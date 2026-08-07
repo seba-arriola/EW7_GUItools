@@ -1,0 +1,60 @@
+This code should now be EW SCNL compliant, utilizing tracebuf2 output.
+
+watch  (watch.c, makewatch.*) was not updated to SCNL because of the existense
+of sniffring and sniffwave, which are two working tools capable of providing
+the same testing/verification functionality as watch.
+
+DK 2005/04/20
+##############################################################################
+
+
+Before attempting to run this program for the first time you should:
+
+1. Insure that earthworm.d has an entry for MOD_IMPORT_IDA
+
+2. Insure that you have defined pin numbers for all expected streams
+   (if you care about pin numbers).  See import_ida.d for words about
+   the format of this file.
+
+NOTES:
+
+Three are three types of network I/O errors that the program considers
+as transient (or at least potentially transient).  These are
+
+1. timeout
+   No traffic at all for 30 seconds (the server sends heartbeats every 15
+   seconds, so no traffic means circuit problems, not simply no data
+   available).
+
+2. no connection
+   This kind of error happens when there is a problem with your computer's
+   connection to the network, or with your network's connection to the
+   outside world.
+
+3. can't resolve hostname
+   Connections with the name server are slow, for example.
+
+Connections that have been working OK but then run into one of the
+above problems will normally be restored successfully in a few
+minutes.  Connection failures due to any other reason are more serious
+and may possibly never succeed.  The only instance I have seen of a
+succesful reconnect for anything other than one of the above is when
+the disk loop at the remote server is being reconfigured.  In that
+case, the client can get a "server fault" error that goes away once the
+work on the server is completed.
+
+Network I/O errors are dealt with by import_ida as follows.  Timeouts
+are dealt with transparently to the application by the idatap library.
+The Xfer_Read() routine will retry on timeout until it succeeds or
+until it fails for some reason other than time out.  If the reason is
+(2) or (3) above, then import_ida will try at 1 minute intervals to
+reconnect.  Failures due to any other error are also retried, but at 15
+minute intervals.  This cycle will continue until successful for up to
+one week.  After one week, the program gives up and closes its socket.
+If you wish to restart a connection after a child has exited you should
+first correct the source of the problem and then halt and restart Earthworm.
+
+In order to avoid filling the log file with repeated entries noting the
+connection failure each minute, only the first network I/O error is logged.
+All subsequent failed attempts are done silently.  The eventual sucesss
+or final failure is also logged.

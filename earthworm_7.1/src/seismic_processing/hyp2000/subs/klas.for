@@ -1,0 +1,122 @@
+      FUNCTION KLAS (NET,Y,X,Z,NAME,FULNAM)
+C--USED BY HYPOINVERSE TO DETERMINE THE REGION NUMBER OF A HYPOCENTER.
+
+C--INPUT:
+C  NET      -THE NETWORK NUMBER AS FOLLOWS:
+C      1 OLD HAWAII
+C      2 NORTHERN CALIFORNIA
+C      3 NEW HAWAII
+
+C  Y      -LATITUDE, DECIMAL DEGREES
+C  X      -LONGITUDE, DECIMAL DEGREES, POSITIVE EAST
+C  Z      -DEPTH IN KM
+
+C--OUTPUT:
+C  KLAS  -THE REGION NUMBER WITHIN THE NETWORK ABOVE.
+C  NAME  -THE REGION NAME OF THE HYPOCENTER (3 CHAR.)
+C  FULNAM-THE FULL REGION NAME (25 CHAR. MAX)
+
+C--THE NUMBER OF REGIONS HERE IS THE NUMBER OF SMALLER REGIONS TO BE SEARCHED,
+C  EXCLUDING THE REGIONS WHICH AGGLOMERATE OTHERS TOGETHER
+      PARAMETER (NREG1=30,NREG2=98)      !OF 103 REGIONS, 98 ARE TO BE SEARCHED
+      PARAMETER (NREG3=51)
+      LOGICAL BOX2, BOX3
+      EXTERNAL BOX2, BOX3
+      CHARACTER NAME*3,FULNAM*25
+
+C--UNTIL THE BOX1 FUNCTION IS WRITTEN, THESE HOLD THE HAWAII REGION NAMES
+      CHARACTER N1(NREG1)*3,FN1(NREG1)*25
+      DATA N1 /
+     2'SNC','SSC','SEC','SER','SME','KOA','SSF','SLE','SF1','SF2',
+     3'SF3','SF4','SF5','LER','MLO','LSW','GLN','SWR','INT','KAO',
+     4'DEP','DLS','DML','LOI','KON','HUA','KOH','KEA','HIL','DIS'/
+
+      DATA FN1 /
+     2'SHALLOW NORTH CALDERA         ','SHALLOW SOUTH CALDERA         ',
+     3'SHALLOW EAST CALDERA          ','SHALLOW EAST RIFT             ',
+     4'SHALLOW MIDDLE ERZ            ','KOAE FAULT ZONE               ',
+     5'SHALLOW SOUTH FLANK           ','SHALLOW LOWER EAST RIFT       ',
+     6'SOUTH FLANK 1                 ','SOUTH FLANK 2                 ',
+     6'SOUTH FLANK 3                 ','SOUTH FLANK 4                 ',
+     7'SOUTH FLANK 5                 ','LOWER EAST RIFT               ',
+     8'MAUNA LOA SUMMIT              ','LOWER SOUTHWEST RIFT          ',
+     8'GLENWOOD                      ','SOUTHWEST RIFT                ',
+     9'INTERMED. DEPTH CALDERA       ','KAOIKI                        ',
+     9'DEEP KILAUEA                  ','DEEP LOWER SOUTHWEST RIFT     ',
+     1'DEEP MAUNA LOA                ','LOIHI                         ',
+     1'KONA                          ','HUALALAI                      ',
+     2'KOHALA                        ','MAUNA KEA                     ',
+     3'HILO                          ','DISTANT                       '/
+
+C--THIS IS THE ORDERED SEARCH LIST FOR THE N. CALIF (NET 2) REGIONS
+C  DONT SEARCH REGIONS 63, 64, 66, 67, 68 BECAUSE THEY AGGLOMERATE OTHER REGIONS
+      DIMENSION ISRCH2(NREG2)
+      DATA ISRCH2 /
+     1  8,  7, 12, 43, 11,  4, 22, 23, 24, 21,
+     2 31, 90, 96, 98, 79, 25,  9,  5, 10,  6,
+     3 13, 14, 26, 19, 16, 18, 27, 17, 20, 29,
+     4 28, 30, 15,  2,  1,  3, 48, 42, 46, 45,
+     5 39, 37, 38, 36, 35, 34, 49, 44, 47, 41,
+     6 57, 58, 56, 62, 93, 92, 50, 52, 51, 33,
+     7 32, 59, 60, 61, 65, 53, 55, 54, 40, 72,
+     8 73, 69, 70, 71, 74, 75, 76, 77, 78, 80,
+     9 81, 82, 83, 84, 85, 86, 87, 88, 89, 91,
+     9 94, 95, 97, 99,100,101,102,103/
+
+C--THIS IS THE SEARCH LIST FOR NEW HAWAII REGIONS
+      DIMENSION ISRCH3(NREG3)
+      DATA ISRCH3 /
+     1 27, 28, 29, 15,  5,  2,  3, 26, 16,  9,
+     2 10, 30,  1,  6,  7, 25, 35, 11, 31,  8,
+     3 14, 32,  4, 36, 44, 12, 13, 24, 33, 34,
+     4 23, 17, 18, 19, 51, 21, 22, 20, 38, 39,
+     5 37, 42, 40, 43, 41, 50, 45, 46, 47, 48,
+     6 49/
+
+
+C--USE THE APPROPRIATE CODE FOR EACH NET
+      GOTO (100, 200, 300), NET
+
+C--NET IS UNDEFINED
+      KLAS=0
+      NAME='   '
+      RETURN
+
+C****************** HAWAII NETWORK (1) *******************************
+C  USE OLD KLASS SUBROUTINE FOR NOW, REPLACE WITH BOX1 ROUTINE LATER.
+100   K=KLASS (1,Y,X,Z)
+      KLAS=K
+      NAME=N1(K)
+      FULNAM=FN1(K)
+      RETURN
+
+C********************* NO. CALIFORNIA NETWORK (2) ***********************
+C--TEST EACH REGION UNTIL THE RIGHT ONE IS FOUND
+C--SEARCH REGIONS IN THE ORDER GIVEN BY ISRCH2
+200   DO 220 I=1,NREG2
+        K=ISRCH2(I)
+        KLAS=K
+        IF (BOX2(Y,X,Z,K,NAME,FULNAM)) RETURN
+220   CONTINUE
+
+C--POINT IS OUTSIDE ALL REGIONS
+      KLAS=NREG2+1
+      NAME='DIS'
+      FULNAM='Distant'
+      RETURN
+
+C********************* NEW HAWAII NETWORK (3) ***********************
+C--TEST EACH REGION UNTIL THE RIGHT ONE IS FOUND
+C--SEARCH REGIONS IN THE ORDER GIVEN BY ISRCH3
+300   DO 320 I=1,NREG3
+        K=ISRCH3(I)
+        KLAS=K
+        IF (BOX3(Y,X,Z,K,NAME,FULNAM)) RETURN
+320   CONTINUE
+
+C--POINT IS OUTSIDE ALL REGIONS
+      KLAS=NREG3+1
+      NAME='DIS'
+      FULNAM='Distant'
+      RETURN
+      END

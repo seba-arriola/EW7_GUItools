@@ -1,0 +1,36 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY arc2trigII
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+LINK_NAME Sample Config File
+LINK arc2trigII.d.txt
+
+LINK_NAME Programmer Notes
+LINK programmer_notes.txt
+
+DESCRIPTION <b>arc2trigII</b> is an enhanced version of <b>arc2trig</b>.
+<br><br> 
+<b>arc2trig</b> creates an Earthworm "trigger message" detailing snippets 
+of waveform data from various channels that should be saved.  
+The list of snippets is generated based upon the contents of 
+a Hypoinverse Archive(arc) message.  
+<br><br> 
+<b>arc2trigII</b> further enhances the functionality of <b>arc2trig</b> by saving
+snippets of interest which were not listed in the arc message. 
+<br><br>
+Initial version by Alex 02/21/01
+
+
+*************************************************
+************************************************/
+

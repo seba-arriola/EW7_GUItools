@@ -1,0 +1,281 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.3 2007/03/02 18:39:43 dietz Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.3  2007/03/02 18:39:43  dietz
+#     removed make entries relating to test versions of hypoinverse
+#
+#     Revision 1.2  2004/05/20 23:14:49  dietz
+#     Grabbed Fred Klein's latest location-code friendly version 5/20/2004
+#
+#     Revision 1.2  2000/09/12 22:15:59  dietz
+#     *** empty log message ***
+#
+#     Revision 1.1  2000/09/12 20:53:03  dietz
+#     Initial revision
+#
+#     Revision 1.1  2000/02/14 18:41:39  lucky
+#     Initial revision
+#
+#
+#
+
+#  HYP	    HYPOINVERSE EARTHQUAKE LOCATION PROGRAM.
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+hyp2000  :  hyp.o hybda.o hycmd.o hysta.o hydel.o hyate.o hyfmc.o hycal.o \
+hyxmc.o hycrh.o hycrt.o hystl.o hyopen.o hyinit.o hyphs.o hysou.o \
+hycin.o hycout.o hytrl.o hyloc.o hysol.o hysvd.o hytra.o hytrh.o hytrt.o \
+hymag.o hyrep.o hylst.o hysum.o hyinp.o hypro.o medwt.o utmcal.o \
+init_event.o hydelt.o hyedit.o hytime.o hybeg.o hypref.o hymagp.o hyfile.o \
+readq.o jdate.o spawn.o openr.o askr.o openw.o errset.o leng.o dayjl.o \
+lask.o jask.o klas.o upstr.o askc.o box2.o box3.o klass.o ksic.o
+	f77 hyp.o hybda.o hycmd.o hysta.o hydel.o hyate.o hyfmc.o hypref.o \
+	hyxmc.o hycrh.o hycrt.o hystl.o hyopen.o hyinit.o hyphs.o hycal.o \
+	hycin.o hytrl.o hyloc.o hysol.o hysvd.o hytra.o hytrh.o hytrt.o \
+	hymag.o hyrep.o hylst.o hysum.o hyinp.o hypro.o medwt.o utmcal.o \
+	init_event.o hydelt.o hyedit.o hytime.o hybeg.o hycout.o hymagp.o hyfile.o \
+	hysou.o readq.o jdate.o spawn.o openr.o askr.o openw.o errset.o \
+	leng.o dayjl.o lask.o jask.o klas.o upstr.o askc.o box2.o box3.o \
+	klass.o ksic.o \
+	-Bstatic -o $B/hyp2000
+
+#  HYP	   * MAIN HYPOINVERSE PROGRAM.
+hyp.o  :  hyp.for common.inc
+	f77 -c hyp.for
+
+#  HYPOINV * MAIN HYPOINVERSE SUBROUTINE.
+hypoinv.o  :  hypoinv.for common.inc
+	f77 -c hypoinv.for
+
+#  HYBDA   * BLOCK DATA INITIALIZATION OF COMMON.
+hybda.o  :  hybda.for common.inc
+	f77 -c hybda.for
+
+#  HYBEG   * INITIALIZATION OF OTHER VARIABLES.
+hybeg.o  :  hybeg.f common.inc
+	f77 -c hybeg.f
+
+#  HYCMD   * GETS AND PROCESSES COMMANDS.
+hycmd.o  :  hycmd.for common.inc
+	f77 -c hycmd.for
+
+#  HYFILE   * DETERMINE THE FILE TYPE AND FORMAT.
+hyfile.o  :  hyfile.for common.inc
+	f77 -c hyfile.for
+
+#  HYSTA   * READS IN STATIONS.
+hysta.o  :  hysta.for common.inc
+	f77 -c hysta.for
+
+#  HYDEL   * READS IN STATION DELAYS (FOR MULTIPLE MODELS).
+hydel.o  :  hydel.for common.inc
+	f77 -c hydel.for
+
+#  HYATE   * READS IN STATION ATTENUATION HISTORY.
+hyate.o  :  hyate.for common.inc
+	f77 -c hyate.for
+
+#  HYCAL   * READS IN STATION CAL FACTOR HISTORY.
+hycal.o  :  hycal.for common.inc
+	f77 -c hycal.for
+
+#  HYFMC   * READS IN STATION FMAG CORRECTIONS.
+hyfmc.o  :  hyfmc.for common.inc
+	f77 -c hyfmc.for
+
+#  HYXMC   * READS IN STATION XMAG CORRECTIONS.
+hyxmc.o  :  hyxmc.for common.inc
+	f77 -c hyxmc.for
+
+#  HYCRH   * READS IN HOMOGENOUS LAYER CRUSTAL MODELS.
+hycrh.o  :  hycrh.for common.inc
+	f77 -c hycrh.for
+
+#  HYCRT   * READS IN TRAVEL-TIME-TABLE CRUSTAL MODELS.
+hycrt.o  :  hycrt.for common.inc
+	f77 -c hycrt.for
+
+#  HYSTL   * OUTPUTS STATIONS, CRUST & PARAMETERS TO PRINT FILE.
+hystl.o  :  hystl.for common.inc
+	f77 -c hystl.for
+
+#  HYOPEN  * OPENS FILES FOR LOCATION RUN.
+hyopen.o  :  hyopen.for common.inc
+	f77 -c hyopen.for
+
+#  HYINIT  * INITIALIZES SOME VARIABLES FOR LOCATION RUN.
+hyinit.o  :  hyinit.for common.inc
+	f77 -c hyinit.for
+
+#  HYPHS   * READS IN PHASE DATA FOR ONE EVENT.
+hyphs.o  :  hyphs.for common.inc
+	f77 -c hyphs.for
+
+#  HYCIN   * INPUTS PHASE DATA FROM CUSP MEM FILES (ALTERNATE TO HYPHS)
+hycin.o  :  hycin.f
+	f77 -c hycin.f
+
+#  HYCOUT   * OUTPUTS PHASE DATA TO CUSP MEM FILES (ALTERNATE TO HYARC)
+hycout.o  :  hycout.f
+	f77 -c hycout.f
+
+#  HYTRL   * SETS TRIAL HYPOCENTER.
+hytrl.o  :  hytrl.for common.inc
+	f77 -c hytrl.for
+
+#  HYLOC   * LOCATES ONE EVENT.
+hyloc.o  :  hyloc.for common.inc
+	f77 -c hyloc.for
+
+#  HYSOL   * PERFORMS INVERSION FOR ONE ITERATION.
+hysol.o  :  hysol.for common.inc
+	f77 -c hysol.for
+
+#  HYSVD     CANNED SINGLE-VALUE-DECOMPOSITION ROUTINE.
+hysvd.o  :  hysvd.f
+	f77 -c hysvd.f
+
+#  HYTRA   * MANAGE CRUST MODEL CHOICE & AVERAGING.
+hytra.o  :  hytra.for common.inc
+	f77 -c hytra.for
+
+#  HYTRH   * CALC TRAVEL TIMES AND DERIVS FOR HOMO LAYER MODEL.
+hytrh.o  :  hytrh.for common.inc
+	f77 -c hytrh.for
+
+#  HYTRT   * CALC TRAVEL TIMES AND DERIVS FROM TRAV-TIME TABLE.
+hytrt.o  :  hytrt.for common.inc
+	f77 -c hytrt.for
+
+#  HYMAG   * COMPUTES DUR & MAX AMP MAGNITUDE.
+hymag.o  :  hymag.for common.inc
+	f77 -c hymag.for
+
+#  HYMAGP   * COMPUTES P AMP MAGNITUDE.
+hymagp.o  :  hymagp.for common.inc
+	f77 -c hymagp.for
+
+#  HYPREF  * SELECTS PREFERRED MAGNITUDE.
+hypref.o  :  hypref.for common.inc
+	f77 -c hypref.for
+
+#  HYREP   * REPORTS A LOCATION ON THE TERMINAL.
+hyrep.o  :  hyrep.for common.inc
+	f77 -c hyrep.for
+
+#  HYSOU   * TABULATES MOST COMMON DATA SOURCES.
+hysou.o  :  hysou.for common.inc
+	f77 -c hysou.for
+
+#  HYLST   * OUTPUTS DATA BY STATION TO PRINT & ARCHIVE FILES.
+hylst.o  :  hylst.for common.inc
+	f77 -c hylst.for
+
+#  HYSUM   * OUTPUTS SUMMARY RECORD (FINAL LOCATION).
+hysum.o  :  hysum.for common.inc
+	f77 -c hysum.for
+
+#  HYINP     FOR INTERACTIVE ENTRY OF PHASE DATA.
+hyinp.o  :  hyinp.for
+	f77 -c hyinp.for
+
+#  HYPRO   * INTERACTIVELY PROCESSES A SERIES OF EVENTS.
+hypro.o  :  hypro.for common.inc
+	f77 -c hypro.for
+
+#  MEDWT     COMPUTES THE WEIGHTED MEDIAN OF A SERIES OF MAGNITUDES.
+medwt.o  :  medwt.for
+	f77 -c medwt.for
+
+#  UTMCAL    CALCULATE STATION DISTANCES ON A UTM GRID
+utmcal.o :  utmcal.for
+	f77 -c utmcal.for
+
+#  INIT_EVENT  INITIALIZES CUSP FOR READING OF MEM DATA FILES (VAX ONLY)
+init_event.o  :  init_event.f
+	f77 -c init_event.f
+
+#  HYDELETE  DELETES FILES IN INTERACTIVE PROCESSING
+hydelt.o  :  hydelt.f
+	f77 -c hydelt.f
+
+#  HYEDTIOR  RUNS AN EDTIOR WITHIN A PROCESS
+hyedit.o  :  hyedit.f
+	f77 -c hyedit.f
+
+#  HYTIME    GETS CURRENT SYSTEM TIME FOR LABELING PRINT FILE
+hytime.o  :  hytime.f
+	f77 -c hytime.f
+
+readq.o : subs/readq.for
+	f77 -c subs/readq.for
+
+jdate.o  :  subs/jdate.for
+	f77 -c subs/jdate.for
+
+spawn.o  :  subs/spawn.f
+	f77 -c subs/spawn.f
+
+openr.o  :  subs/openr.f
+	f77 -c subs/openr.f
+
+askr.o  :  subs/askr.for
+	f77 -c subs/askr.for
+
+openw.o  :  subs/openw.f
+	f77 -c subs/openw.f
+
+errset.o  :  subs/errset.f
+	f77 -c subs/errset.f
+
+leng.o  :  subs/leng.for
+	f77 -c subs/leng.for
+
+dayjl.o  :  subs/dayjl.for
+	f77 -c subs/dayjl.for
+
+lask.o  :  subs/lask.for
+	f77 -c subs/lask.for
+
+jask.o  :  subs/jask.for
+	f77 -c subs/jask.for
+
+klas.o  :  subs/klas.for
+	f77 -c subs/klas.for
+
+upstr.o  :  subs/upstr.for
+	f77 -c subs/upstr.for
+
+askc.o  :  subs/askc.for
+	f77 -c subs/askc.for
+
+box2.o  :  subs/box2.for
+	f77 -c subs/box2.for
+
+box3.o  :  subs/box3.for
+	f77 -c subs/box3.for
+
+klass.o  :  subs/klass.for
+	f77 -c subs/klass.for
+
+ksic.o  :  subs/ksic.for
+	f77 -c subs/ksic.for
+
+#
+#  Clean-up rules
+#  **************
+#
+clean:
+	rm -f a.out core *.o *.obj *% *~ subs/*.o subs/*.obj
+
+clean_bin:
+	rm -f $B/hyp2000*

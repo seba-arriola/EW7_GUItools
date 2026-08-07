@@ -1,0 +1,75 @@
+# FILE: makefile.ux                 Copyright (c), Symmetric Research 2004-2007
+#
+#                    Make file for srparxchewsend  - Linux version
+#
+
+#CFLAGS = -g ${GLOBALFLAGS} -DDEBUG
+CFLAGS = -g ${GLOBALFLAGS}
+
+CC = gcc
+
+# Insist that Earthworm environment is set
+
+ifeq "$(EW_HOME)" ""
+error:
+	echo Please run ew_linux.bash to set the Earthworm environment before continuing
+endif
+
+
+# The following lines set the location of the SR PARxCH and PARGPS 
+# library functions needed to compile SrParxchEwSend.  Un-comment the
+# first line below when compiling from the earthworm directory tree
+# and the second when compiling from the SR directory tree.
+
+SR_HOME=$(EW_HOME)/$(EW_VERSION)/src/data_sources/srparxchewsend
+#SR_HOME=/usr/local/sr
+
+PARXCH=$(SR_HOME)/parxch
+PARGPS=$(SR_HOME)/pargps
+
+PARXCHINC = $(PARXCH)/include
+PARGPSINC = $(PARGPS)/include
+PARXCHLIB = $(PARXCH)/lib/parxch.c
+PARGPSLIB = $(PARGPS)/lib/pargps.c
+
+
+PDEF  = -DSROS_LINUX -DSRA2D_PARANY -DGPS_AVAILABLE
+CFLAGSR = -fPIC
+
+APP = srparxchewsend
+O = $(APP).o parxch.o pargps.o
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+LIBS = -lm -lpthread
+
+EWLIBS = $L/getutil.o  \
+         $L/kom.o      \
+         $L/logit.o    \
+         $L/sleep_ew.o \
+         $L/time_ew.o  \
+         $L/transport.o
+
+$B/$(APP): $O
+	$(CC) $(CFLAGS) -o $B/$(APP) $O $(EWLIBS) $(LIBS)
+
+$(APP).o: $(APP).c
+	$(CC) -c $(CFLAGS) $(PDEF) -I$(PARXCHINC) -I$(PARGPSINC) -o $@  $(APP).c
+
+parxch.o: $(PARXCHLIB)
+	$(CC) -c $(CFLAGSR) $(PDEF) -I$(PARXCHINC) -I$(PARGPSINC) $(PARXCHLIB)
+
+pargps.o: $(PARGPSLIB)
+	$(CC) -c $(CFLAGSR) $(PDEF) -I$(PARGPSINC) $(PARGPSLIB)
+
+.c.o:
+	$(CC) $(CFLAGS) -o $@
+
+
+# Clean-up directives
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/$(APP)*

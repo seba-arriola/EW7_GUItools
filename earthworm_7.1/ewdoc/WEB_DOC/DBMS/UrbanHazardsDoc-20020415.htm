@@ -1,0 +1,198 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Urban Hazards System</TITLE>
+<META NAME="Template" CONTENT="C:\Program Files\Microsoft Office\Office\html.dot">
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<B><U><P ALIGN="CENTER">Earthworm Urban Hazards Project</P>
+</u></B><P ALIGN="CENTER">User's Guide</P>
+<P ALIGN="CENTER">Lucky Vidmar</P>
+<P ALIGN="CENTER">Barbara Bogaert</P>
+<P ALIGN="CENTER">April 15, 2002</P>
+<P>&nbsp;</P>
+<B><U><P>OBJECTIVE</P>
+</u></B><P>The objective of the Earthworm Urban Hazards Project ("UH") is to support experimental deployments by the Urban Hazards Project at the USGS, Golden, CO. These experiments consist of deploying K2s in the field and periodically collecting .evt files from them. The desire is to associate the triggers from the .evt files with events from a known catalog. </P>
+<P>Once the entire experiment is completed and all triggers associated, the data set should be made available to the scientific and engineering community for downloading over the internet.</P>
+<P>To support these requirements, the UH project consists of two main prongs, explained in detail below:</P>
+
+<UL>
+<LI>Processing - load the catalog, station and response information into the database; associate the .evt files with the events in the database. </LI>
+<LI>Web - allow users to download associated waveform data from the internet, both as raw counts and transformed into ground motion. </LI></UL>
+
+<P>&nbsp;</P>
+<P>The major software components of UH are the same as those required for Quick Review: </P>
+<P>* The Oracle DBMS containing event parameters and event trace data. </P>
+<P>* Webserver programs which manipulate the data and provide a user interface. </P>
+<P>* The SeisGram2K applet (by Anthony Lomax), which allows visualization of the data.</P>
+<P>&nbsp;</P>
+<P>The source code and example configuration files can be found under:</P>
+<P><I>EW_VERSION/src/oracle/apps/src/urban_hazards</i>:</P>
+
+<UL>
+<LI><I>process</i> - processing tools </LI>
+<LI><I>web</i> - web tools </LI>
+<LI><I>scripts</i> - helpful scripts </LI></UL>
+
+<P>&nbsp;</P>
+<B><U><P>PROCESSING TOOLS</P>
+</u></B><P>The processing stream of the UH Project consists of several tools, each performing a specific task. They should be run in the following order:</P>
+
+<UL>
+<LI><B>stalist_maker</b> - reads .evt files and creates a station list file from the information gathered from the EVT headers. </LI>
+<LI><B>stalist_loader</b> - loads the information from a station list file into the database. </LI>
+<LI><B>cnsscat2ora</b> - loads the information from a CNSS format catalog file into the database. </LI>
+<LI><B>evtK2ora</b> - reads .evt files and attempts to associate them with the events in the database. If an association is made, it saves the trace data from the .evt file into the database.</LI></UL>
+
+<P>&nbsp;</P>
+<B><U><P>Note on the Directory Structure</P>
+</u></B><P>The processing flow is intended to move .evt files from the source directory into the target directory whenever an .evt file is processed without errors. If an error is encountered, the offending .evt file is moved into the error directory. Therefore, the tools that read .evt files require the entire set of trigger files to be in one directory. Unfortunately, this is not how they are typically stored after an Urban Hazards experiment. In the typical case, the .evt files are stored in directories containing many subdirectories where the .evt files are not necessarily named uniquely. </P>
+<P>To remedy this discrepancy and to provide a helpful workaround, we provide a set of scripts for both NT and Solaris that will process the typical experiment directory and create a single, consolidated directory of .evt files suitable for ingestion by the UH processing tools.</P>
+<U><P>On Windows NT</P>
+</U><P>This procedure requires the Cygwin Unix emulation software to be installed as c:\cygwin. This package is a required standard since Earthworm6. The consolidation scripts should be installed under the cygwin tree:</P>
+
+<UL>
+<FONT FACE="Courier New" SIZE=1><LI>copy ...\apps\src\urban_hazards\scripts\consolidate_evts_nt c:\cygwin\bin\ew </LI>
+<LI>copy ...\apps\src\urban_hazards\scripts\get_evts_nt c:\cygwin\bin\ew</LI></font></UL>
+
+<P>&nbsp;</P>
+<P>Suppose that we have an experiment directory called c:\ExperimentXYZ, under which there are many subdirectories containing .evt files from multiple visits to all stations in the experiment. To create a consolidated directory called h:\XYZConsolidated:</P>
+
+<UL>
+<FONT FACE="Courier New" SIZE=1><LI>mkdir h:\XYZConsolidated </LI>
+<LI>cd c:\XYZExperiment </LI>
+<LI>c:\cywin\bin\tcsh -c 'consolidate_evts_nt /cygdrive/h/XYZConsolidated'</LI></font></UL>
+
+<P>This procedure will create an output file c:\consolidate_evt_output which can be used as a mapping from the original location of an .evt file to its consolidated counterpart. The file is found one level above <FONT FACE="Courier New">c:\XYZExperiment</FONT><FONT SIZE=1>.</font></P>
+<P>&nbsp;</P>
+<U><P>On Solaris</P>
+</U><P>Analogous to the NT approach:</P>
+
+<UL>
+<FONT FACE="Courier New" SIZE=1><LI>cd /home/XYZExperiment </LI>
+<LI>mkdir ../XYZConsolidated </LI>
+<LI>consolidate_evts_sol ../XYZConsolidated</LI></font></UL>
+
+<P>&nbsp;</P>
+<B><U><P>Configuration </P>
+</u></B><P>As with all Earthworm tools, all UH processing tools read their configuration options from a .d file and write output to a log file. </P>
+<B><U><P>stalist_maker</P>
+</u></B><P>The configuration file specifies:</P>
+
+<UL>
+<LI>EVTFilesInDir - where the consolidated .evt files are to be found </LI>
+<LI>EVTFilesOutDir - where .evt files are moved upon success </LI>
+<LI>EVTFilesErrorDir - where .evt files are moved upon error </LI>
+<LI>StaListFile - name of the station list file </LI>
+<LI>NetworkCode - two letter code to be assigned as a network designation to all channels</LI></UL>
+
+<P>This program reads through the directory of .evt files and creates a station file containing information about each channel found in those .evt files. The station list file contains the following fields:</P>
+
+<UL>
+<LI>1-6 &#9;Station Code </LI>
+<LI>7-12&#9;Component Code </LI>
+<LI>13-17 &#9;Network Code </LI>
+<LI>18-27 &#9;Latitude </LI>
+<LI>28-38 &#9;Longitude </LI>
+<LI>39-45 &#9;Elevation </LI>
+<LI>46-50 &#9;Azimuth </LI>
+<LI>51-55 &#9;Dip </LI>
+<LI>56-60 &#9;Sampling Rate </LI>
+<LI>61-64 &#9;Gain </LI>
+<LI>65-70 &#9;Fullscale </LI>
+<LI>71-81 &#9;Sensitivity </LI>
+<LI>82-83 &#9;Damping </LI>
+<LI>88-91 &#9;Sensor Type </LI>
+<LI>92-101&#9; Name of the Response File (Poles and Zeros)</LI></UL>
+
+<P>&nbsp;</P>
+<P>Once the station list file is created, the user is invited to examine it and modify any fields that may be set incorrectly in the .evt headers. The file is re-usable since <B>stalist_maker</B> first attempts to read in an existing station list file before rummaging through the directory of .evt files. If an existing station list file is found, the values therein will over-ride whatever is found in .evt headers. In that case, <B>stalist_maker</B> will overwrite the existing station list file when it is done reading through .evt files. For this reason, it is a good idea to make a copy of an existing station list file before running <B>stalist_maker</B>.</P>
+<P>&nbsp;</P>
+<B><U><P>stalist_loader</P>
+</u></B><P>The configuration files specifies:</P>
+
+<UL>
+<LI>StaListFile - name of the station list file </LI>
+<LI>PZ_Dir - directory containing response files </LI>
+<LI>Database connection parameters </LI>
+
+<UL>
+<LI>DBuser </LI>
+<LI>DBpassword </LI>
+<LI>DBservice</LI></UL>
+</UL>
+
+<P>This program reads in the station list file and loads the information into the database. Note that the response files must be in the PZ_directory and must named exactly as they appear in the station list file for each channel.</P>
+<P>&nbsp;</P>
+<B><U><P>cnsscat2ora</P>
+</u></B><P>The configuration files specifies:</P>
+
+<UL>
+<LI>Database connection parameters </LI>
+
+<UL>
+<LI>DBuser </LI>
+<LI>DBpassword </LI>
+<LI>DBservice</LI></UL>
+</UL>
+
+<P>This program is invoked as:</P>
+<P>cnsscat2ora config_file catalog_file</P>
+<P>The catalog file must be in the CNSS format. This program inserts the information about the events from the catalog file into the database.</P>
+<P>&nbsp;</P>
+<B><U><P>evtK2ora</P>
+</u></B><P>The configuration file specifies:</P>
+
+<UL>
+<LI>EVTFilesInDir - where the consolidated .evt files are to be found </LI>
+<LI>EVTFilesOutDir - where .evt files are moved upon success </LI>
+<LI>EVTFilesErrorDir - where .evt files are moved upon error </LI>
+<LI>NetworkCode - two letter code to be assigned as a network designation to all channels </LI>
+<LI>Database connection parameters </LI>
+
+<UL>
+<LI>DBuser </LI>
+<LI>DBpassword </LI>
+<LI>DBservice</LI></UL>
+
+<LI>MaxTravelTime - maximum distance from the event </LI>
+<LI>Pvelocity - local P velocity in km/sec </LI>
+<LI>ClocDoubt - uncertainty of K2 clock in seconds</LI></UL>
+
+<P>This program reads a consolidated directory of .evt files. For each file it selects a list of candidate events for association. This list includes all events falling in the time interval between the end-time of the trace snippet and MaxTravelTime seconds before the start of the trace snippet. An association is made if any part of the trace snippet falls between P and S arrival times, as calculated in a homogeneous half-space. The P velocity is specified in the configuration table. The S velocity is P/1.73.</P>
+<P>Note that the station list and the catalog must both be loaded before this program can run successfully. </P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><U><P>WEB TOOLS </P>
+<P>Setup and Configuration</P>
+</u></B><P>No special setup or configuration is necessary beyond setting up Earthworm Quick Review and the basic Earthworm web pages. Be sure that the getlist.d configuration file has ShowStasCol enabled in order to allow users to enter the ground motion download page.</P>
+<P>&nbsp;</P>
+<B><U><P>View Ground Motion Traces</P>
+</u></B><P>Clicking on the <B>Stas</B> column in the <B>getlist</B> page brings up a new browser window which displays all associated trace data (from .evt files) for the selected events. The top of the page shows basic parameters for the event. Below that, channels are arranged according to stations. For each station, the user can view either all channels at that stations by clicking on the station name, or individual channels by clicking on the channel link.</P>
+<P>Clicking on either type of link will bring up the SeisGram2K applet showing the selected trace data. If the channel name in the list is followed by a (+GM) tag, ground motion transformation was successfully completed and the applet will display four trace panels for each channel:</P>
+
+<UL>
+<LI>raw data in counts </LI>
+<LI>acceleration in nm/s2 </LI>
+<LI>velocity in nm/s </LI>
+<LI>displacement in nm</LI></UL>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><U><P>Download Trace Data</P>
+</u></B><P>The user can select which waveforms to download (in SAC format) by selecting buttons corresponding either to all channels at a station or to specific channels. By clicking DONE at the bottom of the page, the user makes a request from the web server to package up the selected trace data. </P>
+<P>The user will then be shown another web page offering up the selected trace data for download either as a .zip or a .tar file. Once downloaded and unpacked, those files will create a directory containing SAC files for each selected channel, with the following naming convention:</P>
+
+<UL>
+<LI>STA.CHAN.NET - raw data in counts </LI>
+<LI>STA.CHAN.NET.acc - acceleration </LI>
+<LI>STA.CHAN.NET.vel - velocity </LI>
+<LI>STA.CHAN.NET.disp - displacement </LI>
+<LI>STA.CHAN.NET.pz - response poles-and-zeros used to transform the raw trace data into ground motion.</LI></UL>
+
+<P>&nbsp;</P><hr><address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address></BODY>
+</HTML>

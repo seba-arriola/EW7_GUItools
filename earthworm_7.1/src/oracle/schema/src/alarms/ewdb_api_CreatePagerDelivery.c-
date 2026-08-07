@@ -1,0 +1,197 @@
+/*
+ *   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+ *   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+ *
+ *    $Id: ewdb_api_CreatePagerDelivery.c-,v 1.1 2001/05/15 02:16:13 davidk Exp $
+ *
+ *    Revision history:
+ *     $Log: ewdb_api_CreatePagerDelivery.c-,v $
+ *     Revision 1.1  2001/05/15 02:16:13  davidk
+ *     Initial revision
+ *
+ *     Revision 1.1  2001/02/28 17:24:59  lucky
+ *     Initial revision
+ *
+ *     Revision 1.1  2001/02/28 17:19:22  lucky
+ *     Initial revision
+ *
+ *
+ */
+
+
+#include <alarms.h>
+#include <ewdb_ora_api.h>
+#include <ewdb_cli_base.h>
+#include <ewdb_oci_base_internal.h>
+
+
+char CREATE_PAGER_STRING[] =
+	"Begin CreatePagerDelivery (OUT_idDelivery => :OUT_idDelivery,"
+	"OUT_idUserDelivery => :OUT_idUserDelivery, "
+	"IN_idUser => :IN_idUser, "
+	"IN_sNumber => :IN_sNumber, "
+	"IN_sPagerCompany => :In_sPagerCompany, "
+	"IN_bisAudit => :IN_bisAudit); End;";
+	
+EWDB_OCI_SFS CreatePagerBindArray[] = 
+{
+  {0,1,0,0,0,OA_INT,    ":OUT_idDelivery"},
+  {0,1,0,0,0,OA_INT,    ":OUT_idUserDelivery"},
+  {0,1,0,0,0,OA_INT,    ":IN_idUser"},
+  {0,1,256,0,0,OA_SZ,   ":IN_sNumber"},
+  {0,1,256,0,0,OA_SZ,   ":IN_sPagerCompany"},
+  {0,1,256,0,0,OA_SZ,   ":IN_bisAudit"},
+};
+
+#define	NUM_FIELDS	6
+
+
+EWDB_OCIStatementStruct 		SSCreatePager;
+static  ewdb_PagerDelivery		LocalPagerStruct;
+static	int						Local_idUserDelivery;
+static	int						Local_idUser;
+static	int						Local_bisAudit;
+
+
+int PrepCreatePagerExec (ewdb_PagerDelivery *, int, EWDB_Cursor *);
+int PostCreatePagerExec (int *, ewdb_PagerDelivery *);
+int InitCreatePagerStatement (char *, EWDB_OCIStatementStruct *);
+
+
+int		ewdb_api_CreatePagerDelivery (int *pidUserDelivery, 
+						int idUser, ewdb_PagerDelivery *pPager, int isAudit)
+{
+
+	EWDB_Cursor	pCursor;
+
+	if ((pPager == NULL) || (pidUserDelivery == NULL))
+	{
+		logit ("", "Null parameters passed in!\n");
+		return EWDB_RETURN_FAILURE;
+	}
+
+	EWDB_SetLastOraAPIActionTime ();
+
+
+	if (EWDB_Reconnect () != EWDB_RETURN_SUCCESS)
+	{
+		logit ("", "Could not reconnect to the database!\n");
+		return (EWDB_RETURN_FAILURE);
+	}
+
+logit ("", "In create_pager: isAUdit = %d\n", isAudit);
+
+	Local_bisAudit = isAudit;
+
+	if (PrepCreatePagerExec (pPager, idUser, &pCursor) != EWDB_RETURN_SUCCESS)
+	{
+		logit ("", "Call to PrepCreatePagerExec failed.\n");
+		return (EWDB_Disconnect (EWDB_RETURN_FAILURE));
+	}
+
+	if (EWDB_SQLExecute (pCursor))
+	{
+		EWDB_ErrorReport (hEWDBC, pCursor,"EWDB_CreatePagerDelivery:EWDB_SQLExecute", 1);
+		return (EWDB_Disconnect (EWDB_RETURN_FAILURE));
+	} 
+
+  
+	/* Commit the transaction (all the previous inserts!)
+	   In Case there is any auditing or logging or debug
+	   changes made in the stored procedures.
+	****************************************************/
+	if (EWDB_SQLCommit (hEWDBC))
+	{
+		EWDB_ErrorReport (hEWDBC, hEWDBC, "EWDB_CreatePagerDelivery:EWDB_SQLCommit",2);
+		return (EWDB_Disconnect (EWDB_RETURN_FAILURE));
+	}
+
+	if (PostCreatePagerExec (pidUserDelivery, pPager) != EWDB_RETURN_SUCCESS)
+	{
+		logit ("", "Call to PostCreatePagerExec failed!\n");
+		return (EWDB_Disconnect (EWDB_RETURN_FAILURE));
+	}
+
+	return EWDB_RETURN_SUCCESS;
+
+}
+
+
+/******************* InitCreatePagerStatement *******************/
+int InitCreatePagerStatement(char *statement, EWDB_OCIStatementStruct *pSS)
+{
+
+	if ((statement == NULL) ||  (pSS == NULL))
+	{
+		logit ("", "Null parameters passed in!\n");
+		return EWDB_RETURN_FAILURE;
+	}
+
+logit ("", "In create_pager: local_isAUdit = %d\n", Local_bisAudit);
+
+	pSS->FieldArray[0].pVal = &(LocalPagerStruct.idDelivery);
+	pSS->FieldArray[1].pVal = &Local_idUserDelivery;
+	pSS->FieldArray[2].pVal = &Local_idUser;
+	pSS->FieldArray[3].pVal = (LocalPagerStruct.sNumber);
+	pSS->FieldArray[4].pVal = (LocalPagerStruct.sPagerCompany);
+	pSS->FieldArray[5].pVal = &Local_bisAudit;
+
+	if (EWDB_RequestCursor (statement, pSS, 0) != 0)
+	{
+		logit ("", "Call to EWDB_RequestCursor failed.\n");
+		return EWDB_RETURN_FAILURE;
+	}
+
+	return EWDB_RETURN_SUCCESS;
+}  
+
+
+/******************* PrepCreatePagerExec *******************/
+int PrepCreatePagerExec (ewdb_PagerDelivery *pPager, int idUser, EWDB_Cursor *ppCursor)
+{
+
+	if ((pPager == NULL) || (ppCursor == NULL) || (idUser < 0))
+	{
+		logit ("", "Invalid parameters passed in!\n");
+		return EWDB_RETURN_FAILURE;
+	}
+
+	memcpy (&LocalPagerStruct, pPager, sizeof (ewdb_PagerDelivery));
+	Local_idUser = idUser;
+
+	SSCreatePager.NumOfFields = NUM_FIELDS;
+	SSCreatePager.FieldArray = CreatePagerBindArray;
+	SSCreatePager.RecordSize = 0;
+
+	if (InitCreatePagerStatement (CREATE_PAGER_STRING, &SSCreatePager)
+												     != EWDB_RETURN_SUCCESS)
+	{
+		logit ("", "Call to InitCreatePagerStatement failed!\n");
+		return EWDB_RETURN_FAILURE;
+	}
+
+	*ppCursor = SSCreatePager.pCda;
+	
+	return EWDB_RETURN_SUCCESS;
+}  
+
+
+/******************* PostCreatePagerExec *******************/
+int PostCreatePagerExec (int *pidUserDelivery, ewdb_PagerDelivery *pPager)
+{
+	EWDB_Cursor pCursor;
+  
+	if (pPager == NULL)
+	{
+		logit ("", "Invalid arguments passed in.\n");
+		return EWDB_RETURN_FAILURE;
+	}
+  
+	pPager->idDelivery = LocalPagerStruct.idDelivery;
+	*pidUserDelivery = Local_idUserDelivery;
+	pCursor = SSCreatePager.pCda;
+  
+	EWDB_ReleaseCursor (pCursor);
+  
+	return EWDB_RETURN_SUCCESS;
+} 

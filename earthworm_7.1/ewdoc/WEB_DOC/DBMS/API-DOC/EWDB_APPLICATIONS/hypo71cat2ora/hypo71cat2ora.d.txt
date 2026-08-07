@@ -1,0 +1,24 @@
+
+
+# configuration file for hypo71 catalog loader
+
+
+#
+# Database connection parameters
+#
+#
+DBuser     p3_main
+DBpassword main
+DBservice  sm.usgs
+
+
+#
+# Logfiledir - where log files are written
+#
+Logfiledir .\log\
+
+#
+# Debug (OPTIONAL)
+#
+Debug    1
+

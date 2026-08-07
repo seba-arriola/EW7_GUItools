@@ -1,0 +1,535 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="Template" content="C:\WINDOWS\Application Data\Microsoft\Templates\Normal.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+   <title>Proposed Alarm schema</title>
+</head>
+<body link="#0000FF">
+
+<center><b><u>Earthworm5 Alarms</u></b>
+<p><b>Programmer's Guide</b>
+<p>Lucky Vidmar
+<p>May 7, 2003</center>
+
+<p><br>
+<br>
+<br>
+<p><b><i>Introduction</i></b>
+<p>The Earthworm Alarms System is intended to satisfy the need for an easy-to-use,
+web-centered method for dispatching notifications about automatic and reviewed
+earthquakes. The initial requirements are that the system must support
+several delivery mechanisms such as email, pager, and QDDS. Furthermore,
+the user must be able to specify and modify the text of the notification
+messages. The system must keep an audit of all notifications that were
+sent, and this audit should be used to ensure that subsequent alarms are
+sent to the same list of recipients who received the original notification.
+<p>This document deals only with the Earthworm Alarms Manager portion with
+its source code residing under <i>oracle/apps/src/alarms/web</i>. Refer
+to the Earthworm Quick Review documentation for more on how reviewed notifications
+are handled and issued.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><i>System Overview</i></b>
+<p>At the center of the system is the Alarms Schema - a set of Oracle DB
+tables, views, and stored procedures, along with the requisite Earthworm
+API routines written in C. Please see the attached ERD and the explanation
+of it in this document.
+<p>The schema is accessed from two levels:
+<ul>
+<li>
+<b>Alarms Manager</b> -- sequence of CGI programs that support the web
+pages allowing the user to create or modify alarm rules, delivery mechanisms,
+formats, etc.</li>
+
+<li>
+<b>Alarms Processor</b> - Earthworm library routines that access the rules
+from the schema, process them, and issue alarms.</li>
+</ul>
+
+<br>&nbsp;
+<br>&nbsp;
+<p><u>Alarms Manager</u>
+<p>The Earthworm Alarms Manager is comprised of a series of CGI programs
+written in C. They support a web interface allowing the "manager" to create
+or modify recipients, rules, delivery mechanisms, and formats. See <a href="http://gldrocky.cr.usgs.gov/DBMS/alarms-overview.gif">System
+Overview Diagram</a> .
+<p><b><i>alarms_manager</i></b> - This is the entry point into the Alarms
+Manager. It retrieves from the DB the available lists of recipients, criteria
+programs, and delivery formats, and then puts up three HTML sections allowing
+the manager to select an existing entry from a list, or chose to insert
+a new one. Clicking on <i>Submit</i> for each of the three sections (recipients,
+programs, formats) invokes the appropriate processing program (<i>alarms_process_recipient</i>,
+<i>alarms_process_prog</i>,
+<i>alarms_process_format</i>, explained below).
+<p><b><i>alarms_process_recipient</i></b> - Invoked by <i>alarms_manager</i>,
+works in two modes depending on whether it is processing a new or an existing
+recipient. If it is a new recipient, it puts up an HTML form allowing the
+manager to define the initial rules for this recipient, specifying magnitude,
+reviewed status, delivery method and format, as well as the criteria program
+desired, if any. If an existing recipient is being processed, it retrieves
+from the DB and then displays the known information about that recipient,
+and then puts up the HTML form allowing the manager to either modify previously
+defined rules, or define new ones. The manager can also delete one or more
+existing rules, or delete the recipient altogether. Clicking Submit or
+Delete will invoke the <i>alarms_process_new_recipient</i> program.
+<p><b><i>alarms_process_new_recipient</i></b> - Works in two modes, depending
+on whether it was invoked by clicking Delete or Submit from <i>alarms_process_recipient</i>.
+If in Delete mode, it deletes the recipient and all rules and deliveries
+associated with the recipient from the database. Otherwise, its task is
+to collect all available information about a recipient and prepare for
+insertion into the database. It is called from <i>alarms_process_recipient</i>
+which passes it all available information about the recipient. It then
+writes the information into a binary structure (see configuration file
+for location of that file) which contains all that information so that
+<i>alarms_insert_recipient</i>
+can use it. After that, it puts up an HTML form requesting the manager
+to fill in all the information which is needed to complete the request
+(new email address, name of the new criteria program, etc.). Clicking Submit
+invokes <i>alarms_insert_recipient</i> program.
+<p><b><i>alarms_insert_recipient</i></b> - First it reads the binary file
+created by <i>alarms_process_new_recipient</i> which contains all of the
+information about this recipient known at that point. Then, it processes
+the web parameters passed in from <i>alarms_process_new_recipient</i> and
+reconciles them with the structure read from the file. If all goes well
+up to here, it proceeds to insert all of the information in the structure
+into the database.
+<p><b><i>alarms_process_prog</i></b> - Invoked by <i>alarms_manager</i>,
+works in two modes depending on whether it is processing a new or an existing
+criteria program. See below for more information on criteria programs.
+If it is a new program, it puts up an HTML form allowing the manager to
+fill in the information about that program. Otherwise, it retrieves from
+the DB and displays previously defined information allowing the manager
+to review or modify it. Clicking Submit or Delete calls <i>alarms_insert_prog</i>
+program.
+<p><b><i>alarms_insert_prog</i></b> - Called by <i>alarms_process_prog</i>,
+works in two ways depending on whether it was invoked by clicking Submit
+or Delete. If it is in Delete mode, and the criteria program is not used
+in any rule, it deletes the program from the database. Otherwise, it processes
+the web parameters passed to it, and calls Earthworm DB API routines to
+insert the information into the database.
+<p><b><i>alarms_process_format</i></b> - Invoked by <i>alarms_manager</i>,
+works in three modes depending on whether it is processing a new or an
+existing delivery format, or if a preview of a format is desired. In Preview
+mode, it displays the existing format showing all valid format tokens in
+a different color. See below for more information on formats. If it is
+a new format, it puts up an HTML form allowing the manager to fill in the
+information about that format. Otherwise, it retrieves from the DB and
+displays previously defined information allowing the manager to review
+or modify it. Clicking Submit or Delete calls <i>alarms_insert_format</i>
+program.
+<p><b><i>alarms_insert_format</i></b> - Called by <i>alarms_process_format</i>,
+works in two ways depending on whether it was invoked by clicking Submit
+or Delete. If it is in Delete mode, and the format is not used in any rule,
+it deletes the format from the database. Otherwise, it processes the web
+parameters passed to it, and calls Earthworm DB API routines to insert
+the information into the database.
+<br>&nbsp;
+<br>&nbsp;
+<p><u>Alarms Processor</u>
+<p>The basic flow of the Alarms Processor is to retrieve all the rules
+from the database, determine which ones meet the event?s criteria, and
+then build and execute the corresponding alarms. Optionally, we would like
+to allow the user to review and modify the alarm list before it is executed.
+<p><b><i>DetermineAlarms()</i></b> - Retrieves the list of all rules from
+the database. For each rule which passes the magnitude and review flag
+criteria, the rule?s criteria program, if defined, is executed. See below
+for more information on criteria programs. If the criteria program returns
+successfully, a new alarm is inserted into the list of alarms to be executed.
+After all rules are processed, the list of alarms is sorted by priority
+and duplicates are eliminated.
+<p><b><i>ReviewAlarms()</i></b> - Given a list of alarms, it puts up an
+HTML form allowing the manager to review the alarms. It returns another
+alarm list which can be passed to <i>ExecuteAlarms()</i>.
+<p><b><i>ExecuteAlarms()</i></b> - For each alarm from the alarm list,
+produces an Earthworm message of the appropriate type (e.g., TYPE_EMAIL_MSG)
+and writes it to the Alarms ring. For each alarm issued, it writes an entry
+into the AlarmsAudit table in the database, noting the time of issue. Note
+that the Phone delivery mechanism alarms are ignored by <i>ExecuteAlarms</i>.
+Currently, the Phone list alarms are processed within the Earthworm Quick
+Review system after <i>ExecuteAlarms()</i> is done, by a CGI program which
+creates a web form listing all phone numbers which the reviewer should
+dial.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><i>Glossary Note - Alarms Formats</i></b>
+<p>The alarms manager allows flexibility in defining and modifying the
+formats in which alarms messages are delivered. Using the format manager,
+each format is assigned two message templates: insertion and deletion.
+The format manager uses a token-based template to allow easy definition
+of new formats. Each token is bracketed by the ~ character, and each format
+definition must end with the ~End~ token. The system then replaces each
+token with the particular value associated with the event which caused
+the event to be issued:
+<p>The following tokens are currently recognized:
+<ul>
+<li>
+~EventID~ : Database ID assigned to the event.</li>
+
+<li>
+~Otime@TIMEZONE~ : Origin time for the event.TIMEZONE must specify a valid
+value for the TIMEZONE environmental variable corresponding to the timezone
+for the desired display. If the @TIMEZONE is omitted, the time will be
+displayed in the timezone of the webserver.&nbsp; Example: ~Otime@US/Mountain~
+will display the origin time in Mountain Time.</li>
+
+<li>
+~Towns@&lt;TOTAL>,&lt;BIG>~:&nbsp; List of towns nearest to the event.&nbsp;
+&lt;TOTAL> is the total number of towns to list, &lt;BIG> is the number
+of big or significant towns.&nbsp; The population limit for big towns is
+specified by the administrator in the Review configuration file.&nbsp;
+Example:&nbsp; ~Towns@5,2~ will display five nearest towns, two of which
+will be "big" with population above the limit set in the configuration
+file.</li>
+
+<li>
+~PrefMag~ : Preferred Magnitude.</li>
+
+<li>
+~Md~ : Duration Magnitude.</li>
+
+<li>
+~ML~ : Local Magnitude.</li>
+
+<li>
+~Lat~ : Latitude in degrees with the format of +/- xx.xxxx.</li>
+
+<li>
+~Lon~ : Longitude in degrees with the format of +/- xxx.xxxx.</li>
+
+<li>
+~Depth~ : Depth (km).</li>
+
+<li>
+~Nph~ : Number of phases used in the solution.</li>
+
+<li>
+~Dmin~ : Distance to nearest station (km).</li>
+
+<li>
+~Rms~ : rms misfit (seconds).</li>
+
+<li>
+~ErrLat~ : Lattitudinal location error (km).</li>
+
+<li>
+~ErrLon~ : Longitudinal location error (km).</li>
+
+<li>
+~ErrZ~ : Vertical location error (km).</li>
+
+<li>
+~Gap~ : Azimuthal gap (degrees).</li>
+
+<li>
+~RevAuto~ : If the solution is automatic this token is replaced with the
+string Automatic, otherwise the string Reviewed is used.</li>
+
+<li>
+~InvokedBy~ : This token is replaced with a string supplied by the program
+which invoked the execution of alarms. This is useful for distinguishing
+alarms raised when various parameters of an event are inserted into the
+database.</li>
+
+<br>~End~ : Required at the end of each format.</ul>
+The insertion and deletion messages for the CUBE format are predefined
+in the system. They can modified in the source code for <i>determine_alarms</i>.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><i>Glossary Note - Criteria Programs</i></b>
+<p>It was realized early on that a relational database is not the best
+platform for storing every imaginable type of alarms rule. However, storing
+rules in the database is one of the specifications. So, to make life easier
+for the programmer, we use the notion of a criteria program (CP) which
+is one attribute of each rule. The basic idea is that a CP is a program
+written in any language, and invoked by the <i>DetermineAlarms()</i> function.
+It is passed information about the event and it signals back to the caller
+whether the event passes some set of criteria defined and checked by the
+program.
+<p>Each CP has <b>three essential elements</b>:
+<ul>
+<li>
+<b>ProgramName</b> - Full path to the location of the program executable.</li>
+
+<li>
+<b>ProgramDir</b> - Temporary directory where this program has write permission.
+This is necessary for simple communication between the calling program
+and CP. <b>ProgramDesc</b>- human readable description (brief) of what
+this CP checks for (e.g., Utah Polygon, Menlo Automatics 2.5).</li>
+</ul>
+Criteria programs are stand-alone programs. This causes some problems with
+respect to communication with <i>DetermineAlarms()</i>. For now, we take
+a simple approach: call each CP using the <i>system()</i> command. Unfortunately,
+this is not as easy as it sounds. To accomplish this, <i>DetermineAlarms()</i>
+retrieves information about each rule and the associated CP (if any, note
+that a rule can exist without a CP). It then prepares to execute the CP
+by writing into the ProgramDir a binary file containing the EWEvent structure
+(structure which holds information about the event). Each CP is executed
+with two parameters: name of the working directory and name of the event
+file. Therefore, <b>each CP, irrespective of the language, must be written
+so that it takes two character strings as parameters: name of the working
+directory and name of the event file</b>.
+<p>After a CP is executed, <i>DetermineAlarms()</i> needs to figure out
+whether the CP failed or succeeded. In our simple scheme this is accomplished
+by reading back the EWEvent structure from the file. If the idEvent value
+is set to the negative of the original idEvent then the event passed the
+criteria check. Otherwise, it did not. Therefore, <b>each CP, irrespective
+of the language, must write the EWEvent structure back to the same file
+from which it was read, and set the idEvent to the negative of the original
+if the criteria checks are successful</b>.
+<p>Finally, after the EWEvent structure is read back by <i>DetermineAlarms()</i>,
+it is removed from the ProgramDir temporary directory.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><i>Alarms Schema Overview</i></b>
+<p>See the attached ERD for a graphical representation of the schema. Following
+are descriptions of each table and their entries.
+<p><b><i>AlarmsRecipient</i></b> - keeps information about a recipient,
+such as the name, address, etc.
+<ul>
+<li>
+idRecipient - unique database identifier.</li>
+
+<li>
+dPriority - priority designation for this recipient</li>
+
+<li>
+sDescription - description of the recipient.</li>
+</ul>
+<b><i>AlarmsFormat</i></b> - delivery format such as CUBE, human readable
+format, pager formats etc. For each format, two descriptions must be defined:
+one defining the format of the message when an event is being inserted,
+and another with the text of deletion message.
+<ul>
+<li>
+idFormat - unique database identifier.</li>
+
+<li>
+sFormatDescription - brief description or label for the format.</li>
+
+<li>
+sFmtInsert - template for the insertion format</li>
+
+<li>
+sFmtDelete - template for the deletion format.</li>
+</ul>
+<b><i>CriteriaProgram</i></b>
+<ul>
+<li>
+idCritProgram - unique database identifier.</li>
+
+<li>
+sProgName - full path to the executable for the program.</li>
+
+<li>
+sProgDir - full path to the temporary directory where event structure files
+are written.</li>
+
+<li>
+sProgDescription - brief description or label for this program.</li>
+</ul>
+<b><i>RecipientDelivery</i></b> - bind table mapping the recipients and
+associated delivery mechanisms, such as email, pager, etc.
+<ul>
+<li>
+idRecipientDelivery - unique database identifier.</li>
+
+<li>
+idRecipient - foreign key into the AlarmsRecipient table identifying the
+recipient.</li>
+
+<li>
+tiDelivery - string indicating delivery mechanism (email, pager).</li>
+
+<li>
+idDelivery - foreign key into one of the delivery mechanism tables.</li>
+</ul>
+<b><i>EmailDelivery</i></b> - email delivery mechanism information.
+<ul>
+<li>
+idDelivery - unique database identifier.</li>
+
+<li>
+sAddress - full address.</li>
+
+<li>
+sMailServer - host to be used as email server (optional).</li>
+</ul>
+<b><i>PagerDelivery</i></b> - pager delivery mechanism information.
+<ul>
+<li>
+idDelivery - unique database identifier.</li>
+
+<li>
+sPagerNumber - pager number.</li>
+
+<li>
+sPagerCompany - pager company and other information needed to send a page.</li>
+</ul>
+<b><i>PhoneDelivery</i></b> - phone delivery mechanism information.
+<ul>
+<li>
+idDelivery - unique database identifier.</li>
+
+<li>
+sPhoneNumber - telephone number.</li>
+</ul>
+<b><i>QddsDelivery</i></b> - QDDS delivery mechanism information.
+<ul>
+<li>
+idDelivery - unique database identifier.</li>
+
+<li>
+sQddsDirectory - QDDS target directory.</li>
+</ul>
+<b><i>CustomDelivery</i></b> - Custom delivery mechanism information.
+<ul>
+<li>
+idDelivery - unique database identifier.</li>
+
+<li>
+sDescription - label (name) of this custom delivery.</li>
+</ul>
+<b><i>AlarmsRule</i></b> - central table holding the information about
+each rule.
+<ul>
+<li>
+idRule - unique database identifier.</li>
+
+<li>
+dMag - minimum magnitude.</li>
+
+<li>
+bIsAuto - reviewed or automatic event.</li>
+
+<li>
+idFormat - foreign key into the AlarmsFormat table indicating the format
+to be used for sending alarms triggered by this rule.</li>
+
+<li>
+idCritProgram - foreign key into the CriteriaProgram table indicating the
+program to run to check further criteria.</li>
+
+<li>
+idRecipientDelivery - foreign key into the RecipientDelivery table indicating
+the recipient for whom this rule is defined, as well as the delivery format
+to be used for sending alarms trigger by this rule.</li>
+</ul>
+<b><i>AlarmsAudit</i></b> - keeps track of alarms that have been declared
+or executed. The database ids stored in this table are not strictly key-ed
+back to the tables in which they reside. This is necessary so that the
+Audit trail is independent from any changes made to the data in the referred
+tables (i.e., if a recipient?s email address changes, the audits for previously
+issued alarms should not be affected).
+<ul>
+<li>
+idAudit - unique database identifier.</li>
+
+<li>
+idEvent -key into the Event table (part of Earthworm Core Schema) indicating
+the event for which this alarm was issued.</li>
+
+<li>
+bIsAuto - boolean value indicating whether the alarm was issued for an
+automatic or reviewed solution.</li>
+
+<li>
+idRecipient - key into the Recipient table indicating the recipient who
+was sent the alarm.</li>
+
+<li>
+idFormat -key into the AlarmsFormat table indicating the delivery format
+in which the alarm was issued.</li>
+
+<li>
+sTableName- string indicating delivery mechanism.</li>
+
+<li>
+idDelivery - index into the appropriate delivery table (email, pager) -
+note that the Audit system has separate delivery tables (i.e., don?t use
+foreign keys into the Email or Pager tables described above). This is needed
+so that audits remain fixed over time, even if the delivery information
+is changed.</li>
+
+<li>
+tAlarmDeclared - time when ExecuteAlarms() declared this alarms by writing
+a message into the Alarms Ring.</li>
+
+<li>
+tAlarmExecuted - time when the alarm delivery program picked up the message
+and executed the appropriate alarm sender.</li>
+</ul>
+<b><i>CubeVersionNumber</i></b> - keeps the next version number for CUBE
+formatted messages.
+<ul>
+<li>
+idVersion - unique database identifier.</li>
+
+<li>
+idEvent - identifier of the event.</li>
+
+<li>
+iVersionNumber - next CUBE version number.</li>
+</ul>
+<b><i>AuditEmailDelivery</i></b>, <b><i>AuditPagerDelivery</i></b>, <b><i>AuditPhoneDelivery,
+AuditQddsDeliver, AuditCustomDelivery</i></b> - identical to non-audit
+delivery tables described above, but with unchangeable information used
+to provide static audit trail.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><i>Alarms Delivery Overview</i></b>
+<p>Once <i>ExecuteAlarms()</i> writes an alarm message into the ring, it
+is up to another Earthworm module to pick that message up and delivery
+the alarm accordingly. Therefore, we need to define a series of new message
+types to carry information about alarms, and then to write delivery modules
+to process those messages.
+<br>&nbsp;
+<br>&nbsp;
+<p><u>Message Types</u>
+<p>Alarm message types will be defined as needed.
+<p><b><i>TYPE_EMAIL_MSG</i></b>
+<p><font face="Courier New">&lt;email address></font>
+<p><font face="Courier New">&lt;mail server></font>
+<p><font face="Courier New">&lt;subject line text></font>
+<p><font face="Courier New">&lt;database ID of the audit associated with
+the alarm></font>
+<p><font face="Courier New">&lt;text of the alarm message></font>
+<p><b><i>TYPE_QDDS_MSG</i></b>
+<p><font face="Courier New">&lt;target directory></font>
+<p><font face="Courier New">&lt;database ID of the audit associated with
+the alarm></font>
+<p><font face="Courier New">&lt;text of the alarm message></font>
+<p><b><i>TYPE_CUSTOM_ALARM_MSG</i></b>
+<p><font face="Courier New">&lt;database ID of the event for which the
+alarm is raised></font>
+<p><font face="Courier New">&lt;database ID of the audit associated with
+the alarm></font>
+<p><font face="Courier New">&lt;label(description) of the custom mechanism
+></font>
+<p><font face="Courier New">&lt;text of the alarm message></font>
+<p><b><i>TYPE_PAGER_MSG</i></b>
+<p><font face="Courier New">*** Format not yet defined ***</font>
+<br>&nbsp;
+<br>&nbsp;
+<p><u>Delivery Modules</u>
+<p><b><i>email_sender</i></b> - picks up TYPE_EMAIL_MSG messages from the
+ring, parses them and calls the <i>SendMail()</i> earthworm library routine
+to delivery the message. Then, it updates the appropriate entry in the
+AlarmsAudit table to indicate that the message has been delivered.
+<p><b><i>qdds_sender</i></b> - picks up TYPE_QDDS_MSG messages from the
+ring, parses them and writes the text of the message to the specified QDDS
+target directory. For now, this program only deals with placing the files
+in CUBE format into the correct directory, leaving the bulk of the delivery
+work to an outside QDDS-capable process.
+<p><b><i>Custom_delivery</i></b> - template of a program that picks up
+TYPE_CUSTOM_ALARM_MSG message from the ring and processes them according
+to customized local requirement. This delivery mechanism is intended to
+provide the unlimited flexibility for sites whose alarm requirements do
+not corresponds to the features of the Earthworm system.<hr>
+<address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</body>
+</html>

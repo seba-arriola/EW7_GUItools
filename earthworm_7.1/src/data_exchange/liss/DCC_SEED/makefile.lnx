@@ -1,0 +1,45 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.lnx,v 1.1 2000/03/05 21:46:50 lombard Exp $
+#
+#    Revision history:
+#     $Log: makefile.lnx,v $
+#     Revision 1.1  2000/03/05 21:46:50  lombard
+#     Initial revision
+#
+#
+#
+
+# Earthworm makefile for Linux
+
+SEEDLIBS = libdcc_seed.a libseim123.a libdcc_time.a libdcc_misc.a
+
+dcc_seed: lib/libdcc_seed.a
+
+dcc_misc: lib/libdcc_misc.a
+
+dcc_time: lib/libdcc_time.a
+
+steim123: lib/libsteim123.a
+
+lib/libdcc_seed.a:
+	cd dcc_seed; make -f makefile.lnx all
+
+lib/libdcc_misc.a:
+	cd dcc_misc; make -f makefile.lnx all
+
+lib/libdcc_time.a:
+	cd dcc_time; make -f makefile.lnx all
+
+lib/libsteim123.a:
+	cd steim123; make -f makefile.lnx all
+
+clean: 
+	cd lib; rm -f *.o *.a core *~ \#*\#
+	cd dcc_time; make -f makefile.lnx clean
+	cd dcc_misc; make -f makefile.lnx clean
+	cd dcc_seed; make -f makefile.lnx clean
+	cd steim123; make -f makefile.lnx clean
+

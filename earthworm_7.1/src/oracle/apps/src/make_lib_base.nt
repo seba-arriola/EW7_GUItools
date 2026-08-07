@@ -1,0 +1,46 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: make_lib_base.nt,v 1.5 2004/04/10 16:59:18 davidk Exp $
+#
+#    Revision history:
+#     $Log: make_lib_base.nt,v $
+#     Revision 1.5  2004/04/10 16:59:18  davidk
+#     Adding support for $(APPS_LIBCPP), a separate library directory for cpp objects.
+#
+#     Revision 1.4  2004/04/09 22:22:49  davidk
+#     Added .cpp suffix definition to compile .cpp (C++) files.
+#     Included a $(CLEAN_OTHER) variable that can be used
+#     by makefiles to clean additional directories/stuff, when
+#     a "make clean" is executed.
+#
+#     Revision 1.3  2004/03/17 20:31:32  davidk
+#     removed -c $(CFLAGS) from the .c compile statement.  It was redundant.
+#
+#     Revision 1.2  2003/06/10 14:41:16  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2001/05/23 22:50:57  davidk
+#     Initial revision
+#
+#
+##################################################################
+
+##############################################
+# Makefile for the ewdb apps/libsrc directory
+##############################################
+
+.c.obj: 
+	$(cc) $(cflags) $<
+	copy $@  $(APPS_LIB)
+
+.cpp.$(OBJ):
+   $(cc) $(cppflags) $<
+	copy $@  $(APPS_LIBCPP)
+
+clean: $(CLEAN_OTHER)
+	-del /f core *.o *.obj *% *~
+
+install:
+    copy *.$(OBJ) $(APPS_LIB)

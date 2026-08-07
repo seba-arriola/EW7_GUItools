@@ -1,0 +1,40 @@
+Format for the list of NEIC stations:
+
+The format is as follows:
+
+      COL      CONTENTS
+    1 -  5     Station code
+    6          Status code
+    7 - 15     Latitude
+   16 - 25     Longitude
+   26 - 32     Elevation
+   33 - end    Name or descriptive text
+
+Station codes are assigned by NEIC and registered by both the NEIC and the
+ISC. Codes may be suggested by the station operator and will be accepted
+if possible.
+
+The status code will be one of the following;
+
+    R  Reserved for future use 
+    C  Closed (station no longer operating)
+    U  Unreported
+    F  Forbidden
+
+A blank status code means the station is operating.
+
+Latitude and longitude are listed in degrees, minutes and seconds
+to the tenth of a second, with no spaces between values.
+
+Elevation is listed in meters to the tenth of a meter.
+
+If you need additional information, please contact the NEIC at:
+
+         U. S. Geological Survey
+         Box 25046, MS 967
+         Denver Federal Center
+         Denver CO 80225
+
+         Internet   sedas@neis.cr.usgs.gov
+         Phone      (303) 273-8500
+         Fax        (303) 273-8450

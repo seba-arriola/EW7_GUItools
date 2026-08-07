@@ -1,0 +1,25 @@
+/export.c/1.20/Wed Mar 28 15:26:44 2007//
+/export_ack.c/1.12/Wed Mar 28 15:26:44 2007//
+/export_ack.d/1.4/Thu May 12 21:19:33 2005//
+/export_ack.desc/1.1/Mon Apr 25 22:29:39 2005//
+/export_actv.c/1.5/Wed Mar 28 15:26:44 2007//
+/export_gen_actv.d/1.1/Tue Apr 20 22:52:52 2004//
+/export_gen_actv.desc/1.1/Tue Apr 20 22:52:52 2004//
+/export_generic.d/1.7/Wed Mar 23 19:21:39 2005//
+/export_generic.desc/1.3/Fri Mar 15 22:56:09 2002//
+/export_scn.d/1.10/Wed Mar 23 19:21:39 2005//
+/export_scn.desc/1.3/Fri Mar 15 22:56:09 2002//
+/export_scn_actv.d/1.2/Wed Apr 21 17:35:06 2004//
+/export_scn_actv.desc/1.1/Tue Apr 20 22:52:52 2004//
+/export_scn_pri.c/1.6/Wed Mar 28 15:26:44 2007//
+/export_scn_pri.d/1.2/Wed Apr 21 17:44:23 2004//
+/export_scn_pri.desc/1.1/Thu Mar 21 17:38:53 2002//
+/export_scnl_ack.d/1.4/Thu May 12 21:19:33 2005//
+/export_scnl_ack.desc/1.1/Mon Apr 25 22:29:39 2005//
+/exportfilter.h/1.3/Fri Apr 22 17:14:18 2005//
+/genericfilter.c/1.5/Tue Apr 26 21:20:40 2005//
+/makefile.nt/1.15/Wed Feb 28 23:03:25 2007//
+/makefile.sol/1.10/Fri Apr 22 17:15:23 2005//
+/makefile.ux/1.3/Wed Mar 28 15:26:44 2007//
+/scnfilter.c/1.16/Wed Nov 16 23:58:29 2005//
+D

@@ -1,0 +1,40 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.1 2005/07/21 19:55:24 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/21 19:55:24  friberg
+#      added in linux Makefile
+#
+#
+#
+#
+
+
+
+CFLAGS = $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+BINARIES = tankplayer.o $L/getutil.o $L/kom.o $L/logit.o \
+           $L/sleep_ew.o $L/swap.o $L/time_ew.o $L/transport.o
+
+tankplayer: $(BINARIES)
+	cc -o $B/tankplayer ${CFLAGS} $(BINARIES)  -lpthread
+
+lint:
+	lint tankplayer.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/tankplayer*

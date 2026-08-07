@@ -1,0 +1,40 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.1 2001/05/23 22:51:12 davidk Exp $
+#
+#    Revision history:
+#     $Log: makefile.ind,v $
+#     Revision 1.1  2001/05/23 22:51:12  davidk
+#     Initial revision
+#
+#################################################################
+
+
+
+
+OBJECTS = ewdb_api_BindDeviceToSlot.$(OBJ) \
+          ewdb_api_CreateSlotType.$(OBJ) \
+          ewdb_api_CreateDeviceSlot.$(OBJ) \
+          ewdb_api_GetDeviceInfo.$(OBJ) \
+          ewdb_api_GetPlexorForChanT.$(OBJ) \
+          ewdb_api_GetSlotTypeInfo.$(OBJ) \
+          ewdb_api_CreateDeviceType.$(OBJ) \
+          ewdb_api_GetDeviceSlotInfo.$(OBJ) \
+          ewdb_api_CreateModule.$(OBJ) \
+          ewdb_api_GetDeviceTypeInfo.$(OBJ) \
+          ewdb_api_SetDeviceFunction.$(OBJ) \
+          ewdb_api_SetPlexorForChannel.$(OBJ) \
+          ewdb_api_CreateModuleEntry.$(OBJ) \
+          ewdb_api_CreateModuleTemplate.$(OBJ) \
+          ewdb_api_GetModuleInfo.$(OBJ) \
+          ewdb_api_CreateOrUpdateDevice.$(OBJ) \
+          ewdb_api_GetModuleEntry.$(OBJ) \
+          ewdb_api_GetFunctionBinds.$(OBJ) \
+          ewdb_api_GetNextPlexor.$(OBJ) 
+
+ALL:  $(OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts
+

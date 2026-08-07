@@ -1,0 +1,39 @@
+#
+#    $Id: makefile.ux,v 1.2 2007/03/28 17:44:58 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/28 17:44:58  paulf
+#     removed the nsl link
+#
+#     Revision 1.1  2005/07/26 20:28:54  friberg
+#     added UNIX makefile
+#
+#
+LIBS =-lm -lpthread
+
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+O = getmenu.o $L/socket_ew.o $L/time_ew.o $L/sleep_ew.o $L/chron3.o \
+     $L/logit.o $L/ws_clientII.o $L/socket_ew_common.o
+
+getmenu: $O
+	cc -o $B/getmenu $O $(LIBS)
+
+.c.o:
+	cc -c ${CFLAGS} $<
+
+lint:
+	lint getmenu.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/getmenu*

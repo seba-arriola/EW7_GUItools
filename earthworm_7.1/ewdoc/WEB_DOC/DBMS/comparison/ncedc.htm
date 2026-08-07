@@ -1,0 +1,713 @@
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Microsoft Developer Studio">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>NCDEC Schema</TITLE>
+</HEAD>
+
+<BODY>
+
+<CENTER>
+<H1>NCEDC Schema</H1>
+</CENTER>
+
+<CENTER>
+<H2>Introduction</H2>
+</CENTER>
+
+<P>
+The NCEDC schema is an innovative adaptation of CSS 3.0 to
+the needs of regional network operations.
+It takes into account current trends in instrumentation,
+analytical methodology, and rapid response requierments.
+While there are some issues I feel rather strongly should
+be done otherwise, as it stands the NCEDC effort is a
+giant step forward in organizing regional network data and
+infrastructural information.
+</P>
+
+<P>
+It should be kept in mind that the NCEDC schema is presently under
+very active development and changes were occuring throughout this
+analysis.
+For the most part I found these changes to be very positive,
+generally providing simplifications of the relationships
+and clearly building towards a solution that should have very
+general appeal.
+I hope the comments in this study can be of use in continuing
+this progress toward what promises to be a very successful
+design.
+</P>
+
+<CENTER>
+<H2>Discussion</H2>
+</CENTER>
+
+<P>
+The diagram convention chosen by the NCEDC for entity relationships
+was not specific with respect to the nature of the relations.
+In particular, exclusivity, whether a null key as permitted,
+was not expressed.
+For example, in the IDC schema, an <B>origin</B> cannot exist
+unless it points to at least one of possibly many arrivals.
+Presumably this results from the processes the schema is meant
+to support, in that origins arise solely from associating arrivals.
+In a more general sense, it might be necessary to include
+origin information for which arrival information is not available.
+Some of the relationships expressed in the entity relationship
+diagram below were guesses.
+For the most part I followed similar conditionality expressed in
+the IDC schema, except where so doing violated major precepts of
+my understanding of the problems encountered in regional network
+analysis.
+In reading this discussion please assume that any symbolism expressing
+exclusivity may be suspect.
+In any case, the ambiguity introduced by the
+lack of this information is not particularly significant.
+</P>
+
+<TABLE>
+<TR>
+	<TD>
+		<IMG SRC=images/ncedc.gif>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		NCEDC_PAR: Entity relation diagram (ERD) showing the
+		Parametric Information Schema.
+	</TD>
+</TR>
+</TABLE>
+
+<P>
+Relationships and entities that are homologous to CSS 3.0 core
+functionality are drawn in bold to facilitate a comparison.
+Normal line density is associated with features that are
+new in the NCEDC schema, often representing functionality which
+is more specialized towards regional network operation and analysis.
+The corresponding entity names are shown in
+<A HREF=default.htm#table_1>Table 1</A>.
+</P>
+
+<CENTER><H3>
+	Catalog Layer
+</H3></CENTER>
+
+<P>
+The NCEDC schema uses the same architecture as the IDC in that
+there is an <B>Event</B> entity at the <B>CATALOG</B> layer that
+selects <B>Event</B> rows from the <B>SUMMARY</B> layer.
+The <B>Event</B> table adds several attributes that are not
+present in the IDC counterpart. These contain information of
+a summary natures such as the number of available arrivals,
+number of available amplitudes.
+Having <B>SUMMARY</B> layer information maintained at the
+<B>CATALOG</B> layer may be problematic.
+For example, changing the preferred origin would would
+require recalculating the number of arrivals if this column
+is meant to reflect the number associated with a particular
+origin since this information is not retained at the <B>SUMMARY</B>
+layer.
+If the number of arrivals reflects the total number of arrivals
+that appear to be associated with a given event the problem
+becomes even worse.
+Low level programs, such as associators, and post processing updating
+routines would have to reach upward two levels and modify
+tables thay they should know nothing about.
+Software maintenance and quality assurance in analysis procedures
+would then suffer as a result.
+Two additional columns were also added, a key to a general comment in
+the <B>Remark</B> table (not shown in the diagram), and an 
+event type.
+The event type indicates the type of the event, such as teleseisms,
+quarry blasts, local events, and so forth.
+There might be some difficulty when exchanging events between adjacent
+networks, since one network's regional is another network's
+local event.
+Also, since origins don't have event types, there would need to be
+some mechanism for assigning this definition as <B>Event</B>
+entries are created.
+</P>
+
+<P>
+Structurally, the NCEDC schema introduces two new foreign keys,
+<B>prefmag</B>, and <B>prefmec</B>, which treats
+the magnitude and mechanism information on the summary layer
+in the same manner as the corresponding origin.
+This seems very appealing.
+I do have concerns though, regarding the complexity of relationships
+between the <B>Event</B> and <B>Origin</B> entities and other
+entities on the <B>SUMMARY</B> layer.
+It seems likely that this complexity would lead to an updating
+nightmare.
+For example, what does it mean for an an event's preferred magnitude
+to depend upon an origin that is not the event's preferred origin.
+</P>
+
+<P>
+The NCEDC schema adds another new entity to the <B>CATALOG</B> layer,
+the <B>Significant_Event</B> table.
+This entity contains information of interest to the local
+public such as felt indicators, maximum intensity, and peak
+acceleration if available.
+On the diagram I showed this as a one or none relationship,
+assuming that for some events such information might not exist.
+Segragating generalizable parameters, such as felt reports, into
+a side table makes a lot of sense.
+There is no mechanism at the <B>CATALOG</B> layer to store multiple felt
+reports or intensities for a given event since the primary key of
+the <B>Significant_Event</B> table is exactly the event identifier.
+Presumably this could be provided through the addition of a <B>Felt</B>
+table keyed on a felt identifier with the event identifier as a
+foreign key.
+</P>
+
+<CENTER><H3>
+	Summary Layer
+</H3></CENTER>
+
+<P>
+As might be expected the main entity on the <B>SUMMARY</B> layer
+is the <B>Origin</B> table.
+As noted earlier the relationship between origins and events is the
+same as that incorporated into the IDC schema.
+Structurally, the preferred magnitude and preferred mechanism
+foreign keys also appear in the <B>Origin</B> table as they
+did in the <B>Event</B> table.
+It is not clear whether this just represents some form of upward
+denormalization to avoid a join on the <B>Event</B> table's
+prefered origins or something more fundamental.
+If it is upward denormalization I would suggest it should be
+eliminated from the <B>Event</B> table because of the updating
+complexity it introduces for seemingly little return.
+Inexplicably the documentation states that an origin record is
+unique with respect to latitude, longitude, depth, and time
+even though these parameters are not part of the key.
+There would seem to be no need for such a requirement, and enforcement
+would problematical.
+</P>
+
+<P>
+The three foreign keys relating preferred body-wave, surface-wave,
+and local magnitudes to an origin in the IDC schema are here
+replaced with a single preferred magnitude relationship.
+This implies some sort of rule that can compare one kind of
+a magnitude with another and select the most appropriate.
+For some purposes, such as public information, this would seem
+to be ideal.
+However, in a more general sense, the various magnitudes measure
+different things, and values for the different types can be
+important in themselves.
+For example, the difference between body wave and surface wave
+magnitudes has been used as a test descriminate.
+On the other hand, trying to expand the IDC approach with a
+key for each magnitude type is futile and inhibits the
+evolution of new methodologies.
+In most cases the perferred magnitudes are related to an event by
+"business rules", that will vary from network to network, and possible
+from catalog to catalog at a single center.
+Again, as stated previously, subordinate tables at the <B>SUMMARY</B>
+layer need to be carefully reexamined.
+</P>
+
+<P>
+Secondary attributes in the IDC schema consists of location 
+parameters, an event type, region codes, and an array of
+three magnitudes with pointers to the supporting <B>netmag</B>
+summary.
+In addition to teleseismic magnitudes, other
+IDC schema teleseismic attributes were dropped in the NCEDC
+design.
+These include region identifiers, depth phase control, and the
+event type.
+Added attributes are associated with local location parameters,
+such as gap, distance to nearest station, quality, crustle model
+identifiers and other similar parameters.
+Attributes were also added that summarize location errors in
+a very general way.
+These include such things horizontal and vertical errors, standard
+error of observations as well as latitude and longitude errors.
+In the previous version of the schema the <B>Origin</B> table
+also included the full model space covariance matrix and
+derivative parameters.
+These have since been removed with the creation of the
+<B>Origin_Error</B> table discussed below.
+They are a form of upward denormalization.
+</P>
+
+<P>
+Rather than replace teleseismic parameters with local ones
+it might be more fertile to remove both teleseismic and
+local location parameters to side tables, retaining only
+the most central in the <B>Origin</B> tables.
+The event type could designate the side table, somewhat
+like the structure of the <B>wftag</B> table in the IDC
+schema.
+Such an approach is more extensible, and simple joins do
+not seriously impact query times.
+This would seem a small price to pay for removing the barrier
+separating global and regional network processing.
+</P>
+
+<P>The <B>Netmag</B> table is homologous to the <B>netmag</B>
+table in the IDC schema.
+This table is very similar its IDC counterpart with the
+addition of a few parameters reflecting additional summary
+information.
+These include maximum angular gap in azimuthal data distribution,
+distance to the nearest to nearest contributing stations, and
+a subjective quality.
+Again, the inclusion of this kind of summary information leads
+to update complexity and possible problems with data integrity.
+It might be better to retain such in a side table as with
+the discussion of the <B>Origin</B> table.
+</P>
+
+<P>
+As stated, the <B>Origin_Error</B> table is new to Version 1.4.3.
+As in the IDC schema, this table contains all of the independant elements
+of the 4x4 model covariance matrix as well as vector angle descriptions
+of the error ellipsoid.
+The summary information appears a bit redundant, and if the
+full covariance matrix is required, it might be more appropriate
+to calculate the principal axes in a subroutine or within an API 
+(application program interface).
+The <B>Origin_Error</B> is an example of an auxiliary side table,
+a concept that should probably be used more liberally to
+enhance generality.
+</P>
+
+<P>
+There is also a new table provided, <B>Mec</B> that is used to
+represent moment tensor data.
+Each <B>Mec</B> row is related to two <B>Origin</B>, one from
+which the moment tensor was calculated, and one from which the
+origin was calculated.
+Perhaps I am missing something very obvious, but I did not understand
+why the <B>Mec</B> table should be linked to possibly as many as three
+distinct origins.
+</P>
+
+<P>
+I am somewhat apprehensive about referencing an event in <B>SUMMARY</B>
+layer relationships.
+Both the <B>Netmag</B> and <B>Mec</B> tables use this device, as does
+the <B>netmag</B> table in the IDC schema.
+I think this concern is rooted in my experience with associators inwhich
+origins coalesce into single events, or sometimes single events
+split into multiple origins with multiple associated events.
+The bookkeeping necessary to update all of these dependancies seems
+quite daunting.
+As I've already indicated, I currenly support a more flexible
+relationship between events and origins and believe <B>SUMMARY</B>
+tables other than that containing core origin information should
+not be linked to the <B>CATALOG</B> layer.
+Although this approach might work well for mission critical and
+tightly specified systems such as the IDC, it may be too restrictive
+for regional network application.
+</P>
+
+<CENTER><H3>
+	Link Layer
+</H3></CENTER>
+
+<P>
+There are five linking tables discussed in the NCEDC schema
+as compared to two in the IDC schema.
+The first, <B>AssocArO</B> is homologous to the <B>assoc</B>
+table in the IDC schema.
+As with the IDC approach, the NCEDC schema stores additional
+parameters that are functionally related to both the arrival and
+and associated origin.
+Those with a more teleseismic flavor have been removed.
+These include back azimuth, which is trivial for regionals,
+and wave slowness parameters.
+Station corrections were added, although these are really not
+dependant on the primary key in total, and consequently violate
+third normal form.
+Generally such information would be stored in a more general table
+of station properties.
+Apparently it is duplicated here for purpose of access speed,
+although it may present a problem if station delays are found to be
+in error, since rows in the <B>AssocArO</B> table are presumably archival.
+</P>
+
+<P>
+All <B>DATA</B> layer tables other than arrivals are associated to
+two <B>SUMMARY</B> layer tables by a pair of association tables.
+For example <B>Amp</B> rows are associated to origins and magnitudes
+by <B>AssocAmO</B> and <B>AssocAmM</B> respectively.
+Similarly, <B>Coda</B> table rows are associated with origins and coda
+magnitudes using <B>AssocCoM</B> and <B>AssocCoO</B>.
+This is a rather clever device and its generalization to other kinds
+of data and summary tables is straight forward.
+In contrast, however, the CSS 3.0/3.1 core only associates <B>DATA</B>
+entities with a single <B>SUMMARY</B> layer table.
+Again it would appear that my experience with phase association
+makes me apprehensive about such associations, and I prefer to
+simplify relationships at the expense of somewhat less performance
+with respect to queries.
+</P>
+
+<P>
+The <B>AssocAmM</B> table is analogous to the <B>stamag</B> table
+in the IDC schema.
+As with <B>AssocArO</B>, each row contains information that is
+functionally dependant on both amplitude data as well as origin
+parameters such as magnitude residuals.
+In the IDC schema, each <B>stamag</B> linkage was also linked to an
+origin and an event.
+The origin relationship was replaced by the <B>AssocAmO</B> external
+linkage, and the event level assocation was moved to the <B>DATA</B>
+layer.
+I don't entirely understand why this was done, and the variations
+amoungst the various approaches at this structural level warrants
+further consideration.
+As always, I am very apprehensive regarding linking fundamental elements
+of the database at the <B>DATA</B> level all the way to the <B>CATALOG</B>
+level.
+I'm also terrified of high places.
+In spite of this I find the NCEDC approach more elegant than the rather
+ungainly approach used in the CSS 3.0 core.
+</P>
+
+<CENTER><H3>
+	Data Layer
+</H3></CENTER>
+
+<P>
+There are three kinds of data provided in the NCEDC schema, arrivals,
+amplitudes, and coda parameters.
+The <B>Arrival</B> table is almost identical to its counterpart,
+<B>arrival</B> in the IDC schema with the addition of some <B>SEED</B>
+format control parameters which ties in with the <B>INFRASTRUCTURE</B>
+layer.
+Inexplicably the teleseismic flavor of the <B>arrival</B> table is
+retained in the form of slowness parameters and emergence angle
+that might arise in three component sites.
+Possibly arrivals could be subclassed in a manner similar to that
+suggested for specializing origins into teleseismic and regional
+origins using a tag array.
+All of the information relating to amplitudes was moved to <B>Amp</B>
+table.
+In the IDC schema this information appears redundantly in both tables.
+The NCEDC approach appears to be the superior one with respect to
+simplicity of design and functionality.
+</P>
+
+<P>
+The <B>Amp</B> table is quite similar to the homologous <B>Amplitude</B>
+table in the IDC schema.
+A foreign key to a predicted arrival table was dropped,
+which seems reasonable for regional networks.
+It might be useful, however, to increase generality.
+Apparently this table was used to scrutinize waveform data for hard to
+pick arrivals after tentative origins had been obtained from a subset
+of more clearly defined arrivals.
+Attributes relating to measure windows and window durations were also
+dropped, as was a foreign key linking amplitudes to particular phases,
+as is often the case in global networks such as that operated at the IDC.
+There were some regional specific additions to the attribute list as
+well.
+For example, a coda duration was added, as was a flag for associating
+an amplitude with a P or S wave arrival.
+Retaining the arrival association might been more appropriate
+for the sake of generality.
+The links into <B>INFRASTRUCTURE</B> layer tables was replaced by
+<B>SEED</B> links.
+</P>
+
+<P>
+The <B>Coda</B> table is of course brand new, having no analogy in the
+IDC world.
+The parameters seem vaguely familiar to me.
+I have a strong negative reaction to limitting the number of coda segments to
+six.
+To a large extent this limitation is a vestigal remnant of a phase
+card format designed by Rex Allen coupled with definititions
+implicit in the coda amplitude methodology.
+There is absolutely nothing magical about the number six.
+Furthermore, such a structure is a violation of the most fundamental
+considerations in table normalization (first normal form).
+Each row should be broken up into as many segments as exist, possibly
+more than six, and an absolute start time for each coda segment
+should be added to the primary key.
+Summary information such as the
+coda summary data, <B>afree</B> and <B>qfree</B> that describe the
+coda envelope, are completely out of place.
+They are <B>SUMMARY</B> layer data, and should appear in a side table
+keyed to <B>Netmag</B>.
+Please excuse this brief lapse into a more vituperative style; I guess I'm
+experiencing some amount of paternalistic fervor.
+</P>
+
+<P>
+In all of the <B>DATA</B> layer tables, a foreign key is provided
+linking each to some event.
+The exclusivity of this relationship is unknown, but common sense
+would suggest that it is optional.
+The multiple connection with events through two paths, one direct,
+the other through association with an origin and then to an event
+is subject to inconsistancy, especially as noted before when the
+relationship between events and origins is in a state of flux
+as it is for real-time and rapid response systems.
+Retaining such linkages in the design should be considered
+very carefully.
+</P>
+
+<CENTER><H3>
+	Waveforms
+</H3></CENTER>
+
+<P>
+The waveform specific components of the NCEDC schema were released
+well after the investigative phase was completed and near the end
+of the writing phase.
+Although an analysis of this part of the schema lies outside the scope
+of the present study, the author suffers from a burning
+curiousity to discover if the innovative nature of the parametric
+information portions of schema carries over into the waveform
+specific definitions as well.
+</P>
+
+<CENTER><H3>
+	Infrastructure
+</H3></CENTER>
+
+<P>
+The NCEDC schema provides at the <B>INFRASTRUCTURE</B> layer a rather
+elegant solution that differs markedly from the CSS 3.0 core.
+It is a direct transcription of SEED volume blockettes into a relational
+architecture.
+The correspondence between NCEDC table names and SEED blockettes is
+shown in the following table.
+This ancestry should be obvious to anyone familiar with the SEED
+standard for the exchange of earthquake data.
+The comparison is based on SEED Format Version 2.3.
+</P>
+
+<CENTER>
+<BR CLEAR=ALL>
+<A NAME=table_2></A>
+<TABLE BORDER=1 CELLSPACING=0>
+
+<THEAD>
+
+<TR ALIGN=LEFT>
+	<TH>NCEDC Table</TH>
+	<TH>SEED (Blockette #: Description)</TH>
+</TR>
+
+<TBODY>
+
+<TR>
+	<TD>Station_Data</TD>
+	<TD>50: Station Identifier</TD>
+</TR>
+
+<TR>
+	<TD>Station_Comment</TD>
+	<TD>51: Station Comment</TD>
+</TR>
+
+<TR>
+	<TD>Channel_Data</TD>
+	<TD>52: Channel Identifier</TD>
+</TR>
+
+<TR>
+	<TD>Channel_Comment</TD>
+	<TD>59: Channel Comment</TD>
+</TR>
+
+<TR>
+	<TD>Coefficients</TD>
+	<TD>54: Response (Coefficients)</TD>
+</TR>
+
+<TR>
+	<TD>DC</TD>
+	<TD ROWSPAN=2>44: Response (Coefficients) Dictionary</TD>
+</TR>
+
+<TR>
+	<TD>DC_Data</TD>
+</TR>
+
+<TR>
+	<TD>Decimation</TD>
+	<TD>57: Decimation</TD>
+</TR>
+
+<TR>
+	<TD>DM</TD>
+	<TD>47: Decimation Dictionary</TD>
+</TR>
+
+<TR>
+	<TD ROWSPAN=2>Poles_Zeros</TD>
+	<TD>55: Response (Poles & Zeroes)</TD>
+</TR>
+
+<TR>
+	<TD ROWSPAN=3>43: Response (Poses & Zeroes) Dictionary</TD>
+</TR>
+
+<TR>
+	<TD>PZ</TD>
+	<TD></TD>
+</TR>
+
+<TR>
+	<TD>PZ_Data</TD>
+	<TD></TD>
+</TR>
+
+<TR>
+	<TD>Sensitivity</TD>
+	<TD>58: Channel Sensitivity (Gain)</TD>
+</TR>
+
+<TR>
+	<TD>Simple_Response</TD>
+	<TD ALIGN=CENTER>(no counterpart)</TD>
+</TR>
+
+<TR>
+	<TD>Abbreviation</TD>
+	<TD>33: Generic Abbreviation</TD>
+</TR>
+
+<TR>
+	<TD>Unit</TD>
+	<TD>34: Units Abbriviation</TD>
+</TR>
+
+<TR>
+	<TD>Comment</TD>
+	<TD>31: Comment Description</TD>
+</TR>
+
+<TR>
+	<TD>Format</TD>
+	<TD ROWSPAN=2>30: Data Format Dictionary</TD>
+</TR>
+
+<TR>
+	<TD>Format_Data</TD>
+</TR>
+
+<TR>
+	<TD COLSPAN=2>Relationship between NCEDC
+		tables and SEED blockettes.
+		The blockettes are drawn from those making up
+		the station control headers.</TD>
+</TR>
+
+</TABLE>
+</CENTER>
+
+<P>
+The NCEDC documentation did not provide an entity relationship diagram,
+so in order to discuss the structure of the schema design, one was
+drafted below.
+The usual caveats apply, specifically that the relations shown are
+at best an educated guess.
+References from the <B>DATA</B> layer are through the
+<B>Channel_Data</B> table based on a rather complex foreign key
+concatenating the network name, station name, seed channel name,
+seed array component, and time.
+Alternatively when only site location is required, one could
+reference the <B>Station_Data</B> table using a composite key
+made up of network name, station name, and time.
+For both tables the corresponding time in the primary key is the effective
+beginning time for whatever information is being provided.
+This is the beginning of the period for which the information is to be
+considered valid.
+Although only one <B>DATA</B> layer table, <B>Arrival</B>, is
+shown in the diagram, the others, such as <B>Amp</B> and <B>Coda</B>
+are all associated in the same manner.
+</P>
+
+<P>
+Strangely, time representation in the <B>DATA</B> layer
+is true epoch time, and the corresponding field in the
+<B>INFRASTRUCTURE</B> tables is apparently an Oracle date.
+The ubiquitous joins between data and station parameters
+might be expected to perform poorly.
+This problem was addressed in the IDC schema by defining
+an alternate key for channel data named <B>chanid</B>.
+Multiple keys at the <B>INFRASTRUCTURE</B> level is reasonable
+because few updates target this layer.
+The <B>INFRASTRUCTURE</B> tables need only be searched once
+when the <B>DATA</B> layer row is created,
+subsequent references follow an efficient equi-join on
+<B>chanid</B>.
+</P>
+
+<BR CLEAR=ALL>
+<CENTER>
+<TABLE BORDER=1 CELLSPACING=0>
+<TR>
+	<TD>
+		<IMG SRC=images/ncedc_sta.gif>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		NCEDC_STA: Entity relation diagram (ERD) showing the
+		Instrument Response Schema.
+	</TD>
+</TR>
+</TABLE>
+</CENTER>
+
+<P>
+A particularly interesting aspect of the NCEDC schema concerns
+the structures representing signal path.
+As with the SEED format, a channel is associated with a
+series of filters starting from the sensor through the
+digitization process.
+These include simple gains, decimation operations, and more
+complex linear spectral operators.
+Each filter stage is identified by a stage sequence number
+beginning at 1 on the sensor side.
+In the diagram the four possibilities provided in the NCEDC
+schema, <B>Coefficients</B>, <B>Decimation</B>,
+<B>Pole_Zeros</B>, and <B>Sensitivity</B>, are shown beneath
+<B>Channel_Data</B>.
+The SEED counterparts generally consist of a fixed header
+for each followed by an array of values such as an array
+of filter poles.
+The schema breaks each blockette into a summary table with
+a required (I would think) one to one or more relation with
+several rows in an associated data table.
+As with <B>DATA</B> layer tables, the response tables are
+linked to particular channels by network, station, seed channel,
+array index, and time.
+The approach taken by the NCEDC in representing signal path
+is excellent.
+</P>
+
+<P>
+One possibility here is to repeat the suggestion made previously
+with respect to primary references to channel data.
+That is, reference the responses based on foreign keys to
+a <B>chanid</B> alternate key in the <B>Channel_Data</B> table.
+Another enhancement might be to add a <B>Resonse</B> table
+between the <B>Channel_Data</B> table and the current response
+sumamry tables.
+The primary key would be <B>chanid</B> and <B>stage_seq</B>, so
+that a query on <B>chanid</B> would produce a sorted list of
+signal path components in order from the sensor to the recording
+device.
+Non key attributes would include a table name and an index within
+that table.
+The architecture is very similar to the <B>wftag</B> table in the
+IDC implementation with the addition of the <B>stage_seq</B> field
+to impose sequentiality within the path.
+</P>
+
+</BODY>
+</HTML>

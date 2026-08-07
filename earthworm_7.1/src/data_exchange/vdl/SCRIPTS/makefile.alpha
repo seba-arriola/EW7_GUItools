@@ -1,0 +1,25 @@
+# Makefile for the Alpha code
+CC     = cc 
+INCDIR = ../alpha
+BIN    = vdlalpha
+LIBDIR = ../vdl
+OPTMIZ = -O 
+INCS   = -I$(INCDIR)
+OSNAME = _SOLARIS
+OSNAME2= _SOLARIS2
+#CFLAGS = $(OPTMIZ) $(INCS) -L$(LIBDIR) -D$(OSNAME) -D$(OSNAME2) -DDEBUG_PRINT
+CFLAGS = $(OPTMIZ) $(INCS) -L$(LIBDIR) -D$(OSNAME) -D$(OSNAME2) 
+SOCKLIBS = -lsocket -lnsl
+
+BINARIES = vdl.o vdltrg.o vdlput.o vdlqsub.o ifft512.o ifft1024.o ifft256.o \
+	fftlib.o cmprs.o vdlfilt.o filt5.o filtheli.o filt2.o filt10.o datetime.o\
+	vdltcp_nopass.o vdlalpha.o ../alpha/canada.o ../alpha/juldat.o \
+	feedme_test_null.o
+
+include SCRIPTS/makefile.modules
+
+#*
+#*   VDLALPHA
+#*
+vdlalpha: $(BINARIES)
+	$(CC) $(CFLAGS)  $(BINARIES) -o $(BIN) -lm $(SOCKLIBS)

@@ -1,0 +1,328 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="Template" content="C:\WINDOWS\Application Data\Microsoft\Templates\Normal.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+   <title>Proposed Alarm schema</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<center><b><u>Earthworm Alarms</u></b>
+<p><b>User's Guide</b>
+<p>Lucky Vidmar
+<p>May 7, 2003</center>
+
+<p><b><u>INTRODUCTION</u></b>
+<p><b><i>System Overview</i></b>
+<p>The Earthworm Alarms System is intended to satisfy the need for an easy-to-use,
+web-centered method for dispatching notifications about automatic and reviewed
+earthquakes. The initial requirements are that the system must support
+several delivery mechanisms such as email, pager, and QDDS. Furthermore,
+the user must be able to specify and modify the text of the notification
+messages. The system must keep an audit of all notifications that were
+sent, and this audit should be used to ensure that subsequent alarms are
+sent to the same list of recipients who received the original notification.
+<p>The system is comprised of an Oracle database, SQL and C source code
+which allows for manipulation of the database objects, web server resident
+C source code which processes web forms, and an Earthworm configuration
+with a ring onto which alarms messages are written and from which alarms
+processing modules actually execute alarm notifications. See below for
+more details on the system setup.
+<p>This document is intended for the target user of the system, one who
+has a managerial decision capacity to define who will receive what types
+of alarm notifications. The user should also be familiar with Earthworm
+as well as with the Earthworm Quick Review (EQR) system.
+<p><b><i>Glossary Notes</i></b>
+<p><b><i>Format</i></b>. The Earthworm Alarms System allows flexibility
+in defining and modifying the formats in which alarms messages are delivered.
+Using the <i>Formats Manager</i> (see below for more details) each format
+is assigned two message templates: insertion and deletion. The <i>Formats
+Manager</i> uses a token-based template to allow easy definition of new
+formats. Each token is bracketed by the ~ character, and each format definition
+must end with the ~End~ token. The system then replaces each token with
+the particular value associated with the event which caused the event to
+be issued:
+<p>The following tokens are currently recognized:
+<ul>
+<li>
+~EventID~ : Database ID assigned to the event.</li>
+
+<li>
+~Otime@TIMEZONE~ : Origin time for the event.TIMEZONE must specify a valid
+value for the TIMEZONE environmental variable corresponding to the timezone
+for the desired display. If the @TIMEZONE is omitted, the time will be
+displayed in the timezone of the webserver.&nbsp; Example: ~Otime@US/Mountain~
+will display the origin time in Mountain Time.</li>
+
+<li>
+~Towns@&lt;TOTAL>,&lt;BIG>~:&nbsp; List of towns nearest to the event.&nbsp;
+&lt;TOTAL> is the total number of towns to list, &lt;BIG> is the number
+of big or significant towns.&nbsp; The population limit for big towns is
+specified by the administrator in the Review configuration file.&nbsp;
+Example:&nbsp; ~Towns@5,2~ will display five nearest towns, two of which
+will be "big" with population above the limit set in the configuration
+file.</li>
+
+<li>
+~PrefMag~ : Preferred Magnitude.</li>
+
+<li>
+~Md~ : Duration Magnitude.</li>
+
+<li>
+~ML~ : Local Magnitude.</li>
+
+<li>
+~Lat~ : Latitude in degrees with the format of +/- xx.xxxx.</li>
+
+<li>
+~Lon~ : Longitude in degrees with the format of +/- xxx.xxxx.</li>
+
+<li>
+~Depth~ : Depth (km).</li>
+
+<li>
+~Nph~ : Number of phases used in the solution.</li>
+
+<li>
+~Dmin~ : Distance to nearest station (km).</li>
+
+<li>
+~Rms~ : rms misfit (seconds).</li>
+
+<li>
+~ErrLat~ : Lattitudinal location error (km).</li>
+
+<li>
+~ErrLon~ : Longitudinal location error (km).</li>
+
+<li>
+~ErrZ~ : Vertical location error (km).</li>
+
+<li>
+~Gap~ : Azimuthal gap (degrees).</li>
+
+<li>
+~RevAuto~ : If the solution is automatic this token is replaced with the
+string Automatic, otherwise the string Reviewed is used.</li>
+
+<li>
+~InvokedBy~ : This token is replaced with a string supplied by the program
+which invoked the execution of alarms. This is useful for distinguishing
+alarms raised when various parameters of an event are inserted into the
+database.</li>
+
+<li>
+~End~ : Required at the end of each format.</li>
+</ul>
+The insertion and deletion messages for the CUBE format are predefined
+in the system and can be modified only by making changes to the source
+code.
+<p><b><i>Criteria Program</i></b>. A Criteria Program (CP) is simply one
+attribute of the alarm specification. It is a program written in any language,
+invoked by the alarms system. It is passed information about the event
+and it signals back to the caller whether the event passed some set of
+criteria defined and checked by the program. CP?s are specified in the
+<i>Program
+Manager</i> (see below for more details).
+<br>&nbsp;
+<br>&nbsp;
+<p><b><u>WEB FORMS</u></b>
+<p>The main component of the system is a sequence of web forms which interact
+with the database allowing the user to manage recipients, formats, and
+criteria programs.
+<p><b><i>Alarms Manager</i></b>
+<p>The Alarms Manager web form is the starting point of the system. It
+is divided into three areas allowing the user to add or modify recipients,
+formats, and criteria programs. Each area presents a list of previously
+defined entries (if any) as well as the option to define a new entry. To
+create a new entry, the user highlights the choice for a new entry (New
+Recipient, New Format, New Program) before clicking <i>Submit</i>. To view,
+modify, or delete an existing entry, the user highlights the desired entry
+and clicks <i>Submit</i>. By clicking <i>Submit</i>, the user enters the
+relevant sub-manager area, i.e., <i>Recipient Manager</i>, <i>Format Manager</i>,
+or <i>Program Manager</i>, described below in more detail.
+<p>The Format area also allows the user to preview a previously defined
+format by highlighting a format in the list and then clicking on <i>Preview</i>.
+In this case, the insertion and deletion templates will be shown with the
+recognized format tokens highlighted in red.
+<p><b><i>Recipient Manager</i></b>
+<p>The Recipient Manager allows for adding, deleting, and modifying rules
+which trigger alarms. Each rule consists of the following attributes:
+<ul>
+<li>
+<b>Delivery mechanism</b> - email, pager, phone, or QDDS</li>
+
+<li>
+<b>Message Format</b> - user-defined templates such as CUBE.</li>
+
+<li>
+<b>Minimum magnitude</b> threshold.</li>
+
+<li>
+<b>Automatic or reviewed</b> solution</li>
+
+<li>
+<b>Criteria Program</b> - program which checks against user-defined criteria.</li>
+</ul>
+To create a new alarms recipient, the user should highlight the <i>New
+Recipient</i> entry in the Alarms manager and click <i>Submit</i>. The
+web form will prompt for the recipient?s name (a string uniquely identifying
+this recipient), priority (a number signifying the relative priority of
+this recipient - the lower the number, the higher the priority), and up
+to five initial rules. Once all fields are filled in, the user should click
+<i>Submit</i>
+to continue.
+<p>Here, the user will be prompted for further information based on the
+delivery mechanisms desired, such as the recipient?s email address, phone
+number, or QDDS target directory.
+<p>Clicking <i>Submit</i> will insert the recipient and all defined rules
+into the database.
+<p>The <i>Recipient Manager</i> can also be invoked for a previously defined
+recipient. In this case, the web form will show all rules defined for the
+recipient along with blank spaces for five more rule definitions. Along
+with the <i>Submit</i> button, which acts as described above, there is
+a <i>Delete</i> button which will delete the current recipient and all
+associated rules from the database. Furthermore, in this mode each individual
+rule can be deleted by clicking the <i>Delete Rule</i> checkbox. The attributes
+of each existing rule can also be changed by changing the magnitude limit,
+or selecting a new or different delivery method and format before clicking
+<i>Submit</i>.
+<p>If <i>Delete Recipient</i> is clicked, a confirmation form is shown
+where the user must click <i>Continue</i> to actually delete the rules
+from the database.
+<p><b>Note</b>: the system does not enforce any content-based constraints
+on the rule attributes. Therefore, it is up to the user to correctly match
+the delivery mechanism with the desired message format (e.g., messages
+delivered by QDDS should typically be in CUBE format).
+<p><b><i>Format Manager</i></b>
+<p>Each format has three required attributes:
+<ul>
+<li>
+<b>Description</b> - Human readable description of the format (e.g., CUBE,
+pager).</li>
+
+<li>
+<b>Insertion Format</b> - Insertion template consisting of the text of
+the message including tokens which will be translated into the notification
+message sent when an event is inserted into the database.</li>
+
+<li>
+<b>Deletion Format </b>- Deletion template consisting of the text of the
+message including tokens which will be translated into the notification
+message sent when an event is deleted from the database.</li>
+</ul>
+If the <i>Format Manager</i> is invoked for an existing format, the current
+definitions for these three attributes are shown and the user is allowed
+to modify them. Otherwise, the <i>Format Manager</i> web form prompts the
+user for the three attributes. The user can then click <i>Submit</i> to
+insert the attributes into the database, or <i>Delete</i> to remove the
+current format definition from the database.
+<p><b>Note: </b>The user must specify both the Insertion Format and Deletion
+Format.
+<p><b>Note</b>: the CUBE format is pre-defined in the source code and can
+only be changed by modifying source code.
+<p><b><i>Program Manager</i></b>
+<p>A criteria program (CP) is a program written in any language, invoked
+by the alarms system. It checks the information about an event against
+any predetermined set of criteria, such as magnitude range, location, type,
+and even trends or swarms.
+<p>Each CP has three required attributes:
+<ul>
+<li>
+<b>ProgramName</b> - Full path to the location of the program executable.</li>
+
+<li>
+<b>ProgramDir</b> - Temporary directory where this program has write permission.
+This is necessary for simple communication between the calling program
+and CP. <b>ProgramDesc</b>- human readable description of what this CP
+checks for (e.g., Utah Polygon, Menlo Automatics 2.5).</li>
+</ul>
+If the <i>Program Manager</i> is invoked for an existing CP, the current
+definitions for these three attributes are shown and the user is allowed
+to modify them. Otherwise, the <i>Program Manager</i> web form prompts
+the user for the three attributes. The user can then click <i>Submit</i>
+to insert the attributes into the database, or <i>Delete</i> to remove
+the current CP definition from the database
+<p>Criteria programs are stand-alone programs. This causes some challenges
+with respect to communication to the rest of the alarms system. Each CP
+is executed as a stand-alone program and it writes its results to a file
+in the temporary program directory where the alarms system knows to look
+for those results. Therefore, the directory specified by <b>ProgramDir</b>
+attribute must be writeable to the web server application.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><u>SYSTEM SETUP</u></b>
+<p>The system is comprised of an Oracle database, SQL and C source code
+which allows for manipulation of the database objects, web server resident
+C source code which processes web forms, and an Earthworm configuration
+with a ring onto which alarms messages are written and from which alarms
+processing modules actually execute alarm notifications.
+<p>The installation and setup of the Oracle database is beyond the scope
+of this document. This section assumes that Oracle has been installed and
+that the latest version of the Earthworm DBMS schema has been successfully
+loaded.
+<p>Because the Quick Review system is closely related to the alarms system,
+reference to the EQR documentation is recommended.
+<br>&nbsp;
+<br>&nbsp;
+<p><b><i>Configuration Files</i></b>
+<p>The Alarms System uses two configuration files:
+<ul>
+<li>
+<b><i>alarms.d</i></b> - defines database connection parameters, hostname
+of the web server, and the path to a temporary directory which must be
+writeable to the web server.</li>
+
+<li>
+<b><i>review_event.d</i></b> - defines the name of an Earthworm ring into
+which alarms messages are written. Refer to EQR documentation for more
+details.</li>
+</ul>
+<b><i>Earthworm Setup</i></b>
+<p>In order for alarm notifications to be issued and delivered, an Earthworm
+construction must be running on the web-server host. At the minimum, it
+must contain one ring into which the EQR system writes alarms messages,
+and one or more delivery modules.
+<p>The following message types are currently supported:
+<p><b><i>TYPE_EMAIL_MSG</i></b>
+<p><font face="Courier New">&lt;email address></font>
+<p><font face="Courier New">&lt;mail server></font>
+<p><font face="Courier New">&lt;subject line text></font>
+<p><font face="Courier New">&lt;database ID of the audit associated with
+the alarm></font>
+<p><font face="Courier New">&lt;text of the alarm message></font>
+<p><b><i>TYPE_QDDS_MSG</i></b>
+<p><font face="Courier New">&lt;target directory></font>
+<p><font face="Courier New">&lt;database ID of the audit associated with
+the alarm></font>
+<p><font face="Courier New">&lt;text of the alarm message></font>
+<p><b><i>TYPE_CUSTOM_MSG</i></b>
+<p><font face="Courier New">*** Format not yet defined ***</font>
+<p><b><i>TYPE_PAGER_MSG</i></b>
+<p><font face="Courier New">*** Format not yet defined ***</font>
+<br>&nbsp;
+<br>&nbsp;
+<p>The following two delivery modules are currently available:
+<ul>
+<li>
+<b><i>email_sender</i></b> - picks up TYPE_EMAIL_MSG messages from the
+ring, parses them and calls the <i>SendMail()</i> earthworm library routine
+to delivery the message. Then, it updates the appropriate entry in the
+AlarmsAudit table to indicate that the message has been delivered.</li>
+
+<li>
+<b><i>qdds_sender</i></b> - picks up TYPE_QDDS_MSG messages from the ring,
+parses them and writes the text of the message to the specified QDDS target
+directory. For now, this program only deals with placing the files in CUBE
+format into the correct directory, leaving the bulk of the delivery work
+to an outside QDDS-capable process.</li>
+</ul>
+<hr>
+<address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</body>
+</html>

@@ -1,0 +1,93 @@
+##############################################################################
+# Copyright (c) 1991, 2001, 2002 by Oracle Corporation
+##############################################################################
+ 
+###########################################
+# Cache and I/O
+###########################################
+db_block_size=8192
+db_cache_size=164626432
+db_file_multiblock_read_count=32
+ 
+###########################################
+# Cursors and Library Cache
+###########################################
+open_cursors=350
+ 
+###########################################
+# Database Identification
+###########################################
+db_domain=$(EW_ORACLE_DOMAIN)
+db_name=$(EW_ORACLE_SID)
+ 
+###########################################
+# Diagnostics and Statistics
+###########################################
+background_dump_dest=$(EW_ORACLE_BASE)\admin\$(EW_ORACLE_SID)\bdump
+core_dump_dest=$(EW_ORACLE_BASE)\admin\$(EW_ORACLE_SID)\cdump
+timed_statistics=TRUE
+user_dump_dest=$(EW_ORACLE_BASE)\admin\$(EW_ORACLE_SID)\udump
+ 
+###########################################
+# File Configuration
+###########################################
+control_files=("$(EW_ORACLE_CONTROL_DIR1)\control01.ctl", "$(EW_ORACLE_CONTROL_DIR2)\control02.ctl", "$(EW_ORACLE_CONTROL_DIR3)\control03.ctl")
+ 
+###########################################
+# Instance Identification
+###########################################
+instance_name=$(EW_ORACLE_SID)
+ 
+###########################################
+# MTS
+###########################################
+dispatchers="(PROTOCOL=TCP) (SERVICE=$(EW_ORACLE_SID)XDB)"
+ 
+###########################################
+# Miscellaneous
+###########################################
+compatible=9.2.0.0.0
+ 
+###########################################
+# Optimizer
+###########################################
+hash_join_enabled=TRUE
+query_rewrite_enabled=FALSE
+star_transformation_enabled=FALSE
+ 
+###########################################
+# Pools
+###########################################
+java_pool_size=65536000
+large_pool_size=131072000
+shared_pool_size=393216000
+ 
+###########################################
+# Processes and Sessions
+###########################################
+processes=200
+ 
+###########################################
+# Redo Log and Recovery
+###########################################
+fast_start_mttr_target=300
+ 
+###########################################
+# Security and Auditing
+###########################################
+remote_login_passwordfile=EXCLUSIVE
+ 
+###########################################
+# Sort, Hash Joins, Bitmap Indexes
+###########################################
+pga_aggregate_target=81788928
+sort_area_size=524288
+sort_area_retained_size=524288
+
+###########################################
+# System Managed Undo and Rollback Segments
+###########################################
+undo_management=AUTO
+undo_retention=10800
+undo_tablespace=UNDOTBS1
+ 

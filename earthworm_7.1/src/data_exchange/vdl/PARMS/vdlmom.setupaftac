@@ -1,0 +1,2 @@
+dsklpmom -port 2011 -logpath /export/data/logs/vdl/ -parms parms1.aftac -addr 192.239.137.222
+!dsklpmom -port 2012 -logpath /export/data/logs/vdl/ -parms parms2.aftac -addr 192.239.137.222

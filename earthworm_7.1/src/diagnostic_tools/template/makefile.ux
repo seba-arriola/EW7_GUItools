@@ -1,0 +1,37 @@
+
+#
+#
+#    $Id: makefile.ux,v 1.2 2007/02/20 16:01:07 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/02/20 16:01:07  stefan
+#     lockfile.o
+#
+#     Revision 1.1  2005/07/26 20:58:04  friberg
+#     added UNIX makefile
+#
+#
+
+CFLAGS=${GLOBALFLAGS} -g
+LIBS=-lm -lpthread
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+TEMPLATE = template.o $L/logit.o $L/kom.o $L/getutil.o $L/sleep_ew.o \
+           $L/time_ew.o $L/transport.o  $L/lockfile_ew.o $L/lockfile.o 
+
+template: $(TEMPLATE)
+	cc -o $B/template $(TEMPLATE) $(LIBS)
+
+lint:
+	lint template.c ${GLOBALFLAGS}
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/template*

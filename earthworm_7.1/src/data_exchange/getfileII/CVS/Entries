@@ -1,0 +1,22 @@
+/README/1.1/Fri Dec 20 02:39:11 2002//
+/chdir_sol.c/1.1/Fri Dec 20 02:39:11 2002//
+/chdir_win.c/1.1/Fri Dec 20 02:39:11 2002//
+/config.c/1.2/Wed Jul 28 17:59:41 2004//
+/getfileII.c/1.4/Mon Feb 26 20:51:24 2007//
+/getfileII.d/1.1/Fri Dec 20 02:39:11 2002//
+/getfileII.h/1.4/Wed Jul 28 17:59:41 2004//
+/log.c/1.1/Fri Dec 20 02:39:11 2002//
+/makefile.bsd/1.1/Wed Mar 17 21:40:58 2004//
+/makefile.lnx/1.1/Mon Mar  1 18:28:34 2004//
+/makefile.nt/1.4/Tue Nov 21 23:03:17 2006//
+/makefile.sol/1.2/Mon Jan  6 22:04:04 2003//
+/makefile.ux/1.1/Mon Jul 25 20:27:36 2005//
+/rename_sol.c/1.2/Wed Jul 28 17:59:41 2004//
+/rename_win.c/1.2/Wed Jul 28 17:59:41 2004//
+/socket_bsd.c/1.1/Wed Mar 17 21:40:58 2004//
+/socket_lnx.c/1.1/Mon Mar  1 18:28:34 2004//
+/socket_sol.c/1.2/Thu Jan  2 21:18:55 2003//
+/socket_win.c/1.1/Fri Dec 20 02:39:11 2002//
+/tzset_sol.c/1.1/Fri Dec 20 02:39:11 2002//
+/tzset_win.c/1.1/Fri Dec 20 02:39:11 2002//
+D

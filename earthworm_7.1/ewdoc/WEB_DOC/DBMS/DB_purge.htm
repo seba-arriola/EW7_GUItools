@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Wiping out and re-creating an Earthworm DB</TITLE>
+<META NAME="Template" CONTENT="C:\Program Files\Microsoft Office\Office\html.dot">
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080">
+
+
+
+
+<CENTER><H1><BR>Wiping out and re-creating an Earthworm DB </H1>
+
+<I>(last revised August 7, 2001)</I></CENTER>
+
+
+<P>The following procedure will remove all data from an existing DBMS, and re-load a clean set of tables and network names.</P>
+<P>This procedure presumes an Windows2000-based Oracle8 server. </P>
+<P>This procedure is to be executed from the keyboard of the server machine.</P>
+<P>1. In a command window:</P><DIR>
+<DIR>
+
+<B><P>cd \orant\bin</P></b></DIR>
+</DIR>
+
+<P>2. Invoke the utility:&#9;</P><DIR>
+<DIR>
+
+<B><P>&gt;svrmgr30</P></b></DIR>
+</DIR>
+
+<P>3. Execute the command</P><DIR>
+<DIR>
+
+<B><P>SVRMGR&gt;connect internal/earthworm@service.usgs</P>
+</B><P>where</P>
+<P><B>"internal"</b> is a reserved account, the equivalent of "superuser" in Unix.</P>
+<P><B>"earthworm"</b> is the internal password which was assigned during initial Oracle installation.</P>
+<P><B>"service.usgs"</b> is the service name assigned during initial Oracle installation.</P></DIR>
+</DIR>
+
+<P>4. Execute the commands</P><DIR>
+<DIR>
+
+<B><P>SVRMGR&gt;shutdown immediate</P>
+<P>SVRMGR&gt;startup</P>
+<P>SVRMGR&gt;quit</P>
+</B><P>This drops any connections to the server.</P></DIR>
+</DIR>
+
+<P>5. Open a second command window, and run the supplied script which will drop (delete) all tables and users:</P><DIR>
+<DIR>
+
+<B><P>cd earthworm\&lt;version&gt;\src\oracle\schema\sql_scripts</P>
+</B><P>Invoke sqlplus and log is as sys, with the password and service name as above:</P>
+<B><P>sqlplus sys/earthworm@service.usgs</P>
+</B><P>Execute the removal script:</P>
+<B><P>SQL&gt;@ewdb_destroy_database.sql</P>
+<P>SQL &gt;quit</P></b></DIR>
+</DIR>
+
+<P>6. Shut down the server. In the first command window, execute:</P><DIR>
+<DIR>
+
+<B><P>&gt;svrmgr30</P>
+<P>SVRMGR&gt;connect internal/earthworm@service.usgs</P>
+<P>SVRMGR&gt;shutdown immediate</P>
+</B><P>&nbsp;</P></DIR>
+</DIR>
+
+<P>7. From the second window, delete the operating system files containing the table space:</P><DIR>
+<DIR>
+
+<P>change to the drive and directory containing the files. These were specified in the initialization script. e.g.:</P>
+<B><P>&gt;del D:\orant\database\ew5\*.*</P></b></DIR>
+</DIR>
+
+<P>8. In the first window, create a default database:</P><DIR>
+<DIR>
+
+<B><P>SVRMGR&gt;startup</P></b></DIR>
+</DIR>
+
+<P>9. In the second window (the one cd'd to the earthworm sql scripts), invoke the earthworm schema creation script. Make sure that the script has been edited for your local user, service name, and table space location.</P><DIR>
+<DIR>
+
+<B><P>&gt;sqlplus sys/earthworm@service.usgs</P>
+</B><P>substituting the correct password and service name as above.</P>
+<B><P>SQL&gt;@ewdb_create_database</P>
+<P>SQL&gt;quit</P></b></DIR>
+</DIR>
+
+<P>10. Load the author id's:</P><DIR>
+<DIR>
+
+<P>cd to the directory containing the script:<B>&gt; cd earthworm\&lt;version&gt;\src\oracle\data</b></P>
+<P>Log in as the user specified in the schema installation script. e.g.:</P>
+<B><P>&gt;sqlplus ewdb_main/main@service.usgs</P>
+</B><P>Execute the insertion script:</P>
+<B><P>SQL&gt;@instid_2_networkname</P>
+<P>SQL&gt;quit</P></b></DIR>
+</DIR>
+
+<P>11. Load the station lists:</P><DIR>
+<DIR>
+
+<B><P>stalist_hinv2ora stafile ewdb_main main service.usgs</P>
+</B><P>where</P>
+<P><B>stafile</b> is a station list in hypoinverse format,</P>
+<P><B>ewdb_main</b> is the user,</P>
+<P><B>main</b> is the password, and</P>
+<P><B>service.usgs</b> is the service name</P></DIR>
+</DIR>
+
+
+<P>12. Load the response information. The following example assumes that the
+Poles-And-Zeros files are in SAC format:</P><DIR>
+<DIR>
+
+<B><P>sac_pz2ora pzfile ewdb_main main service.usgs</P>
+</B><P>where</P>
+<P><B>pzfile</b> is the file containing the channel response in SAC format,</P>
+<P><B>ewdb_main</b> is the user,</P>
+<P><B>main</b> is the password, and</P>
+<P><B>service.usgs</b> is the service name</P></DIR>
+</DIR><hr>
+<address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</BODY>
+</HTML>

@@ -1,0 +1,849 @@
+<hr>
+<a name=EWDB_AlarmAuditStruct></a>
+<font size=+1>EWDB_AlarmAuditStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmAuditStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about an alarms audit entry.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idAudit</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this audit.</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the event which triggered this alarm.</td>
+    </tr>
+    <tr>
+     <td>bAuto</td>
+     <td>int</td>
+     <td>Automatic or reviewed criterion.</td>
+    </tr>
+    <tr>
+     <td>Recipient</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_AlarmsRecipientStruct>EWDB_AlarmsRecipientStruct</a></td>
+     <td>Information about the recipient who receieved this alarm.</td>
+    </tr>
+    <tr>
+     <td>Format</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_AlarmsFormatStruct>EWDB_AlarmsFormatStruct</a></td>
+     <td>Information about the format used to send.</td>
+    </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the delivery mechanism used to send.</td>
+    </tr>
+    <tr>
+     <td>tAlarmDeclared</td>
+     <td>double</td>
+     <td>Time when the alarm was declared.</td>
+    </tr>
+    <tr>
+     <td>tAlarmExecuted</td>
+     <td>double</td>
+     <td>Time when the alarm was executed.</td>
+    </tr>
+    <tr>
+     <td>DelMethodInd</td>
+     <td>int</td>
+     <td> Index of the delivery method corresponding to the constants defined above.</td>
+    </tr>
+    <tr>
+     <td>sInvocationString</td>
+     <td>char[256]</td>
+     <td> Text inserted into the alarm message by the calling program.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_AlarmDeliveryUnionStruct></a>
+<font size=+1>EWDB_AlarmDeliveryUnionStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmDeliveryUnionStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure simulating a union of different delivery mechanism types, switched based on the value of DelMethodInd.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>DelMethodInd</td>
+     <td>int</td>
+     <td>Index of the delivery method corresponding to the constants defined above.</td>
+    </tr>
+    <tr>
+     <td>idRecipientDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database id of the recipient.</td>
+    </tr>
+    <tr>
+     <td>email</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_EmailDeliveryStruct>EWDB_EmailDeliveryStruct</a></td>
+     <td>Information about an email delivery.</td>
+    </tr>
+    <tr>
+     <td>pager</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_PagerDeliveryStruct>EWDB_PagerDeliveryStruct</a></td>
+     <td>Information about a pager delivery.</td>
+    </tr>
+    <tr>
+     <td>phone</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_PhoneDeliveryStruct>EWDB_PhoneDeliveryStruct</a></td>
+     <td>Information about a phone delivery.</td>
+    </tr>
+    <tr>
+     <td>qdds</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_QddsDeliveryStruct>EWDB_QddsDeliveryStruct</a></td>
+     <td>Information about a qdds delivery.</td>
+    </tr>
+    <tr>
+     <td>custom</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_CustomDeliveryStruct>EWDB_CustomDeliveryStruct</a></td>
+     <td>Information about a custom delivery.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_AlarmsCritProgramStruct></a>
+<font size=+1>EWDB_AlarmsCritProgramStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmsCritProgramStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a criteria program</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idCritProgram</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this program.</td>
+    </tr>
+    <tr>
+     <td>sProgName</td>
+     <td>char[256]</td>
+     <td>Full path to the criteria program executable</td>
+    </tr>
+    <tr>
+     <td>sProgDir</td>
+     <td>char[256]</td>
+     <td>Full path to the working directory.</td>
+    </tr>
+    <tr>
+     <td>sProgDescription</td>
+     <td>char[256]</td>
+     <td>Label for this program.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_AlarmsFormatStruct></a>
+<font size=+1>EWDB_AlarmsFormatStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmsFormatStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a format.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idFormat</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this format.</td>
+    </tr>
+    <tr>
+     <td>sDescription</td>
+     <td>char[256]</td>
+     <td>Label for this format.</td>
+    </tr>
+    <tr>
+     <td>sFmtInsert</td>
+     <td>char[<a href=../../.././EWDB_API_LIB/ALARMS_API/C/constant_comments.html#EWDB_ALARMS_MAX_FORMAT_LEN>EWDB_ALARMS_MAX_FORMAT_LEN</a>]</td>
+     <td>Insertion format.</td>
+    </tr>
+    <tr>
+     <td>sFmtDelete</td>
+     <td>char[<a href=../../.././EWDB_API_LIB/ALARMS_API/C/constant_comments.html#EWDB_ALARMS_MAX_FORMAT_LEN>EWDB_ALARMS_MAX_FORMAT_LEN</a>]</td>
+     <td>Deletion format.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_AlarmsRecipientStruct></a>
+<font size=+1>EWDB_AlarmsRecipientStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmsRecipientStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a recipient of alarms.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idRecipient</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this recipient.</td>
+    </tr>
+    <tr>
+     <td>dPriority</td>
+     <td>int</td>
+     <td>Priority number of this recipient.</td>
+    </tr>
+    <tr>
+     <td>sDescription</td>
+     <td>char[<a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/constant_comments.html#EWDB_MAXIMUM_AMPS_PER_CODA>EWDB_MAXIMUM_AMPS_PER_CODA</a>]</td>
+     <td>Name label for this recipient</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_AlarmsRecipientStructSummary></a>
+<font size=+1>EWDB_AlarmsRecipientStructSummary</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmsRecipientStructSummary</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Summary information about how an alarm should be delivered to a recipient.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idRule</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the rule which raised the alarm.</td>
+    </tr>
+    <tr>
+     <td>sTableName</td>
+     <td>char[64]</td>
+     <td>Name of the delivery table (email, pager, etc.) to use.</td>
+    </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the delivery to use.</td>
+    </tr>
+    <tr>
+     <td>idRecipientDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the recipient's delivery to use.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_AlarmsRuleStruct></a>
+<font size=+1>EWDB_AlarmsRuleStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_AlarmsRuleStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a single rule.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idRule</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this rule.</td>
+    </tr>
+    <tr>
+     <td>dMag</td>
+     <td>double</td>
+     <td>Threshhold magnitude for this rule.</td>
+    </tr>
+    <tr>
+     <td>Auto</td>
+     <td>int</td>
+     <td>Automatic or reviewed criterion.</td>
+    </tr>
+    <tr>
+     <td>idRecipientDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the delivery to be used if this rule is satisfied.</td>
+    </tr>
+    <tr>
+     <td>DeliveryIndex</td>
+     <td>ind</td>
+     <td>Index into the Delivery array of the AlarmList structure defined in the APPS section.</td>
+    </tr>
+    <tr>
+     <td>Format</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_AlarmsFormatStruct>EWDB_AlarmsFormatStruct</a></td>
+     <td>Information about the format to use.</td>
+    </tr>
+    <tr>
+     <td>bCritInUse</td>
+     <td>int</td>
+     <td>Should the criteria program be evaluated?</td>
+    </tr>
+    <tr>
+     <td>CritProg</td>
+     <td><a href=../../.././EWDB_API_LIB/ALARMS_API/C/typedef_comments.html#EWDB_AlarmsCritProgramStruct>EWDB_AlarmsCritProgramStruct</a></td>
+     <td>Information about the criteria program to use.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_CustomDeliveryStruct></a>
+<font size=+1>EWDB_CustomDeliveryStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_CustomDeliveryStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a custom delivery.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this delivery..</td>
+    </tr>
+    <tr>
+     <td>sDescription</td>
+     <td>char[256]</td>
+     <td>Name label for this custom delivery.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_EmailDeliveryStruct></a>
+<font size=+1>EWDB_EmailDeliveryStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_EmailDeliveryStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about an email delivery.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this delivery..</td>
+    </tr>
+    <tr>
+     <td>sAddress</td>
+     <td>char[256]</td>
+     <td>Email address to deliver to.</td>
+    </tr>
+    <tr>
+     <td>sMailServer</td>
+     <td>char[256]</td>
+     <td>Mail server to use for delivery.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_PagerDeliveryStruct></a>
+<font size=+1>EWDB_PagerDeliveryStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_PagerDeliveryStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a pager delivery.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this delivery..</td>
+    </tr>
+    <tr>
+     <td>sNumber</td>
+     <td>char[256]</td>
+     <td>Pager number to send to.</td>
+    </tr>
+    <tr>
+     <td>sPagerCompany</td>
+     <td>char[256]</td>
+     <td>Pager company to use.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_PhoneDeliveryStruct></a>
+<font size=+1>EWDB_PhoneDeliveryStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_PhoneDeliveryStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a phone delivery.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this delivery..</td>
+    </tr>
+    <tr>
+     <td>sPhoneNumber</td>
+     <td>char[256]</td>
+     <td>Telephone number to dial.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_QddsDeliveryStruct></a>
+<font size=+1>EWDB_QddsDeliveryStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_QddsDeliveryStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information about a qdds delivery.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idDelivery</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of this delivery..</td>
+    </tr>
+    <tr>
+     <td>sQddsDirectory</td>
+     <td>char[256]</td>
+     <td>Full path to the directory where qdds files should be written.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>ALARMS_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

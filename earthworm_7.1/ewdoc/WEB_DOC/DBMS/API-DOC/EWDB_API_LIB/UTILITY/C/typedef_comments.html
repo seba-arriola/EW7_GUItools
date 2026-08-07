@@ -1,0 +1,133 @@
+<hr>
+<a name=EWDB_CriteriaStruct></a>
+<font size=+1>EWDB_CriteriaStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_CriteriaStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure for specifying criteria for object searches. Criteria can be used to retrieve a list of certian objects, like Events or Stations.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>Criteria</td>
+     <td>int</td>
+     <td>Set of flags specifying which criteria to use.  See <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_TIME>EWDB_CRITERIA_USE_TIME</a> for a list of the possible criteria flags.  The flags are not mutually exclusive.  The values of the remaning members will be ignored if their matching criteria flags are not set.</td>
+    </tr>
+    <tr>
+     <td>MinTime</td>
+     <td>int</td>
+     <td>The minimum acceptable time for a list value. Specified as seconds since 1970.  If time were a criteria for selecting a list of events, then all events in the returned list would have to have occurred after MinTime.</td>
+    </tr>
+    <tr>
+     <td>MaxTime</td>
+     <td>int</td>
+     <td>The maximum acceptable time for a list value. Comparable to MinTime.  Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>MinLon</td>
+     <td>float</td>
+     <td>The minimum acceptable longitude for a list value. Same principal as MinTime.  Expressed as degrees. (West=negative)</td>
+    </tr>
+    <tr>
+     <td>MaxLon</td>
+     <td>float</td>
+     <td>The maximum acceptable longitude for a list value. Same principal as MinTime.  Expressed as degrees. (West=negative)</td>
+    </tr>
+    <tr>
+     <td>MinLat</td>
+     <td>float</td>
+     <td>The minimum acceptable lattitude for a list value. Same principal as MinTime.  Expressed as degrees. (South=negative)</td>
+    </tr>
+    <tr>
+     <td>MaxLat</td>
+     <td>float</td>
+     <td>The maximum acceptable lattitude for a list value. Same principal as MinTime.  Expressed as degrees. (South=negative)</td>
+    </tr>
+    <tr>
+     <td>MinDepth</td>
+     <td>float</td>
+     <td>The minimum acceptable depth for a list value.  Same principal as MinTime.  Expressed as kilometers(km) below surface.</td>
+    </tr>
+    <tr>
+     <td>MaxDepth</td>
+     <td>float</td>
+     <td>The maximum acceptable depth for a list value.  Same principal as MinTime.  Expressed as kilometers(km) below surface.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/library_comments.html#UTILITY>UTILITY</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDBid></a>
+<font size=+1>EWDBid</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The C format of a EWDB Database ID.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>Last seen, EWDBids were capable of being larger than an integer, and this could create problems for the storing of EWDBids in C.  There is a move to change the type from int to either 64-bit int or string. DavidK 05/01/00  This should not cause problems with operations on existing EW5 databases, but in the existing format, it does prevent existing nodes from coexisting in a tightly coupled manner.</td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/library_comments.html#UTILITY>UTILITY</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

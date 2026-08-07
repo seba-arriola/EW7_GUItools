@@ -1,0 +1,47 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+
+#
+#  This top level makefile creates both text and web review directories
+#
+
+
+default: do_web 
+clean: web_clean text_clean
+clean_bin: web_clean_bin text_clean_bin
+
+do_web:
+	cd web 
+	nmake nt
+	cd ..
+
+do_text:
+	cd text 
+	nmake nt
+	cd ..
+
+
+web_clean:
+	cd web 
+	nmake clean_nt
+	cd ..
+
+text_clean:
+	cd text 
+	nmake clean_nt
+	cd ..
+
+web_clean_bin:
+	cd web 
+	nmake clean_bin_nt
+	cd ..
+
+text_clean_bin:
+	cd text 
+	nmake clean_bin_nt
+	cd ..
+

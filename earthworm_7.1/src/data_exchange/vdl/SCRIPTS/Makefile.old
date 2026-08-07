@@ -1,0 +1,71 @@
+# Sample makefile for nrts_tap based client
+
+CC     = gcc 
+INCDIR = ../../code/src/include
+BINDIR = ../bin/$(ARCH)
+LIBDIR = ../../code/lib/$(ARCH)
+OPTMIZ = -O
+INCS   = -I$(INCDIR)
+CFLAGS = $(OPTMIZ) $(INCS) -L$(LIBDIR)
+QLIB = datasock/qlib/libqlib.a
+ALL    = vdltap vdl 
+
+all: $(ALL)
+
+
+remove: FORCE
+	rm $(ALL)
+
+clean: FORCE
+
+FORCE:
+
+#*
+#*   VDL at Berkeley
+#*
+vdlucb:  vdl.o vdltrg.o vdlput.o vdlqsub.o ifft512.o ifft256.o fftlib.o cmprs.o vdltcp.o filt2.o filt10.o ../datasock/vdltest/feedme.o ../datasock/qlib/libqlib.a
+	 makedate
+INCDIR = ../datasock/qlib
+	$(CC) $(CFLAGS)  datetime.c -c
+	$(CC) $(CFLAGS)  vdl.o vdltrg.o vdlput.o feedme.o vdlqsub.o ifft256.o ifft512.o fftlib.o cmprs.o vdltcp.o datetime.o filt2.o filt10.o $(QLIB) -o vdl -lnrts -liris -lutil -lm
+feedme.o: feedme.c vdl.h $(INCDIR)/qlib.h
+	$(CC) $(CFLAGS)  feedme.c -c
+	
+#*
+#*	VDL at UCSD
+#*
+vdl: vdl.o vdltrg.o vdlput.o vdltap.o vdlqsub.o ifft512.o ifft256.o fftlib.o cmprs.o vdltcp.o filt2.o filt10.o
+	 makedate
+	$(CC) $(CFLAGS)  datetime.c -c
+	$(CC) $(CFLAGS)  vdl.o vdltrg.o vdlput.o vdltap.o vdlqsub.o ifft256.o ifft512.o fftlib.o cmprs.o vdltcp.o datetime.o filt2.o filt10.o -o vdl -lnrts -liris -lutil -lm
+vdl.o: vdl.c vdl.h vdlgbl.h cmprs.h ifft.h vdlqsub.h
+	$(CC) $(CFLAGS) vdl.c -c
+vdltrg.o: vdltrg.c vdl.h vdlgbl.h cmprs.h ifft.h vdlqsub.h
+	$(CC) $(CFLAGS)  vdltrg.c -c
+vdlput.o: vdlput.c vdl.h vdlgbl.h cmprs.h ifft.h vdlqsub.h
+	$(CC) $(CFLAGS)  vdlput.c -c
+vdlqsub.o: vdlqsub.c vdl.h vdlqsub.h vdlgbl.h
+	$(CC) $(CFLAGS)  vdlqsub.c -c
+vdltcp.o: vdltcp.c vdlgbl.h vdl.h
+	$(CC) $(CFLAGS)  vdltcp.c -c
+vdltap.o: vdltap.c $(INCDIR)/nrts.h
+	$(CC) $(CFLAGS)  vdltap.c -c
+vdltap2.o: vdltap2.c $(INCDIR)/nrts.h
+	$(CC) $(CFLAGS)  vdltap2.c -c
+ifft256.o: ifft256.c ifft.h
+	$(CC) $(CFLAGS)  ifft256.c -c
+ifft512.o: ifft512.c ifft.h
+	$(CC) $(CFLAGS)  ifft512.c -c
+fftlib.o: fftlib.c ifft.h
+	$(CC) $(CFLAGS)  fftlib.c -c
+trigtst: trigtst.o satrig.o vdltap.o ifft512.o vdlqsub.o fftlib.o ifft256.o
+	$(CC) $(CFLAGS)  trigtst.o satrig.o vdlqsub.o vdltap.o ifft256.o ifft512.o fftlib.o -o trigtst -lnrts -liris -lutil -lm
+trigtst.o: trigtst.c satrig.h satriggbl.h
+	$(CC) $(CFLAGS) trigtst.c -c
+satrig.o: satrig.c satrig.h satriggbl.h
+	$(CC) $(CFLAGS) satrig.c -c
+vdlmom: vdlmom.o
+	$(CC) $(CFLAGS) vdlmom.o -o vdlmom -lm
+vdlmom.o: vdlmom.c
+	$(CC) $(CFLAGS) vdlmom.c -c
+

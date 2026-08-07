@@ -1,0 +1,39 @@
+#
+#    $Id: makefile.ux,v 1.2 2007/03/28 17:43:36 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/28 17:43:36  paulf
+#     fixed pthread linking
+#
+#     Revision 1.1  2005/07/26 20:22:24  friberg
+#     added UNIX makefile
+#
+#
+#
+
+LIBS = -lm -lpthread
+
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+O = findwave.o $L/getutil.o $L/kom.o $L/transport.o $L/sleep_ew.o \
+    $L/logit.o $L/time_ew.o $L/swap.o
+
+findwave: $O
+	cc -o $B/findwave $O $(LIBS)
+
+lint:
+	lint findwave.c $(GLOBALFLAGS)
+
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/findwave*

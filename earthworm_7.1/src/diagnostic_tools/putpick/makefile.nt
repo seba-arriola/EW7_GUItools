@@ -1,0 +1,45 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.2 2006/11/21 23:03:55 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.2  2006/11/21 23:03:55  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.1  2004/06/24 18:58:14  dietz
+#     New tool for writing pick/coda msgs to ring
+#
+#
+
+#
+#          Nmake File For putpick - Windows NT version
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = putpick
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+EWBINARIES = $L\chron3.obj $L\getutil.obj $L\kom.obj $L\logit.obj \
+             $L\rdpickcoda.obj $L\time_ew.obj $L\transport.obj $L\sleep_ew.obj 
+
+$B\$(APP).exe: $(APP).obj $(EWBINARIES)
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) $(APP).obj $(EWBINARIES) \
+	 -out:$B\$(APP).exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\$(APP)*

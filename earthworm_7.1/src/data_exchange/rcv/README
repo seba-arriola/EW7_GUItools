@@ -1,0 +1,89 @@
+01/04/1999 LDD  incorporated the newest version of Ketchum's sunrcv:
+-rw-r--r--  1 5051     neic       164648 Dec 31 22:55 sunrcv.tar.Z
+
+
+4/30/1998  INSTRUCTIONS FOR BUILDING RCV
+
+This directory originated from a release of sunrcv distributed
+by Dave Ketchum on the anonymous ftp site at gldfs.cr.usgs.gov
+
+ftp> cd sunrcv
+ftp> dir sunrcv
+-rw-r--r--  1 5051     neic       127185 Feb 23 20:21 sunrcv.tar.Z
+ftp> binary
+ftp> get sunrcv.tar.Z
+
+
+The untarred file had 3 directories:
+
+   /STEIM123  
+   /cmpnsn
+   /sunrcv
+
+I only wanted to have one main directory for the rcv program under the 
+earthworm/vX.X/src directory. I created a directory named /rcv and made 
+STEIM123, cmpnsn, and sunrcv subdirectories under /rcv.  All Earthworm 
+source files, make files, sample configuration files, and documentation
+live directly under rcv.
+
+Here's how the Earthworm rcv directory tree looks:
+
+.../vX.X/src/rcv           <- all Earthworm files live here
+                /STEIM123  <- original USNSN directory
+                /cmpnsn    <-  "
+                /sunrcv    <-  " (plus an Earthworm makefile.sol)
+
+--------------------------------------------------------------------------
+To incorporate changes of Dave Ketchum's code into Earthworm's rcv:
+
+1) copy the "old" rcv directory to something like rcv_old (as a safety net):
+
+   cd vX.X/src
+   cp -r rcv rcv_old
+
+
+2) remove the 3 old USNSN directories from the rcv directory:
+
+   cd rcv
+   rm -r STEIM123
+   rm -r cmpnsn
+   rm -r sunrcv
+
+
+3) get a new tar file of Ketchum's USNSN code 
+   (put it in the vX.X/src/rcv directory):
+
+   ftp gldfs.cr.usgs.gov
+   log in as anonymous
+   ftp>  cd sunrcv
+   ftp>  binary
+   ftp>  get sunrcv.tar.Z
+
+
+4) unpack the new tar file:
+ 
+   uncompress sunrcv.tar.Z
+   tar xvf sunrcv.tar
+
+   This should create the three USNSN sub-directories again,
+   without touching any of the Earthworm files.  
+
+
+5) remake the entire module.  In the vX.X/src/rcv directory:
+
+   make -f makefile.sol (or "emake" if your Earthworm
+                         environment is set up properly)
+ 
+   This actually uses the script file "make.script" which, among other
+   things, renames Ketchum's original makefile in the sunrcv directory 
+   to makefile.ketchum (to avoid later confusion).  It also puts a copy 
+   of the earthworm makefile (makefile.sol.sunrcv) into the sunrcv 
+   directory as "makefile.sol."  This is the makefile that is actually
+   used under Earthworm to link rcv and station with the Earthworm user 
+   functions instead of the dummy user functions that come with the release.
+
+
+6) If everything compiles ok, go ahead and get rid of the old
+   version that you had saved under rcv_old.
+
+Lynn Dietz 04/30/98

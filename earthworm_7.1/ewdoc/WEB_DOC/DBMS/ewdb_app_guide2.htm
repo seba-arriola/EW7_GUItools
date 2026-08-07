@@ -1,0 +1,389 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Application Writer’s Guide to the Earthworm Database Project</TITLE>
+<META NAME="Template" CONTENT="C:\WINDOWS\Application Data\Microsoft\Templates\Normal.dot">
+</HEAD>
+<BODY>
+
+<B><P ALIGN="CENTER">Application Writer’s Guide to the Earthworm Database Project</P>
+</B><FONT SIZE=2><P ALIGN="CENTER">Lucky Vidmar</P>
+<P ALIGN="CENTER">March 2, 2001</P>
+</FONT>
+<P>&nbsp;</P>
+<B><P>Source Tree Organization</P>
+</B>
+<FONT FACE="Courier New" SIZE=2><P>EW_HOME / </P></FONT><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>EW_VERSION /</P></font><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>include</P>
+<P>lib</P>
+<P>bin</P>
+<P>src /</P></font><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>archiving /</P>
+<P>display /</P>
+<P>libsrc /</P><DIR>
+<DIR>
+
+<P>util </P>
+<P>winnt </P>
+<P>solaris</P></DIR>
+</DIR>
+
+<P>[ . . . ]</P>
+<P>oracle /</P></font><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>schema-VERSION /</P><DIR>
+<DIR>
+
+<P>sql_scripts</P>
+<P>lib </P>
+<P>src /</P><DIR>
+<DIR>
+
+<P>include</P>
+<P>core_schema</P>
+<P>strong_motion</P>
+<P>[ . . . ]</P></DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>apps /</P></font><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>lib</P>
+<P>src /</P></font><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>include &#9;</P>
+<P>archive /</P>
+<P>orareport /</P>
+<P>[ . . . ]</P>
+<P>libsrc </P>
+</font></DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<B><P>API Overview</P>
+</B>
+<P>The <FONT FACE="Courier New">oracle</FONT> subtree in the <FONT FACE="Courier New">src</FONT> directory consists of two independent branches: schema and apps. The schema directory contains the source code (C and SQL) which actually touches the database. We think of this as the Earthworm DBMS Application Programmer’s Interface (API).   The <FONT FACE="Courier New">schema/src</FONT> directory is comprised of several subdirectories roughly corresponding to the parts of the schema (core, external, alarms, etc.). Each of those directories contains the actual API C routines, as well as the SQL scripts necessary to support them. </P>
+
+<P>Each API call lives within its own object file which has the same name as the API call itself.   For example, the API call to retrieve an origin is <I>ewdb_api_GetOrigin()</I>, the source code for it is in <FONT FACE="Courier New">ewdb_api_GetOrigin.c</FONT> which compiles to <FONT FACE="Courier New">ewdb_api_GetOrigin.o</FONT>. This object file is automatically copied into the <FONT FACE="Courier New">schema/lib</FONT> directory from where it can be linked into the applications. </P>
+
+<P>The function prototypes for each API function should be listed in <FONT FACE="Courier New">ewdb_ora_api.h</FONT> under <FONT FACE="Courier New">schema/src/include</FONT>. </P>
+
+<B><P>Applications Overview</P>
+</B>
+<P>Each application lives in its own directory under <FONT FACE="Courier New">schema/apps/src</FONT>. The convention is that the source file which contains the <I>main()</I> function has the same name as the application. For example, the directory for the archive application might be:</P>
+
+<FONT FACE="Courier New"><P>apps/src/archive/</P></FONT><DIR><DIR>
+<FONT FACE="Courier New">
+
+<P>archive.c</P>
+<P>archive.h</P>
+<P>another_source_file.c</P>
+<P>archive.d</P>
+<P>makefile.sol</P>
+<P>makefile.nt</P>
+<P>RCS /</P>
+</font>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<B></B><P><I><B>RCS</b></i>. The <FONT FACE="Courier New">RCS</FONT> directory supports the Revision Control System which is used to ensure exclusive write-access to files, as well as to provide simple revision history of each file. There are several things to keep in mind while working with RCS:</P>
+
+<P>1. In order for RCS to automatically update each file with the revision comments (a useful feature, we think), the following should be added to the top of each source file:</P>
+
+<FONT FACE="Courier New" SIZE=2><P>/*</P>
+<P> *   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE</P>
+<P> *   CHECKED IT OUT USING THE COMMAND CHECKOUT.</P>
+<P> *</P>
+<P> *    $Id: ewdb_app_guide2.htm,v 1.2 2006/06/15 15:49:32 stefan Exp $</P>
+<P> *</P>
+<P> *    Revision history:</P>
+<P> *     $Log: ewdb_app_guide2.htm,v $
+<P> *     Revision 1.2  2006/06/15 15:49:32  stefan
+<P> *     contact
+<P> *
+<P> *     Revision 1.1  2006/05/19 15:49:52  paulf
+<P> *     first inclusion
+<P> *</P>
+<P> *</P>
+<P> */</P>
+</FONT><FONT FACE="Courier New">
+<P>&nbsp;</P>
+</FONT><P>2. Before modifying any source file which is under RCS, make sure to check it out first:</P>
+
+<FONT FACE="Courier New"><P># checkout archive.c</P>
+
+</FONT><P>3. Once finished modifying a source file, check it back in immediately to so that others can access it:</P>
+
+<FONT FACE="Courier New"><P># checkin archive.c</P>
+</FONT>
+<P>&nbsp;</P>
+<B></B><P><I><B>Makefiles</b></i>. Each application directory should have two makefiles: <FONT FACE="Courier New">makefile.sol</FONT> and <FONT FACE="Courier New">makefile.nt</FONT> used to compile the application under Solaris and NT respectively. Even if an application only runs on one platform, there should be a makefile for the other one containing only the clean-up directives. This ensures a smooth cross-platform compilation.</P>
+
+<P>Below are the template makefiles for both Solaris and NT, with some explanations given in different color:</P>
+
+<FONT FACE="Courier New"><P>makefile.sol</P>
+</FONT><FONT FACE="Courier New" SIZE=2><P>#</P>
+<P>#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE</P>
+<P>#   CHECKED IT OUT USING THE COMMAND CHECKOUT.</P>
+<P>#</P>
+
+<P>###############################</P>
+<P># Set APP to your program name.</P>
+<P>###############################</P>
+<P>APP = program_name   In our example above, this would be archive</P>
+
+<P>&nbsp;</P>
+<P>###############################</P>
+<P># Set directories</P>
+<P>###############################</P>
+
+<P>These directories are defined in the ew_sol_sparc.cmd file </P>
+<P>B        = $(WEB_DIR)/bin/</P>
+<P>L        = $(EW_HOME)/$(EW_VERSION)/lib/</P>
+<P>A        = $(SCHEMA_DIR)/lib/</P>
+<P>APPS_LIB = $(APPS_DIR)/lib/</P>
+
+<P>###############################</P>
+<P>#OBJECT FILES EXTENSION</P>
+<P>###############################</P>
+<P>OBJ = .o</P>
+
+<P>#########################################################</P>
+<P># Set APP_OBJECTS to the object files in this directory</P>
+<P>#</P>
+<P># Set APP_OTHER to bind options or libraries needed by</P>
+<P># this application.</P>
+<P>#########################################################</P>
+<P>APP_OBJECTS = $(APP).o another_source_file.o </P>
+
+<P>APP_OTHER = -lm</P>
+
+<P>#########################################################</P>
+<P># Set EARTHWORM_API_O to all utility objects needed </P>
+<P># by this application.</P>
+<P>#########################################################</P>
+<P>EARTHWORM_API_O = $(L)ew_utility1.o \</P><DIR>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>$(L)ew_utility2.o \</P>
+<P>$(APPS_LIB)ewdb_apps_util1.o \</P>
+<P>$(APPS_LIB)ewdb_apps_util2.o \</P>
+<P>$(APPS_LIB)ewdb_apps_util3.o</P>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>############################################################</P>
+<P># Include the makefile which links in all of the EWDB_API</P>
+<P># libraries. This makefile also enters the scary world of</P>
+<P># Oracle compilation options. No self-respecting application</P>
+<P># writer would want to know anything about what happens</P>
+<P># past this point.</P>
+<P>############################################################</P>
+<P>The make_ora_api.sol file contains the list of all API objects which are to be linked in. Those objects are in schema/lib directory. The make_ora_api.sol file also contains a series of directives needed to properly set up the Oracle compilation environment on Solaris. Changing any of the Oracle directives is done at one’s peril.</P>
+<P>include $(APPS_DIR)/src/make_ora_api.sol</P>
+
+<P>&nbsp;</P>
+<P>Below are the typical lint and clean-up directives. They allow for easy removal of object files and binaries. </P>
+<P># lint directive</P>
+<P>lint:</P><DIR>
+<DIR>
+
+<P>lint $(APP).c another_source_file.c $(GLOBALFLAGS)</P>
+</DIR>
+</DIR>
+
+<P># cleanup directives</P>
+<P>clean:</P><DIR>
+<DIR>
+
+<P>/bin/rm -f a.out core *.o *.obj</P>
+</DIR>
+</DIR>
+
+<P>clean_bin:</P><DIR>
+<DIR>
+
+<P>/bin/rm -f $(B)/$(APP)*</P>
+</DIR>
+</DIR>
+
+<P>install:</P>
+<P>&#9;</P>
+
+</FONT><FONT FACE="Courier New"><P>makefile.nt</P>
+</FONT><FONT FACE="Courier New" SIZE=2><P>#</P>
+<P>#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE</P>
+<P>#   CHECKED IT OUT USING THE COMMAND CHECKOUT.</P>
+<P>#</P>
+
+<P>&nbsp;</P>
+<P>###############################</P>
+<P># Set APP to your program name.</P>
+<P>###############################</P>
+<P>APP = program_name</P>
+
+<P>###############################</P>
+<P># NT System Makefile</P>
+<P>###############################</P>
+<P>!include &lt;ntwin32.mak&gt;</P>
+
+<P>###############################</P>
+<P># Set directories</P>
+<P>###############################</P>
+<P>B            = $(EW_HOME)\$(EW_VERSION)\bin</P>
+<P>L            = $(EW_HOME)\$(EW_VERSION)\lib</P>
+<P>A            = $(SCHEMA_DIR)\lib</P>
+<P>APPS_LIB     = $(APPS_DIR)\lib</P>
+<P>API_INC_DIR  = $(SCHEMA_DIR)\src\include</P>
+
+<P>&nbsp;</P>
+<P>###############################</P>
+<P># OBJECT FILES EXTENSION</P>
+<P>###############################</P>
+<P>OBJ = .obj</P>
+
+<P>#########################################################</P>
+<P># Set APP_OBJECTS to the object files in this directory</P>
+<P>#</P>
+<P># Set APP_OTHER to bind options or libraries needed by</P>
+<P># this application.</P>
+<P>#########################################################</P>
+<P>APP_OBJECTS = $(APP).obj another_source_file.obj</P>
+
+<P>APP_OTHER = -lm</P>
+
+<P>&nbsp;</P>
+<P>############################################################</P>
+<P># Include the makefile which links in all of the EWDB_API</P>
+<P># libraries. EW_LIB is also set in this makefile -- it </P>
+<P># includes all of the typical earthworm libraries.</P>
+<P>############################################################</P>
+<P>make_ora_api.nt is less complicated than its Solaris cousin. It only contains the list of all API objects from schema/lib to be included. All of the necessary Oracle compilation directive are below in this file.</P>
+<P>include ..\make_ora_api.nt</P>
+
+<P>&nbsp;</P>
+<P>#########################################################</P>
+<P># Set EARTHWORM to all utility objects needed</P>
+<P># by this application.</P>
+<P>#########################################################</P>
+<P>EARTHWORM = $(EW_LIB) \</P><DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>$(L)\ew_utility1.obj \</P>
+<P>$(L)\ew_utility2.obj  \</P>
+<P>$(APPS_LIB)\ewdb_apps_util1.obj \</P>
+<P>$(APPS_LIB)\ewdb_apps_util2.obj </P>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P></DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>##################################</P>
+<P># All object files for this app.</P>
+<P>##################################</P>
+<P>ALL_APP_OBJECTS = $(API_LIB) $(API_SQL_LIB) $(APP_OBJECTS) $(EARTHWORM)</P>
+
+<P>&nbsp;</P>
+<P>Here is where the scary Oracle stuff begins. It is not contemplated that the application writer should have to change any of this.</P>
+<P>##########################################################</P>
+<P># This is where the scary Oracle compilation stuff begins. </P>
+<P># No self-respecting application writer would want to know </P>
+<P># anything about what happens past this point.</P>
+<P>##########################################################</P>
+<P># libraries for linking oci programs</P>
+<P>OCILDLIBS= ociw32.lib oci.lib</P>
+
+<P>LDFLAGS=  /LIBPATH:$(ORACLE_HOME)\oci$(ORACLE_OCI_VER)\lib\msvc $(OCILDLIBS)</P>
+<P># Switch \lib\msvc to \lib\borland for borland compiler</P>
+<P> </P>
+<P># directory that contain oratypes.h and other oci demo program header files</P>
+<P>ORA_INCLUDE= -I$(ORACLE_INC)</P>
+
+<P>API_INCLUDE= -I$(API_INC_DIR)</P>
+
+<P>ALL_INCLUDE= $(API_INCLUDE) $(ORA_INCLUDE)</P>
+
+<P>&nbsp;</P>
+<P>###############################</P>
+<P># Build Your Application</P>
+<P>###############################</P>
+<P>$(B)\$(APP).exe: $(ALL_APP_OBJECTS)</P>
+<P>   $(link) $(conlflags) $(ldebug)  $(conlibsmt) $(LDFLAGS) $(ALL_APP_OBJECTS) -out:$(B)\$(APP).exe</P>
+
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>##################################</P>
+<P># To build objects from .c files</P>
+<P>##################################</P>
+<P>.c$(OBJ):</P><DIR>
+<DIR>
+
+<P>$(cc) $(cflags) $(cdebug) $(cvarsmt) $(tflags) $(ALL_INCLUDE) /Od $&lt;</P>
+
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<P># Clean-up directives</P>
+<P>clean:</P><DIR>
+<DIR>
+
+<P>del a.out core *.o *.obj *% *~</P>
+</DIR>
+</DIR>
+
+<P>clean_bin:</P></FONT><DIR><DIR>
+<FONT FACE="Courier New" SIZE=2>
+
+<P>del $(B)\$(APP)*</P>
+</font>
+<P>&nbsp;</P>
+<P>&nbsp;</P></DIR>
+</DIR>
+
+<B></B><P><I><B>Application Utilities</b></i>. Under <FONT FACE="Courier New">apps/src</FONT>, there is a <FONT FACE="Courier New">libsrc</FONT> directory containing utility routines which are potentially helpful to the application writer. The object files compiled from the source in <FONT FACE="Courier New">libsrc</FONT> are copied into <FONT FACE="Courier New">apps/lib</FONT> directory from where they can be linked into applications. The examples of such utilities include various web routines such as <I>html_header()</I>, as well as the routines providing a higher level interface to the database, e.g., <I>GetDBEventInfo()</I>.</P>
+
+<P>The function prototypes of the utility routines in <FONT FACE="Courier New">apps/src/libsrc</FONT> are in <FONT FACE="Courier New">ewdb_apps_utils.h</FONT> under <FONT FACE="Courier New">apps/src/include</FONT>.</P>
+
+<P>While application writers are not expected to modify the code under the <FONT FACE="Courier New">schema</FONT> 
+  subtree, they are welcome to add to or modify the utility routines under <FONT FACE="Courier New">apps/src/libsrc</FONT>. 
+  It should be kept in mind, however, that other applications potentially rely 
+  on these utility routines. Therefore, care should be taken that such modifications 
+  do not break other applications.</P>
+
+<hr><address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address></BODY>
+</HTML>

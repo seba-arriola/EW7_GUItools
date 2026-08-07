@@ -1,0 +1,93 @@
+# @(#)Cshrc 1.5 90/11/01 SMI
+########################################################################
+#
+#	.cshrc file
+#
+#	Initial setup file for both interactive and noninteractive
+#	C-Shells.
+#
+#	Heavily modified by Doug Neuhauser, doug@perry.berkeley.edu
+#	
+########################################################################
+
+# Select a default window system.  
+# This is used in constructing an appropriate path AND in the .login file
+# to invoke the window system (if appropriate).
+# Current choices are: openwin, sunview, or mitx.
+
+if ( ! ${?mychoice} ) setenv mychoice openwin
+
+########################################################################
+
+# Construct the search path.
+
+# First, set lpath to contain your personal or local paths you want searched.
+
+set lpath = ( )
+
+# Set up the information needed to contruct a proper search path.
+# Source a locally-written script to set environment variables, 
+# default path, and "building blocks" for constructing our own path.
+# DO NOT DELETE THE "source ..." LINE -- IT IS USEFUL.
+# If we can't find the local script, set up some defaults.
+
+#set path = ( . )
+
+########################################################################
+
+# Set cdpath, which specifies a list of additional directories to be 
+# searched when a "cd" command is given with a relative pathname.
+
+set cdpath  = ( )  
+# set cdpath  = ( ~ ~/src )  #  add parents of frequently used directories
+
+########################################################################
+
+# Specify default file protection.
+
+umask	022
+
+########################################################################
+
+# Optional items that people might find useful for ALL shells.
+
+#set noclobber
+
+# Aliases for all shells (even non-interactive ones).
+
+#alias cd            'cd \!*;echo $cwd'
+#alias cp            'cp -i'
+#alias mv            'mv -i'
+#alias rm            'rm -i'
+#alias pwd           'echo $cwd'
+#alias del          'rm -i'
+
+# Skip remaining setup if not an interactive shell
+
+setenv ARCH	`arch`
+if ($?USER == 0 || $?prompt == 0) exit
+
+########################################################################
+
+# Setting for interactive shells ONLY>
+
+set history=40
+#set savehist=20
+set ignoreeof
+set filec
+set notify
+unset autologout
+# Change this limit if you want core files created.
+if ("$ARCH" == "sun4") limit coredumpsize 0m
+
+if ( ! -f /usr/local/bin/shostname ) alias shostname hostname
+set prompt="`shostname`% "
+#set prompt="`whoami`@`shostname`:(\!)% "
+#set prompt="% "
+#set prompt="`hostname`{`whoami`}\!: "
+
+#set notify
+#set time=100
+
+source .vdlrc
+setenv EDITOR vi

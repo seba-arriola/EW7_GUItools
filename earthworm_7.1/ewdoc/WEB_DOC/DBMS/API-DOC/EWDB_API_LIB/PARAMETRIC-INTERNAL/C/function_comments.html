@@ -1,0 +1,390 @@
+<hr>
+<a name=ewdb_internal_CreateCodaDur></a>
+<font size=+2>ewdb_internal_CreateCodaDur()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateCodaDur(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a> *</i> pCodaDur</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_internal_CreateCodaDur.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a coda duration measurement (the basis for a station duration magnitude) by linking a pair of caller supplied P-Pick(idPick) and coda termination(idTCoda) records.  The function ignores all other members of the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a>.  Upon successfull completion, the function writes the DB ID of the newly created coda duration back to pCodaDur->idCodaDur.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pCodaDur</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/library_comments.html#PARAMETRIC-INTERNAL>PARAMETRIC-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_CreatePeakAmp></a>
+<font size=+2>ewdb_internal_CreatePeakAmp()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreatePeakAmp(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pPeakAmp</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_internal_CreatePeakAmp.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Inserts the following information from a StationMag structure into the Database: the Channel from which the amplitude was recorded(idChan), the first amplitude measurement(dAmp1), the time of the first amplitude measurement(tAmp1), the wave period of the first amplitude measurement (tPeriod1),  the second amplitude measurement(dAmp2), the time of the second amplitude measurement(tAmp2), the wave period of the second amplitude measurement(tPeriod2), and the Magnitude type associated with the amplitude.  All other fields from the EWDB_StationMagnitudeStruct are ignored. <br> Upon Successfull completion, the DB ID of the new Peak Amplitude record is written back to pPeakAmp->idDatum and pPeakAmp->StaMagUnion.PeakAmp.idPeakAmp.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pPeakAmp</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td>Pointer to the Station Magnitude structure filled with Peak Amplitude information to be inserted into the DB.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/library_comments.html#PARAMETRIC-INTERNAL>PARAMETRIC-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_CreateStaMag></a>
+<font size=+2>ewdb_internal_CreateStaMag()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateStaMag(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pStaMag</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_internal_CreateStaMag.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Links a Summary Magnitude with a supporting amplitude from a station, based on the information in the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> passed by the caller.  The magnitude types of the summary magnitude(idMagnitude) and the amplitude/duration measurement(idDatum) must match, or the function will fail. <br> The function ignores the contents of the StaMagUnion in the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a>.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pStaMag</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td>Station Magnitude structure filled by the caller</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/library_comments.html#PARAMETRIC-INTERNAL>PARAMETRIC-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_CreateTCoda></a>
+<font size=+2>ewdb_internal_CreateTCoda()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateTCoda(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a> *</i> pTCoda</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_internal_CreateTCoda.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Creates a coda termination record based upon the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a> passed by the caller.  The function ignores all parameters of the CodaDuration structure except the data channel(idChan), the coda termination time (tCodaTermXtp), and the observed coda termination time (tCodaTermObs) if applicable .  It does not look at the average amplitude values(pCodaAmp), so that pointer may be left as NULL!</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pTCoda</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a> *</td>
+  <td>CodaDuration structure filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/library_comments.html#PARAMETRIC-INTERNAL>PARAMETRIC-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetStaMagsForCodaDur></a>
+<font size=+2>ewdb_internal_GetStaMagsForCodaDur()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetStaMagsForCodaDur(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idMagnitude</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pStaMags</NOBR>, <NOBR><i>int *</i> pNumStaMagsFound</NOBR>, <NOBR><i>int *</i> pNumStaMagsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_internal_GetStaMagsForCodaDur.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of "Coda Duration" based station magnitudes that support a single summary duration magnitude(Md) for an Event.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> for a description of the information retrieved for each associated stamag. Because this function deals with only duration measurements, it will never fill in the StaMagUnion.PeakAmp information</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial Success.  The call executed successfully, but the caller's buffer was not large enough to accommodate all of the StaMags found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idMagnitude</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB ID of the summary magnitude for which the caller wants to retrieve associated station magnitudes.  (The caller wants to retrieve station magnitudes for this summary magnitude.)</td>
+ </tr>
+ <tr>
+  <td>pStaMags</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td></td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes placed in the callers buffer(pStaMags).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pStaMags buffer as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a>. (example: 15 structs)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/library_comments.html#PARAMETRIC-INTERNAL>PARAMETRIC-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

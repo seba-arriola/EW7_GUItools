@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+ 
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+ 
+  <meta name="Generator" content="Microsoft Word 97">
+  <title>WHAT TO DO UNTIL THE DBA COMES</title>
+  
+  <meta name="Template" content="C:\Program Files\Microsoft Office\Office\html.dot">
+</head>
+ <BODY TEXT="#000000" BGCOLOR="#ffffff" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+  <b><font face="Courier New" size="3"></font></b>
+<p align="Center"><b><font face="Courier New" size="3">WHAT TO DO UNTIL THE
+DBA COMES</font></b></p>
+ 
+<p align="Center"><font face="Courier New" size="3">Some procedures for recovering
+from various offenses</font></p>
+ 
+<p align="Center"><font face="Courier New" size="3">against the sensibilities
+of an Oracle8 database.</font></p>
+ 
+<p align="Center"><font face="Courier New" size="3">2/13/2002</font></p>
+ 
+<p><font face="Courier New" size="3"> </font></p>
+ <font face="Courier New" size="3"><b>
+<p>I. DELETED DATAFILES</p>
+ </b></font>
+<p><font face="Courier New" size="3">This procedure recovers from an oracle
+datafile having been deleted. This is taken as a serious offense; the DB
+becomes extremely upset, and simple-minded efforts to make up to it are scornfully
+rejected. Here's what to do:</font></p>
+ 
+<p><font face="Courier New" size="3">1. Run the Oracle Server Manager (svrmgr30
+on Windows 2000 or svrmgrl on UNIX).</font></p>
+ 
+<p><font face="Courier New" size="3">2. From within Server Manager: </font></p>
+<dir> 
+<dir>  
+<p><font face="Courier New" size="3">a. Execute "connect internal". If it
+complains about the ORACLE_SID not being set, then check to make sure that
+the ORACLE_SID environment variable is properly set. With the default setup,
+you could issue a command like "setenv ORACLE_SID eqs" from the csh prompt.
+On Windows 2000 use the environment variable modification tool under Control Panel
+-&gt; System. If you have this problem on , Win2000 you should probably redo the
+entire Oracle installation. On UNIX you will have to run as the account that
+own oracle.</font></p>
+ 
+<p><font face="Courier New" size="3">b. Execute "shutdown abort" to make
+sure the database is shutdown.</font></p>
+ 
+<p><font face="Courier New" size="3">c. Execute "startup nomount". (This
+is the most primitive way of starting the database.)</font></p>
+ 
+<p><font face="Courier New" size="3">d. Execute "alter database mount" (This
+should mount the database, and server manager should reply with the string
+"Statement Processed")</font></p>
+ 
+<p><font face="Courier New" size="3">e. Execute "alter database datfile &lt;DATAFILE&gt;
+offline drop" where &lt;DATAFILE&gt; is the name of the operating system
+file that you have deleted or otherwise butchered. It should be surrounded
+by single quotes ( ' ).</font></p>
+ 
+<p><font face="Courier New" size="3">f. If the last statement executed, you
+should be in the clear. Execute "shutdown immediate" to shutdown the database.</font></p>
+ 
+<p><font face="Courier New" size="3">g. Exit server manager.</font></p>
+</dir>
+ </dir>
+  
+<p><font face="Courier New" size="3">3. Restart the database in the usual
+manner (stop and start the Start_&lt;ORACLE&gt;) service on Win2000, or run $(ORACLE_HOME)/bin/dbshut
+(as the oracle owner) or etc/.../init.d/dbora start (as root) on UNIX. </font></p>
+ <font face="Courier New" size="3"><b></b></font>
+<p><font face="Courier New" size="3"><b>OR   </b>Simply reboot the computer.</font></p>
+ 
+<p><font face="Courier New" size="3">4. Connect via SQL_PLUS using the "sys"
+or "internal" account and drop the TableSpace that contained the deleted
+or molested datafile. Issue a "drop tablespace &lt;TABLESPACE&gt;" command
+to drop the tablespace. You may have to get honery (sp?) with it, and include
+syntax such as "drop tablespace &lt;TABLESPACE&gt; including contents" or
+other forceful language.</font></p>
+ 
+<p><font face="Courier New" size="3">5. Now as reward for all your hard work,
+you can reinstall the portion of the EW DB that you just deleted by wiping
+out the &lt;TABLESPACE&gt;, and hopefully you will remember to never delete
+a datafile on your own again. :-)</font></p>
+ 
+<p><font face="Courier New" size="3">	So wrote Dave K. A more cowardly approach
+is to do the whole delete-create drill. A word of caution there is that the
+deletion script ("p3s2_destroy_schema2_db_hex_hex.sql") seems to bomb when
+it tires to drop the non-existing table space. One should thus edit this
+script to drop the existing ones first...</font></p>
+ 
+<p><font face="Courier New" size="3"> </font></p>
+ 
+<p><font face="Courier New" size="3"> </font></p>
+ <font face="Courier New" size="3"><b>
+<p>II. TOO MUCH DATA</p>
+ </b></font>
+<p><font face="Courier New" size="3">This is usually manifested by lack of
+trace data snippets in the database after some point in time. There are two
+solutions: Give Oracle more data files to play with, and allow the data files
+to grow:</font></p>
+ <font face="Courier New" size="3"><b>
+<p>II.a. Creating more data files</p>
+ </b></font>
+<p><font face="Courier New" size="3">Each Oracle Tablespace is kept on one
+or more operating system files. Oracle is smar enough to go from file to
+file as they fill up. Here's how to create more files on Win2000:</font></p>
+ 
+<p><font face="Courier New" size="3">1. Run the Storage Manager:</font></p>
+ 
+<p><font face="Courier New" size="3">Select Start-&gt;Programs-&gt;Oracle
+Enterprise Manager-&gt;Storage Manager</font></p>
+ 
+<p><font face="Courier New" size="3">2. Log in as user "internal".</font></p>
+ 
+<p><font face="Courier New" size="3">3. Click on the "+" of Tablespaces.</font></p>
+ 
+<p><font face="Courier New" size="3">4. Click on the "+" of the tablesapce
+to be enlarged.</font></p>
+ 
+<p><font face="Courier New" size="3">5. Click on "Datafiles"</font></p>
+ 
+<p><font face="Courier New" size="3">6. Right-click on one of the files shown
+in the right window.</font></p>
+ 
+<p><font face="Courier New" size="3">7. Select "Create like..."</font></p>
+ 
+<p><font face="Courier New" size="3">8. Enter the complete path and filename
+of the new file. Fear and superstision has it that it should have an.ora
+extention.</font></p>
+ 
+<p><font face="Courier New" size="3">9. Select "Create".</font></p>
+ 
+<p><font face="Courier New" size="3"> </font></p>
+ <font face="Courier New" size="3"><b>
+<p>II.b. Allowing the data files to grow</p>
+ </b></font>
+<p><font face="Courier New" size="3">This is controlled by setting the 'extents'
+property of a data file, which determines how large a data file may become.
+The procedure here will allow it to grow to the limit set by the operating
+system:</font></p>
+ 
+<p><font face="Courier New" size="3">1. Run the Storage Manager:</font></p>
+ 
+<p><font face="Courier New" size="3">Select Start-&gt;Programs-&gt;Oracle
+Enterprise Manager-&gt;Storage Manager</font></p>
+ 
+<p><font face="Courier New" size="3">2. Log in as user "internal".</font></p>
+ 
+<p><font face="Courier New" size="3">3. Click on the "+" of Tablespaces.</font></p>
+ 
+<p><font face="Courier New" size="3">4. Click on the "+" of the tablesapce
+to be enlarged.</font></p>
+ 
+<p><font face="Courier New" size="3">5. Click on "Datafiles".</font></p>
+ 
+<p><font face="Courier New" size="3">6. Right-click on one of the files shown
+in the right window.</font></p>
+ 
+<p><font face="Courier New" size="3">7. Select "quick edit".</font></p>
+ 
+<p><font face="Courier New" size="3">8. Select the "Auto Extend" tab.</font></p>
+ 
+<p><font face="Courier New" size="3">9. In the "Maximum Extent" panel, select
+"unlimited".</font></p>
+ 
+<p><font face="Courier New" size="3"> </font></p>
+ 
+<p><b><font face="Courier New" size="3">The basics of monitoring an Oracle
+Database.... </font></b></p>
+ 
+<p><font face="Courier New" size="3"> All of the above mentioned storage
+issues can be proactively monitored.  Oracle does a good job watching and
+recording what it does.  Most Oracle databases encounter some type of storage
+related issues over time and most Oracle DBAs know how to look for the onset
+of these issues.  A basic blurb of what happens in the database needs to
+happen here.  The Oracle database consists of a collection of data files.
+ The database also has the concept of tablespaces.  <br>
+A tablespace can hold many database objects including tables and indexes.
+ A tablespace uses at least one datafile to store the tablespace info onto
+the OS.<br>
+  </font></p>
+ 
+<p><font face="Courier New" size="3">Understanding this, one can see that
+it would be wise to understand the relationship between tablespaces, datafiles
+and database objects.  It is even better to understand the growth patterns
+within.  Entire books are written on this subject and I will not try to gloss
+over here.  <br>
+In general, If a database object has outgrown it's environment, there will
+be issues.  </font></p>
+ 
+<p><font face="Courier New" size="3">This reflects the bare minimum needed
+to succeed in the Oracle environment.  Included below is a nice sql query
+that can show you very important information about the database objects.
+ It must be run as an Oracle DBA.  Do not run this or anything as SYS.  </font></p>
+<p><font face="Courier New" size="3">Here is the sql.  Cut and paste into
+notepad if desired.<br>
+/*******************check_earthworm_db.sql **********************/<br>
+/**/</font></p>
+<p><font face="Courier New" size="3"> </font>rem  Name:         check_earthworm_db.sql<br>
+rem  Date:        Feb 5, 2002<br>
+rem  Useage:        sqlplus system/password@check_earthworm_db.sql<br>
+rem  Output        Ascii file: check_earthworm_db.log<br>
+rem<br>
+rem<br>
+rem  Description:      See below<br>
+rem  This script is designed to look at specific and important <br>
+rem  sections of the earthworm database.  <br>
+rem  The script creates an output file names check_earthworm_db.log in the
+sqlplus local directory<br>
+rem  The things that are checked are:<br>
+rem<br>
+rem  Fragmitation.<br>
+rem  Objects that have a large number of extents are often considered fragmented.
+ <br>
+rem  Fragmentation should be considered in earthworm but is not the most
+important consideration.<br>
+rem<br>
+rem  Remaining Space in the tablespace in size and percent.<br>
+rem<br>
+rem  The next part of the report shows database objects along with the current
+storage requirements.  It also shows rem  the  objects that cannot extend
+for several reasons.  From this information the DBA may decide <br>
+rem  to adjust storage rem  parameters of the tablespace or the object to
+allow the object to grow.  <br>
+rem<br>
+rem  The last part of the report looks for database objects that need to
+be compiled.  <br>
+<br>
+spool check_earthworm_db.log<br>
+<br>
+prompt Checking For Fragmented Database Objects<br>
+<br>
+rem<br>
+rem Fragmentation Report - Multiple Extents Bad , Single Extents Good.<br>
+rem<br>
+column owner noprint new_value owner_var<br>
+column segment_name format a20 heading "Object name"<br>
+column segment_type format a9 heading "Tabl/Indx"<br>
+column sum(bytes) format 999,999,999,999 heading "Bytes Used"<br>
+column count(*) format 999999 heading "Extent"<br>
+column sum(blocks) format 999,999,999 heading "Blocks"<br>
+break on owner skip page 2<br>
+rem - the report<br>
+select  owner , segment_name , segment_type ,<br>
+sum(bytes) , sum(blocks) , count(*)<br>
+from dba_extents<br>
+having count(*) &gt;20<br>
+group by owner , segment_name , segment_type<br>
+order by owner , segment_name , segment_type<br>
+/<br>
+<br>
+  set pagesize 300<br>
+  set lines 200<br>
+<br>
+  column sumb format 9,999,999,999<br>
+  column extents format 9999<br>
+  column bytes format 9,999,999,999<br>
+  column largest format 9,999,999,999<br>
+  column Tot_Size format 9,999,999,999,999<br>
+  column Tot_Free format 99,999,999,999<br>
+  column Pct_Free format 99,999<br>
+  column Chunks_Free format 9,999,999,999<br>
+  column next_extent format 9,999,999,999<br>
+  column nextext format 9,999,999,999<br>
+  column Max_Free format 9,999,999,999<br>
+<br>
+PROMPT  REMAINING SPACE IN TABLESPACES AND THE LARGEST CHUNK<br>
+<br>
+  select a.tablespace_name,sum(a.tots) Tot_Size,<br>
+  sum(a.sumb) Tot_Free,<br>
+  sum(a.sumb)*100/sum(a.tots) Pct_Free,<br>
+  sum(a.largest) Max_Free,sum(a.chunks) Chunks_Free, autoext<br>
+  from<br>
+  (<br>
+  select tablespace_name,0 tots,sum(bytes) sumb,<br>
+  max(bytes) largest,count(*) chunks<br>
+  from dba_free_space a<br>
+  group by tablespace_name<br>
+  union<br>
+  select tablespace_name,sum(bytes) tots,0,0,0 from<br>
+  dba_data_files<br>
+  group by tablespace_name) a,<br>
+  (select distinct tablespace_name, AUTOEXTENSIBLE autoext<br>
+    from dba_data_files<br>
+   where autoextensible='YES'<br>
+  ) ddf<br>
+  where a.tablespace_name=ddf.tablespace_name(+)<br>
+  group by a.tablespace_name, autoext<br>
+/<br>
+  PROMPT OBJECTS WHERE THERE'S NOT ENOUGH ROOM FOR THE NEXT EXTENT<br>
+<br>
+  select  a.owner, a.segment_name, b.tablespace_name,<br>
+       decode(ext.extents,1,b.next_extent,<br>
+       a.bytes*(1+b.pct_increase/100)) nextext,<br>
+       freesp.largest, ddf.autoext<br>
+  from    dba_extents a,<br>
+       dba_segments b,<br>
+       (select owner, segment_name, max(extent_id) extent_id,<br>
+       count(*) extents<br>
+       from dba_extents<br>
+       group by owner, segment_name<br>
+       ) ext,<br>
+       (select tablespace_name, max(bytes) largest<br>
+       from dba_free_space<br>
+       group by tablespace_name<br>
+       ) freesp,<br>
+       (select distinct tablespace_name, AUTOEXTENSIBLE autoext<br>
+          from dba_data_files<br>
+         where autoextensible='YES'<br>
+       ) ddf<br>
+  where   a.owner=b.owner<br>
+      and a.tablespace_name=ddf.tablespace_name (+)<br>
+      and a.segment_name=b.segment_name<br>
+      and a.owner=ext.owner<br>
+      and a.segment_name=ext.segment_name<br>
+      and a.extent_id=ext.extent_id<br>
+      and b.tablespace_name = freesp.tablespace_name<br>
+      and decode(ext.extents,1,b.next_extent,<br>
+                 a.bytes*(1+b.pct_increase/100)) &gt; freesp.largest<br>
+<br>
+/<br>
+<br>
+spool off</p>
+<p><br>
+/**************** File complete *******************************/</p>
+<p><br>
+<br>
+</p>
+ 
+<p><font face="Courier New" size="3"> </font></p>
+</body>
+</html>

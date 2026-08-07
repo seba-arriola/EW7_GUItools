@@ -1,0 +1,49 @@
+#
+#   This file is managed using Concurrent Versions System (CVS).
+#
+#    $Id: makefile.ux,v 1.2 2007/03/22 13:49:48 ilya Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/22 13:49:48  ilya
+#     Fixed unfunctional makefile.ux
+#
+#     Revision 1.1  2006/12/28 23:27:53  lombard
+#     Added version number, printed on startup.
+#     Revised scnl2scn to provide complete mapping from SCNL back to SCN, using
+#     configuration command similar to scn2scnl.
+#
+#
+#
+
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+BIN = $L/kom.o $L/getutil.o $L/time_ew.o $L/chron3.o $L/logit.o \
+      $L/transport.o $L/sleep_ew.o  $L/rdpickcoda.o
+
+all: scn2scnl scnl2scn
+
+scn2scnl: scn2scnl.o scn_config.o to_pick_scnl.o to_coda_scnl.o \
+	  scn_convert.o to_trace_scnl.o $(BIN) 
+	cc -o $B/scn2scnl scn2scnl.o scn_config.o to_pick_scnl.o \
+	  to_coda_scnl.o to_trace_scnl.o scn_convert.o $(BIN) -lm -lpthread
+ 
+scnl2scn: scnl2scn.o scnl_config.o to_pick2k.o to_coda2k.o \
+          scnl_convert.o to_trace_scn.o $(BIN)
+	cc -o $B/scnl2scn scnl2scn.o scnl_config.o to_pick2k.o \
+      to_coda2k.o scnl_convert.o  to_trace_scn.o  $(BIN) -lm -lpthread
+ 
+lint:
+	lint scn2scnl.c scnl2scn.c scn_config.c scnl_config.c scn_convert.o \
+      $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/scn2scnl* $B/scnl2scn*
+

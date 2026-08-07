@@ -1,0 +1,88 @@
+NSNRCV README	Mar 27, 1996  Last Modified November 3, 1997
+
+RCV is a program for receiving data from a VSAT serial port or TCP/IP pipe in 
+the same format used by the USNSN - that is just about any data format enclose
+with a NSN style header.  The source of data for RCV is the "LOOPBACK" feature
+of the NSN which sends an exact copy of the packet as received at Golden CO to
+the RCV program with a second of its reception.  The emphasis was on making
+data available as timely as possible.  Most users of RCV will probably use
+the TCP/IP transport.  However, serial data feeds via VSAT or other 
+serial communications is available.  The program requires the adaptor to write
+3 subroutines which are called by the RCV/STATION suite.  These routines are
+a 1 time initialize routine, a routine called with each chunk of data as it is
+received, and a shutdown routine.
+
+RCV just does the packetizing and rollbacks.  It does not attempt to interpret
+the contents in any way.  It passes data packets to another program called
+STATION.  RCV can fork a child process STATION for each combination of 
+routing and node (roughly equivalent to a station) or it can feed all components
+to a single version of STATION (see the switch -#).   RCV feeds 
+data through a pipe created at the fork to STATION containing only data packets.  RCV handles all of the rollbacks, packetizing, etc. that can be done at the 
+packet level.  Thus STATION is assured of receiving all of the data that will 
+be available. 
+
+Rollbacks within RCV are handled in accordance with the documentation for 
+rollbacks in the "USNSN Satellite Primer".   This document is available from
+the gldfs.cr.usgs.gov anonymous ftp area in primer/Primer.eps.  If a hard copy
+is needed e-mail ketchum@usgs.gov and request a copy.  Hopefully, the detailed
+knowlege contained in the primer will not be needed by adapters of RCV.
+
+Serial input on Suns is very problematic.  RCV on the test bed SUN/4 required very short and frequent reads in the main loop of RCV since the built in serial
+ports have little buffering.  The more loaded a system is the more likely a
+built in port will drop characters.  Most applications of RCV have installed buffering devices like the Central Data ST-1xxx series.  Users wanting longer 
+reads and less frequent looping with buffered serial devices should adjust NCREAD (characters to read each time) and UWAIT (microseconds to wait between 
+reads. 
+
+STATION currently only handles NSN compressed data and "IRIS" or "NSNCOM" or
+"STEIM" compressed data.  All of the latter forms are the same.  NSNCOM is the
+program on Quanterra station processors which forwards data in STEIM compressed
+format to a VSAT.  IRIS owns many of these sites and hence the terms have
+been used loosely as equivalents.  Eventually (Hopefully?) in the long term
+all NSNCOM sites will run the NSN program VDL instead of NSNCOM and the
+data forwarded on such lines will be in NSN compressed format.  STATION tracks
+that the channel sequence numbers are continuous and complains when they are
+not.  STATION calls a user supplied routine USER_PROC with the time, data, 
+end-of-file flag, SEED channel name, and channel digitizing rate.  
+
+RCV and STATION have been compiled using SunOS bundled C, GNU C, and GNU C in
+ANSI mode.  Both program contain conditional code for ANSI C based on the
+standard symbol __STDC__.  This conditional code mainly effects the definition 
+of subroutines and the prototyping of subroutines in the *.h files.
+
+If you have any problems with RCV or STATION that should be corrected in the
+base code, please contact me.  I will update the code as appropriate.
+
+The tar file builds 3 directories - sunrcv, STEIM123, and cmpnsn. To build the executable first go to STEIM123 and "make STEIM123".  The makefile in sunrcv  will build any part of cmpnsn that is needed.   In directory sunrcv "make 
+station" and "make rcv".  RCV is then run and will create the "station" processes as needed. 
+
+The file nsnstation2.dat contains SEED information from a site.  it can be
+updated using the AUTODRM.  Send a mail message to autodrm@gldfs.cr.usgs.gov
+with the body :
+
+BEGIN
+CLIST
+STOP
+
+The returned mail can be saved and named nsnstation2.dat
+
+Please review the switch settings documented in RCV.C for usage.
+
+Changes / Updates
+
+Jun 21, 1996 	Release now has command line arguments to set most parameters.
+				TCP/IP sockets from the NEIC TCPOUT process is supported in 
+				addition to satellite serial feeds.
+
+Apr 25, 1997	New command line arguments for both to control output.  Added
+				partial update feature for USER_PROC so user could get LP data
+				more promptly.
+
+Apr 25, 1998	Changed so that one STATION could handle multiple stations.
+
+
+Oct 31, 1997	New traps for signals to support exit handler.  Added switch to
+				allow one station process to handle all data from RCV.
+
+Dave Ketchum
+ketchum@gldfs.cr.usgs.gov
+(303) 273-8479

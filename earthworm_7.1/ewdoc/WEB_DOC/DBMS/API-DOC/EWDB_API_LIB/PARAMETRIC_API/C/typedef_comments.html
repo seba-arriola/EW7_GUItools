@@ -1,0 +1,1501 @@
+<hr>
+<a name=EWDB_ArrivalStruct></a>
+<font size=+1>EWDB_ArrivalStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_ArrivalStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Arrival structure describing information about a phase, possibly with information relating the phase to an Origin.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>The fields szCalcPhase - tResPick are only legitimate if a phase is associated with an Origin.  If idOrigin is not set then these feels should be ignored.</td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idPick</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the Pick.</td>
+    </tr>
+    <tr>
+     <td>idOriginPick</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the OriginPick, the record relating the Pick(phase) to an Origin.</td>
+    </tr>
+    <tr>
+     <td>idOrigin</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the Origin with which this phase is associated.</td>
+    </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the channel that this pick came from.</td>
+    </tr>
+    <tr>
+     <td>pStation</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+     <td>Station/Component information for the channel associated with this phase.</td>
+    </tr>
+    <tr>
+     <td>szCalcPhase</td>
+     <td>char[6]</td>
+     <td>The calculated type of the Phase: P, S, PKP(sp?), and others up to 5 chars.  This values is assigned by the phase associator or locator that created the Origin that this phase is associated with.  This is not the phase type given by the picker.</td>
+    </tr>
+    <tr>
+     <td>tCalcPhase</td>
+     <td>double</td>
+     <td>The onset time of the phase, according to the associator/locator.</td>
+    </tr>
+    <tr>
+     <td>dWeight</td>
+     <td>float</td>
+     <td>The weight of the phase pick in calculating the Origin.</td>
+    </tr>
+    <tr>
+     <td>dWeight</td>
+     <td>float</td>
+     <td>The weight of the phase pick in calculating the Origin.</td>
+    </tr>
+    <tr>
+     <td>dDist</td>
+     <td>float</td>
+     <td>The epicentral distance to the station where the phase was observed.</td>
+    </tr>
+    <tr>
+     <td>dAzm</td>
+     <td>float</td>
+     <td>Azimuthal direction from the station where the phase was observed to the epicenter.  Expressed as degrees east of North.</td>
+    </tr>
+    <tr>
+     <td>dTakeoff</td>
+     <td>float</td>
+     <td>Takeoff angle of the Phase from the hypocenter.</td>
+    </tr>
+    <tr>
+     <td>tResPick</td>
+     <td>float</td>
+     <td>Pick residual in seconds.</td>
+    </tr>
+    <tr>
+     <td>szExtSource</td>
+     <td>char[16]</td>
+     <td>Reserved</td>
+    </tr>
+    <tr>
+     <td>szExternalPickID</td>
+     <td>char[16]</td>
+     <td>Reserved</td>
+    </tr>
+    <tr>
+     <td>szExtPickTabName</td>
+     <td>char[16]</td>
+     <td>Reserved</td>
+    </tr>
+    <tr>
+     <td>szObsPhase</td>
+     <td>char[6]</td>
+     <td>The type of the Phase:  P, S, PKP(sp?), and others up to 5 chars.  This values is assigned by the picker(the entity that observed the phase arrival).</td>
+    </tr>
+    <tr>
+     <td>tObsPhase</td>
+     <td>double</td>
+     <td>The onset time of the phase, according to the picker.</td>
+    </tr>
+    <tr>
+     <td>cMotion</td>
+     <td>char</td>
+     <td>The initial motion of the phase: U (up), D (down).</td>
+    </tr>
+    <tr>
+     <td>cOnset</td>
+     <td>char</td>
+     <td>The onset type of the phase:  CLEANUP??? what are the possible onset values?  Berkeley has several in their documentation.</td>
+    </tr>
+    <tr>
+     <td>dSigma</td>
+     <td>double</td>
+     <td>Potential Phase error.  Expressed in seconds. CLEANUP detailed meaning?</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_CodaAmplitudeStruct></a>
+<font size=+1>EWDB_CodaAmplitudeStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_CodaAmplitudeStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information for average amplitude measurments of a coda in support of a coda termination measurement/calculation.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>tOn</td>
+     <td>double[<a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/constant_comments.html#EWDB_MAXIMUM_AMPS_PER_CODA>EWDB_MAXIMUM_AMPS_PER_CODA</a>]</td>
+     <td>Array of window starting times for coda average amplitude measurements.  Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>tOff</td>
+     <td>double[<a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/constant_comments.html#EWDB_MAXIMUM_AMPS_PER_CODA>EWDB_MAXIMUM_AMPS_PER_CODA</a>]</td>
+     <td>Array of window ending times for coda average amplitude measurements.  Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>iAvgAmp</td>
+     <td>int[<a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/constant_comments.html#EWDB_MAXIMUM_AMPS_PER_CODA>EWDB_MAXIMUM_AMPS_PER_CODA</a>]</td>
+     <td>Array of average amplitude values for coda average amplitude measurements.  Expressed as digital counts.  tOn[x] and tOff[x] describe a time window during a coda at a component. AvgAmp[x] is the average wave amplitude during that window.  A series of timed average amplitude measurements can be combined with a decay algorithm to estimate the coda termination time.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_CodaDurationStruct></a>
+<font size=+1>EWDB_CodaDurationStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_CodaDurationStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information for the Coda Duration measurement associated with a station magnitude calculation.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the channel that this pick came from.</td>
+    </tr>
+    <tr>
+     <td>idTCoda</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the coda termination record.</td>
+    </tr>
+    <tr>
+     <td>tCodaTermObs</td>
+     <td>double</td>
+     <td>Time when the coda associated with this station duration magnitude, was observed to have ended.  Time is expressed as seconds since 1970.  *NOTE*: In general, this value should not be used. It is provided as a reference in case tCodaTermXtp contains an extrapolated value.  The value of tCodaTermXtp should always be a better value.  When recalculating a coda termination time, the results should be written to tCodaTermXtp.)</td>
+    </tr>
+    <tr>
+     <td>tCodaTermXtp</td>
+     <td>double</td>
+     <td>Time when the coda associated with this station duration magnitude ended.  This will be the better of either an observed coda termination, or one calculated based on average amplitude values and a decay rate.  Time is expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>tCodaDurObs</td>
+     <td>double</td>
+     <td>Length of the coda (in seconds) from the time of the P-pick to the time of the OBSERVED coda termination.  This value should not be used for the coda estimate, use tCodaDurXtp instead. See the tCodaTermObs comment.</td>
+    </tr>
+    <tr>
+     <td>tCodaDurXtp</td>
+     <td>double</td>
+     <td>Length of the coda (in seconds) from the time of the P-pick to the time of the coda termination.  This value is based upon tCodaTermXtp and P-pick times.</td>
+    </tr>
+    <tr>
+     <td>idCodaDur</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the coda duration record calculated by associated a Phase pick with a coda termination.</td>
+    </tr>
+    <tr>
+     <td>idPick</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the Phase arrival(pick) that is associated with a Coda termination from the same channel, to produce the coda duration(s) that this station magniutde is calculated from.</td>
+    </tr>
+    <tr>
+     <td>pCodaAmp</td>
+     <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaAmplitudeStruct>EWDB_CodaAmplitudeStruct</a> *</td>
+     <td>Pointer to a structure of Coda Average Amplitude Values, used to calculate the coda termination time.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_CoincEventStruct></a>
+<font size=+1>EWDB_CoincEventStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_CoincEventStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Coincidence Trigger event structure.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idCoincidence</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the Coincidence.</td>
+    </tr>
+    <tr>
+     <td>tCoincTrigger</td>
+     <td>double</td>
+     <td>Time of the event trigger</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Event with which this Coincidence is associated.</td>
+    </tr>
+    <tr>
+     <td>bBindToEvent</td>
+     <td>int</td>
+     <td>Boolean flag indicating whether or not this Magnitude should be bound to an Event when it is inserted into the DB. If yes, it is associated with the Event identified by idEvent upon insertion into the DB.</td>
+    </tr>
+    <tr>
+     <td>szSource</td>
+     <td>char[256]</td>
+     <td>Identifier of the source/author that declared the Coincidence.  This could be the Logo of the Earthworm module that generated the Coincidence, or the login name of an analyst that reviewed it.</td>
+    </tr>
+    <tr>
+     <td>szComment</td>
+     <td>char *</td>
+     <td>Optional comment associated with the magnitude.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_EventListStruct></a>
+<font size=+1>EWDB_EventListStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_EventListStruct DESCRIPTION Structure to</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>There was overlap between EWDB_EventListStruct and <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a>, so the overlapping fields from EWDB_EventListStruct were removed and <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> was incorporated.</td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>Event</td>
+     <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a></td>
+     <td>Event summary information for the current event.</td>
+    </tr>
+    <tr>
+     <td>dOT</td>
+     <td>double</td>
+     <td>Time of the Event's preferred origin of in seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>dLat</td>
+     <td>float</td>
+     <td>Latitude of the preferred Origin of the Event. Expressed in degrees.  (North=positive)</td>
+    </tr>
+    <tr>
+     <td>dLon</td>
+     <td>float</td>
+     <td>Longitude of the preferred Origin of the Event. Expressed in degrees.  (East=positive)</td>
+    </tr>
+    <tr>
+     <td>dDepth</td>
+     <td>float</td>
+     <td>Depth of the preferred Origin of the Event. Expressed in kilometers below surface.</td>
+    </tr>
+    <tr>
+     <td>dPrefMag</td>
+     <td>float</td>
+     <td>preferred Magnitude of the Event.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_EventStruct></a>
+<font size=+1>EWDB_EventStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_EventStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure containing information about a Database Event.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the event</td>
+    </tr>
+    <tr>
+     <td>iEventType</td>
+     <td>int</td>
+     <td>Human assigned event-type (quake, avalanche, volcano, nuclear detination).  Currently the only types supported are Quake and Unknonwn.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/constant_comments.html#EWDB_EVENT_TYPE_QUAKE>EWDB_EVENT_TYPE_QUAKE</a> for more information.</td>
+    </tr>
+    <tr>
+     <td>iDubiocity</td>
+     <td>int</td>
+     <td>Describes the perceived validity of the Event.  The Dubiocity range is currently defined as TRUE/FALSE with <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a> indicating a dubious event.</td>
+    </tr>
+    <tr>
+     <td>bArchived</td>
+     <td>int</td>
+     <td>Indicates whether or not the Event has already been archived from the database to disk.</td>
+    </tr>
+    <tr>
+     <td>szComment</td>
+     <td>char[512]</td>
+     <td>Description of and comments about the Event.</td>
+    </tr>
+    <tr>
+     <td>szSource</td>
+     <td>char[256]</td>
+     <td>Identifier of the source/author that declared the Event.  Only one Source is listed here.  If more than one Source contributed to the declaration of the Event, then the manner by which this Source is chosen as THE Source is undefined.  This could be the Logo of the Earthworm module that generated the Event, or the or the login name of an analyst that reviewed it.</td>
+    </tr>
+    <tr>
+     <td>szSourceName</td>
+     <td>char[256]</td>
+     <td>Name of the source/author that declared the Event. The SourceName is a human readable version of the Source.  The SourceName could be the name of the network that generated the event, or the name of an Analyst that reviewed it.</td>
+    </tr>
+    <tr>
+     <td>szSourceEventID</td>
+     <td>char[256]</td>
+     <td>Event identifer assigned to this event by the Source.  This would be the EventID given by and Earthworm Binder Module to an automatic event that was generated by an Earthworm.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_MagStruct></a>
+<font size=+1>EWDB_MagStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_MagStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Summary magnitude struct.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idMag</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the Magnitude.</td>
+    </tr>
+    <tr>
+     <td>iMagType</td>
+     <td>int</td>
+     <td>Magnitude type: Duration, Local, BodyAmp, Surface, etc. This is an enumerated value that identifies a magnitude type.  The possible enumerated values are defined in rw_mag.h.</td>
+    </tr>
+    <tr>
+     <td>dMagAvg</td>
+     <td>float</td>
+     <td>The summary magnitude.  For most magnitude types, this is computed as a weighted average of a bunch of station magnitudes.</td>
+    </tr>
+    <tr>
+     <td>iNumMags</td>
+     <td>int</td>
+     <td>Number of station magnitudes used to compute the dMagAvg.  For a Moment magnitude, this maybe the number of reporting stations that were used in calculating the moment.</td>
+    </tr>
+    <tr>
+     <td>dMagErr</td>
+     <td>float</td>
+     <td>The potential error of the summary magnitude. CLEANUP!  Detailed units, meaning?  I believe this is the Median Absolute Deviation of the station mags.</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Event with which this Magnitude is associated.</td>
+    </tr>
+    <tr>
+     <td>bBindToEvent</td>
+     <td>int</td>
+     <td>Boolean flag indicating whether or not this Magnitude should be bound to an Event when it is inserted into the DB. If yes, it is associated with the Event identified by idEvent upon insertion into the DB.</td>
+    </tr>
+    <tr>
+     <td>bSetPreferred</td>
+     <td>int</td>
+     <td>Boolean flag indicating whether or not this Magnitude should be set as the Preferred Magnitude for the Event identified by idEvent.  This flag is ignored if bBindToEvent is <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#FALSE>FALSE</a>.</td>
+    </tr>
+    <tr>
+     <td>idOrigin</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Optional Database identifier of the Origin that this Magnitude was calculated from.</td>
+    </tr>
+    <tr>
+     <td>szSource</td>
+     <td>char[256]</td>
+     <td>Identifier of the source/author that declared the Origin.  This could be the Logo of the Earthworm module that generated the Origin, or the login name of an analyst that reviewed it.  CLEANUP Should this be the human readable version of the source name??  It should be consistent with Origin and Mechanism.</td>
+    </tr>
+    <tr>
+     <td>szComment</td>
+     <td>char *</td>
+     <td>Optional comment associated with the magnitude. This is provided primarily as an option for later development.  Most functions that handle the EWDB_MagStruct, do not know/care about comments.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_MergeStruct></a>
+<font size=+1>EWDB_MergeStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_MergeStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Event Merge info structure.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idMerge</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the Merge.</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Event which is to be merged.</td>
+    </tr>
+    <tr>
+     <td>idPh</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Phenomenon which is to be merged with the event.</td>
+    </tr>
+    <tr>
+     <td>szSource</td>
+     <td>char[256]</td>
+     <td>Identifier of the source/author that declared the Merge.  This could be the Logo of the Earthworm module that generated the Merge, or the login name of an analyst that reviewed it.</td>
+    </tr>
+    <tr>
+     <td>szHumanReadable</td>
+     <td>char[256]</td>
+     <td>Huamn readable string identifying the person or program that declared the Merge.</td>
+    </tr>
+    <tr>
+     <td>szComment</td>
+     <td>char *</td>
+     <td>Optional comment associated with the magnitude.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_OriginStruct></a>
+<font size=+1>EWDB_OriginStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_OriginStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure containing information about an Event Origin. Includes error information.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idOrigin</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Origin.</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Event with which this origin is associated.</td>
+    </tr>
+    <tr>
+     <td>BindToEvent</td>
+     <td>int</td>
+     <td>Boolean flag indicating whether or not this Origin should be bound to an Event when it is inserted into the DB.  If yes, it is associated with the Event identified by idEvent upon insertion into the DB.</td>
+    </tr>
+    <tr>
+     <td>SetPreferred</td>
+     <td>int</td>
+     <td>Boolean flag indicating whether or not this Origin should be set as the Preferred Origin for the Event identified by idEvent.  This flag is ignored if BindToEvent is <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#FALSE>FALSE</a>.</td>
+    </tr>
+    <tr>
+     <td>tOrigin</td>
+     <td>double</td>
+     <td>Origin time in seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>dLat</td>
+     <td>float</td>
+     <td>Lattitude of the Origin.  Expressed in degrees. (North=positive)</td>
+    </tr>
+    <tr>
+     <td>dLon</td>
+     <td>float</td>
+     <td>Longitude of the Origin.  Expressed in degrees. (East=positive)</td>
+    </tr>
+    <tr>
+     <td>dDepth</td>
+     <td>float</td>
+     <td>Depth of the Origin. Expressed in kilometers below surface.</td>
+    </tr>
+    <tr>
+     <td>dLatStart</td>
+     <td>float</td>
+     <td>Lattitude of the starting location.</td>
+    </tr>
+    <tr>
+     <td>dLonStart</td>
+     <td>float</td>
+     <td>Longitude of the starting location.</td>
+    </tr>
+    <tr>
+     <td>dDepthStart</td>
+     <td>float</td>
+     <td>Depth of the starting location .</td>
+    </tr>
+    <tr>
+     <td>dErrLat</td>
+     <td>float</td>
+     <td>Potential lattitude error of the Origin.  Expressed in degrees.</td>
+    </tr>
+    <tr>
+     <td>dErrLon</td>
+     <td>float</td>
+     <td>Potential longitude error of the Origin.  Expressed in degrees.</td>
+    </tr>
+    <tr>
+     <td>dErZ</td>
+     <td>float</td>
+     <td>Potential vertical(depth) error of the Origin. Expressed in km.</td>
+    </tr>
+    <tr>
+     <td>ExternalTableName</td>
+     <td>char[256]</td>
+     <td>Reserved</td>
+    </tr>
+    <tr>
+     <td>xidExternal</td>
+     <td>char[256]</td>
+     <td>Reserved</td>
+    </tr>
+    <tr>
+     <td>sRealSource</td>
+     <td>char[51]</td>
+     <td>Identifier of the source/author that declared the Origin.  This could be the Logo of the Earthworm module that generated the Origin, or the login name of an analyst that reviewed it.</td>
+    </tr>
+    <tr>
+     <td>sSource</td>
+     <td>char[101]</td>
+     <td>Human readable name of the source/author of the origin.</td>
+    </tr>
+    <tr>
+     <td>Comment</td>
+     <td>char[4000]</td>
+     <td>Comment about the Origin. Currently unused.</td>
+    </tr>
+    <tr>
+     <td>iGap</td>
+     <td>int</td>
+     <td>Largest gap between stations used to compute the origin.  The gap is the largest arc between stations, based on a epicentral circle.  Expressed in degrees.</td>
+    </tr>
+    <tr>
+     <td>dMin</td>
+     <td>float</td>
+     <td>Epicentral distance to nearest station used in origin computation.</td>
+    </tr>
+    <tr>
+     <td>dRms</td>
+     <td>float</td>
+     <td>RMS misfit for the origin.  What does RMS mean? CLEANUP dk 05/01/00.</td>
+    </tr>
+    <tr>
+     <td>iAssocRD</td>
+     <td>int</td>
+     <td>Number of readings associated with the Origin.</td>
+    </tr>
+    <tr>
+     <td>iAssocPh</td>
+     <td>int</td>
+     <td>Number of phases associated with the Origin.</td>
+    </tr>
+    <tr>
+     <td>iUsedRd</td>
+     <td>int</td>
+     <td>Number of readings used to calculate the Origin.</td>
+    </tr>
+    <tr>
+     <td>iUsedPh</td>
+     <td>int</td>
+     <td>Number of phases used to calculate the Origin.</td>
+    </tr>
+    <tr>
+     <td>iE0Azm</td>
+     <td>int</td>
+     <td>Azimuth of the smallest principal error of the error elipse.  Expressed as Degrees east of North.</td>
+    </tr>
+    <tr>
+     <td>iE1Azm</td>
+     <td>int</td>
+     <td>Azimuth of the intermediate principal error of the error elipse.  Expressed as Degrees east of North.</td>
+    </tr>
+    <tr>
+     <td>iE2Azm</td>
+     <td>int</td>
+     <td>Azimuth of the largest principal error of the error elipse.  Expressed as Degrees east of North.</td>
+    </tr>
+    <tr>
+     <td>iE0Dip</td>
+     <td>int</td>
+     <td>Dip of the smallest principal error of the error elipse.  Expressed as Degrees below horizontal.</td>
+    </tr>
+    <tr>
+     <td>iE1Dip</td>
+     <td>int</td>
+     <td>Dip of the intermediate principal error of the error elipse.  Expressed as Degrees below horizontal.</td>
+    </tr>
+    <tr>
+     <td>iE2Dip</td>
+     <td>int</td>
+     <td>Dip of the largest principal error of the error elipse.  Expressed as Degrees below horizontal.</td>
+    </tr>
+    <tr>
+     <td>dE0</td>
+     <td>float</td>
+     <td>Magnitude of smallest principle error of the error elipse.</td>
+    </tr>
+    <tr>
+     <td>dE1</td>
+     <td>float</td>
+     <td>Magnitude of intermediate principle error of the error elipse.</td>
+    </tr>
+    <tr>
+     <td>dE2</td>
+     <td>float</td>
+     <td>Magnitude of largest principle error of the error elipse.</td>
+    </tr>
+    <tr>
+     <td>dMCI</td>
+     <td>double</td>
+     <td>Confidence interval.  CLEANUP???  Help? Units, detailed meaning?</td>
+    </tr>
+    <tr>
+     <td>iFixedDepth</td>
+     <td>int</td>
+     <td>Flag indicating whether a fixed depth model was used to calculate the Origin.</td>
+    </tr>
+    <tr>
+     <td>iVersionNum</td>
+     <td>int</td>
+     <td>Integer > 0 indicating the version number of the current origin.  The idea, is that external system will produce multiple revisions of event solutions as time goes on.  Each new origin will have an increasing version number assigned to it.  That way when you process origin data to produce other summary data (such as magnitudes) you can associate it with the correct origin version.</td>
+    </tr>
+    <tr>
+     <td>szSourceEventID</td>
+     <td>char[256]</td>
+     <td>Event identifer assigned to this origin's event by the Source.  This would be the EventID given by and Earthworm Binder Module to an automatic event that was generated by an Earthworm.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_PeakAmpStruct></a>
+<font size=+1>EWDB_PeakAmpStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_PeakAmpStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Information for the Peak Amplitude measurement associated with a station magnitude calculation.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idPeakAmp</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the Peak Amplitude record for this amplitude structure.</td>
+    </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the channel that this pick came from.</td>
+    </tr>
+    <tr>
+     <td>szExtSource</td>
+     <td>char[16]</td>
+     <td>Source where this amplitude was produced</td>
+    </tr>
+    <tr>
+     <td>szExternalAmpID</td>
+     <td>char[16]</td>
+     <td>ID of the amplitude at the source</td>
+    </tr>
+    <tr>
+     <td>dAmp1</td>
+     <td>float</td>
+     <td>1st Amplitude measurement(millimeters).</td>
+    </tr>
+    <tr>
+     <td>dAmpPeriod1</td>
+     <td>float</td>
+     <td>Time period of the first measurement.</td>
+    </tr>
+    <tr>
+     <td>tAmp1</td>
+     <td>double</td>
+     <td>Starting time of the first amplitude measurement. Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>dAmp2</td>
+     <td>float</td>
+     <td>2nd Amplitude measurement(millimeters).</td>
+    </tr>
+    <tr>
+     <td>dAmpPeriod2</td>
+     <td>float</td>
+     <td>Time period of the second measurement.</td>
+    </tr>
+    <tr>
+     <td>tAmp2</td>
+     <td>double</td>
+     <td>Starting time of the second amplitude measurement. Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>iAmpType</td>
+     <td>int</td>
+     <td>Type of amplitude.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_PhenomenonStruct></a>
+<font size=+1>EWDB_PhenomenonStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_PhenomenonStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Phenomenon structure</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idPh</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the phenomenon.</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Event which first gave rise to this phenomenon.</td>
+    </tr>
+    <tr>
+     <td>szSource</td>
+     <td>char[256]</td>
+     <td>Identifier of the source/author that declared the Merge.  This could be the Logo of the Earthworm module that generated the Merge, or the login name of an analyst that reviewed it.</td>
+    </tr>
+    <tr>
+     <td>szHumanReadable</td>
+     <td>char[256]</td>
+     <td>Huamn readable string identifying the person or program that declared the Merge.</td>
+    </tr>
+    <tr>
+     <td>szComment</td>
+     <td>char *</td>
+     <td>Optional comment associated with the merge.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_PlaceStruct></a>
+<font size=+1>EWDB_PlaceStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_PlaceStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Towns and Places structure</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idPlace</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the place.</td>
+    </tr>
+    <tr>
+     <td>szState</td>
+     <td>char[3]</td>
+     <td>two-letter State code</td>
+    </tr>
+    <tr>
+     <td>szPlaceName</td>
+     <td>char[70]</td>
+     <td> Name of the place</td>
+    </tr>
+    <tr>
+     <td>szPlaceType</td>
+     <td>char[20]</td>
+     <td> Type of the place</td>
+    </tr>
+    <tr>
+     <td>szCountry</td>
+     <td>char[30]</td>
+     <td> Country of the place</td>
+    </tr>
+    <tr>
+     <td>szCounty</td>
+     <td>char[30]</td>
+     <td> County of the place</td>
+    </tr>
+    <tr>
+     <td>dLat</td>
+     <td>double</td>
+     <td> Latitude</td>
+    </tr>
+    <tr>
+     <td>dLon</td>
+     <td>double</td>
+     <td> Longitude</td>
+    </tr>
+    <tr>
+     <td>dElev</td>
+     <td>double</td>
+     <td> Elevation</td>
+    </tr>
+    <tr>
+     <td>iPopulation</td>
+     <td>int</td>
+     <td> Population</td>
+    </tr>
+    <tr>
+     <td>iPlaceMajorType</td>
+     <td>int</td>
+     <td> Major Type (City, Dam, etc...)</td>
+    </tr>
+    <tr>
+     <td>iPlaceMinorType</td>
+     <td>int</td>
+     <td> Minor Type (large city, small city...)</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_StationMagStruct></a>
+<font size=+1>EWDB_StationMagStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_StationMagStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure of Station Magnitude information.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>pStationInfo</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+     <td>Station information for the station for which the magnitude was calculated.</td>
+    </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the channel that this pick came from.</td>
+    </tr>
+    <tr>
+     <td>pStationInfo</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+     <td>Station/Component information for the channel associated with this phase.</td>
+    </tr>
+    <tr>
+     <td>idMagLink</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the station magnitude.</td>
+    </tr>
+    <tr>
+     <td>idMagnitude</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the summary magnitude.</td>
+    </tr>
+    <tr>
+     <td>iMagType</td>
+     <td>int</td>
+     <td>Type of magnitude.  See rw_mag.h for a list of Magnitude types.</td>
+    </tr>
+    <tr>
+     <td>dMag</td>
+     <td>float</td>
+     <td>Station magnitude.</td>
+    </tr>
+    <tr>
+     <td>dWeight</td>
+     <td>float</td>
+     <td>Weight of the Station Magnitude in calculating the summary magnitude this Station Magnitude is associated with.</td>
+    </tr>
+    <tr>
+     <td>idDatum</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the measurement that the station magnitude is calculated from.  The measurement could be a Peak Amplitude or Coda Duration.</td>
+    </tr>
+    <tr>
+     <td>StaMagUnion</td>
+     <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagUnion>EWDB_StationMagUnion</a></td>
+     <td>Information about the measurement upon which the magnitude is based.  This could be either Peak Amplitude information for an Amplitude based magnitude, or Coda Duration information for a Duration based magnitude.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_StationMagUnion></a>
+<font size=+1>EWDB_StationMagUnion</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>union _EWDB_StationMagUnion</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure of Station Magnitude information.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>PeakAmp</td>
+     <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a></td>
+     <td>Measurement information for an Amplitude measurement.</td>
+    </tr>
+    <tr>
+     <td>CodaDur</td>
+     <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_CodaDurationStruct>EWDB_CodaDurationStruct</a></td>
+     <td>Measurement information for a Coda Duration measurement.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_TriggerStruct></a>
+<font size=+1>EWDB_TriggerStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_TriggerStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Single Channel Triggerstructure.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idTrigger</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID for the Coincidence.</td>
+    </tr>
+    <tr>
+     <td>tTrigger</td>
+     <td>double</td>
+     <td>Time of the trigger</td>
+    </tr>
+    <tr>
+     <td>idCoincidence</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the Coincidence Event with which this trigger is associated.</td>
+    </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database identifier of the channel with which this trigger is associated.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

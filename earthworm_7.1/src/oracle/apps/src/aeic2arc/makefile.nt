@@ -1,0 +1,63 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.2 2006/11/21 23:04:20 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.2  2006/11/21 23:04:20  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.1  2004/07/01 18:58:51  labcvs
+#     Moved aeic2arc from src/data_sources to /src/oracle/apps/src JMP
+#
+#     Revision 1.3  2003/05/06 20:52:28  lucky
+#     *** empty log message ***
+#
+#     Revision 1.2  2002/05/01 16:49:38  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2002/03/22 20:13:58  lucky
+#     Initial revision
+#
+#     Revision 1.1  2000/02/14 18:30:07  lucky
+#     Initial revision
+#
+#
+#
+
+#
+#                    Nmake File For getter - Windows NT version
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = aeic2arc
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+A = $(APPS_DIR)\lib
+
+
+$B\$(APP).exe: $(APP).obj aeic_2_ewevent.obj
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) \
+	$(APP).obj aeic_2_ewevent.obj \
+	$L\getutil.obj  $L\kom.obj $L\transport.obj $L\sleep_ew.obj \
+	$L\dirops_ew.obj $L\logit.obj $L\time_ew.obj $L\threads_ew.obj \
+	$L\sema_ew.obj $L\mem_circ_queue.obj $L\chron3.obj $L\read_arc.obj \
+	$A\arc_2_ewevent.obj $A\init_ewevent.obj \
+	-out:$B\$(APP).exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\aeic2arc*

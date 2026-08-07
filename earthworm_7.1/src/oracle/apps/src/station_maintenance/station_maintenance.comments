@@ -1,0 +1,28 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY station_maintenance
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK station_maintenance.html
+
+DESCRIPTION <b>station_maintenance</b> is a collection of tools developed
+to manage station metadata in an Earthworm database.  Please see the details
+page for descriptions of and information for the tools.
+<br><br>
+<br><br>
+Initial blame to DavidK 2003/12/12
+<br><br>
+Last touched by  DavidK 2003/12/12
+
+
+*************************************************
+************************************************/
+
+

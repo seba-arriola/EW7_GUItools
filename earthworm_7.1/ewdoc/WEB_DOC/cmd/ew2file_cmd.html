@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Earthworm System: ew2file commands</title>
+</head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(250, 223, 175);"
+ alink="#ff0000" link="#0000ee" vlink="#551a8b">
+<center>
+<h1> <br>
+ew2file Configuration File</h1>
+<i>(last revised June 1, 2006)</i> </center>
+<p>ew2file is a&nbsp; utility for writing out messages as a file (in
+binary form).
+</p>
+<p>Below is a copy of the .d file with detailed notes on each
+parameter
+</p>
+<pre>#   ew2file_generic configuration file<br>#<br>#<br> MyModuleId     MOD_EW2FILE         # module id for this program<br> InRing         SM_RING             # transport ring to use for input<br> HeartBeatInt   30                  # EW internal heartbeat interval (sec)<br> LogFile        1                   # If 0, don't write logfile<br>                                    # if 2, write to module log but not to<br>                                    # stderr/stdout .<br>#<br># Logos of messages to export to client systems<br># Each message of a given logo will be written to a file with the specified<br># File Suffix at the end of the file name folloing `.'.<br># Do NOT include a `.' in the suffix.<br># Use as many GetMsgLogo commands as you want.<br>#              Installation       Module       Message Type        File Suffix<br> GetMsgLogo    INST_UCB        MOD_REDI2EW   TYPE_STRONGMOTIONII     smUCB<br> <br> MaxMsgSize        512         # maximum size (bytes) for input msgs<br> QueueSize         1000        # number of msgs to buffer<br><br> TimeBasedFilename 1           # set non-zero if you want a time string in the<br>                               # form of "yyyymmdd-hhmmss." at the beginning of<br>                               # each output file. The timestring is generated from<br>                               # msg contents, currently possible for only msgtypes:<br>                               # TYPE_PICK2K, TYPE_PICK_SCNL, TYPE_HYP2000ARC<br>       <br># Optional heartbeat file commands. <br>#----------------------------------<br># Default HeartFileInt is 0 =&gt; send no heartbeat files.<br># Default HeartFileMsg is "Alive".<br># Default HeartFileSuffix is "hrt"<br> HeartFileInt     30           # heartbeat file interval; optional<br> HeartFileMsg     Alive        # string for heartbeat file; optional  <br> HeartFileSuffix  hrtUCB       # suffix for heartbeat files; do not include `.'<br><br># SerialKeeper: File name where the serial number of the output files is <br># stored. This should be a unique file name, in the params directory.<br># If the file does not exist, ew2file will attempt to create it.<br>SerialKeeper  ew2file_keeper<br><br># TempDir: Directory in which files are created. This directory must be in the<br># same filesystem as all the SendDir directories. Exactly one TempDir is required.<br>TempDir      /home/earthworm/run/ew2file/temp  <br><br># SendDir: Directory to which output files will be moved after they have <br># been created. <br>#  Use as many SendDir commands as you need.<br># Be sure the final line is terminated with a newline.<br>SendDir      /home/earthworm/run/ew2file/Menlo<br>SendDir      /home/earthworm/run/ew2file/CGS<br>SendDir      /home/earthworm/run/ew2file/Pas      <br></pre>
+<center> <a href="../modules.html">Module Index</a> | <a
+ href="../ovr/ew2file_ovr.html">ew2file Overview</a> </center>
+<hr>
+<address> <br>
+Contact: </address>
+<address> Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</body>
+</html>

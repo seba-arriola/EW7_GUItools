@@ -1,0 +1,21 @@
+#! /bin/csh
+
+# C-shell script to re-make all parts of import_ida
+
+unalias cd
+unalias rm
+
+echo --------------------------------------------
+echo Making idatap library
+rm -f ${EW_HOME}/${EW_VERSION}/src/data_exchange/import_ida/idatap/libidatap.a
+cd ${EW_HOME}/${EW_VERSION}/src/data_exchange/import_ida/idatap/src
+make -f makefile.sol
+cd ../..
+
+echo --------------------------------------------
+echo Making import_ida
+cd import_ida
+rm *.o
+make -f makefile.sol
+
+echo Finished making import_ida!

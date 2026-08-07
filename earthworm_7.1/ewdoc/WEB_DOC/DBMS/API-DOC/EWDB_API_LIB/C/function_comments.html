@@ -1,0 +1,94 @@
+<hr>
+<a name=ewdb_internal_GetStaMagsForCodaDur></a>
+<font size=+2>ewdb_internal_GetStaMagsForCodaDur()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetStaMagsForCodaDur(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idMagnitude</NOBR>, <NOBR><i><a href=../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pStaMags</NOBR>, <NOBR><i>int *</i> pNumStaMagsFound</NOBR>, <NOBR><i>int *</i> pNumStaMagsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_internal_GetStaMagsForCodaDur.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of "Peak Amplitude" based station magnitudes that support a single summary amplitude magnitude (ML, Mb, etc.) for an Event.  See <a href=../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> for a description of the information retrieved for each associated stamag. Because this function deals with only amplitude based measurements, it will never fill in the StaMagUnion.CodaDur information</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td><a href=../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial Success.  The call executed successfully, but the caller's buffer was not large enough to accommodate all of the StaMags found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idMagnitude</td>
+  <td><a href=../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB ID of the summary magnitude for which the caller wants to retrieve associated station magnitudes.  (The caller wants to retrieve station magnitudes for this summary magnitude.)</td>
+ </tr>
+ <tr>
+  <td>pStaMags</td>
+  <td><a href=../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td></td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes placed in the callers buffer(pStaMags).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pStaMags buffer as a multiple of <a href=../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a>. (example: 15 structs)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

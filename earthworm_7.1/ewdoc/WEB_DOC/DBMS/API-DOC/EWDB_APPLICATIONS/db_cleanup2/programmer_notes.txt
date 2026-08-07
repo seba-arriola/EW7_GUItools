@@ -1,0 +1,12 @@
+/* db_cleanup2 programmer notes 
+   programmer_notes.txt */
+
+Programmer Notes:
+
+Archiving Formats
+Archiving is done in the archive_event.c file.  Currently the db_cleanup2 code calls
+two archiving functions:  ArchiveEvent_init() and ArchiveEvent().
+By implementing these two functions for other data formats, you could
+use db_cleanup2 to archive to other formats.
+
+

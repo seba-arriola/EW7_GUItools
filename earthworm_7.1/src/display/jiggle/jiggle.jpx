@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--JBuilder XML Project-->
+<project>
+  <property category="runtime.0" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
+  <property category="runtime.0" name="application.class" value="org.trinet.jiggle.Jiggle"/>
+  <property category="runtime.0" name="application.vmparameters" value="-DJIGGLE_USER_HOMEDIR=j:\data\davek -DJIGGLE_USER_NAME=davek -version -server -Xss128k"/>
+  <property category="runtime.0" name="test.harness" value="junit.textui.TestRunner"/>
+  <property category="sys" name="AuthorLabel" value="@author"/>
+  <property category="sys" name="BackupPath" value="bak"/>
+  <property category="sys" name="BeansInstantiate" value="false"/>
+  <property category="sys" name="BraceStyle" value="0"/>
+  <property category="sys" name="CheckStable" value="1"/>
+  <property category="sys" name="Company" value=""/>
+  <property category="sys" name="CompanyLabel" value="Company:"/>
+  <property category="sys" name="CompileOnDebug" value="0"/>
+  <property category="sys" name="CompileOnRun" value="0"/>
+  <property category="sys" name="Copyright" value="Copyright (c) 2002"/>
+  <property category="sys" name="CopyrightLabel" value="Copyright:"/>
+  <property category="sys" name="DefaultPath" value="."/>
+  <property category="sys" name="Description" value=""/>
+  <property category="sys" name="DescriptionLabel" value="Description:"/>
+  <property category="sys" name="DocPath" value="doc"/>
+  <property category="sys" name="EventMatch" value="false"/>
+  <property category="sys" name="EventStyle" value="1"/>
+  <property category="sys" name="ExcludeClassEnabled" value="0"/>
+  <property category="sys" name="IncludeTestPath" value="1"/>
+  <property category="sys" name="InstanceVisibility" value="0"/>
+  <property category="sys" name="JDK" value="java 1.3.1-b24"/>
+  <property category="sys" name="LastTag" value="0"/>
+  <property category="sys" name="Libraries" value="oracle_jdbc;Fissures_Seed"/>
+  <property category="sys" name="MakeStable" value="0"/>
+  <property category="sys" name="OutPath" value="classes"/>
+  <property category="sys" name="SourcePath" value=".;test"/>
+  <property category="sys" name="TestPath" value="test"/>
+  <property category="sys" name="Title" value=""/>
+  <property category="sys" name="TitleLabel" value="Title:"/>
+  <property category="sys" name="Version" value="1.0"/>
+  <property category="sys" name="VersionLabel" value="@version"/>
+  <property category="sys" name="WorkingDirectory" value="."/>
+  <node name="org" type="Folder">
+    <node name="trinet" type="Folder">
+      <node name="apps" type="Folder">
+        <file path="org/trinet/apps/CalcMca.java"/>
+        <file path="org/trinet/apps/CalcML.java"/>
+        <file path="org/trinet/apps/CalcMlFromWaveforms.java"/>
+        <file path="org/trinet/apps/CalcMLProperties.java"/>
+        <file path="org/trinet/apps/EventCopy.java"/>
+        <file path="org/trinet/apps/EventDump.java"/>
+        <file path="org/trinet/apps/EventViewer.java"/>
+        <file path="org/trinet/apps/FreeSnap.java"/>
+        <file path="org/trinet/apps/Locate.java"/>
+        <file path="org/trinet/apps/Scope.java"/>
+        <file path="org/trinet/apps/SeedFileViewer.java"/>
+        <file path="org/trinet/apps/SeedSummary.java"/>
+        <file path="org/trinet/apps/SnapShot.java"/>
+        <file path="org/trinet/apps/WAViewer.java"/>
+      </node>
+      <node name="jasi" type="Folder">
+        <node name="EW" type="Folder">
+          <node name="SQL" type="Folder">
+            <file path="org/trinet/jasi/EW/SQL/CheckidWaveformStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateArrivalStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateCodaDurStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateEventLockStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateEventStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateMagnitudeStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateOriginPickStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateOriginStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreatePickStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateSnippetStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateStaMagStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateTCodaStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/CreateWaveformDescStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/DeleteEventLockStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/EWComplexSQLStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/EWSQLStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetAllLocksStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetArrivalsStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetComponentInfoStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetEventInfoStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetListStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetLockListStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetMagListStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetMagnitudeStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetNearestPlacesStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetOriginListStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetOriginStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetPreferredInfoStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetStaMagCodaStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetStationListStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetWaveformDescStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetWaveformListStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetWaveformListwCompTStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/GetWaveformStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/SetPreferStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/UpdateEventStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/UpdateWaveformDescStatement.java"/>
+            <file path="org/trinet/jasi/EW/SQL/UpdateWaveformStatement.java"/>
+          </node>
+          <file path="org/trinet/jasi/EW/AmplitudeEW.java"/>
+          <file path="org/trinet/jasi/EW/ChannelEW.java"/>
+          <file path="org/trinet/jasi/EW/CodaEW.java"/>
+          <file path="org/trinet/jasi/EW/EventTypeMapEW.java"/>
+          <file path="org/trinet/jasi/EW/EWChannel.java"/>
+          <file path="org/trinet/jasi/EW/EWCoda.java"/>
+          <file path="org/trinet/jasi/EW/EWMagnitude.java"/>
+          <file path="org/trinet/jasi/EW/EWOrigin.java"/>
+          <file path="org/trinet/jasi/EW/EWPhase.java"/>
+          <file path="org/trinet/jasi/EW/EWSolution.java"/>
+          <file path="org/trinet/jasi/EW/EWSolutionLock.java"/>
+          <file path="org/trinet/jasi/EW/EWWaveform.java"/>
+          <file path="org/trinet/jasi/EW/MagnitudeEW.java"/>
+          <file path="org/trinet/jasi/EW/PhaseEW.java"/>
+          <file path="org/trinet/jasi/EW/SolutionEW.java"/>
+          <file path="org/trinet/jasi/EW/SolutionLockEW.java"/>
+          <file path="org/trinet/jasi/EW/WaveformEW.java"/>
+        </node>
+        <node name="seed" type="Folder">
+          <file path="org/trinet/jasi/seed/DbBlobReader.java"/>
+          <file path="org/trinet/jasi/seed/SeedHeader.java"/>
+          <file path="org/trinet/jasi/seed/SeedReader.java"/>
+          <file path="org/trinet/jasi/seed/SeedReaderException.java"/>
+        </node>
+        <file path="org/trinet/jasi/ActiveArrayList.java"/>
+        <file path="org/trinet/jasi/ActiveList.java"/>
+        <file path="org/trinet/jasi/AmpList.java"/>
+        <file path="org/trinet/jasi/Amplitude.java"/>
+        <file path="org/trinet/jasi/AmpType.java"/>
+        <file path="org/trinet/jasi/AssociatedSolutionMismatchException.java"/>
+        <file path="org/trinet/jasi/AuthChannelIdIF.java"/>
+        <file path="org/trinet/jasi/CatSearch.java"/>
+        <file path="org/trinet/jasi/Channel.java"/>
+        <file path="org/trinet/jasi/Channelable.java"/>
+        <file path="org/trinet/jasi/ChannelableList.java"/>
+        <file path="org/trinet/jasi/ChannelDataIF.java"/>
+        <file path="org/trinet/jasi/ChannelDataList.java"/>
+        <file path="org/trinet/jasi/ChannelFilterIF.java"/>
+        <file path="org/trinet/jasi/ChannelGain.java"/>
+        <file path="org/trinet/jasi/ChannelIdIF.java"/>
+        <file path="org/trinet/jasi/ChannelList.java"/>
+        <file path="org/trinet/jasi/ChannelListIF.java"/>
+        <file path="org/trinet/jasi/ChannelMag.java"/>
+        <file path="org/trinet/jasi/ChannelMagCorrection.java"/>
+        <file path="org/trinet/jasi/ChannelMagCorrectionList.java"/>
+        <file path="org/trinet/jasi/ChannelName.java"/>
+        <file path="org/trinet/jasi/ChannelParms.java"/>
+        <file path="org/trinet/jasi/ChannelSorter.java"/>
+        <file path="org/trinet/jasi/ChannelTimeWindow.java"/>
+        <file path="org/trinet/jasi/ChannelTimeWindowModel.java"/>
+        <file path="org/trinet/jasi/Coda.java"/>
+        <file path="org/trinet/jasi/CodaList.java"/>
+        <file path="org/trinet/jasi/Comment.java"/>
+        <file path="org/trinet/jasi/CommitableIF.java"/>
+        <file path="org/trinet/jasi/ComponentSorter.java"/>
+        <file path="org/trinet/jasi/CTMampsOnly.java"/>
+        <file path="org/trinet/jasi/DataSource.java"/>
+        <file path="org/trinet/jasi/DataSourceChannelTimeModel.java"/>
+        <file path="org/trinet/jasi/DbaseConnectionDescription.java"/>
+        <file path="org/trinet/jasi/DumpCache.java"/>
+        <file path="org/trinet/jasi/EnvironmentInfo.java"/>
+        <file path="org/trinet/jasi/EventPriority.java"/>
+        <file path="org/trinet/jasi/EventQuality.java"/>
+        <file path="org/trinet/jasi/EventSelectionProperties.java"/>
+        <file path="org/trinet/jasi/EventTypeMap.java"/>
+        <file path="org/trinet/jasi/Frame1.java"/>
+        <file path="org/trinet/jasi/Frame2.java"/>
+        <file path="org/trinet/jasi/GenericDataSource.java"/>
+        <file path="org/trinet/jasi/HypoFormat.java"/>
+        <file path="org/trinet/jasi/JasiCommitException.java"/>
+        <file path="org/trinet/jasi/JasiFactory.java"/>
+        <file path="org/trinet/jasi/JasiObject.java"/>
+        <file path="org/trinet/jasi/JasiPropertyList.java"/>
+        <file path="org/trinet/jasi/JasiReading.java"/>
+        <file path="org/trinet/jasi/JasiReadingList.java"/>
+        <file path="org/trinet/jasi/JasiTimeBoundedData.java"/>
+        <file path="org/trinet/jasi/JasiTimeSeries.java"/>
+        <file path="org/trinet/jasi/JBChannelTimeWindowModel.java"/>
+        <file path="org/trinet/jasi/JBModel.java"/>
+        <file path="org/trinet/jasi/Lockable.java"/>
+        <file path="org/trinet/jasi/Magnitude.java"/>
+        <file path="org/trinet/jasi/MagnitudeEngine.java"/>
+        <file path="org/trinet/jasi/MagnitudeGeneratorIF.java"/>
+        <file path="org/trinet/jasi/MagnitudeMethod.java"/>
+        <file path="org/trinet/jasi/MakeHypoStaList.java"/>
+        <file path="org/trinet/jasi/MasterChannelList.java"/>
+        <file path="org/trinet/jasi/NetworkCode.java"/>
+        <file path="org/trinet/jasi/Phase.java"/>
+        <file path="org/trinet/jasi/PhaseDescription.java"/>
+        <file path="org/trinet/jasi/PhaseDescriptionList.java"/>
+        <file path="org/trinet/jasi/PhaseList.java"/>
+        <file path="org/trinet/jasi/PicksOnlyChannelTimeModel.java"/>
+        <file path="org/trinet/jasi/ProcessingState.java"/>
+        <file path="org/trinet/jasi/QualityControlModel.java"/>
+        <file path="org/trinet/jasi/ResourceLock.java"/>
+        <file path="org/trinet/jasi/Rflag.java"/>
+        <file path="org/trinet/jasi/Sample.java"/>
+        <file path="org/trinet/jasi/SeedEncodingFormat.java"/>
+        <file path="org/trinet/jasi/SeisFormat.java"/>
+        <file path="org/trinet/jasi/SimpleChannelTimeModel.java"/>
+        <file path="org/trinet/jasi/SoCalMLProperties.java"/>
+        <file path="org/trinet/jasi/Solution.java"/>
+        <file path="org/trinet/jasi/SolutionList.java"/>
+        <file path="org/trinet/jasi/SolutionLock.java"/>
+        <file path="org/trinet/jasi/SolutionLockException.java"/>
+        <file path="org/trinet/jasi/TestDataSource.java"/>
+        <file path="org/trinet/jasi/Testit.java"/>
+        <file path="org/trinet/jasi/TestMagWrite.java"/>
+        <file path="org/trinet/jasi/TimeSeriesQuality.java"/>
+        <file path="org/trinet/jasi/TimeSeriesSegment.java"/>
+        <file path="org/trinet/jasi/TravelTime.java"/>
+        <file path="org/trinet/jasi/TriggerChannelTimeWindow.java"/>
+        <file path="org/trinet/jasi/Units.java"/>
+        <file path="org/trinet/jasi/Waveform.java"/>
+        <file path="org/trinet/jasi/WFSegment.java"/>
+        <file path="org/trinet/jasi/WrongAmpTypeException.java"/>
+      </node>
+      <node name="jdbc" type="Folder">
+        <file path="org/trinet/jdbc/ColumnData.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataBoolean.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataClasses.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataClassIds.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataDate.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataDateRange.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataDouble.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataDoubleRange.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataFloat.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataFloatRange.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataInteger.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataIntegerRange.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataLong.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataLongRange.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataNumber.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataNumeric.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataObject.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataObjectRange.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataObjectRangeIF.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataState.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataString.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataTime.java"/>
+        <file path="org/trinet/jdbc/datatypes/DataTimestamp.java"/>
+        <file path="org/trinet/jdbc/datatypes/DateStringFormatter.java"/>
+        <file path="org/trinet/jdbc/JDBCConnect.java"/>
+        <file path="org/trinet/jdbc/DataSources/JDBCDataSource.java"/>
+        <file path="org/trinet/jdbc/JDBConn.java"/>
+        <file path="org/trinet/jdbc/JDBConnect.java"/>
+        <file path="org/trinet/jdbc/NullValueDb.java"/>
+        <file path="org/trinet/jdbc/ResultSetDb.java"/>
+        <file path="org/trinet/jdbc/SQLExceptionHandler.java"/>
+        <file path="org/trinet/jdbc/StringSQL.java"/>
+        <file path="org/trinet/jdbc/datatypes/ValueParser.java"/>
+      </node>
+      <node name="jiggle" type="Folder">
+        <file path="org/trinet/jiggle/ActiveSolutionList.java"/>
+        <file path="org/trinet/jiggle/ActiveWFPanel.java"/>
+        <file path="org/trinet/jiggle/AmpFlag.java"/>
+        <file path="org/trinet/jiggle/BombSightViewport.java"/>
+        <file path="org/trinet/jiggle/CatPane.java"/>
+        <file path="org/trinet/jiggle/CenteredDialog.java"/>
+        <file path="org/trinet/jiggle/ChangeModel.java"/>
+        <file path="org/trinet/jiggle/CodaFlag.java"/>
+        <file path="org/trinet/jiggle/ColumnLayout.java"/>
+        <file path="org/trinet/jiggle/CommentDialog.java"/>
+        <file path="org/trinet/jiggle/ComponentColor.java"/>
+        <file path="org/trinet/jiggle/CursorLocModel.java"/>
+        <file path="org/trinet/jiggle/CursorLocPanel.java"/>
+        <file path="org/trinet/jiggle/DPChannelTimeWindowModel.java"/>
+        <file path="org/trinet/jiggle/DPLocationEngine.java"/>
+        <file path="org/trinet/jiggle/DPmagnitude.java"/>
+        <file path="org/trinet/jiggle/DPwaveSource.java"/>
+        <file path="org/trinet/jiggle/EditModeModel.java"/>
+        <file path="org/trinet/jiggle/EventEditDialog.java"/>
+        <file path="org/trinet/jiggle/EventTypeChooser.java"/>
+        <file path="org/trinet/jiggle/FixDepthButton.java"/>
+        <file path="org/trinet/jiggle/GraphicDialog.java"/>
+        <file path="org/trinet/jiggle/GroupPanelConfigDialog.java"/>
+        <file path="org/trinet/jiggle/GroupPanelConfigPanel.java"/>
+        <file path="org/trinet/jiggle/IconImage.java"/>
+        <file path="org/trinet/jiggle/JasiReadingListModel.java"/>
+        <file path="org/trinet/jiggle/Jiggle.java"/>
+        <file path="org/trinet/jiggle/JiggleFileChooser.java"/>
+        <file path="org/trinet/jiggle/JiggleProperties.java"/>
+        <file path="org/trinet/jiggle/LocationEngine.java"/>
+        <file path="org/trinet/jiggle/MagEd.java"/>
+        <file path="org/trinet/jiggle/MainStatusBar.java"/>
+        <file path="org/trinet/jiggle/MainToolBar.java"/>
+        <file path="org/trinet/jiggle/MarkerIF.java"/>
+        <file path="org/trinet/jiggle/MasterView.java"/>
+        <file path="org/trinet/jiggle/PhaseCue.java"/>
+        <file path="org/trinet/jiggle/PhaseDialog.java"/>
+        <file path="org/trinet/jiggle/PhasePopup.java"/>
+        <file path="org/trinet/jiggle/PickableWFPanel.java"/>
+        <file path="org/trinet/jiggle/PickFlag.java"/>
+        <file path="org/trinet/jiggle/PickingPanel.java"/>
+        <file path="org/trinet/jiggle/PreferencesDialog.java"/>
+        <file path="org/trinet/jiggle/RTWFView.java"/>
+        <file path="org/trinet/jiggle/SelectableReadingList.java"/>
+        <file path="org/trinet/jiggle/SelectedWFViewModel.java"/>
+        <file path="org/trinet/jiggle/SelectedWFWindowModel.java"/>
+        <file path="org/trinet/jiggle/SolutionListComboBox.java"/>
+        <file path="org/trinet/jiggle/SolutionPanel.java"/>
+        <file path="org/trinet/jiggle/StatusFrame.java"/>
+        <file path="org/trinet/jiggle/StatusPanel.java"/>
+        <file path="org/trinet/jiggle/TestBed.java"/>
+        <file path="org/trinet/jiggle/Tester.java"/>
+        <file path="org/trinet/jiggle/TimeColumnHeader.java"/>
+        <file path="org/trinet/jiggle/UnpickMode.java"/>
+        <file path="org/trinet/jiggle/VersionChecker.java"/>
+        <file path="org/trinet/jiggle/WaveServerGroup.java"/>
+        <file path="org/trinet/jiggle/WaveServerGroupDialogPanel.java"/>
+        <file path="org/trinet/jiggle/WaveServerGroupEditDialog.java"/>
+        <file path="org/trinet/jiggle/WFCacheManager.java"/>
+        <file path="org/trinet/jiggle/WFDataBox.java"/>
+        <file path="org/trinet/jiggle/WFGroupPanel.java"/>
+        <file path="org/trinet/jiggle/WFPanel.java"/>
+        <file path="org/trinet/jiggle/WFPanelList.java"/>
+        <file path="org/trinet/jiggle/WFScroller.java"/>
+        <file path="org/trinet/jiggle/WFSelectionBox.java"/>
+        <file path="org/trinet/jiggle/WFView.java"/>
+        <file path="org/trinet/jiggle/WFViewList.java"/>
+        <file path="org/trinet/jiggle/ZoomableWFPanel.java"/>
+        <file path="org/trinet/jiggle/ZoomPanel.java"/>
+        <file path="org/trinet/jiggle/ZoomScaleComboBox.java"/>
+      </node>
+      <node name="TN" type="Folder">
+        <node name="engines" type="Folder"/>
+        <node name="gazetteer" type="Folder">
+          <node name="EW" type="Folder">
+            <file path="org/trinet/util/gazetteer/EW/EWWhereIs.java"/>
+            <file path="org/trinet/util/gazetteer/EW/WhereIsEW.java"/>
+          </node>
+          <node name="TN" type="Folder">
+            <file path="org/trinet/util/gazetteer/TN/BasicGazetteerPt.java"/>
+            <file path="org/trinet/util/gazetteer/TN/GazetteerType.java"/>
+            <file path="org/trinet/util/gazetteer/TN/IndexSort.java"/>
+            <file path="org/trinet/util/gazetteer/TN/LatLon.java"/>
+            <file path="org/trinet/util/gazetteer/TN/MapLocation.java"/>
+            <file path="org/trinet/util/gazetteer/TN/USACountyType.java"/>
+            <file path="org/trinet/util/gazetteer/TN/USAStateType.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereAmI.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereBasicBigTown.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereBasicPt.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereBasicQuake.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereBasicQuarry.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereBasicTown.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereFault.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosest.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestBigTown.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestFault.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestFrom.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestQuake.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestQuarry.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestStation.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereIsClosestTown.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereItemBasicPt.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereLine.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WheresFrom.java"/>
+            <file path="org/trinet/util/gazetteer/TN/WhereStation.java"/>
+          </node>
+          <file path="org/trinet/util/gazetteer/Concat.java"/>
+          <file path="org/trinet/util/gazetteer/DistanceAzimuthElevation.java"/>
+          <file path="org/trinet/util/gazetteer/GazetteerData.java"/>
+          <file path="org/trinet/util/gazetteer/Geoidal.java"/>
+          <file path="org/trinet/util/gazetteer/GeoidalConvert.java"/>
+          <file path="org/trinet/util/gazetteer/GeoidalUnits.java"/>
+          <file path="org/trinet/util/gazetteer/LatLonZ.java"/>
+          <file path="org/trinet/util/gazetteer/WhereIsEngine.java"/>
+          <file path="org/trinet/util/gazetteer/WhereItem.java"/>
+          <file path="org/trinet/util/gazetteer/WhereSummary.java"/>
+          <file path="org/trinet/util/gazetteer/WhereSummaryItem.java"/>
+        </node>
+        <file path="org/trinet/jdbc/table/Amp.java"/>
+        <file path="org/trinet/jasi/TN/AmplitudeTN.java"/>
+        <file path="org/trinet/jdbc/table/Arrival.java"/>
+        <file path="org/trinet/jdbc/table/AssocAmM.java"/>
+        <file path="org/trinet/jdbc/table/AssocAmO.java"/>
+        <file path="org/trinet/jdbc/table/AssocArO.java"/>
+        <file path="org/trinet/jdbc/table/AssocCoM.java"/>
+        <file path="org/trinet/jdbc/table/AssocCoO.java"/>
+        <file path="org/trinet/jdbc/table/AssocWaE.java"/>
+        <file path="org/trinet/jdbc/table/ChannelData.java"/>
+        <file path="org/trinet/jasi/TN/ChannelTN.java"/>
+        <file path="org/trinet/jdbc/table/Coda.java"/>
+        <file path="org/trinet/jasi/TN/CodaTN.java"/>
+        <file path="org/trinet/jasi/TN/CommentTN.java"/>
+        <file path="org/trinet/jdbc/table/DataStnChl.java"/>
+        <file path="org/trinet/jdbc/table/DataTableRow.java"/>
+        <file path="org/trinet/jdbc/table/DataTableRowStates.java"/>
+        <file path="org/trinet/jdbc/table/Event.java"/>
+        <file path="org/trinet/jasi/TN/EventPriorityModelTN.java"/>
+        <file path="org/trinet/jdbc/table/EventTableRow.java"/>
+        <file path="org/trinet/jasi/TN/EventTypeMapTN.java"/>
+        <file path="org/trinet/jdbc/table/ExecuteSQL.java"/>
+        <file path="org/trinet/jdbc/table/Filename.java"/>
+        <file path="org/trinet/jdbc/table/JasiEventLock.java"/>
+        <file path="org/trinet/jasi/TN/MagnitudeTN.java"/>
+        <file path="org/trinet/jdbc/table/McaParms.java"/>
+        <file path="org/trinet/jdbc/table/Mec.java"/>
+        <file path="org/trinet/jdbc/table/NetMag.java"/>
+        <file path="org/trinet/jdbc/table/NetMagAssocTableRow.java"/>
+        <file path="org/trinet/jdbc/table/Origin.java"/>
+        <file path="org/trinet/jdbc/table/OriginAssocTableRow.java"/>
+        <file path="org/trinet/jdbc/table/OriginError.java"/>
+        <file path="org/trinet/jdbc/table/OriginTableRow.java"/>
+        <file path="org/trinet/jasi/TN/PhaseTN.java"/>
+        <file path="org/trinet/jasi/TN/QualityControlModelTN.java"/>
+        <file path="org/trinet/jdbc/table/Remark.java"/>
+        <file path="org/trinet/jdbc/table/ResponseStnChlTableRow.java"/>
+        <file path="org/trinet/jdbc/table/ResponseStnTableRow.java"/>
+        <file path="org/trinet/jdbc/table/RtProcessingParameters.java"/>
+        <file path="org/trinet/jdbc/table/SeqIds.java"/>
+        <file path="org/trinet/jdbc/table/SignificantEvent.java"/>
+        <file path="org/trinet/jasi/TN/SolutionLockTN.java"/>
+        <file path="org/trinet/jasi/TN/SolutionTN.java"/>
+        <file path="org/trinet/jdbc/table/StationData.java"/>
+        <file path="org/trinet/jdbc/table/StnChlTableRow.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAmp.java"/>
+        <file path="org/trinet/jdbc/table/TableRowArrival.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAssocAmM.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAssocAmO.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAssocArO.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAssocCoM.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAssocCoO.java"/>
+        <file path="org/trinet/jdbc/table/TableRowAssocWaE.java"/>
+        <file path="org/trinet/jdbc/table/TableRowChannelData.java"/>
+        <file path="org/trinet/jdbc/table/TableRowCoda.java"/>
+        <file path="org/trinet/jdbc/table/TableRowEvent.java"/>
+        <file path="org/trinet/jdbc/table/TableRowFilename.java"/>
+        <file path="org/trinet/jdbc/table/TableRowJasiEventLock.java"/>
+        <file path="org/trinet/jdbc/table/TableRowMcaParms.java"/>
+        <file path="org/trinet/jdbc/table/TableRowMec.java"/>
+        <file path="org/trinet/jdbc/table/TableRowNetMag.java"/>
+        <file path="org/trinet/jdbc/table/TableRowOrigin.java"/>
+        <file path="org/trinet/jdbc/table/TableRowOriginError.java"/>
+        <file path="org/trinet/jdbc/table/TableRowRemark.java"/>
+        <file path="org/trinet/jdbc/table/TableRowRtProcessingParameters.java"/>
+        <file path="org/trinet/jdbc/table/TableRowSignificantEvent.java"/>
+        <file path="org/trinet/jdbc/table/TableRowStationData.java"/>
+        <file path="org/trinet/jdbc/table/TableRowWaveform.java"/>
+        <file path="org/trinet/jdbc/table/TableRowWaveformRequest.java"/>
+        <file path="org/trinet/jasi/TN/TNCommitableIF.java"/>
+        <file path="org/trinet/jdbc/table/Waveform.java"/>
+        <file path="org/trinet/jasi/TN/WaveformTN.java"/>
+      </node>
+      <node name="util" type="Folder">
+        <file path="org/trinet/util/magnitudeengines/CodaMagnitudeGenerator.java"/>
+        <file path="org/trinet/util/magnitudeengines/CodaMagnitudeGeneratorIF.java"/>
+        <file path="org/trinet/util/velocitymodel/HK_SoCalVelocityModel.java"/>
+        <file path="org/trinet/util/magnitudeengines/JiggleMCA.java"/>
+        <file path="org/trinet/util/magnitudeengines/LocalMagnitudeEngine.java"/>
+        <file path="org/trinet/util/locationengines/LocationEngineHypoInverse.java"/>
+        <file path="org/trinet/util/magnitudeengines/MCA.java"/>
+        <file path="org/trinet/util/magnitudeengines/McaCalDb.java"/>
+        <file path="org/trinet/util/magnitudeengines/McaCalibrationList.java"/>
+        <file path="org/trinet/util/magnitudeengines/McaCalibrationTN.java"/>
+        <file path="org/trinet/util/magnitudeengines/McaCodaCalibrParms.java"/>
+        <file path="org/trinet/util/magnitudeengines/McaCodaGeneratorExp.java"/>
+        <file path="org/trinet/util/magnitudeengines/McaCodaGeneratorTN.java"/>
+        <file path="org/trinet/util/magnitudeengines/ML.java"/>
+        <file path="org/trinet/util/velocitymodel/PrimarySecondaryWaveTravelTimeGeneratorIF.java"/>
+        <file path="org/trinet/util/magnitudeengines/SoCalML.java"/>
+        <file path="org/trinet/util/velocitymodel/SoCalVelocityModel.java"/>
+        <file path="org/trinet/util/magnitudeengines/TrinetMagnitudeMethod.java"/>
+        <file path="org/trinet/util/velocitymodel/TTLayer.java"/>
+        <file path="org/trinet/util/velocitymodel/UniformFlatLayerTravelTimeGenerator.java"/>
+        <file path="org/trinet/util/velocitymodel/UniformFlatLayerVelocityModel.java"/>
+        <file path="org/trinet/util/velocitymodel/UniformFlatLayerVelocityModelIF.java"/>
+        <file path="org/trinet/util/velocitymodel/VelocityModelIF.java"/>
+      </node>
+    </node>
+  </node>
+</project>

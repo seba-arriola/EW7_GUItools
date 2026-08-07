@@ -1,0 +1,27 @@
+# Sample makefile for nrts_tap based client
+
+CC     = gcc 
+INCDIR = datasock/qlib
+INCDIR2 =  ../STEIM123
+BINDIR = ../bin/$(PLATFORM)
+QLIB = datasock/qlib/libqlib.a
+LIBDIR = ../vdl
+OPTMIZ = -O
+INCS   = -I$(INCDIR) -I$(INCDIR2)
+OSNAME = SUNOS
+OSNAME2 = NONE
+#CFLAGS = $(OPTMIZ) $(INCS) -L$(LIBDIR) -D$(OSNAME) -D$(OSNAME2) -DDEBUG_PRINT  -ansi
+CFLAGS = $(OPTMIZ) $(INCS) -L$(LIBDIR) -D$(OSNAME) -D$(OSNAME2) -ansi
+
+
+BINARIES = vdl.o vdltrg.o vdlput.o vdlqsub.o ifft512.o ifft1024.o ifft256.o \
+	fftlib.o cmprs.o vdlfilt.o filt5.o filtheli.o filt2.o filt10.o datetime.o\
+	feedme.o feedme_test_null.o vdltcp_nopass.o vdlmath.o $(QLIB)
+
+include SCRIPTS/makefile.modules
+
+
+#*	VDL Berkeley - Data Sockets
+#*
+vdlucbsunos: $(BINARIES) 
+	$(CC) $(CFLAGS)  $(BINARIES) -o vdlucbsunos -lm -lposix4 -lnsl -lsocket

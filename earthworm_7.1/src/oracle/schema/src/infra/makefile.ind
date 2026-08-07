@@ -1,0 +1,98 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.7 2005/06/10 15:55:22 davidk Exp $
+#
+#    Revision history:
+#     $Log: makefile.ind,v $
+#     Revision 1.7  2005/06/10 15:55:22  davidk
+#     Removed
+#     ewdb_api_GetStationListWithZeroLatLon as it is redundant to
+#     ewdb_api_GetStationList() and is not used by any current programs.
+#
+#     Revision 1.6  2004/11/18 22:58:08  davidk
+#     Added ewdb_api_GetSelectedPickableStations, a function that retrieves only
+#     stations that have been previously phase picked(ever) from the DB.
+#
+#     Revision 1.5  2004/04/06 17:49:10  davidk
+#     Added ewdb_api_CreateOrUpdateChanParams().
+#     Removed ewdb_api_SplitChanT() because it was never finished, and
+#     is not functional.
+#
+#     Revision 1.4  2003/12/03 00:36:12  davidk
+#     Added objects required for metadata station maintenance
+#     programs.
+#
+#     Revision 1.3  2003/03/27 17:54:47  davidk
+#     added GetSelectedXXX API calls.
+#
+#     Revision 1.2  2001/07/01 21:55:40  davidk
+#     Cleanup of the Earthworm Database API and the applications that utilize it.
+#     The "ewdb_api" was cleanup in preparation for Earthworm v6.0, which is
+#     supposed to contain an API that will be backwards compatible in the
+#     future.  Functions were removed, parameters were changed, syntax was
+#     rewritten, and other stuff was done to try to get the code to follow a
+#     general format, so that it would be easier to read.
+#
+#     Applications were modified to handle changed API calls and structures.
+#     They were also modified to be compiler warning free on WinNT.
+#
+#     Revision 1.1  2001/05/23 22:51:10  davidk
+#     Initial revision
+#
+#################################################################
+
+
+
+
+OBJECTS = \
+          ewdb_api_AssociateChanWithComp.$(OBJ) \
+          ewdb_api_CreateChannel.$(OBJ) \
+          ewdb_api_CreateComponent.$(OBJ) \
+		      ewdb_api_CreateCompT.$(OBJ) \
+          ewdb_api_CreateCompTForSCNLT.$(OBJ) \
+          ewdb_api_CreateOrUpdateChanParams.$(OBJ) \
+		      ewdb_api_CreateSite.$(OBJ) \
+	        ewdb_api_CreateSiteT.$(OBJ) \
+          ewdb_api_CreateTransformFunction.$(OBJ) \
+          ewdb_api_DeleteChanT.$(OBJ) \
+          ewdb_api_DeleteComp.$(OBJ) \
+          ewdb_api_DeleteCompT.$(OBJ) \
+          ewdb_api_DeleteSite.$(OBJ) \
+          ewdb_api_DeleteSiteT.$(OBJ) \
+          ewdb_api_GetChanParams.$(OBJ) \
+          ewdb_api_GetComponentInfo.$(OBJ) \
+          ewdb_api_GetCompTInfo.$(OBJ) \
+          ewdb_api_GetCompTParams.$(OBJ) \
+          ewdb_api_GetidChansFromSCNLT.$(OBJ) \
+          ewdb_api_GetidChanT.$(OBJ) \
+          ewdb_api_GetidComp.$(OBJ) \
+          ewdb_api_GetidSite.$(OBJ) \
+          ewdb_api_GetSelectedChannels.$(OBJ) \
+          ewdb_api_GetSelectedSites.$(OBJ) \
+          ewdb_api_GetSelectedStations.$(OBJ) \
+          ewdb_api_GetSelectedPickableStations.$(OBJ) \
+          ewdb_api_GetSelectedStations_w_Response.$(OBJ) \
+          ewdb_api_GetSiteTParams.$(OBJ) \
+          ewdb_api_GetStationList.$(OBJ) \
+          ewdb_api_GetStationListWithoutLocation.$(OBJ) \
+          ewdb_api_GetTransformFunctionForChan.$(OBJ) \
+          ewdb_api_ModifySiteParams.$(OBJ) \
+          ewdb_api_SetCompParams.$(OBJ) \
+          ewdb_api_SetCompTParams.$(OBJ) \
+          ewdb_api_SetTransformFuncForChanT.$(OBJ) \
+          ewdb_api_SplitSiteT.$(OBJ) \
+          ewdb_api_UpdateChanTTime.$(OBJ) \
+          ewdb_api_UpdateCompTTime.$(OBJ) \
+          ewdb_api_UpdateSiteT.$(OBJ) \
+          ewdb_api_UpdateTransformFunction.$(OBJ) \
+          ewdb_internal_GetChanCTFForChannel.$(OBJ) \
+          ewdb_internal_GetTransformFunction.$(OBJ) \
+          ewdb_internal_GetTransformFunctionDesc.$(OBJ) \
+          ewdb_internal_SetChanParams.$(OBJ) 
+
+
+ALL:  $(OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts

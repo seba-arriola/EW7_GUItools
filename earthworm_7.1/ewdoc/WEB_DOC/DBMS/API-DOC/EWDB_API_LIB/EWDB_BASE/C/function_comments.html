@@ -1,0 +1,197 @@
+<hr>
+<a name=ewdb_base_ConnMgr></a>
+<font size=+2>ewdb_base_ConnMgr()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>thr_ret ewdb_base_ConnMgr(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>void *</i> dummy</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The connection manager thread.  This thread runs periodically and brings the connection to the DB down if it has timed out(been inactive for a certain amount of time.)  By having a connection manager, the DB connection can be left open in between consecutive DB calls, yet still closed when not in use.  The idea behind the connection mgr is to optimize the efficiency of accessing the DB, relative to limiting the use of DB licenses and the overhead time required to raise a DB connection.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>thr_ret</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>dummy</td>
+  <td>void *</td>
+  <td>Default parameter.  Unused by this function.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>EWDB_BASE</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_ew_oci_base.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_base_SetLastOraAPIActionTime></a>
+<font size=+2>ewdb_base_SetLastOraAPIActionTime()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>void ewdb_base_SetLastOraAPIActionTime(</NOBR></font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Sets the time of the last ora_api action call to NOW.  The connection manager will close the connection to the database EWDB_MAX_IDLE_TIME seconds after the last API call action.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>void</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>EWDB_BASE</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_ew_oci_base.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_base_SetOraConnectionTimeout></a>
+<font size=+2>ewdb_base_SetOraConnectionTimeout()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>void ewdb_base_SetOraConnectionTimeout(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>int</i> tsec</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Sets the connection timeout, so that the connection manager will not close the database connection until NOW + tsec seconds.  This call is useful if you know that a database call will take a long time.  DeleteEvent() is an excelent example.  The DB connection may timeout if you simply use <a href=../../.././EWDB_API_LIB/EWDB_BASE/C/function_comments.html#ewdb_base_SetLastOraAPIActionTime>ewdb_base_SetLastOraAPIActionTime</a>(), whereas you can call ewdb_base_SetOraConnectionTimeout() to set the timeout to 15 minutes, so that you don't get a disconnect during the delete.  You can then call ewdb_base_SetOraConnectionTimeout() after the DB call has executed in order to reset the timeout to normal.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>void</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>tsec</td>
+  <td>int</td>
+  <td>The number of seconds from now that the connection manager should timeout the connection and close it.  (Should obviously be > 0)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>EWDB_BASE</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_ew_oci_base.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_base_TerminateConnMgr></a>
+<font size=+2>ewdb_base_TerminateConnMgr()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>void ewdb_base_TerminateConnMgr(</NOBR></font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Causes the connection manager to shutdown. It may take a couple of seconds for the connection manager to shutdown if it is currently asleep. Should only be called when terminating use of the DB and API code.  It SHOULD NOT be called by individual functions when they are finished using the DB.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>void</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>EWDB_BASE</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_ew_oci_base.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

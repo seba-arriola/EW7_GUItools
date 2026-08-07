@@ -1,0 +1,39 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+
+###############################
+#Set APP to your program name.
+###############################
+APP = db_cleanup
+FULL_APP_NAME = $(EW_BIN)$(APP)$(EXE)
+
+###############################
+#Set APP_OBJECTS to your object 
+# files
+#Set APP_OTHER to any other bind
+# options or libraries that you
+# need specially for your app.
+###############################
+APP_OBJECTS =     $(APP).$(OBJ) config.$(OBJ)
+
+APP_OTHER = 
+
+###############################
+#Set ALL_CLIENT_LIBS to all non DB
+# objects needed by your app.
+###############################
+ALL_CLIENT_LIBS=	 	$(EW_LIB)dirops_ew.$(OBJ) \
+										$(EW_LIB)transport.$(OBJ) \
+										$(EW_LIB)swap.$(OBJ) \
+										$(EW_LIB)geo_to_km.$(OBJ) \
+										$(EW_LIB)sacputaway.$(OBJ) \
+										$(APPS_LIB)sac_2_ewevent.$(OBJ) \
+										$(APPS_LIB)init_ewevent.$(OBJ) \
+										$(APPS_LIB)ewdb_apps_GetDBEventInfo.$(OBJ) \
+										$(APPS_LIB)time_functions.$(OBJ) 
+
+
+

@@ -1,0 +1,90 @@
+<hr>
+<a name=EWDB_FunctionBindStruct></a>
+<font size=+1>EWDB_FunctionBindStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_FunctionBindStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure for storing parameters for a function bind.  This structure is used to store (in the database raw infrastructure schema) a binding between a device and a response function.  This structure's contents dictate that a certain device has a certain piece of functionality (presumably related to signal response) for a time period between tOn and tOff.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idFunctionBind</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the function bind mechanism.</td>
+    </tr>
+    <tr>
+     <td>idDevice</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the device to which a given functionality is bound.</td>
+    </tr>
+    <tr>
+     <td>tOn</td>
+     <td>double</td>
+     <td>Start of the time interval for which the functionality exists for the given device.</td>
+    </tr>
+    <tr>
+     <td>tOff</td>
+     <td>double</td>
+     <td>End of the time interval for which the functionality exists for the given device.</td>
+    </tr>
+    <tr>
+     <td>idFunction</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the Function bound to the device.</td>
+    </tr>
+    <tr>
+     <td>szFunctionName</td>
+     <td>char[]</td>
+     <td>Name of the function type of the function identified by idFunction.</td>
+    </tr>
+    <tr>
+     <td>bOverridable</td>
+     <td>int</td>
+     <td>Flag indicating whether the function is an overridable default for the device.  Devices can be derived from other devices, and the derived devices inherit the functional properties of the inheritees.  This flag indicates if this is a property of the inheritee that should be overriden by the derived device.</td>
+    </tr>
+    <tr>
+     <td>pFunction</td>
+     <td>void *</td>
+     <td>Pointer to the actual Function that is being bound by this FunctionBind.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE_API/library_comments.html#RAW_INFRASTRUCTURE_API>RAW_INFRASTRUCTURE_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

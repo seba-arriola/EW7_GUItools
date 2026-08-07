@@ -1,0 +1,240 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.1 2000/02/14 18:40:56 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.1  2000/02/14 18:40:56  lucky
+#     Initial revision
+#
+#
+#
+
+
+#                Make File For hyp2000_mgr - Solaris version
+
+# This program calls Fred Klein's hypoinv function.
+
+# -e flag allows source lines up to 132 characters long
+
+H     = ../hyp2000
+S     = ../hyp2000/subs
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+F_OBJ = hyp2000_ew.o hyate.o hybda.o hybeg.o hycal.o \
+        hycin.o hycmd.o hycout.o hycrh.o hycrt.o \
+        hydel.o hydelt.o hyedit.o hyfile.o hyfmc.o hyinit.o \
+        hyinp.o hyloc.o hylst.o hymag.o hymagp.o \
+        hyopen.o hyphs.o hypoinv.o hypref.o hypro.o \
+        hyrep.o hysol.o hysou.o hysta.o hystl.o \
+        hysum.o hysvd.o hytime.o hytra.o hytrh.o \
+        hytrl.o hytrt.o hyxmc.o init_event.o medwt.o \
+        utmcal.o spawn.o openr.o askr.o \
+        openw.o errset.o leng.o dayjl.o lask.o \
+        readq.o jask.o jdate.o klas.o upstr.o \
+        askc.o box2.o box3.o klass.o ksic.o
+
+C_OBJ = hyp2000_mgr.o $L/kom.o $L/logit.o $L/time_ew.o \
+        $L/getutil.o $L/transport.o $L/sleep_ew.o $L/pipe.o
+
+hyp2000_mgr: $(F_OBJ) $(C_OBJ)
+	f77 -e $(F_OBJ) $(C_OBJ) -o $B/hyp2000_mgr -lposix4 -lthread -lc -Bstatic
+#
+#  Rule for compiling the C source files
+#
+.c.o:
+	cc -c $(GLOBALFLAGS) $<
+
+hyp2000_ew.o: hyp2000_ew.for
+	f77 -c -silent hyp2000_ew.for
+
+hyate.o:      $H/hyate.for
+	f77 -c -silent $H/hyate.for
+
+hybda.o:      $H/hybda.for
+	f77 -c -silent $H/hybda.for
+
+hybeg.o:      $H/hybeg.f
+	f77 -c -silent $H/hybeg.f
+
+hycal.o:      $H/hycal.for
+	f77 -c -silent $H/hycal.for
+
+hycin.o:      $H/hycin.f
+	f77 -c -silent $H/hycin.f
+
+hycmd.o:      $H/hycmd.for
+	f77 -c -silent $H/hycmd.for
+
+hycout.o:     $H/hycout.f
+	f77 -c -silent $H/hycout.f
+
+hycrh.o:      $H/hycrh.for
+	f77 -c -silent $H/hycrh.for
+
+hycrt.o:      $H/hycrt.for
+	f77 -c -silent $H/hycrt.for
+
+hydel.o:      $H/hydel.for
+	f77 -c -silent $H/hydel.for
+
+hydelt.o:     $H/hydelt.f
+	f77 -c -silent $H/hydelt.f
+
+hyedit.o:     $H/hyedit.f
+	f77 -c -silent $H/hyedit.f
+
+hyfile.o:     $H/hyfile.for
+	f77 -c -silent $H/hyfile.for
+ 
+hyfmc.o:      $H/hyfmc.for
+	f77 -c -silent $H/hyfmc.for
+
+hyinit.o:     $H/hyinit.for
+	f77 -c -silent $H/hyinit.for
+
+hyinp.o:      $H/hyinp.for
+	f77 -c -silent $H/hyinp.for
+
+hyloc.o:      $H/hyloc.for
+	f77 -c -silent $H/hyloc.for
+
+hylst.o:      $H/hylst.for
+	f77 -c -silent $H/hylst.for
+
+hymag.o:      $H/hymag.for
+	f77 -c -silent $H/hymag.for
+
+hymagp.o:     $H/hymagp.for
+	f77 -c -silent $H/hymagp.for
+
+hyopen.o:     $H/hyopen.for
+	f77 -c -silent $H/hyopen.for
+
+hyphs.o:      $H/hyphs.for
+	f77 -c -silent $H/hyphs.for
+
+hypoinv.o:    $H/hypoinv.for
+	f77 -c -silent $H/hypoinv.for
+
+hypref.o:     $H/hypref.for
+	f77 -c -silent $H/hypref.for
+
+hypro.o:      $H/hypro.for
+	f77 -c -silent $H/hypro.for
+
+hyrep.o:      $H/hyrep.for
+	f77 -c -silent $H/hyrep.for
+
+hysol.o:      $H/hysol.for
+	f77 -c -silent $H/hysol.for
+
+hysou.o:      $H/hysou.for
+	f77 -c -silent $H/hysou.for
+
+hysta.o:      $H/hysta.for
+	f77 -c -silent $H/hysta.for
+
+hystl.o:      $H/hystl.for
+	f77 -c -silent $H/hystl.for
+
+hysum.o:      $H/hysum.for
+	f77 -c -silent $H/hysum.for
+
+hysvd.o:      $H/hysvd.f
+	f77 -c -silent $H/hysvd.f
+
+hytime.o:     $H/hytime.f
+	f77 -c -silent $H/hytime.f
+
+hytra.o:      $H/hytra.for
+	f77 -c -silent $H/hytra.for
+
+hytrh.o:      $H/hytrh.for
+	f77 -c -silent $H/hytrh.for
+
+hytrl.o:      $H/hytrl.for
+	f77 -c -silent $H/hytrl.for
+
+hytrt.o:      $H/hytrt.for
+	f77 -c -silent $H/hytrt.for
+
+hyxmc.o:      $H/hyxmc.for
+	f77 -c -silent $H/hyxmc.for
+
+init_event.o: $H/init_event.f
+	f77 -c -silent $H/init_event.f
+
+medwt.o:      $H/medwt.for
+	f77 -c -silent $H/medwt.for
+
+utmcal.o:     $H/utmcal.for
+	f77 -c -silent $H/utmcal.for
+
+spawn.o:      $S/spawn.f
+	f77 -c -silent $S/spawn.f
+
+openr.o:      $S/openr.f
+	f77 -c -silent $S/openr.f
+
+askr.o:       $S/askr.for
+	f77 -c -silent $S/askr.for
+
+openw.o:      $S/openw.f
+	f77 -c -silent $S/openw.f
+
+errset.o:     $S/errset.f
+	f77 -c -silent $S/errset.f
+
+leng.o:       $S/leng.for
+	f77 -c -silent $S/leng.for
+
+dayjl.o:      $S/dayjl.for
+	f77 -c -silent $S/dayjl.for
+
+lask.o:       $S/lask.for
+	f77 -c -silent $S/lask.for
+
+readq.o:      $S/readq.for
+	f77 -c -silent $S/readq.for
+
+jask.o:       $S/jask.for
+	f77 -c -silent $S/jask.for
+
+jdate.o:      $S/jdate.for
+	f77 -c -silent $S/jdate.for
+
+klas.o:       $S/klas.for
+	f77 -c -silent $S/klas.for
+
+upstr.o:      $S/upstr.for
+	f77 -c -silent $S/upstr.for
+
+askc.o:       $S/askc.for
+	f77 -c -silent $S/askc.for
+
+box2.o:       $S/box2.for
+	f77 -c -silent $S/box2.for
+
+box3.o:       $S/box3.for
+	f77 -c -silent $S/box3.for
+
+klass.o:      $S/klass.for
+	f77 -c -silent $S/klass.for
+
+ksic.o:       $S/ksic.for
+	f77 -c -silent $S/ksic.for
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/hyp2000_mgr*
+

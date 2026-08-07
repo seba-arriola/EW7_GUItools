@@ -1,0 +1,48 @@
+
+#
+#    $Id: makefile.ux,v 1.2 2007/03/28 18:10:26 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/28 18:10:26  paulf
+#     removed -lnsl from unix make
+#
+#     Revision 1.1  2005/07/26 21:14:55  friberg
+#     added UNIX makefile
+#
+#
+#
+
+LIBS = -lm -mt -lpthread -lc
+
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+BINARIES = sgram.o  \
+		$L/swap.o $L/logit.o $L/getutil.o  $L/transport.o $L/kom.o \
+		$L/sleep_ew.o $L/time_ew.o $L/threads_ew.o $L/sema_ew.o\
+		$L/mem_circ_queue.o  \
+		$L/getavail.o $L/getsysname_ew.o $L/chron3.o\
+		$L/parse_trig.o $L/pipe.o \
+		$L/socket_ew.o $L/socket_ew_common.o $L/ws_clientII.o\
+		$L/gd.o $L/gdfontt.o $L/gdfonts.o $L/gdfontmb.o \
+		$L/gdfontl.o $L/gdfontg.o
+
+sgram: $(BINARIES)
+	cc -o $(B)/sgram $(BINARIES) $(LIBS)
+
+.c.o:
+	$(CC) $(CFLAGS) -g $(CPPFLAGS) -c  $(OUTPUT_OPTION) $<
+
+lint:
+	lint sgram.c $(GLOBALFLAGS)
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/sgram*
+

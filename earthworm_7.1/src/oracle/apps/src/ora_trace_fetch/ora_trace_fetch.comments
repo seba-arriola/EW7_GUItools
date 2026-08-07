@@ -1,0 +1,38 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY ora_trace_fetch
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html#ora_trace_fetch
+
+LINK_NAME Sample Config File
+LINK ora_trace_fetch.d.txt
+
+LINK_NAME Bugs
+LINK bugs.txt
+
+LINK_NAME Programmer Notes
+LINK programmer_notes.html
+
+DESCRIPTION <b>ora_trace_fetch</b> is the rear portion of the concierge system.
+<br><br>
+<b>ora_trace_fetch</b> processes snippet_requests that it retrieves from a table
+in the database, by repeatedly attempting to retrieve data from wave_servers.
+It has the ability to continually retrieve new data for a snippet as it 
+becomes avaialable, thus allowing a snippet to grow incrementally over time.
+<br><br>
+Initial blame to DavidK 2001/12/05
+<br><br>
+Last touched by  DavidK 2001/12/05
+
+
+*************************************************
+************************************************/
+

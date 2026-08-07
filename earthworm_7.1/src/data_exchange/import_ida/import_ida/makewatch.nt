@@ -1,0 +1,22 @@
+#                    Nmake File For watch - Windows NT version
+
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = watch
+O = watch.obj 
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+$B\$(APP).exe: $O
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) $O $L\threads_ew.obj \
+    $L\getutil.obj $L\kom.obj $L\logit_mt.obj \
+    $L\transport.obj $L\sleep_ew.obj \
+    $L\time_ew.obj $L\sema_ew.obj ..\idatap\idatap.lib -out:$B\$(APP).exe
+
+.c.obj:
+   $(cc) /nologo /I..\idatap\include $(cflags) $(cdebug) $(cvarsmt) $(tflags) -D_NTSDK $<
+

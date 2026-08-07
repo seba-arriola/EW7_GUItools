@@ -1,0 +1,40 @@
+#!/bin/csh -f #
+# Assume that a SAC directory containing event files, was created.
+# Now, tar the resulting SAC directory, compress it and make it
+# available for download via anonymous FTP.
+#
+#   Arguments:
+#       $1 - Event ID
+#       $2 - Top level directory where the SAC directory was be created: 
+#              top_level/yyyymm
+#       $3 - Directory where SAC files for this event are:
+#              yyyymmdd_hhmm_iiiiiiiiii
+#
+#  This script will create a file with the following name:
+#    top_level/yyyymm/yyyymmdd_hhmm_iiiiiiiiii.tar.Z
+#
+#   The intermediate SAC directory yyyymmdd_hhmm_iiiiiiiiii will be deleted
+#
+#
+
+set errfile = /tmp/SAC_ev_$1
+
+if ($#argv != 3) then
+
+	echo "Usage: SAC_create <event id> <top level SAC dir> <event SAC dir> "
+	exit -1
+
+endif
+
+
+cd $2
+
+#echo "Removing older versions of $3 package" >> $errfile
+	rm -f $3* >>& $errfile
+#echo "Creating $3.tar" >> $errfile
+	tar -cf $3.tar $3 >>& $errfile
+#echo "Creating $3.zip" >> $errfile
+	zip -1 -r $3.zip $3 >>& $errfile
+#echo "Removing $3" >> $errfile
+	rm -rf $3 >>& $errfile
+

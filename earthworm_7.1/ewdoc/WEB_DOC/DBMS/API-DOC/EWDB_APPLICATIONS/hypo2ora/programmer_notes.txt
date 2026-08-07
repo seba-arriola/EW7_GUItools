@@ -1,0 +1,13 @@
+/* hypo2ora programmer notes 
+   programmer_notes.txt */
+
+
+
+Programmer Notes:
+
+Detailed Processing
+Hypo2ora calls ewdb_apps_ArcFile2DB() to read in the ARC file 
+and create a resulting Event w/Origin, Magnitude(s), Picks, and 
+possibly Amplitudes, and Codas in the DB.
+
+

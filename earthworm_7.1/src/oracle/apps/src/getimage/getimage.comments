@@ -1,0 +1,37 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY getimage
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+#LINK_NAME Sample Config File
+#LINK getimage.d.txt
+
+#LINK_NAME Programmer Notes
+#LINK programmer_notes.txt
+
+DESCRIPTION <b>getimage</b> is a simple program for
+retrieving and deleting GIF images.  
+It is called via a webserver, with a
+GIF filename.  It opens the GIF file, writes its
+contents back to the webserver, and then deletes
+the file.  The program is for use with dynamically
+generated GIF images(such as getlist/eqparam2html
+maps), where the map needs to be passed to the
+webclient, and then deleted so that old maps do not
+overrun the webserver.
+<br><br>
+Initial version  davidk 1999
+<br><br>
+
+*************************************************
+************************************************/
+

@@ -1,0 +1,441 @@
+<HTML>
+<HEAD>
+<TITLE>Earthworm Modules: Pick_ew commands</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FADFAF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF
+0000">
+
+<CENTER><H1>Earthworm Modules: <BR>Pick_ew Configuration File Commands</H1>
+<I>(last revised 01 Sept 2006)</I></CENTER>
+						  	 
+Page Index:<BR>
+1.  <A HREF=#example>Example configuration file</A><BR>
+2.  <A HREF=#function>Functional command listing</A><BR>
+3.  <A HREF=#alphabet>Alphabetic command listing & description</A><BR>
+4.  <A HREF=#station>Station list format</A><BR> 
+5.  <A HREF=#reference>Additional references on the picker algorithm</A>
+<P>
+<!-- ADD HERE: Paragraph "On startup, xxxx reads the..." -->
+On startup, pick_ew reads the configuration file named on the command line.  
+Commands in this file set up all parameters used in picking P-wave arrivals 
+from Earthworm waveform data.  In the control file, lines may begin with a 
+valid pick_ew command (listed below) or with one of 2 special characters:
+
+<BLOCKQUOTE><PRE>
+#  marks the line as a comment (example: # This is a comment).<BR>   
+@  allows control files to be nested; one control file can be 
+   accessed from another with the command "@" followed by 
+   a string representing the path name of the next control file 
+   (example: @pick_ew.d).
+</BLOCKQUOTE></PRE>
+Command names must be typed in the control file exactly as shown in this
+document (upper/lower case matters!).
+<P>
+<A NAME="example">
+<H2>1.  EXAMPLE CONFIGURATION FILE</H2>
+<PRE>
+#
+#                     Pick_ew's Configuration File
+#
+MyModId        MOD_PICK_EW     # This instance of pick_ew
+StaFile        <A HREF=#station>pick_ew.sta</A>     # File containing station name/pin# info
+InRing           WAVE_RING     # Transport ring to find waveform data on,
+OutRing          PICK_RING     # Transport ring to write output to,
+HeartbeatInt            30     # Heartbeat interval, in seconds,
+RestartLength          100     # Number of samples to process for restart
+MaxGap                  15     # Maximum gap to interpolate
+Debug                    0     # If 1, print debugging message
+
+</PRE>
+<A NAME="function">
+<H2>2.  FUNCTIONAL COMMAND LISTING</H2>
+<P>  
+<!-- ADD HERE: Paragraph "Below are the commands recognized..." -->
+Below are the commands recognized by pick_ew, grouped by the function they 
+influence.  All of the commands are required; they must be specified in 
+the control file (in any order) for pick_ew to operate.
+
+<!-- ADD HERE: The pre-formatted functional command listing      -->
+<!-- To make an anchor for each command, surround it with these: -->
+
+<PRE>	Earthworm system setup:
+		<A HREF=#InRing>InRing</A>		Shared memory region for input
+		<A HREF=#OutRing>OutRing</A>		Shared memory region for output
+ 		<A HREF=#MyModId>MyModId</A>		Module id for pick_ew
+		<A HREF=#HeartBeatInt>HeartBeatInt</A> 	Interval between heartbeats
+
+	Picking Parameters:
+		<A HREF=#RestartLength>RestartLength</A>	Number of samples to process for restarts
+		<A HREF=#MaxGap>MaxGap</A>		Maximum gap (#samples) to interpolate
+		<A HREF=#StaFile>StaFile</A>		File containing station names and picking parameters
+
+	Output Control:
+		<A HREF=#Debug>Debug</A>		Debugging flag
+
+</PRE>
+
+<A NAME="alphabet">
+<H2>3.  ALPHABETIC COMMAND LISTING & DESCRIPTION</H2>
+<P>
+In the following section, all configuration file commands are listed 
+in alphabetical order.  Listed along with the command (bold-type) are 
+its arguments (in red), the name of the subroutine that processes the 
+command, and the function within the module that the command influences. 
+A detailed description of the command and is also given.  None of the 
+commands has any default value.  The values used by Calnet are listed 
+after each command description.
+<PRE><B>
+command <font color=red>arg1</font>				processed by		function
+</PRE></B>
+<HR>
+
+<!-- ADD HERE: all commands; below is a sample command blank: -->
+
+
+<A NAME="Debug">  <!-- command name as anchor inside quotes -->	
+<PRE><B>Debug <font color=red>flag</font>				GetConfig		output</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets a flag to control the volume of debugging information
+output by pick_ew.  If <font color=red>flag</font> is zero, no debug info is written.  
+If <font color=red>flag</font> is non-zero,  debug information is written to the logfile and screen.
+<PRE><!-- Default and example go here   -->
+Default:  none				
+Sample:   Debug 0
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="HeartBeatInt">  <!-- command name as anchor inside quotes -->	
+<PRE><B>HeartBeatInt <font color=red>nsec</font>			GetConfig		Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Defines the number of seconds, <font color=red>nsec</font>, between TYPE_HEARTBEAT 
+messages issued by pick_ew.
+<PRE><!-- Default and example go here   -->
+Default:  none				
+Sample:   HeartBeatInt 30
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="InRing">  <!-- command name as anchor inside quotes -->	
+<PRE><B>InRing <font color=red>ring</font>				GetConfig		Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Tells pick_ew which shared memory region to find its input waveforms on.
+<font color=red>ring</font> is a character string (valid strings are listed in earthworm.d) 
+that relates (in earthworm.d) to a unique number for the key to the
+shared memory region.  By default, pick_ew processes all TYPE_TRACEBUF messages
+that reside on <font color=red>ring</font>, regardless of their
+installation id or module id.
+<PRE><!-- Default and example go here   -->
+Default:  none				
+Sample:   InRing WAVE_RING
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MaxGap">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MaxGap <font color=red>maxgap</font>				GetConfig		output</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets <font color=red>maxgap</font>, the maximum length (in samples) of a data gap
+which pick_ew will allow without restarting the picking algorithm.  When pick_ew
+detects a data gap less than or equal to <font color=red>maxgap</font> samples
+on a given channel, it will do a simple linear interpolation across the gap
+and continue in the picking algorithm as if there were no data gap.  If a
+gap is longer than <font color=red>maxgap</font> samples, then pick_ew will
+drop all active pick and coda calculations for that channel and will enter the
+"restart" phase (see <A HREF=#RestartLength>RestartLength</A> command) of the
+algorithm.
+<PRE><!-- Default and example go here   -->
+Default:  none
+Sample:   MaxGap 10
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MyModId">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MyModId <font color=red>mod_id</font>				GetConfig		Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the module id for labeling all outgoing messages. <font color=red>mod_id</font> is
+a character string (valid strings are listed in earthworm.d) that
+relates (in earthworm.d) to a unique single-byte number.  If more than
+one pick_ew is running at the same time, they must be given different
+module ids!  (If 2 pick_ew's are given the same module id, other modules
+that listen to pick_ew output may report many "missed message" errors).
+<PRE><!-- Default and example go here   -->
+Default:  none				
+Sample:   MyModId  MOD_PICK_EW
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="OutRing">  <!-- command name as anchor inside quotes -->	
+<PRE><B>OutRing <font color=red>ring</font>				GetConfig		Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Tells pick_ew which shared memory region to use for all its output
+(picks, codas, heartbeats and errors).  <font color=red>ring</font> is a character string 
+(valid strings are listed in earthworm.d) that relates (in earthworm.d) 
+to a unique number for the key to the shared memory region.
+<PRE><!-- Default and example go here   -->
+Default:  none				
+Sample:   OutRing PICK_RING
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="RestartLength">  <!-- command name as anchor inside quotes -->	
+<PRE><B>RestartLength <font color=red>nrestart</font>			GetConfig		picking params</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets <font color=red>nrestart</font>, the number of samples pick_ew will process on startup
+for each channel to obtain background values before entering the P-wave picking phase
+for that signal.  Once running, any time pick_ew detects a data gap longer than <A HREF=#MaxGap>MaxGap</A> samples in a 
+given channel's data, pick_ew will drop any active pick or coda calculations for that
+channel. 
+It will then "restart" that channel by processing the next <font color=red>nrestart</font> samples to reestablish baseline values,
+after which it will return to the picking phase of the algorithm.
+<PRE><!-- Default and example go here   -->
+Default:  none
+Sample:   RestartLength 100
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="StaFile">  <!-- command name as anchor inside quotes -->	
+<PRE><B>StaFile <font color=red>name</font>				GetConfig		picking params</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Tells pick_ew the <font color=red>name</font> of the file that contains the pick/don't pick flag, pin numbers, station code, and per-channel picking parameters.
+<font color=red>name</font> is a character string;
+it may be enclosed in double-quotes, but it doesn't have to be.
+See <A HREF=#station>section 4</A> below for the format of this file.
+<PRE><!-- Default and example go here   -->
+Default:  none
+Sample:   StaFile "pick_ew.sta"
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="station">
+<H2>4.  STATION LIST FORMAT</H2> 
+<P>
+By default, pick_ew processes all TYPE_TRACEBUF messages (regardless of their
+installation id or module id) that reside on transport ring specified in the InRing 
+command.  All of the channels of trace data being processed by the Earthworm system 
+should be described in pick_ew's station list file.  This file contains one line per 
+input channel. Each line contains 22 required
+fields used by pick_ew to identify the channel and set all the picking parameters 
+for that channel.
+In v5.1 and higher an optional 23rd field was added for use by the module eqcoda. 
+Pick_ew ignores this 23rd field if it exists.
+Upon retrieving a TYPE_TRACEBUF message from the ring, pick_ew finds the appropriate
+parameters for that message by matching the station, component, and network fields in 
+the message header to a line from the station file.  If it can't find a match, pick_ew
+won't process that tracebuf message.
+<P>
+A sample portion of a pick_ew station list file appears below. <BR>
+Note that a comments are preceded by a #. 
+<P>
+----------------------------------------------------
+<PRE>
+#
+#  This is a sample station list for the pick_ew program.
+#
+#                                 MinBigZC       RawDataFilt    LtaFilt         DeadSta          PreEvent
+# Pick  Pin    Station/      MinSmallZC   MaxMint           StaFilt       RmavFilt           AltCoda
+# Flag  Numb   Comp/Net/Loc   Itr1   MinPeakSize  i9  CharFuncFilt  EventThresh          CodaTerm         Erefs   ClipCount
+# ----  ----   --------   ---------------------------------------------------------------------------------------------
+    1     0  AAR   VHZ NC  -- 3  40  3  60  500  3  .985  3.  .6  .03  5.  .9961  1200.  49.14  .8  1.5  50000.     2048
+    1     1  AAS   VHZ NC  -- 3  40  3  60  500  3  .985  3.  .6  .03  5.  .9961  1200.  49.14  .8  1.5  50000.     2048
+    0     2  ABL   VHZ CI  -- 3  40  3  60  500  3  .985  3.  .6  .03  5.  .9961  1200.  49.14  .8  1.5  50000.     2048
+    1     3  ABR   VHZ NC  -- 3  40  3  60  500  3  .985  3.  .6  .03  5.  .9961  1200.  49.14  .8  1.5  50000.     2048
+    1  2005  KCPB  BHZ NC  -- 3  40  3 162  500  3  .939  3.  .4  .015 5.  .9961  1200. 132.7   .8  1.5 135000.  8388608
+# end of station file
+</PRE>
+----------------------------------------------------
+<P>
+Each line in the station file contains the following 24 fields, separated by white space:
+<P>
+<B>Channel Identification:</B>
+
+<PRE>
+ 1. <font color=blue>Pick Flag</font>	if <font color=blue>Pick Flag</font> is 0, pick_ew will not try to pick P-wave arrivals 
+		from this trace.  If <font color=blue>Pick Flag</font> is 1, the trace will be picked.
+
+ 2. <font color=blue>Pin Numb</font>	this field is not used by pick_ew, but exists for posterity
+		and for potential use by other programs.  Each input signal in a given 
+		Earthworm system should have a pin number <font color=blue>Pin Numb</font> (2-byte integer)
+		that is unique across all data sources within the system.  For example, 
+		if we use two digitizers with 256 channels each, our pin numbers would
+		range from 0 to 511.
+
+ 3. <font color=blue>Station</font>	the first of 3 fields (Station-Comp-Net) that will uniquely identify 
+		each trace of seismic data.  <font color=blue>Station</font> is a string, up to 5 characters, 
+		that identifies the physical site of the seismic instrument. This label 
+		must be unique within a given network.
+   
+ 4. <font color=blue>Comp</font>	a 3-character string to identify the component of motion
+		recorded by this seismic trace.
+   
+ 5. <font color=blue>Net</font>		a 2-character string that identifies the network that
+		operates the seismic instrument.
+
+ 6. <font color=blue>Loc</font>		a 2-character string that identifies the location code that
+		describes the sensor location.
+</PRE>
+   
+<B>Event Termination/Evaluation Criteria:</B>
+
+<PRE>
+ 7. <font color=blue>Itr1</font>	(i5 in earlier code) Sets <font color=blue>Itr1</font> which is used to calculate the 
+		zero-crossing termination count.  The pick_ew calculates <font color=red>itrm</font>, the 
+		number of consecutive small-zero crossings (zero-crossings where the 
+		short-term average is less than the critical termination level) to be 
+		allowed before declaring the event over. <font color=red>itrm</font> = <font color=blue>Itr1</font> + <font color=red>m</font> / <font color=blue>Itr1</font>  
+		where <font color=red>m</font> is the zero-crossing counter.  <font color=red>itrm</font> will start out quite small 
+		at the beginning of an event and will increase during an event to a 
+		maximum of 50.
+   
+ 8. <font color=blue>MinSmallZC</font>	(i6 in earlier code) Defines the minimum number of zero-crossings for
+		a valid pick.  An event is declared over and potentially valid after 
+		<font color=blue>MinSmallZC</font> zero-crossings. Pick_ew then evaluates the event to determine
+		if it was a seismic event or noise.
+ 
+ 9. <font color=blue>MinBigZC</font>	(i7 in earlier code) Defines the minimum number of "big zero-crossings" for 
+		a valid pick. No pick is reported unless at least <font color=blue>MinBigZC</font> big zero-crossings 
+		occurred while the event was active.  [A "big zero-crossing" amplitude 
+		must exceed rbig, where rbig is (the largest amplitude of first 3 half-
+		cycles after event activation)/3.  A "big zero crossing" must also
+		represent a crossing of opposite polarity to the previous crossing].
+
+10. <font color=blue>MinPeakSize</font>	(i8 in earlier code) Defines the minimum amplitude (digital counts) for 
+		a valid pick. No pick is reported unless one of the first three peaks 
+		of an event has an amplitude larger than <font color=blue>MinPeakSize</font> digital counts.
+ 
+11. <font color=blue>MaxMint</font>	(hard-wired at 500 in earlier code) Maximum interval (in samples) between 
+		zero crossings. If no zero crossings occur within <font color=blue>MaxMint</font> data samples, 
+		the pick event is terminated.
+ 
+12. <font color=blue>i9</font>		(i9 in earlier code) Defines the minimum coda length (seconds) for a 
+		valid pick.  No pick is reported unless its coda is at least <font color=blue>i9</font> seconds 
+		long.
+</PRE>
+
+
+<B>Waveform Filtering Parameters:</B>
+
+<PRE>
+13. <font color=blue>RawDataFilt</font>	(c1 in earlier code) Sets the filter parameter <font color=blue>RawDataFilt</font> that is 
+		applied to the raw trace data.  This is essentially a recursive highpass 
+		filter that removes the DC offset from the data.
+
+14. <font color=blue>CharFuncFilt</font> (c2 in earlier code) Sets the filter parameter <font color=blue>CharFuncFilt</font> that is 
+		applied in the calculation of the characteristic function of the 
+		waveform data.
+ 
+15. <font color=blue>StaFilt</font>	(c3 in earlier code) Sets the filter parameter (time constant) <font color=blue>StaFilt</font>  
+		that is used in the calculation of the short-term average (STA) 
+		of the characteristic function of the trace.
+ 
+16. <font color=blue>LtaFilt</font>	(c4 in earlier code) Sets the filter parameter (time constant) <font color=blue>LtaFilt</font> 
+		that is used in the calculation of the long-term average (LTA) 
+		of the characteristic function of the trace.
+   
+17. <font color=blue>EventThresh</font>	(c5 in earlier code) Sets the STA/LTA event threshold.  An event (a pick) 
+		is declared when STA is larger than <font color=blue>EventThresh</font>*LTA.  Once an event 
+		is declared, pick_ew enters an event evaluation mode to determine if 
+		the event is a P-wave arrival or noise.
+   
+18. <font color=blue>RmavFilt</font>	Filter parameter (time constant) used
+		to calculate the running mean of the absolute value of the waveform data. Usually set to 0.9961.
+
+19. <font color=blue>DeadSta</font>	(c6 in earlier code) Sets the dead station threshold (counts).  
+		If the running average of the absolute value (AAV) of a trace is 
+		greater than <font color=blue>DeadSta</font> digital counts, the channel is considered
+		dead and the pick_ew does not attempt to pick arrivals.
+</PRE>
+
+<B>Coda Termination Parameters:</B>
+
+<PRE>
+20. <font color=blue>CodaTerm</font>	(c7 in earlier code) Sets the "normal" coda termination threshold (counts).  
+		Two methods are used to determine if the coda length calculation 
+		is over.  For quiet stations, the coda is "normally" terminated 
+		when the AAV of a 2-second waveform window drops below <font color=blue>CodaTerm</font> digital 
+		counts.  For noisy stations, an alternate termination method is used 
+		(see AltCoda & PreEvent, below).  Pick_ew stops all coda calculations 
+		144 seconds after event activation, even if the coda AAV hasn't reached 
+		the termination value.  In the Northern California Seismic Network's 
+		convention, <font color=blue>CodaTerm</font> is the number of digital counts produced by a 
+		discriminator output signal (input to the Earthworm A/D) of 60 mV.  
+		The 2-bit Earthworm A/D has an input range of +/- 2.5 volts and an 
+		output range of 0 to 4095 counts (-2048 to 2047 counts).  For such a 
+		system, a 60 mV input will produce a sample of 49.1 counts.
+
+21. <font color=blue>AltCoda</font>	(c8 in earlier code) Defines the "noisy station level" at which 
+		pick_ew should use the alternate coda termination method.  If the 
+		AAV of a channel is greater than <font color=blue>CodaTerm</font>*<font color=blue>AltCoda</font> digital counts 
+		when an event is declared, pick_ew uses the alternate coda termination 
+		method.
+   
+22. <font color=blue>PreEvent</font>	(c9 in earlier code) Defines the alternate coda termination threshold 
+		for noisy stations. If the AAV of a channel is greater than 
+		<font color=blue>CodaTerm</font>*<font color=blue>AltCoda</font> digital counts when an event is declared, the coda is 
+		considered over when the AAV of a 2-second waveform window drops to 
+		less than <font color=blue>PreEvent</font>*<font color=red>(pre-event signal amplitude)</font>.  Pick_ew stops 
+		all coda calculations 144 seconds after event activation, even if the 
+		coda AAV hasn't reached the termination value.
+
+23. <font color=blue>Erefs</font>	(hard-wired at 50000. in earlier code) Used in calculating the increment 
+		(<font color=red>crtinc</font>) to be added to the criterion level (<font color=red>ecrit</font>) at each zero crossing.
+		The criterion level is used to determine if the event is over.  
+			<font color=red>crtinc = eref / </font><font color=blue>Erefs</font> 
+		where <font color=red>eref</font> is the current STA/LTA reference level. The smaller <font color=blue>Erefs</font> is, 
+		the faster <font color=red>ecrit</font> will increase, and the sooner the event will terminate.
+</PRE>
+
+<B>Optional Parameters:</B>
+
+<PRE>
+24. <font color=blue>ClipCount</font>	(added in v5.1 for use by eqcoda, ignored by pick_ew) Specifies 
+		the maximum absolute amplitude (in counts zero-to-peak) that can be
+		expected for this channel. Eqcoda calculates clipping thresholds for 
+		P-amplitudes and coda-window average absolute amplitudes as a fraction 
+		of <font color=blue>ClipCount</font>.   
+</PRE>
+
+
+<HR>
+<A NAME="reference">
+<H2>5.  ADDITIONAL REFERENCES ON THE PICKER ALGORITHM</H2>
+<PRE>
+Allen, Rex V., Automatic Earthquake Recognition and Timing from Single Traces, 
+	Bull. Seism. Soc. Am., v. 68, pp 1521-1532, 1978.
+
+Allen, Rex, Automatic Phase Pickers:  Their Present Use and Future Prospects,
+	Bull. Seism. Soc. Am., v. 72, pp S225-S242, 1982.
+</PRE>
+<HR>
+
+<CENTER> 
+<A HREF="../modules.html">Module Index</A> | 
+<A HREF="../ovr/pick_ew_ovr.html">Pick_ew Overview</A> |
+<A HREF="../ovr/picker_tune.html">Picker Tuning</A>
+</CENTER>
+
+
+
+<!-- USGS-required stuff at the end -->
+<HR>
+<ADDRESS>
+Contact: <B><address> Questions? Issues? <a href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw" target="_blank">Subscribe to the Earthworm List (earthw). </a></address></B><BR>
+</ADDRESS>
+</BODY>
+</HTML>
+

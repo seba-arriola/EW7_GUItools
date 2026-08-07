@@ -1,0 +1,1 @@
+rcv -tcp -o rcvnsn7.loga -# 1000 -e rcv_ew_nsn7.d -host nsn7.cr.usgs.gov -stationlog &

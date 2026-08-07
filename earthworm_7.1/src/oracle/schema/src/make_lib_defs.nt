@@ -1,0 +1,69 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: make_lib_defs.nt,v 1.7 2005/06/10 16:30:49 davidk Exp $
+#
+#    Revision history:
+#     $Log: make_lib_defs.nt,v $
+#     Revision 1.7  2005/06/10 16:30:49  davidk
+#     Added flag to have the compiler issue a stricter level of warnings "/W3".
+#
+#     Revision 1.6  2004/04/09 02:34:10  davidk
+#     Separately defined earthworm cheater flags (_WINNT, _INTEL)
+#
+#     Revision 1.5  2003/12/13 01:48:29  davidk
+#     Added a <space> to the end of the EW_LIB define line, so
+#     that the last '\' would be interpreted as part of the
+#     directory name, instead of as a line-escape.
+#
+#     Revision 1.4  2003/11/10 17:16:36  davidk
+#     Added an EW_LIB definition.
+#
+#     Revision 1.3  2003/11/10 17:16:06  davidk
+#     *** empty log message ***
+#
+#     Revision 1.2  2001/07/02 22:50:26  lucky
+#     Added CFLAGS definition -- without it, nothing compiles under nt
+#
+#     Revision 1.1  2001/05/23 22:51:11  davidk
+#     Initial revision
+#
+#
+##################################################################
+
+# Set MS Make Variable NODEBUG based on EW_DEBUG setting
+!IF "$(EW_DEBUG)" == "1"
+!ELSE
+NODEBUG=1
+!ENDIF
+
+
+######################################
+# Include the system makefile 
+# (ntwin32.mak) so that 
+# certain macros like $(CC) work.
+######################################
+!include <ntwin32.mak>
+
+######################################
+# Define the macro definitions that
+# we need for all of the schema 
+# makefiles.
+######################################
+COPY = copy
+DELETE_FORCE = del /f
+EMAKE = nmake -f makefile.nt
+EMAKE_FORCE = nmake -a -f makefile.nt
+EWDB_LIB= $(SCHEMA_DIR)\lib\  
+EW_LIB  = $(EW_HOME)\$(EW_VERSION)\lib\  
+
+###############################
+#OBJECT FILES EXTENSION
+###############################
+OBJ 	= obj
+
+CHEATER_EARTHWORM_PLATFORM_FLAGS = -D_WINNT -D_INTEL 
+cflags  = /nologo /W3 $(cdebug) $(cvarsmt) -c $(CHEATER_EARTHWORM_PLATFORM_FLAGS) -I$(SCHEMA_DIR)\src\include -I$(SCHEMA_DIR)\src\include\internal
+
+

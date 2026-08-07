@@ -1,0 +1,29 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.2 2003/05/06 20:56:31 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.2  2003/05/06 20:56:31  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2003/01/30 23:11:34  lucky
+#     Initial revision
+#
+#
+#
+
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+# Clean-up rules
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\vdl*

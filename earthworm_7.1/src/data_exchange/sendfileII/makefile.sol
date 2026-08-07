@@ -1,0 +1,25 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#                     Make file for sendfileII
+#                         Solaris Version
+#
+#  The posix4 library is required for nanaosleep.
+#
+CFLAGS = -g
+
+O = sendfileII.o socket_sol.o config.o chdir_sol.o getfname_sol.o \
+    sleep_sol.o log.o tzset_sol.o fopen_sol.o
+
+all: sendfileII
+
+sendfileII: $O
+	cc -o sendfileII $O -lm -lsocket -lnsl -lposix4
+
+
+clean:
+	/bin/rm -f sendfileII *.o
+
+clean_bin:
+	/bin/rm -f sendfileII 

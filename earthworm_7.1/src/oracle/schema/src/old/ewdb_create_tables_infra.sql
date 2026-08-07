@@ -1,0 +1,117 @@
+/*                                                          */
+/*   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE */
+/*   CHECKED IT OUT USING THE COMMAND CHECKOUT.             */
+/*                                                          */
+
+
+/*
+/* Creating Infrastructure Tables 
+*********************************/
+
+CREATE TABLE Chan (idChan NUMBER(13,0) NULL, idComment NUMBER(13,0) NULL,  
+ CONSTRAINT idChan PRIMARY KEY (idChan)  
+)  TABLESPACE EWDB_INFRASPACE;
+
+CREATE TABLE Site (idSite NUMBER(13,0) NULL, 
+  sSta VARCHAR2(7) NULL, sNet VARCHAR2(9) NULL, 
+  idComment NUMBER(13,0) NULL,  
+ CONSTRAINT idSite UNIQUE  (idSite),  
+ CONSTRAINT Site_Sta_Net PRIMARY KEY (sSta, sNet)  
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+CREATE TABLE SiteT (idSiteT NUMBER(13,0) NULL, 
+  idSite NUMBER(13,0) NULL, 
+  tOff NUMBER(14,4) NULL, tOn NUMBER(14,4) NULL, 
+  dLat NUMBER(10,6) NULL, dLon NUMBER(10,6) NULL, 
+  dElev NUMBER(7,2) NULL, idComment NUMBER(13,0) NULL,  
+ CONSTRAINT SiteT_idSite FOREIGN KEY (idSite) 
+   REFERENCES SITE(IDSITE),  
+ CONSTRAINT SiteT_idSite_tOff PRIMARY KEY (idSite, tOff),
+ CONSTRAINT idSiteT UNIQUE  (idSiteT)
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+CREATE TABLE Comp (idComp NUMBER(13,0) NULL, 
+  idSite NUMBER(13,0) NULL, sComp VARCHAR2(9) NULL, 
+  sLoc VARCHAR2(9) NULL, idComment NUMBER(13,0) NULL,  
+ CONSTRAINT idComp PRIMARY KEY (idComp),  
+ CONSTRAINT Comp_idSite FOREIGN KEY (idSite) 
+   REFERENCES SITE(IDSITE),  
+ CONSTRAINT Comp_SCNL UNIQUE  (idSite, sComp, sLoc)  
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+CREATE TABLE CompT (idCompT NUMBER(13,0) NULL, 
+  idComp NUMBER(13,0) NULL, tOff NUMBER(14,4) NULL, 
+  tOn NUMBER(14,4) NULL, sSta VARCHAR2(7) NULL, 
+  sComp VARCHAR2(9) NULL, sNet VARCHAR2(9) NULL, 
+  sLoc VARCHAR2(9) NULL, dLat NUMBER(10,6) NULL, 
+  dLon NUMBER(10,6) NULL, dElev NUMBER(7,2) NULL, 
+  dAzm NUMBER(4,1) NULL, dDip NUMBER(4,1) NULL, 
+  idComment NUMBER(13,0) NULL,  
+ CONSTRAINT idCompT UNIQUE  (idCompT),  
+ CONSTRAINT CompT_idComp_tOff PRIMARY KEY (idComp, tOff)  
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+CREATE TABLE ChanT (idChanT NUMBER(13,0) NULL, 
+  idChan NUMBER(13,0) NULL, tOff NUMBER(14,4) NULL, 
+  tOn NUMBER(14,4) NULL, idCompT NUMBER(13,0) NULL, 
+  idDeviceslot NUMBER(13,0) NULL, iPlexor NUMBER(3,0) NULL, 
+  idComment NUMBER(13,0) NULL,  CONSTRAINT idChanT UNIQUE (idChanT),  
+ CONSTRAINT ChanT_idChan_tOff PRIMARY KEY (idChan, tOff),  
+ CONSTRAINT ChanT_idCompT FOREIGN KEY (idCompT) 
+   REFERENCES COMPT(IDCOMPT),  
+ CONSTRAINT ChanT_idChan FOREIGN KEY (idChan) 
+   REFERENCES Chan(idChan)
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+
+
+CREATE TABLE CookedTF (idCTF NUMBER(13,0) NULL, 
+  sFuncDesc varchar(50) NULL,
+ CONSTRAINT idCTF PRIMARY KEY (idCTF)
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+CREATE TABLE ChanCTF (idChanCTF NUMBER(13,0) NULL, 
+  idChanT NUMBER(13,0) NULL, idCTF NUMBER(13,0) NULL, 
+  dSampRate NUMBER(8,4) NULL, dGain NUMBER NULL,
+ CONSTRAINT idChanCTF UNIQUE  (idChanCTF),  
+ CONSTRAINT ChanCTF_idChanT_Primary PRIMARY KEY (idChanT),  
+ CONSTRAINT ChanCTF_idChanT_Foreign FOREIGN KEY (idChanT) 
+   REFERENCES CHANT(IDCHANT),  
+ CONSTRAINT ChanCTF_idCTF FOREIGN KEY (idCTF) 
+   REFERENCES CookedTF(IDCTF)
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+CREATE TABLE PolesAndZeroes (idCTF NUMBER(13,0) NULL, 
+  idPZ NUMBER(13,0) NULL, cPZType CHAR(1) NULL, 
+  dReal NUMBER(14,7) NULL, dImaginary NUMBER(14,7) NULL,  
+ CONSTRAINT idPZ PRIMARY KEY (idPZ),  
+ CONSTRAINT PolesAndZeroes_idCTF FOREIGN KEY (idCTF) 
+   REFERENCES CookedTF(IDCTF)
+   /* CLEANUP cPZType should be changed to iPZType or bPZType */
+   /*  whatever the standard format is for a */
+   /*   binary(T or F) flag. */
+)  TABLESPACE EWDB_INFRASPACE;
+
+
+/* 
+  Creating Infrastructure Sequences 
+**************************************/
+Create Sequence ChanSeq       START WITH 1 MAXVALUE 999999999 CYCLE;
+Create Sequence SiteSeq       START WITH 1 MAXVALUE 999999999 CYCLE;
+Create Sequence SiteTSeq      START WITH 1 MAXVALUE 999999999 CYCLE;
+Create Sequence CompSeq       START WITH 1 MAXVALUE 999999999 CYCLE;
+Create Sequence CompTSeq      START WITH 1 MAXVALUE 999999999 CYCLE;
+Create Sequence ChanTSeq      START WITH 1 MAXVALUE 999999999 CYCLE;
+
+Create Sequence CTFSeq        START WITH 1 MAXVALUE 999999999 CYCLE CACHE 2;
+Create Sequence ChanCTFSeq    START WITH 1 MAXVALUE 999999999 CYCLE CACHE 2;
+Create Sequence PZSeq         START WITH 1 MAXVALUE 999999999 CYCLE CACHE 2;
+
+

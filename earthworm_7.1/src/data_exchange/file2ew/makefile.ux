@@ -1,0 +1,62 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.1 2005/07/25 20:16:19 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/25 20:16:19  friberg
+#     added in Unix makefile
+#
+#
+#
+
+CFLAGS = ${GLOBALFLAGS}
+LIBS = -lm -lpthread
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+BINARIES = file2ew.o $L/chron3.o $L/logit.o $L/kom.o $L/getutil.o \
+	   $L/sleep_ew.o $L/swap.o $L/time_ew.o $L/transport.o $L/dirops_ew.o $L/k2evt2ew.o 
+
+SMBIN = $(BINARIES) $L/rw_strongmotionII.o 
+
+
+all:
+	make -f makefile.ux file2ew
+	make -f makefile.ux sm_csmip2ew 
+	make -f makefile.ux sm_nsmp2ew 
+	make -f makefile.ux sm_redi2ew 
+	make -f makefile.ux sm_terra2ew 
+	make -f makefile.ux sm_tremor2ew 
+
+file2ew: $(BINARIES) raw2ew.o
+	cc -o $B/file2ew $(BINARIES) raw2ew.o  $(LIBS)
+
+sm_csmip2ew: $(SMBIN) csmip2ew.o
+	cc -o $B/sm_csmip2ew $(SMBIN) csmip2ew.o  $(LIBS)
+
+sm_nsmp2ew: $(SMBIN) nsmp2ew.o
+	cc -o $B/sm_nsmp2ew $(SMBIN) nsmp2ew.o $(LIBS)
+
+sm_redi2ew: $(SMBIN) redi2ew.o
+	cc -o $B/sm_redi2ew $(SMBIN) redi2ew.o  $(LIBS)
+
+sm_terra2ew: $(SMBIN) terra2ew.o
+	cc -o $B/sm_terra2ew $(SMBIN) terra2ew.o  $(LIBS)
+
+sm_tremor2ew: $(SMBIN) tremor2ew.o
+	cc -o $B/sm_tremor2ew $(SMBIN) tremor2ew.o  $(LIBS)
+
+
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/sm_*2ew* $B/file2ew*

@@ -1,0 +1,20 @@
+#CFLAGS = -D_REENTRANT -D_EARTHWORM -DDEBUG_PRINT $(GLOBALFLAGS)
+CFLAGS = -D_REENTRANT -D_EARTHWORM $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+include SCRIPTS/makefile.modules
+
+BINARIES =   vdl.o vdltrg.o vdlput.o vdlqsub.o ifft512.o ifft256.o ifft1024.o\
+		 fftlib.o vdlfilt.o filtheli.o datetime.o edgesock_thr.o\
+		 cmprs.o vdltcp_nopass.o filt2.o filt10.o filt5.o feed_vdl_ew.o \
+	 	 $L/getutil.o  $L/kom.o $L/logit.o $L/transport.o  $L/sleep_ew.o\
+		 $L/socket_ew.o $L/time_ew.o $L/threads_ew.o $L/sema_ew.o\
+		 $L/mem_circ_queue.o $L/swap.o
+
+vdlew: $(BINARIES)
+	echo "L=$L"
+	echo "B=$B"
+	cc -o $B/vdl $(BINARIES) -lnsl -lsocket -mt -lposix4 -lthread -lc -lm

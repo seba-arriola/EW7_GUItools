@@ -1,0 +1,12 @@
+KNOWN BUGS
+
+1)  If you do not set "TimeoutSeconds" in the config file, then the
+program will run in the default mode, which is without a wave_server
+timeout.  This is HIGHLY DISCOURAGED, because a network problem can
+cause a disconnection from the wave_server that is unnoticed by the
+client program, and thus ora_trace_fetch will hang in a recv() call
+waiting for trace_data from a wave_server that has disconnected.
+It is recommended that you run with a very large timeout (such as 20
+minutes) instead of running without a timeout.
+DavidK 031402
+

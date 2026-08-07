@@ -1,0 +1,1016 @@
+<!-- Warning!!!: Do not edit this page it is
+automatically generated from comments in the ewdb_ora_api.h
+source file.  -->
+<html>
+<head>
+<title>EWDB Ora API Functions</title>
+<body><center><h1>Functions of the EW5 Oracle API</h1></center>
+
+<hr>
+<a name=ArcFile2DB></a>
+<font size=+1>ArcFile2DB</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ArcFile2DB(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> ArcFileName</NOBR>, <NOBR><i>char *</i> author</NOBR>, <NOBR><i>char *</i> szEventID</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Reads the hypoinverse arc file, converts it into DB event format and inserts it into he database.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EW_SUCCESS</td>
+  <td>Successful operation</td>
+ </tr>
+ <tr>
+  <td>EW_FAILURE</td>
+  <td> Failure -- see logfile for details.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>ArcFileName</td>
+  <td>char *</td>
+  <td>Name of Hypoinverse arc file to insert.</td>
+ </tr>
+ <tr>
+  <td>author</td>
+  <td>char *</td>
+  <td>Author to be assigned to the event.</td>
+ </tr>
+ <tr>
+  <td>szEventID</td>
+  <td>char *</td>
+  <td>External author ID.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=RetrieveIdChanExternal></a>
+<font size=+1>RetrieveIdChanExternal</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int RetrieveIdChanExternal(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDB_External_StationStruct *</i> pStation</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates or updates a component and associated channel in the DB using an external station table and a a cheater table to go from external station to chan.  Upon successful completion it writes the DB ID of the new/update channel to pStation->idChan.  This function ignores the pStation->idComp parameter.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pStation</td>
+  <td>EWDB_External_StationStruct *</td>
+  <td>Pointer to an EWDB_External_StationStruct filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=InsertBodyAmp></a>
+<font size=+1>InsertBodyAmp</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int InsertBodyAmp(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDB_PhaseAmpStruct *</i> pBodyAmp</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a body amplitude based station magnitude from the caller supplied information in pDurCoda.  The function assumes that the caller has supplied all station magnitude information including summary magnitude data in the EWDB_PhaseAmpStruct.  The caller need not fill in AmpBody related information as it is inappropriate.  The pBodyAmp->idMagnitude and pDurCoda->idPick values must be valid existing Magnitude and Pick DB IDs respectively.  The pDurCoda->idChan value must also be filled in with the DB ID of a valid existing channel.  </td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBodyAmp</td>
+  <td>EWDB_PhaseAmpStruct *</td>
+  <td>Pointer to a EWDB_PhaseAmpStruct filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=InsertDurCoda></a>
+<font size=+1>InsertDurCoda</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int InsertDurCoda(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDB_PhaseAmpStruct *</i> pDurCoda</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a coda duration based station magnitude from the caller supplied information in pDurCoda.  The function assumes that the caller has supplied all station magnitude information including summary magnitude data in the EWDB_PhaseAmpStruct.  The caller need not fill in AmpBody related information as it is inappropriate.  The pDurCoda->idMagnitude and pDurCoda->idPick values must be valid existing Magnitude and Pick DB IDs respectively.  The pDurCoda->idChan value must also be filled in with the DB ID of a valid existing channel.  Upon successful completion, the function writes the DB IDs of the newly created coda duration, coda termination, and station magnitude to pDurCoda->idDurCoda, pDurCoda->idTCoda, and pDurCoda->idMagLink respectively.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pDurCoda</td>
+  <td>EWDB_PhaseAmpStruct *</td>
+  <td>Pointer to a EWDB_PhaseAmpStruct filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=DB2ArcFile></a>
+<font size=+1>DB2ArcFile</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int DB2ArcFile(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>char *</i> ArcFileName</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Writes all information about the event in  Hypoinverse archive format to the file.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EW_SUCCESS</td>
+  <td>Successful operation</td>
+ </tr>
+ <tr>
+  <td>EW_FAILURE</td>
+  <td> Failure -- see logfile for details.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>Database ID of the event to retrieve.</td>
+ </tr>
+ <tr>
+  <td>ArcFileName</td>
+  <td>char *</td>
+  <td>Name of Hypoinverse arc file to write.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=GetDBEventInfo></a>
+<font size=+1>GetDBEventInfo</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int GetDBEventInfo(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>t1</i> p1</NOBR>, <NOBR><i>t2</i> p2</NOBR>, <NOBR><i>t3</i> p3</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>desc</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>p1</td>
+  <td>t1</td>
+  <td>d1</td>
+ </tr>
+ <tr>
+  <td>p2</td>
+  <td>t2</td>
+  <td>d2</td>
+ </tr>
+ <tr>
+  <td>p3</td>
+  <td>t3</td>
+  <td>d3</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=<a href=ora_api_functions.html#GetDBEventInfo>GetDBEventInfo</a>_Super></a>
+<font size=+1><a href=ora_api_functions.html#GetDBEventInfo>GetDBEventInfo</a>_Super</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int <a href=ora_api_functions.html#GetDBEventInfo>GetDBEventInfo</a>_Super(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>t1</i> p1</NOBR>, <NOBR><i>t2</i> p2</NOBR>, <NOBR><i>t3</i> p3</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>desc</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>p1</td>
+  <td>t1</td>
+  <td>d1</td>
+ </tr>
+ <tr>
+  <td>p2</td>
+  <td>t2</td>
+  <td>d2</td>
+ </tr>
+ <tr>
+  <td>p3</td>
+  <td>t3</td>
+  <td>d3</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=GetTransformFunctionForChan></a>
+<font size=+1>GetTransformFunctionForChan</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int GetTransformFunctionForChan(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idChan</NOBR>, <NOBR><i>time_t</i> tTime</NOBR>, <NOBR><i>EWDB_ChanTCTFStruct *</i> pChanCTF</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td>EWDBid</td>
+  <td>The DB ID of the channel for which the caller wants to retrieve a cooked transform function.</td>
+ </tr>
+ <tr>
+  <td>tTime</td>
+  <td>time_t</td>
+  <td>Point in time for which the caller wants a cooked transform function for the channel. A time is required because the transform function varies over time as device properties are changed or the channel is altered.</td>
+ </tr>
+ <tr>
+  <td>pChanCTF</td>
+  <td>EWDB_ChanTCTFStruct *</td>
+  <td>Pointer to a caller allocated EWDB_ChanTCTFStruct where the function will write the cooked transform function and associated channel specific response information requested by the caller. DESCRIPTION Function retrieves the poles/zeroes based transform function, gain and sample rate for a given channel and time. The transform Function is used to transform recorded waveforms back into ground motion.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ConvertString2PZNum></a>
+<font size=+1>ConvertString2PZNum</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ConvertString2PZNum(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDB_PZNum *</i> PZNums</NOBR>, <NOBR><i>int *</i> pCount</NOBR>, <NOBR><i>int</i> MaxPZNums</NOBR>, <NOBR><i>char *</i> szNumString</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function parses szNumString for a list of complex numbers.  The function converts the list to an array of EWDB_PZNums, writes the list to PZNums, and writes the number of complex numbers converted to pCount.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td> This function should not be part of the exposed API. It is a utility function for converting Poles/Zeroes from a format useful in C(EWDB_PZNum) to a format useable in Oracle PL/SQL(string).  It should never be needed by API clients, because they pass an receive Pole/Zero data as C structures and not strings.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>PZNums</td>
+  <td>EWDB_PZNum *</td>
+  <td>Caller allocated array of pole or zero complex numbers.</td>
+ </tr>
+ <tr>
+  <td>pCount</td>
+  <td>int *</td>
+  <td>A pointer to an int where the function will write the number of EWDB_PZNums placed in PZNums.</td>
+ </tr>
+ <tr>
+  <td>MaxPZNums</td>
+  <td>int</td>
+  <td>The szie of the caller's buffer(PZNums) in terms of EWDB_PZNum structs.</td>
+ </tr>
+ <tr>
+  <td>szNumString</td>
+  <td>char *</td>
+  <td>Caller supllied string containing a list of complex numbers.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=PutDBEventInfo></a>
+<font size=+1>PutDBEventInfo</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int PutDBEventInfo(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>t1</i> p1</NOBR>, <NOBR><i>t2</i> p2</NOBR>, <NOBR><i>t3</i> p3</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>desc</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>p1</td>
+  <td>t1</td>
+  <td>d1</td>
+ </tr>
+ <tr>
+  <td>p2</td>
+  <td>t2</td>
+  <td>d2</td>
+ </tr>
+ <tr>
+  <td>p3</td>
+  <td>t3</td>
+  <td>d3</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=CreateWaveform></a>
+<font size=+1>CreateWaveform</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int CreateWaveform(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>t1</i> p1</NOBR>, <NOBR><i>t2</i> p2</NOBR>, <NOBR><i>t3</i> p3</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>desc</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>p1</td>
+  <td>t1</td>
+  <td>d1</td>
+ </tr>
+ <tr>
+  <td>p2</td>
+  <td>t2</td>
+  <td>d2</td>
+ </tr>
+ <tr>
+  <td>p3</td>
+  <td>t3</td>
+  <td>d3</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=GetWaveformListByEvent></a>
+<font size=+1>GetWaveformListByEvent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int GetWaveformListByEvent(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>EWDB_WaveformStruct *</i> pWaveformBuffer</NOBR>, <NOBR><i>EWDB_StationStruct *</i> pStationBuffer</NOBR>, <NOBR><i>int</i> BufferRecLen</NOBR>, <NOBR><i>int</i> bIncludeStationInfo</NOBR>, <NOBR><i>int *</i> pWaveformDescsFound</NOBR>, <NOBR><i>int *</i> pWaveformDescsRetrieved</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of waveform descriptors and optionally EWDB_StationStructs for waveform snippets associated with the Event identified by idEvent.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>The DB identifier of the Event for which the caller wants a list of waveform snippets.</td>
+ </tr>
+ <tr>
+  <td>pWaveformBuffer</td>
+  <td>EWDB_WaveformStruct *</td>
+  <td>Pointer to a buffer allocated by the caller, where the function will write the list of waveform descriptors.</td>
+ </tr>
+ <tr>
+  <td>pStationBuffer</td>
+  <td>EWDB_StationStruct *</td>
+  <td>Pointer to a buffer allocated by the caller, where the function will write the component info for each waveform descriptor's channel.  There is a 1-to-1 correlation between waveform descriptors and station/component descriptors, and they are in the same order. This parameter is ignored if bIncludeStationInfo is FALSE.</td>
+ </tr>
+ <tr>
+  <td>BufferRecLen</td>
+  <td>int</td>
+  <td>Length of the caller supplied buffers(pWaveformBuffer and pStationBuffer) in terms of records.</td>
+ </tr>
+ <tr>
+  <td>bIncludeStationInfo</td>
+  <td>int</td>
+  <td>Flag indicating whether station information should be retrieved along with the waveform descriptor information.  The caller should set the value to TRUE if station (read component) information is desired, or to FALSE if it is not.</td>
+ </tr>
+ <tr>
+  <td>pWaveformDescsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of waveform descriptors found.</td>
+ </tr>
+ <tr>
+  <td>pWaveformDescsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of waveform descriptors placed in the caller's buffer(pWaveformBuffer).  If bIncludeStationInfo is set to TRUE by the caller, then the same number of EWDB_StationStructs will be written to pStationBuffer.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=StartSnippetEvent></a>
+<font size=+1>StartSnippetEvent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int StartSnippetEvent(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid *</i> pidEvent</NOBR>, <NOBR><i>char *</i> sSourceEventID</NOBR>, <NOBR><i>char *</i> sAuthor</NOBR>, <NOBR><i>int</i> Debug</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a new event in the DB, and returns the idEvent DB identifier for the new Event.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>EWDB_StartSnippetEvent(), EWDB_<a href=ora_api_functions.html#NextSnippetForAnEvent>NextSnippetForAnEvent</a>() and EWDB_<a href=ora_api_functions.html#CloseSnippetEvent>CloseSnippetEvent</a>() are modeled after the Earthworm trace disposal routines for use with XXX_trace_save Earthworm programs like ora_trace_save, trig2disk, and waveman2disk.  The logic behind the routines, is to call a StartEvent function to open the processing of an event.  Next, <a href=ora_api_functions.html#NextSnippetForAnEvent>NextSnippetForAnEvent</a> is called repeatedly for all of the snippets associated with the event.  Finally CloseEvent is called to end processing for an Event.  Although 3 aforemention API functions support this processing model, they are not limited to it. The caller can thus call EWDB_<a href=ora_api_functions.html#NextSnippetForAnEvent>NextSnippetForAnEvent</a>() to add a snippet to a previous event.  The caller does not have to call EWDB_StartSnippetEvent() before calling EWDB_<a href=ora_api_functions.html#NextSnippetForAnEvent>NextSnippetForAnEvent</a>().  As long as the caller provides a valid existing idEvent to EWDB_<a href=ora_api_functions.html#NextSnippetForAnEvent>NextSnippetForAnEvent</a>(), the call should function properly.  A side effect of this functionality is that EWDB_<a href=ora_api_functions.html#CloseSnippetEvent>CloseSnippetEvent</a>() does nothing.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidEvent</td>
+  <td>EWDBid *</td>
+  <td>A pointer to a EWDBid where the function will write The DB identifier of the Event it created.</td>
+ </tr>
+ <tr>
+  <td>sSourceEventID</td>
+  <td>char *</td>
+  <td>The identifier given to the Event by the author, in string format.  This is an identifier external to the DB, not to be confused with idEvent which is the identifier given by the DB.</td>
+ </tr>
+ <tr>
+  <td>sAuthor</td>
+  <td>char *</td>
+  <td>The name of the author(source) of the new Event.</td>
+ </tr>
+ <tr>
+  <td>Debug</td>
+  <td>int</td>
+  <td>Flag indicating whether or not debug messages should be written to the log file. Set Debug to TRUE for debug log messages.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=NextSnippetForAnEvent></a>
+<font size=+1>NextSnippetForAnEvent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int NextSnippetForAnEvent(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>EWDB_EW_SnippetStruct *</i> pSnippet</NOBR>, <NOBR><i>EWDBid *</i> OUT_pidWaveform</NOBR>, <NOBR><i>EWDBid *</i> INOUT_pidChan</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function inserts a waveform snippet along with descriptor information, into the DB.  It associates the snippet with the Event identified by idEvent.  It returns the DB identifier of the new Waveform along with the DB identifier of the Waveform's associated channel.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>The database ID of an existing Event with which the caller wishes to associate a new waveform snippet.</td>
+ </tr>
+ <tr>
+  <td>pSnippet</td>
+  <td>EWDB_EW_SnippetStruct *</td>
+  <td>A pointer to waveform snippet structure, that includes parametric data describing a waveform snippet along with the actual waveform snippet.</td>
+ </tr>
+ <tr>
+  <td>OUT_pidWaveform</td>
+  <td>EWDBid *</td>
+  <td>A pointer to a EWDBid where the function will write The DB identifier of the waveform snippet it created.</td>
+ </tr>
+ <tr>
+  <td>INOUT_pidChan</td>
+  <td>EWDBid *</td>
+  <td>A pointer to a EWDBid where the function will write The DB channel identifier of the channel of the waveform snippet it created. If you already know the idChan for the channel of the snippet, you can set (*INOUT_pidChan) to the proper idchan, otherwise WARNING!!!! (*INOUT_pidChan) should be set to 0, or the function will attempt to treat it as a valid idchan.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ProcessSnippetReqs></a>
+<font size=+1>ProcessSnippetReqs</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ProcessSnippetReqs(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> szSta</NOBR>, <NOBR><i>char *</i> szComp</NOBR>, <NOBR><i>char *</i> szNet</NOBR>, <NOBR><i>char *</i> szLoc</NOBR>, <NOBR><i>double</i> tStart</NOBR>, <NOBR><i>double</i> tEnd</NOBR>, <NOBR><i>EWDBid</i> idEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Added 2000/12/24 Function creates requests for snippets of waveform data for each channel that matches the given SCNL for the given time range.  If idEvent is specified as non 0, then any snippets recovered as a result of the requests will be associated the given idEvent. *NOTE:  This function does not retrieve any waveform data! It only creates requests for waveform data, that must be fulfilled by another program(concierge).</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>szSta</td>
+  <td>char *</td>
+  <td>SEEDlike station code for the channel. It may not be blank or NULL, and should be a maximum of 7 characters.</td>
+ </tr>
+ <tr>
+  <td>szComp</td>
+  <td>char *</td>
+  <td>SEEDlike component code for the channel. The field may not be blank or NULL and should be a maximum of 9 characters.  "*" may be used as a wildcard for this field.</td>
+ </tr>
+ <tr>
+  <td>szNet</td>
+  <td>char *</td>
+  <td>SEEDlike network code for the channel. It may not be blank or NULL and should be a maximum of 9 characters.  "*" may be used as a wildcard for this field.</td>
+ </tr>
+ <tr>
+  <td>szLoc</td>
+  <td>char *</td>
+  <td>Optional SEEDlike location code for the channel. It should be a maximum of 9 characters.  "*" may be used as a wildcard for this field.</td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>double</td>
+  <td>The start of the time interval for which the caller wants a snippet for the given SCNL. Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>double</td>
+  <td>The end of the time interval for which the caller wants a snippet for the given SCNL. Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>The EWDB event identifer that the any resulting snippets should be associated with.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=CloseSnippetEvent></a>
+<font size=+1>CloseSnippetEvent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int CloseSnippetEvent(</font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function is a do nothing placeholder routine that exists so the API waveform insertion routines(see note under EWDB_<a href=ora_api_functions.html#StartSnippetEvent>StartSnippetEvent</a>) can resemble the Earthworm XXX_trace_save putaway routines.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+

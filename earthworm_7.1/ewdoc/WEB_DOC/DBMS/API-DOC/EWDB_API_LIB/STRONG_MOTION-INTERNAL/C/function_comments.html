@@ -1,0 +1,576 @@
+<hr>
+<a name=ewdb_internal_CreateSMMessage></a>
+<font size=+2>ewdb_internal_CreateSMMessage()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateSMMessage(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidSMMessage</NOBR>, <NOBR><i>double</i> tMain</NOBR>, <NOBR><i>double</i> tLoad</NOBR>, <NOBR><i>double</i> tAlt</NOBR>, <NOBR><i>int</i> iAltCode</NOBR>, <NOBR><i>double</i> tPGA</NOBR>, <NOBR><i>double</i> tPGV</NOBR>, <NOBR><i>double</i> tPGD</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idChan</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>ewdb_internal_CreateSMMessage.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function Creates an SMMessage record in the DB and returns the idSMMessage of the new record.  It does not create all the strong motion measurements that are part of the message. The caller must call <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/function_comments.html#ewdb_internal_CreateSMMotion>ewdb_internal_CreateSMMotion</a>() for each motion measurment in the message.  If idEvent is a positive number, then the function will attempt to bind the new SMMessage to the Event identified by idEvent.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>Be sure to properly initialize idEvent.  If a seemingly valid idEvent is passed, and no such Event exists, the function will fail, even though it can create the SMMessage itself without problems. If you do not have an idEvent, but have an author and an author's EventID, then you can use <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/function_comments.html#ewdb_api_CreateEvent>ewdb_api_CreateEvent</a>() to get an idEvent from an author and author's EventID.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Failure.  See logfile for details.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidSMMessage</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td> A pointer to an <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the idSMMessage of the newly created message.  The idSMMessage will only be written if the function returns <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a>.</td>
+ </tr>
+ <tr>
+  <td>tMain</td>
+  <td>double</td>
+  <td>This is the main timestamp for the message.  This is the one given by the program/device that recorded/declared the motion.  (seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>tLoad</td>
+  <td>double</td>
+  <td>This is the time that the message was first loaded into a Database.  (This is kind of a sanity timestamp).  This timestamp should only be assigned once, when the message is first loaded into a DB.  (seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>tAlt</td>
+  <td>double</td>
+  <td>This is an alternate time to tMain.  It can be assigned by different entities.  iAltCode describes how the time was derived. (seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>iAltCode</td>
+  <td>int</td>
+  <td>A code that describes how tAlt was derived. See SM_ALTCODE_NONE in rw_strongmotion.h for more information.</td>
+ </tr>
+ <tr>
+  <td>tPGA</td>
+  <td>double</td>
+  <td>(OPTIONAL) Time of the Peak Ground Acceleration(PGA) for this motion.  (seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>tPGV</td>
+  <td>double</td>
+  <td>(OPTIONAL) Time of the Peak Ground Velocity(PGV) for this motion.  (seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>tPGD</td>
+  <td>double</td>
+  <td>(OPTIONAL) Time of the Peak Ground Displacement(PGD) for this motion.  (seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB Identifier of the channel that recorded this strong motion message.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB Identifier of the event(that already exists in the DB)  that this strong motion message should be associated with.  The caller should set idEvent to 0 if they do not want this message associated with an Event.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/library_comments.html#STRONG_MOTION-INTERNAL>STRONG_MOTION-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_sm_internal.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_CreateSMMotion></a>
+<font size=+2>ewdb_internal_CreateSMMotion()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateSMMotion(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidSMMotion</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idSMMessage</NOBR>, <NOBR><i>int</i> iMotionType</NOBR>, <NOBR><i>double</i> dPeriod</NOBR>, <NOBR><i>double</i> dMeasurement</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>ewdb_internal_CreateSMMotion.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function Creates an SMMotion record in the DB and returns the idSMMotion of the new record.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Failure.  See logfile for details.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidSMMotion</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to an <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the idSMMotion of the newly created motion measurment.</td>
+ </tr>
+ <tr>
+  <td>idSMMessage</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB id of the message that this motion measurment is a part of.</td>
+ </tr>
+ <tr>
+  <td>iMotionType</td>
+  <td>int</td>
+  <td>The type of motion.  This must be either <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_MOTION_TYPE_ACCELERATION>EWDB_SM_MOTION_TYPE_ACCELERATION</a>, <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_MOTION_TYPE_VELOCITY>EWDB_SM_MOTION_TYPE_VELOCITY</a>, or <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_MOTION_TYPE_DISPLACEMENT>EWDB_SM_MOTION_TYPE_DISPLACEMENT</a>.</td>
+ </tr>
+ <tr>
+  <td>dPeriod</td>
+  <td>double</td>
+  <td>For spectral response measurements, this is the time period associated with the motion.  For other types of measurments, this is a special code (see <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_PERIOD_PEAK_VALUE_CODE>EWDB_SM_PERIOD_PEAK_VALUE_CODE</a>) indicating a special measurement type.</td>
+ </tr>
+ <tr>
+  <td>dMeasurement</td>
+  <td>double</td>
+  <td>The measurement of the motion.  This value is in terms of centimeters and seconds, so should be either cm/s/s for acceleration, cm/s for velocity, or cm for displacement.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/library_comments.html#STRONG_MOTION-INTERNAL>STRONG_MOTION-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_sm_internal.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetAllSMMessages></a>
+<font size=+2>ewdb_internal_GetAllSMMessages()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetAllSMMessages(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> IN_szSta</NOBR>, <NOBR><i>char *</i> IN_szComp</NOBR>, <NOBR><i>char *</i> IN_szNet</NOBR>, <NOBR><i>char *</i> IN_szLoc</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idEvent</NOBR>, <NOBR><i>int</i> IN_iQueryType</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDB_CriteriaStruct>EWDB_CriteriaStruct</a> *</i> IN_pCriteria</NOBR>, <NOBR><i>void *</i> pBuffer</NOBR>, <NOBR><i>int</i> iBufferRecLen</NOBR>, <NOBR><i>int *</i> pNumRecordsFound</NOBR>, <NOBR><i>int *</i> pNumRecordsRetrieved</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>ewdb_internal_GetAllSMMessages.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function is the big, bad, nasty, smelly, 4000Lb gorilla of strong motion data retrieval.  It is a multiplexed work of some nefarious creature.  Based on the parameters passed in, it executes one of mutiple(Currently 5) genres of queries to retrieve strong motion messages, and then retrieves the data into one of multiple(currently 2) buffer types.  This function exists because it was deemed better to write one large hairy function than to write ten simpler functions that had lots of redundant code between them.  The caller passes in a set of criteria and a type of query to execute, and then the function executes the query and retrieves the data into the caller's buffer, in a record format determined by the query type.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function retrieves only the messages and (optionally) non-motion associated info, such as Channel and Event association. It does not retrieve the actual motion measurements.  This must be done by calling <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/function_comments.html#ewdb_internal_GetSMMotionsForMessage>ewdb_internal_GetSMMotionsForMessage</a>() after calling this function.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Failure.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial Success.  The function successfully executed, but either 1)the caller's buffer wasn't large enough to retrieve all of the messages, and/or 2) there was a problem retrieving one or more of the messages.  If the value written to pNumRecordsFound at the completion of the function is greater than the iBufferRecLen parameter passed to the function, then more records were found than the caller's buffer could hold. If the value written to pNumRecordsRetrieved is less than the iBufferRecLen parameter passed to the function, then the function failed to retrieve atleast one of the messages that it found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_szSta</td>
+  <td>char *</td>
+  <td>The Station name criteria for retrieving messages.  This param is only used for criteria if IN_pCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>IN_szComp</td>
+  <td>char *</td>
+  <td>The Component name criteria for retrieving messages.  This param is only used for criteria if IN_pCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>IN_szNet</td>
+  <td>char *</td>
+  <td>The Network name criteria for retrieving messages.  This param is only used for criteria if IN_pCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>IN_szLoc</td>
+  <td>char *</td>
+  <td>The Location name criteria for retrieving messages.  This param is only used for criteria if IN_pCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The Event criteria for retrieving messages.  This param is only used for criteria if IN_pCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_IDEVENT>EWDB_CRITERIA_USE_IDEVENT</a> flag.  This param must be set to a valid(existing) idEvent, if IN_pCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_IDEVENT>EWDB_CRITERIA_USE_IDEVENT</a> flag, or the function will fail.</td>
+ </tr>
+ <tr>
+  <td>IN_iQueryType</td>
+  <td>int</td>
+  <td> The type of search query to use to retrieve messages and related info.  See <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_INFO>EWDB_SM_SELECT_SMMESSAGES_W_INFO</a> and related constants for more details.</td>
+ </tr>
+ <tr>
+  <td>IN_pCriteria</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDB_CriteriaStruct>EWDB_CriteriaStruct</a> *</td>
+  <td> The criteria struct for specifying criteria types and values for the query to retrieve messages. IN_pCriteria->Criteria, contains the flags which indicate which criteria to use in searching for messages.  NOTE: The Depth criteria is not supported by this function!  See <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDB_CriteriaStruct>EWDB_CriteriaStruct</a> for more detail on criteria.</td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td>void *</td>
+  <td> A buffer allocated by the caller, where the function will place the retrieved messages.  See the description of iBufferRecLen immediately below, for more information on buffer records.</td>
+ </tr>
+ <tr>
+  <td>iBufferRecLen</td>
+  <td>int</td>
+  <td> The length of the buffer(pBuffer) in terms of records.  This function supports multiple record types for the retrieval buffer, dependent upon the iQueryType parameter. If iQueryType is (<a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_INFO>EWDB_SM_SELECT_SMMESSAGES_W_INFO</a>, <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_CHANNEL_INFO>EWDB_SM_SELECT_SMMESSAGES_W_CHANNEL_INFO</a>, <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_CHANNEL_INFO_BY_EVENT>EWDB_SM_SELECT_SMMESSAGES_W_CHANNEL_INFO_BY_EVENT</a>, or <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_CHANNEL_INFO_WITHOUT_EVENT>EWDB_SM_SELECT_SMMESSAGES_W_CHANNEL_INFO_WITHOUT_EVENT</a>) then the buffer records are expected to be of type <a href=../../.././EWDB_API_LIB/STRONG_MOTION_API/C/typedef_comments.html#EWDB_SMChanAllStruct>EWDB_SMChanAllStruct</a>. If iQueryType is <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_ID_ONLY>EWDB_SM_SELECT_SMMESSAGES_W_ID_ONLY</a>, then the buffer records are expected to be of type <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a>.</td>
+ </tr>
+ <tr>
+  <td>pNumRecordsFound</td>
+  <td>int *</td>
+  <td> A pointer to an int where the function will write the number of messages found to meet the given criteria. NOTE:  The number found is not the number retrieved and written to the caller's buffer.  That is NumRecordsRetrieved.  If the number of messages found is greater than the caller's buffer will hold, then the function will return a warning.</td>
+ </tr>
+ <tr>
+  <td>pNumRecordsRetrieved</td>
+  <td>int *</td>
+  <td> A pointer to an int where the function will write the number of messages actualy retrieved by the function. This number will be less than or equal to the number found.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/library_comments.html#STRONG_MOTION-INTERNAL>STRONG_MOTION-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_sm_internal.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetSMMessages></a>
+<font size=+2>ewdb_internal_GetSMMessages()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetSMMessages(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDB_CriteriaStruct>EWDB_CriteriaStruct</a> *</i> pcsCriteria</NOBR>, <NOBR><i>char *</i> szSta</NOBR>, <NOBR><i>char *</i> szComp</NOBR>, <NOBR><i>char *</i> szNet</NOBR>, <NOBR><i>char *</i> szLoc</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i>int</i> iQueryType</NOBR>, <NOBR><i>char *</i> szStructType</NOBR>, <NOBR><i>void *</i> pBuffer</NOBR>, <NOBR><i>int</i> iBufferRecLen</NOBR>, <NOBR><i>int *</i> pNumRecordsFound</NOBR>, <NOBR><i>int *</i> pNumRecordsRetrieved</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>ewdb_internal_GetSMMessages.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function retrieves strong motion messages and associated info for all messages that meet the criteria given by the caller.  This function retrieves the strong motion messages(SMMessages) complete with all of the motion measurements for each message, and Channel and Event association information for each message if the caller's buffer will accomodate it.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Failure.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial Success.  The function successfully executed, but either 1)the caller's buffer wasn't large enough to retrieve all of the messages, and/or 2) there was a problem retrieving one or more of the messages.  If the value written to pNumRecordsFound at the completion of the function is greater than the iBufferRecLen parameter passed to the function, then more records were found than the caller's buffer could hold. If the value written to pNumRecordsRetrieved is less than the iBufferRecLen parameter passed to the function, then the function failed to retrieve atleast one of the messages that it found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pcsCriteria</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDB_CriteriaStruct>EWDB_CriteriaStruct</a> *</td>
+  <td> The criteria struct for specifying criteria types and values for the query to retrieve messages. pcsCriteria->Criteria, contains the flags which indicate which criteria to use in searching for messages.  NOTE: The Depth criteria is not supported by this function!  See <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDB_CriteriaStruct>EWDB_CriteriaStruct</a> for more detail on criteria.</td>
+ </tr>
+ <tr>
+  <td>szSta</td>
+  <td>char *</td>
+  <td>The Station name criteria for retrieving messages.  This param is only used for criteria if pcsCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>szComp</td>
+  <td>char *</td>
+  <td>The Component name criteria for retrieving messages.  This param is only used for criteria if pcsCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>szNet</td>
+  <td>char *</td>
+  <td>The Network name criteria for retrieving messages.  This param is only used for criteria if pcsCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>szLoc</td>
+  <td>char *</td>
+  <td>The Location name criteria for retrieving messages.  This param is only used for criteria if pcsCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_SCNL>EWDB_CRITERIA_USE_SCNL</a> flag.  '*' may be used as a wildcard.  This param must always be a valid pointer, the function may fail if it is set to NULL.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The Event criteria for retrieving messages.  This param is only used for criteria if pcsCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_IDEVENT>EWDB_CRITERIA_USE_IDEVENT</a> flag.  This param must be set to a valid(existing) idEvent, if pcsCriteria->Criteria includes the <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_CRITERIA_USE_IDEVENT>EWDB_CRITERIA_USE_IDEVENT</a> flag, or the function will fail.</td>
+ </tr>
+ <tr>
+  <td>iQueryType</td>
+  <td>int</td>
+  <td> The type of search query to use to retrieve messages and related info.  See <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_SELECT_SMMESSAGES_W_INFO>EWDB_SM_SELECT_SMMESSAGES_W_INFO</a> and related constants for more details.</td>
+ </tr>
+ <tr>
+  <td>szStructType</td>
+  <td>char *</td>
+  <td> A string representation of the structure type of the caller's buffer.  (The format the caller is expecting to retrieve data in.)  Currently only "SM_INFO" and "EWDB_SMChanAllStruct" are supported, any other structure type will cause the function to fail.</td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td>void *</td>
+  <td> A buffer allocated by the caller, where the function will place the retrieved messages.  See the description of iBufferRecLen immediately below, for more information on buffer records.</td>
+ </tr>
+ <tr>
+  <td>iBufferRecLen</td>
+  <td>int</td>
+  <td> The length of the buffer(pBuffer) in terms of records.  The record type is given by the szStructType param.  See szStructType(above) for a description of what structure types are supported.</td>
+ </tr>
+ <tr>
+  <td>pNumRecordsFound</td>
+  <td>int *</td>
+  <td> A pointer to an int where the function will write the number of messages found to meet the given criteria. NOTE:  The number found is not the number retrieved and written to the caller's buffer.  That is NumRecordsRetrieved.  If the number of messages found is greater than the caller's buffer will hold, then the function will return a warning.</td>
+ </tr>
+ <tr>
+  <td>pNumRecordsRetrieved</td>
+  <td>int *</td>
+  <td> A pointer to an int where the function will write the number of messages actualy retrieved by the function. This number will be less than or equal to the number found.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/library_comments.html#STRONG_MOTION-INTERNAL>STRONG_MOTION-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_sm_internal.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetSMMotionsForMessage></a>
+<font size=+2>ewdb_internal_GetSMMotionsForMessage()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetSMMotionsForMessage(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idSMMessage</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/typedef_comments.html#EWDB_SMMotionStruct>EWDB_SMMotionStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> iBufferRecLen</NOBR>, <NOBR><i>int *</i> pNumRecordsFound</NOBR>, <NOBR><i>int *</i> pNumRecordsRetrieved</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>ewdb_internal_GetSMMotionsForMessage.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function retrieves all strong motion measurements for a given strong motion message(SMMessage).  It writes the results as an array of <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/typedef_comments.html#EWDB_SMMotionStruct>EWDB_SMMotionStruct</a>.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Failure.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial Success.  The function successfully executed, but the caller's buffer wasn't large enough to retrieve all of the messages.  See *pNumRecordsFound for the neccessary buffersize to retrieve all selected motion measurments.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idSMMessage</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td> The DB ID of the strong motion message for which the caller wants to retrieve motion measurments.</td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/typedef_comments.html#EWDB_SMMotionStruct>EWDB_SMMotionStruct</a> *</td>
+  <td> Buffer allocated by the caller, where the function will write the retrieved motion measurements for the given SMMessage.</td>
+ </tr>
+ <tr>
+  <td>iBufferRecLen</td>
+  <td>int</td>
+  <td> The length of the caller's buffer(pBuffer) in terms of <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/typedef_comments.html#EWDB_SMMotionStruct>EWDB_SMMotionStruct</a> records.</td>
+ </tr>
+ <tr>
+  <td>pNumRecordsFound</td>
+  <td>int *</td>
+  <td> A pointer to an int where the function will write the number of motions found. NOTE:  The number found is not the number retrieved and written to the caller's buffer.  That is NumRecordsRetrieved.  If the number of messages found is greater than the caller's buffer will hold, then the function will return a warning.</td>
+ </tr>
+ <tr>
+  <td>pNumRecordsRetrieved</td>
+  <td>int *</td>
+  <td> A pointer to an int where the function will write the number of motion measurements actualy retrieved by the function.  This will be less than or equal to the number found.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/library_comments.html#STRONG_MOTION-INTERNAL>STRONG_MOTION-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_sm_internal.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

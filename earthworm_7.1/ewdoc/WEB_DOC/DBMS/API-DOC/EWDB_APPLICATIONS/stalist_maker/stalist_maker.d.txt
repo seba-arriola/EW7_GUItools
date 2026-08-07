@@ -1,0 +1,47 @@
+
+
+# configuration file for the station list maker (stalist_maker) 
+# I read the headers of the evt files and construct a station list from them.
+# I can also take such a station list as input. In that case, any parameters in
+# the input station list will supercede similar parameters found in the evt headers.
+# This is to permit a human to edit my automatically produced station list, and to
+# have such changes override any future appearances of conflicting parameters from evt files.
+#	The station list I produce can be inserted into the DBMS via stalist_loader.
+
+# I move the .evt files from the input directory to the output directory as they're processed.
+# If there is a problem with a file, that file is moved to the error directory and
+# I continue on to the next file until there are no more in the input directory
+
+#
+# LogDir
+#
+LogDir	/home/earthworm/run_MRO/log/
+
+#
+# EVTFilesInDir -- full path to the directory containing ASCII evt files
+#
+EVTFilesInDir /tmp/evt1
+
+#
+# EVTFilesOutDir -- full path to the directory where processed evt files will be moved to.
+#
+EVTFilesOutDir /tmp/evt2
+
+#
+# EVTFilesErrorDir -- full path to the directory where problem evt files will be moved to.
+#
+EVTFilesErrorDir /tmp/evt3
+
+#
+# StaListFile -- full path to the station list file
+#
+StaListFile /tmp/Stafile 
+
+
+#
+# NetworkCode -- Two character network code to be assigned to the channel names
+#
+NetworkCode  	AF
+
+
+#Debug

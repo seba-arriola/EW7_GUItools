@@ -1,0 +1,101 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.lnx,v 1.1 2000/02/14 17:27:23 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.lnx,v $
+#     Revision 1.1  2000/02/14 17:27:23  lucky
+#     Initial revision
+#
+#
+#
+
+CFLAGS = -g ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+OBJS = fir.o \
+       bandcom.o \
+       configure.o \
+       filt1scn.o \
+       firfilt.o \
+       firthrd.o \
+       hqr.o \
+       initpars.o \
+       initsta.o \
+       matchscn.o \
+       readcnfg.o \
+       readewh.o \
+       remeznp.o \
+       remez_for.o \
+       resetsta.o \
+       setfilt.o \
+       statrpt.o \
+       zeroes.o \
+       $L/logit_mt.o \
+       $L/kom.o \
+       $L/getutil.o \
+       $L/sleep_ew.o \
+       $L/time_ew.o \
+       $L/transport.o \
+       $L/swap.o \
+       $L/mem_circ_queue.o \
+       $L/threads_ew.o \
+       $L/sema_ew.o 
+
+TOBJS = fir_test.o \
+       bandcom.o \
+       configure.o \
+       filt1scn.o \
+       firfilt_test.o \
+       firthrd.o \
+       hqr.o \
+       initpars.o \
+       initsta.o \
+       matchscn.o \
+       readcnfg.o \
+       readewh.o \
+       remeznp.o \
+       remez_for.o \
+       resetsta.o \
+       setfilt.o \
+       statrpt.o \
+       zeroes.o \
+       test_transport.o \
+       $L/logit_mt.o \
+       $L/kom.o \
+       $L/getutil.o \
+       $L/sleep_ew.o \
+       $L/time_ew.o \
+       $L/transport.o \
+       $L/swap.o \
+       $L/mem_circ_queue.o \
+       $L/threads_ew.o \
+       $L/sema_ew.o 
+
+
+LIBS = -lm -lpthread
+
+fir: $(OBJS)
+	f77 -o fir $(OBJS) $(LIBS)
+
+fir_test: $(TOBJS)
+	f77 -o fir_test $(TOBJS) $(LIBS)
+
+
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f fir
+
+.c.o: cc -c ${CFLAGS} $<
+
+.f.o: f77 -c ${FFLAGS} $<

@@ -1,0 +1,12 @@
+/ewdb_create_coincidence.sql/1.1/Fri Mar 22 20:00:56 2002//
+/ewdb_create_merge.sql/1.2/Tue Jun 18 16:11:08 2002//
+/ewdb_create_phenomenon.sql/1.1/Fri Mar 22 20:00:56 2002//
+/ewdb_create_trigger.sql/1.2/Tue Jun 18 16:11:25 2002//
+/ewdb_delete_coincidence.sql/1.1/Fri Mar 22 20:00:56 2002//
+/ewdb_delete_merge.sql/1.1/Tue Jun 18 16:11:51 2002//
+/ewdb_delete_phenomenon.sql/1.1/Tue Jun 18 16:11:51 2002//
+/ewdb_delete_trigger.sql/1.1/Fri Mar 22 20:00:56 2002//
+/ewdb_update_merge_preference.sql/1.1/Fri Mar 22 20:00:56 2002//
+/makefile.nt/1.1/Thu Sep  9 06:03:51 2004//
+/makefile.sol/1.1/Thu Sep  9 06:03:51 2004//
+D

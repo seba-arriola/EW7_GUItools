@@ -1,0 +1,44 @@
+# ----------------------------------------------------------------------
+# MakeFile for psnadsend
+# ----------------------------------------------------------------------
+#
+# Instructions on how to create the executable:
+#
+#     First make sure that your environmental variables
+#     'INCLUDE' and 'LIB' are set correctly.
+#
+#     You may also load this .MAK file from Visual C++.
+#     Visual C++ will then treat it as an 'external makefile'.
+#
+#     The libsrc functions are recompiled here because we need
+#     single-threaded versions instead of multi-threaded versions
+#
+#
+NODEBUG=1
+#
+!include <ntwin32.mak>
+#
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+U = $(EW_HOME)\$(EW_VERSION)\src\libsrc\util
+W = $(EW_HOME)\$(EW_VERSION)\src\libsrc\winnt
+#
+O = PsnAdSend.obj getconfig.obj
+J = $L\logit.obj $L\getutil.obj $L\time_ew.obj $L\kom.obj $L\transport.obj $L\sleep_ew.obj
+#
+# TARGET: Console application
+#
+all: PsnAdSend.exe
+#
+PsnAdSend.exe: $O
+    link /MACHINE:I386 libcmt.lib PSNADBoard.lib /OUT:$B\PsnAdSend.exe $O $J
+#    
+.c.obj:
+    cl /c /DWIN32 $(GLOBALFLAGS) $(cvarsmt) $(tflags) $<
+#
+# Clean-up directives
+clean:
+    -del *.obj
+
+clean_bin:
+    -del $B\PsnAdSend*

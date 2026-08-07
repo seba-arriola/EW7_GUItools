@@ -1,0 +1,270 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.50 2007/03/06 17:52:39 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.50  2007/03/06 17:52:39  paulf
+#     added psn4 format to putaway for WIN only
+#
+#     Revision 1.49  2007/03/02 03:59:36  stefan
+#     glevt_2_ewevent
+#
+#     Revision 1.48  2007/02/20 16:33:40  paulf
+#     added the lockfile_ew.c
+#
+#     Revision 1.47  2007/01/28 00:50:15  stefan
+#     *** empty log message ***
+#
+#     Revision 1.46  2007/01/16 21:50:48  stefan
+#     alpha
+#
+#     Revision 1.45  2006/11/21 23:04:14  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.44  2006/11/21 22:23:04  stefan
+#     cl to $(cc) $(GLOBALFLAGS)  and include <ntwin32.mak>
+#
+#     Revision 1.43  2006/04/04 18:00:14  stefan
+#     startstop with reconfigure and libraries 20060404 s.lisowski
+#
+#     Revision 1.42  2006/01/30 19:35:36  friberg
+#     added in some Hydra libs needed by raypicker under NT
+#
+#     Revision 1.41  2006/01/26 20:28:17  friberg
+#     modified makefile.nt for global libs
+#
+#     Revision 1.40  2004/07/29 19:59:56  dietz
+#     changed ws_clientIII to ws_clientIIx
+#
+#     Revision 1.39  2004/07/15 20:30:42  davidk
+#     Added ws_clientIII.obj.
+#
+#     Revision 1.38  2004/06/13 02:10:24  davidk
+#     Removed *ewevent.c  files.  Files were located in two places,
+#     libsrc/util  and oracle/apps/src/libsrc.
+#     Files were removed from libsrc/util.
+#
+#     Revision 1.37  2004/05/14 17:53:54  dietz
+#     added rdpickcoda.c, moved from pkfilter's source dir
+#
+#     Revision 1.36  2004/04/29 23:27:09  dietz
+#     re-added gd_lib stuff
+#
+#     Revision 1.35  2004/04/29 23:05:09  kohler
+#     Added trheadconv.c to make files.  WMK 4/29/04
+#
+#     Revision 1.34  2003/12/13 01:38:51  davidk
+#     Added support for EW_DEBUG environment variable, that controls
+#     whether objects are built with debug info.
+#     Hardcoded definition of the _INTEL flag.  Users running
+#     NT on Alpha will have problems.
+#
+#     Revision 1.33  2003/12/13 01:32:18  davidk
+#     Changes made by Dale:
+#     removed global objects (moved from earthworm tree to NEIC).
+#     Used nt_comp command to build gd_lib (more efficient,
+#      better error handling).
+#     Changed del to -del to ignore deletion errors.
+#
+#     Revision 1.32  2002/07/23 19:20:47  dhanych
+#     corrected global_phs_rw.obj to global_pick_rw.obj
+#
+#     Revision 1.31  2002/07/23 19:17:43  dhanych
+#     replace global_msg_rw.obj with others
+#
+#     Revision 1.30  2002/07/23 14:34:08  dhanych
+#     added global_msg_rw.obj
+#
+#     Revision 1.29  2002/05/08 16:32:33  dhanych
+#     20020508 dbh -- added fleng (Flynn-
+#     Engdahl calculations)
+#
+#     Revision 1.28  2002/05/08 16:28:58  lucky
+#     *** empty log message ***
+#
+#     Revision 1.27  2002/04/22 17:30:39  lucky
+#     Added gma
+#
+#     Revision 1.26  2002/03/21 18:13:06  dhanych
+#     added priority_queue
+#
+#     Revision 1.25  2002/02/22 18:51:58  lucky
+#     added gseputaway, seiputaway, and seiutils; needed for new output formats
+#
+#     Revision 1.24  2001/11/19 16:07:11  lucky
+#     added k2evt2ew
+#
+#     Revision 1.23  2001/07/01 22:12:18  davidk
+#     Added geo_to_km.obj to the list of library objects.
+#
+#     Revision 1.22  2001/05/23 22:50:50  davidk
+#     Modified makefiles so that the latest (post Magnitude addition)
+#     version of the EWDB_API and apps now build on NT.
+#
+#     Revision 1.21  2001/05/16 21:36:31  dietz
+#     *** empty log message ***
+#
+#     Revision 1.20  2001/05/15 20:50:34  davidk
+#     removed references to DBEvent/FullEvent objects that have been
+#     moved to the oracle/apps/src/libsrc directory.
+#
+#     Revision 1.19  2001/05/07 17:34:02  lucky
+#     added rw_mag.obj
+#
+#     Revision 1.18  2001/04/12 00:17:21  davidk
+#     stamped out queue_max_size.c.
+#
+#     Revision 1.17  2001/04/11 20:57:28  lombard
+#     Revised to make it work like a makefile instead of a script.
+#
+#     Revision 1.16  2001/03/30 22:40:22  lombard
+#     removed sing.c from libsrc
+#
+#     Revision 1.15  2001/03/15 22:01:11  bogaert
+#     added fft99
+#
+#     Revision 1.14  2001/03/14 00:20:56  alex
+#     added geo_to_km.   Alex
+#
+#     Revision 1.13  2001/03/09 18:15:27  dietz
+#     added rw_strongmotionII
+#
+#     Revision 1.12  2001/03/09 17:48:27  lucky
+#     Following the create schema cleanup
+#
+#     Revision 1.11  2001/01/15 02:08:10  lombard
+#     Added fft_prep.c, sing.c, transfer.c
+#
+#     Revision 1.10  2000/12/18 18:55:36  lucky
+#     Re-added old format converter routines, but changed names from
+#     DBEvent to FullEvent
+#
+#     Revision 1.9  2000/12/16 01:01:43  davidk
+#     removed 3 DB related library files from this directory.  Moved them to
+#     src/oracle/apps/src/libsrc/util
+#
+#     Revision 1.8  2000/08/29 18:08:55  lucky
+#     Added InitDBEvent
+#
+#     Revision 1.7  2000/08/16 18:46:01  lucky
+#     Fixed Sac2DBEvent line
+#
+#     Revision 1.6  2000/08/16 18:44:27  lucky
+#     Fixed Arc2DBEvent line
+#
+#     Revision 1.5  2000/08/16 17:19:40  lucky
+#     Removed DBEventArcSac, added Arc2DBEvent and Sac2DBEvent
+#
+#     Revision 1.4  2000/05/02 15:40:56  lucky
+#     Added DBEventSacArc.c
+#
+#     Revision 1.3  2000/03/31 21:24:28  lucky
+#     *** empty log message ***
+#
+#     Revision 1.2  2000/03/31 18:21:16  lucky
+#     added neic2scn
+#
+#     Revision 1.1  2000/02/14 18:51:48  lucky
+#     Initial revision
+#
+#
+#
+
+#
+#                  Nmake File For Utility Routines
+#
+!IF "$(EW_DEBUG)" == "1"
+!ELSE
+NODEBUG=1
+!ENDIF
+
+
+!include <ntwin32.mak>
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+OBJS =  ahputaway.obj \
+	brent.obj \
+	butterworth.obj \
+	chron3.obj \
+	complex_math.obj \
+	convertInstResponse.obj \
+	fft99.obj \
+	fft_prep.obj \
+	fleng.obj \
+	global_loc_rw.obj \
+	global_pick_rw.obj \
+	global_amp_rw.obj \
+	global_msg.obj \
+	gma.obj \
+	geo_to_km.obj \
+	getutil.obj \
+	glevt_2_ewevent.obj \
+	gseputaway.obj \
+	k2evt2ew.obj \
+	kom.obj \
+	ioc_filter.obj \
+	logit.obj \
+	logit_mt.obj \
+	lockfile.obj \
+	make_triglist.obj \
+	mem_circ_queue.obj \
+	mnbrak.obj \
+	neic2scn.obj \
+	parse_trig.obj \
+	parse_usnsn.obj \
+	priority_queue.obj \
+	psn4putaway.obj \
+	putaway.obj \
+	rdpickcoda.obj \
+	read_arc.obj \
+	residue.obj \
+	rw_mag.obj \
+	rw_strongmotion.obj \
+	rw_strongmotionII.obj \
+	sacputaway.obj \
+	seiputaway.obj \
+	seiutils.obj \
+	site.obj \
+	socket_ew_common.obj \
+	startstop_lib.obj \
+	sudsputaway.obj \
+	swap.obj \
+	tankputaway.obj \
+	tlay.obj \
+	transfer.obj \
+ 	transferFunction.obj \
+	trheadconv.obj \
+	watchdog_client.obj \
+	wave_client.obj \
+	ws_clientII.obj \
+	ws_clientIIx.obj 
+
+
+
+all: $(OBJS) install
+
+logit_mt.obj: logit.c
+   $(cc) $(GLOBALFLAGS)  /Fologit_mt.obj /D_LOGITMT $(cflags) $(cdebug) $(cvarsmt) \
+         $(tflags) logit.c
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) /D_INTEL $(cvarsmt) $(tflags) $<
+
+install:
+   copy *.obj $L
+	 nmake -a -f makefile.nt gd_lib
+
+
+gd_lib:
+	nt_comp gd_lib
+
+clean:
+	-del a.out core *.o *.obj *% *~
+
+

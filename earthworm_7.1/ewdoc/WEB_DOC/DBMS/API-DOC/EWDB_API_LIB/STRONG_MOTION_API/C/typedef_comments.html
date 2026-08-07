@@ -1,0 +1,70 @@
+<hr>
+<a name=EWDB_SMChanAllStruct></a>
+<font size=+1>EWDB_SMChanAllStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_SMChanAllStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This struct contains information for a single strong motion message(SMMessage), including any associated data, such as idEvent, Channel data. It is used to retrieve SMMessages from the DB.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idSMMessage</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>The DB ID of the SMMessage.</td>
+    </tr>
+    <tr>
+     <td>idSMMessage</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>The DB ID of the Event with which the message is associated.</td>
+    </tr>
+    <tr>
+     <td>Station</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+     <td>A structure containing information about the channel from which the message was generated.</td>
+    </tr>
+    <tr>
+     <td>SMChan</td>
+     <td>SM_INFO</td>
+     <td>The strong motion message itself, in SM_INFO form.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>STRONG_MOTION_API</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

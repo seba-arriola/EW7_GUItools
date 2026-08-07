@@ -1,0 +1,319 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: make_api_lib.ind-with-raw-infra,v 1.1 2004/03/17 18:11:26 davidk Exp $
+#
+#    Revision history:
+#     $Log: make_api_lib.ind-with-raw-infra,v $
+#     Revision 1.1  2004/03/17 18:11:26  davidk
+#     Initial revision
+#
+#     Revision 1.12  2003/08/20 23:16:12  michelle
+#     added GetPickByID
+#
+#     Revision 1.11  2003/08/20 03:12:22  lucky
+#     Added GetPickByExtId
+#
+#     Revision 1.10  2003/08/06 18:48:31  lucky
+#     *** empty log message ***
+#
+#     Revision 1.9  2003/08/05 19:32:21  lucky
+#     Removed IOC stuff
+#
+#     Revision 1.8  2003/06/24 16:00:10  lucky
+#     *** empty log message ***
+#
+#     Revision 1.7  2003/06/10 21:51:40  michelle
+#     added deleteDefaultPassport
+#
+#     Revision 1.6  2003/06/07 21:13:46  michelle
+#     added passport api objs
+#
+#     Revision 1.5  2003/06/05 20:14:23  lucky
+#     *** empty log message ***
+#
+#     Revision 1.4  2003/05/20 20:35:08  lucky
+#     *** empty log message ***
+#
+#     Revision 1.3  2003/05/20 15:36:33  lucky
+#     *** empty log message ***
+#
+#     Revision 1.2  2003/03/27 18:04:53  davidk
+#     *** empty log message ***
+#
+#     Revision 1.15  2002/05/09 18:40:29  davidk
+#     added ewdb_api_UpdateSnippetRequestControlParams.
+#
+#     Revision 1.14  2002/04/17 16:45:54  davidk
+#     removed a duplicate entry under concierge.
+#
+#     Revision 1.13  2002/04/17 15:24:35  lucky
+#     added internal concierge routines - otherwise nothing compiles
+#
+#     Revision 1.12  2002/04/16 21:02:32  lucky
+#     *** empty log message ***
+#
+#     Revision 1.11  2001/09/28 00:12:44  davidk
+#     added ewdb_api_GetNumStationsForEvent
+#
+#     Revision 1.10  2001/09/26 21:48:32  lucky
+#     Added support for urban hazards stuff.
+#
+#     Revision 1.9  2001/07/31 19:53:39  lucky
+#     CHanged from User to Recipient
+#
+#     Revision 1.8  2001/07/27 21:21:42  lucky
+#     Added Custom delivery mechanism
+#
+#     Revision 1.7  2001/07/26 17:33:15  davidk
+#     added rw_strongmotionII object, and shortened long lines.
+#
+#     Revision 1.6  2001/07/23 17:48:40  davidk
+#     Changed ewdb_api_CreateSnippetRequest object to ewdb_internal_CreateSnippetRequest.
+#
+#     Revision 1.5  2001/07/14 08:12:47  davidk
+#     added 5 delete objects and update_event().
+#
+#     Revision 1.4  2001/07/01 21:55:24  davidk
+#     Cleanup of the Earthworm Database API and the applications that utilize it.
+#     The "ewdb_api" was cleanup in preparation for Earthworm v6.0, which is
+#     supposed to contain an API that will be backwards compatible in the
+#     future.  Functions were removed, parameters were changed, syntax was
+#     rewritten, and other stuff was done to try to get the code to follow a
+#     general format, so that it would be easier to read.
+#
+#     Applications were modified to handle changed API calls and structures.
+#     They were also modified to be compiler warning free on WinNT.
+#
+#     Revision 1.3  2001/06/26 17:35:20  lucky
+#     Added Qdds delivery stuff in alarms
+#
+#     Revision 1.2  2001/06/22 19:55:50  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2001/05/23 22:50:57  davidk
+#     Initial revision
+#
+#
+##################################################################
+
+###############################
+#EW_ORACLE_VERSION not currently set
+###############################
+#EW_ORACLE_VERSION = 
+
+INCLUDE_FLAGS = $(GLOBALFLAGS) $(APP_INCLUDE_FLAGS)
+
+###############################
+#ORA_API object files
+###############################
+BASE_OCI_LIB_O = 	$(EWDB_LIB)ewdb_oci_base.$(OBJ)
+
+EW_BASE_OCI_LIB_O = $(EWDB_LIB)ewdb_ew_oci_base.$(OBJ)
+
+API_LIB_O      = 	$(EWDB_LIB)ewdb_ora_api.$(OBJ) 
+
+
+
+API_CORE =				$(EWDB_LIB)ewdb_api_CreateArrival.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateMagnitude.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateCoincidence.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateOrigin.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateOriginPick.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateUnassocPick.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateTrigger.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreatePhenomenon.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeletePhenomenon.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateMerge.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateStaMag.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreatePeakAmp.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeleteMerge.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UpdateMergePreference.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_BindToEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_SetPrefer.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeleteEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeleteDataBeforeTime.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeletePeakAmpsBeforeTime.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeletePicksBeforeTime.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeleteSMMessagesBeforeTime.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeleteWaveformsBeforeTime.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UpdateEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetArrivals.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetEventInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetEventList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetidOriginFromVersionNum.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetMergeList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetCoincidence.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetMagnitude.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetMagsForOrigin.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetOrigin.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetPreferredSummaryInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetStaMags.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetOriginsForEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetTriggerList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetPickByExternalID.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UpdateComment.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_InsertCodaWithMag.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_InsertPeakAmpWithMag.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetNumStationsForEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetEventID.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetPickByID.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CreateTCoda.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CreateCodaDur.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetStaMagsForPeakAmp.$(OBJ) \
+          				$(EWDB_LIB)ewdb_api_GetAmpsByOrigin.$(OBJ) \
+          				$(EWDB_LIB)ewdb_api_GetEventForOrigin.$(OBJ) \
+          				$(EWDB_LIB)ewdb_api_GetAmpsByEvent.$(OBJ) \
+          				$(EWDB_LIB)ewdb_api_GetAmpsByTime.$(OBJ) \
+          				$(EWDB_LIB)ewdb_internal_GetAmpsByEvent.$(OBJ) \
+          				$(EWDB_LIB)ewdb_internal_GetAmpsByEvent_w_StaInfo.$(OBJ) \
+          				$(EWDB_LIB)ewdb_internal_GetAmpsByTime.$(OBJ) \
+          				$(EWDB_LIB)ewdb_internal_GetAmpsByTime_w_StaInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetStaMagsForCodaDur.$(OBJ) 
+
+API_EXTERNAL = 						$(EWDB_LIB)ewdb_api_CreateOrAlterExternalStation.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetIdChanFromStationExternal.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UH_CreateExternalInfraRecord.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UH_GetExternalInfraRecord.$(OBJ)
+
+API_INFRA = 			$(EWDB_LIB)ewdb_api_AssociateChanWithComp.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateChannel.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateCompTForSCNLT.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateComponent.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateTransformFunction.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetComponentInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetStationList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetStationListWithZeroLatLon.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetStationListWithoutLocation.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetTransformFunctionForChan.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetidChanT.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetidChansFromSCNLT.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_SetCompParams.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_SetTransformFuncForChanT.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSelectedChannels.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSelectedSites.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSelectedStations.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSelectedStations_w_Response.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_SetChanParams.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetChanCTFForChannel.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetTransformFunction.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetTransformFunctionDesc.$(OBJ) 
+
+API_RAW_INFRA = 	$(EWDB_LIB)ewdb_api_BindDeviceToSlot.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateDeviceSlot.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateDeviceType.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateModule.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateModuleEntry.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateModuleTemplate.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateOrUpdateDevice.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateSlotType.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetDeviceInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetDeviceSlotInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetDeviceTypeInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetFunctionBinds.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetModuleEntry.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetModuleInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetNextPlexor.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetPlexorForChanT.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSlotTypeInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_SetDeviceFunction.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_SetPlexorForChannel.$(OBJ)
+
+API_SM = 					$(EWDB_LIB)ewdb_api_DeleteSMMessage.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSMData.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSMDataWithChannelInfo.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_PutSMMessage.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CreateSMMessage.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CreateSMMotion.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetAllSMMessages.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetSMMessages.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetSMMotionsForMessage.$(OBJ)
+
+API_MISC =  			$(EWDB_LIB)ewdb_api_CreatePlace.$(OBJ) \
+						$(EWDB_LIB)ewdb_api_GetPlaceList.$(OBJ)
+
+API_WAVEFORM = 		$(EWDB_LIB)ewdb_internal_CreateSnippet.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateWaveform.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CreateWaveformDesc.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetWaveformDesc.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetWaveformListByEvent.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetWaveformList.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetWaveformListWithCompT.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UpdateWaveform.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CheckidWaveform.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_UpdateWaveformDesc.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_UpdateSnippet.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetWaveformSnippet.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_CreateSnippetRequest.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_GetReservedSnipReqs.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_LockReservedSnipReqs.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_LockSnipReq.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_ReleaseReservedSnipReqs.$(OBJ) \
+									$(EWDB_LIB)ewdb_internal_ReserveSnippetRequests.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_DeleteSnippetRequest.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_ProcessSnippetReqs.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetSnippetRequestList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetListOfOldSnipReqs.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetNextScheduledSnippetRetrievalAttempt.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UpdateSnippetRequest.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_UpdateSnippetRequestControlParams.$(OBJ) 
+
+
+API_ALARMS = 			$(EWDB_LIB)ewdb_api_CreateAlarmsCriteria.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateAlarmsFormat.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateAlarmsRule.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateAlarmsRecipient.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateEmailDelivery.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreatePagerDelivery.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreatePhoneDelivery.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateQddsDelivery.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateCustomDelivery.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_CreateAlarmAudit.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetAlarmsAudit.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetAlarmsCriteriaList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetAlarmsFormats.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetAlarmsRules.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetAlarmsRecipientList.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetAlarmsRecipientSummary.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetEmailDeliveries.$(OBJ) \
+									$(EWDB_LIB)ewdb_api_GetPagerDeliveries.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_GetPhoneDeliveries.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_GetQddsDeliveries.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_GetCustomDeliveries.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_GetAndIncrementCubeVersion.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteEmailDelivery.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeletePagerDelivery.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeletePhoneDelivery.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteQddsDelivery.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteCustomDelivery.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteAlarmsFormat.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteAlarmsRule.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteAlarmsRecipient.$(OBJ)  \
+									$(EWDB_LIB)ewdb_api_DeleteCritProgram.$(OBJ)
+
+API_SQL_LIB_O  = 	$(API_ALARMS) \
+									$(API_CORE) \
+									$(API_EXTERNAL) \
+									$(API_INFRA) \
+									$(API_RAW_INFRA) \
+									$(API_SM) \
+									$(API_WAVEFORM) \
+									$(API_MISC)
+			
+
+
+EARTHWORM_API_LIB_O   = $(EW_LIB)logit_mt.$(OBJ) $(EW_LIB)sleep_ew.$(OBJ) $(EW_LIB)threads_ew.$(OBJ) \
+                      $(EW_LIB)time_ew.$(OBJ) $(EW_LIB)sema_ew.$(OBJ) \
+                      $(EW_LIB)kom.$(OBJ) $(EW_LIB)read_arc.$(OBJ) \
+                      $(EW_LIB)chron3.$(OBJ) $(EW_LIB)getutil.$(OBJ) \
+                      $(EW_LIB)rw_strongmotionII.$(OBJ)
+
+ALL_ORA_API_LIBS = $(BASE_OCI_LIB_O) $(EW_BASE_OCI_LIB_O) $(API_LIB_O) \
+                   $(API_SQL_LIB_O)  $(EARTHWORM_API_LIB_O)
+
+
+
+
+

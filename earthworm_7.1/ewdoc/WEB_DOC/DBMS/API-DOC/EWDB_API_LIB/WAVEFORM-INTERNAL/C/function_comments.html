@@ -1,0 +1,575 @@
+<hr>
+<a name=ewdb_internal_CheckidWaveform></a>
+<font size=+2>ewdb_internal_CheckidWaveform()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CheckidWaveform(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idWaveform</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_CheckidWaveform.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Checks the DB waveform table to validate that there exists a Waveform record with the given idWaveform.  Returns <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a> if a matching record is found, otherwise returns <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a>.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idWaveform</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB ID that the caller wants validated.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_CreateSnippet></a>
+<font size=+2>ewdb_internal_CreateSnippet()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateSnippet(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idWaveform</NOBR>, <NOBR><i>char *</i> IN_pSnippet</NOBR>, <NOBR><i>int</i> IN_SnippetSize</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_CreateSnippet.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Inserts the binary waveform snippet into the database.  A waveform descriptor must already exist in the DB for the given waveform.  The idWaveform is the DB ID of the existin waveform descriptor.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idWaveform</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Waveform associated with this snippet.</td>
+ </tr>
+ <tr>
+  <td>IN_pSnippet</td>
+  <td>char *</td>
+  <td>Pointer to the binary waveform snippet to be inserted.</td>
+ </tr>
+ <tr>
+  <td>IN_SnippetSize</td>
+  <td>int</td>
+  <td>Length of the snippet.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_CreateWaveformDesc></a>
+<font size=+2>ewdb_internal_CreateWaveformDesc()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateWaveformDesc(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> *</i> pWaveform</NOBR>, <NOBR><i>int</i> bBindToEvent</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_CreateWaveformDesc.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Insert a waveform descriptor record into the database and associate it with an Event(if bBindToEvent is set to <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>).</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pWaveform</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> *</td>
+  <td>Input waveform structure filled by the caller.</td>
+ </tr>
+ <tr>
+  <td>bBindToEvent</td>
+  <td>int</td>
+  <td>Set to 1 if this waveform record should be bound to the event specified by idEvent.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Event with which this Waveform Descriptor is associated.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetWaveformList></a>
+<font size=+2>ewdb_internal_GetWaveformList()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace> ewdb_internal_GetWaveformList(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idEvent</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></i> IN_pWaveformBuffer</NOBR>, <NOBR><i>int</i> IN_BufferRecLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_GetWaveformList.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of waveforms that are associated with a given event.  See <a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> for a description of the information retrieved for each associated waveform.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function only retrieves the waveform DESCRIPTORS, it does not actually retrieve the binary waveform.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td></td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Event whose waveform snippets we are interested in.</td>
+ </tr>
+ <tr>
+  <td>IN_pWaveformBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></td>
+  <td>Pointer to a pre-allocated array of waveform structs which will be filled by this function.</td>
+ </tr>
+ <tr>
+  <td>IN_BufferRecLen</td>
+  <td>int</td>
+  <td>Length of the IN_pWaveformBuffer array.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetWaveformListWithCompT></a>
+<font size=+2>ewdb_internal_GetWaveformListWithCompT()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetWaveformListWithCompT(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idEvent</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></i> IN_pWaveformBuffer</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></i> IN_pStationBuffer</NOBR>, <NOBR><i>int</i> IN_BufferRecLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_GetWaveformListWithCompT.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of waveforms (and their associated station/component info) that are associated with a given event.  See <a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> and <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> for a description of the information retrieved for each associated waveform.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function only retrieves the waveform DESCRIPTORS, it does not actually retrieve the binary waveform.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Event whose waveform snippets we are interested in.</td>
+ </tr>
+ <tr>
+  <td>IN_pWaveformBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></td>
+  <td>Pointer to a pre-allocated array of waveform structs which will be filled by this function.</td>
+ </tr>
+ <tr>
+  <td>IN_pStationBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+  <td>Pointer to a pre-allocated array of station structs which will be filled by this function.</td>
+ </tr>
+ <tr>
+  <td>IN_BufferRecLen</td>
+  <td>int</td>
+  <td>Length of the IN_pWaveformBuffer array.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_UpdateSnippet></a>
+<font size=+2>ewdb_internal_UpdateSnippet()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_UpdateSnippet(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idWaveform</NOBR>, <NOBR><i>char *</i> IN_pSnippet</NOBR>, <NOBR><i>int</i> IN_iSnippetSize</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_UpdateSnippet.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Updates the binary waveform snippet in the database, replacing the old binary snippet with the new one. A snippet and a waveform descriptor must already exist in the DB for the given idWaveform.  The idWaveform is the DB ID of the existing waveform descriptor and snippet.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idWaveform</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Waveform associated with this snippet.</td>
+ </tr>
+ <tr>
+  <td>IN_pSnippet</td>
+  <td>char *</td>
+  <td>Pointer to the binary waveform snippet to be inserted.</td>
+ </tr>
+ <tr>
+  <td>IN_iSnippetSize</td>
+  <td>int</td>
+  <td>Length of the snippet.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_UpdateWaveformDesc></a>
+<font size=+2>ewdb_internal_UpdateWaveformDesc()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_UpdateWaveformDesc(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> *</i> pWaveform</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/waveform/ewdb_internal_UpdateWaveformDesc.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Update an existing waveform descriptor record in the database.  The record maintains any existing associations it has.  pWaveform should be a pointer to an <a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a>. pWaveform->idWaveform, pWaveform->tStart, pWaveform->tEnd, pWaveform->binSnippet, and pWaveform->iByteLen must be filled in and valid.  idWaveform must be the DB ID of an existing waveform within the DB.  pWaveform->idChan is ignored (You are not allowed to change the channel for an existing snippet.  If you have erroniously associated a snippet with a channel, you must delete the old snippet, and create a new one to fix the problem. pWaveform->iDataFormat is not currently supported.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pWaveform</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/typedef_comments.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> *</td>
+  <td>Input waveform structure filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM-INTERNAL/library_comments.html#WAVEFORM-INTERNAL>WAVEFORM-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

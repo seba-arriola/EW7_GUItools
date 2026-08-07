@@ -1,0 +1,61 @@
+#
+# eqparam2html's configuration file
+#
+
+Logfiledir      ../log/
+DBuser          db_user
+DBpassword      db_pwd
+DBservice       db_service
+Debug
+
+#
+# Hostname of the web server machine
+# 
+WebHost     webhost.somewhere.domain
+
+#
+#
+# LM_method: method used for computing the ML magnitude.
+#  Valid methods are Peak2Peak and Zero2Peak. Zero2Peak method
+#  uses one amplitude pick from zero to peak. Peak2Peak method
+#  uses two picks denoting the largest plus-to-minus or
+#  minus-to-plus swing in the sliding window whose length
+#  is determined by the value of slideLength in the
+#  LM_progname's configuration file.
+#
+#  The choice of method is installation-specific, but it must
+#  be consistent over various modules dealing with local
+#  magnitude calculations. If localmag uses slideLength
+#  greater than 0 then then method should be set to Peak2Peak.
+LM_method Peak2Peak
+
+
+###################################################
+# Command:   WaveformLinks
+#
+# Description:
+#           Specifies links that are created at the bottom
+#           of the eqparams page, to link to record section
+#           displays(waveforms).
+#
+# Params:
+#     PROGRAM_NAME   
+#                    specifies the program name that the link will 
+#                    attempt to execute
+#
+#     DESCRIPTION   
+#                    the text of the link that will show up on the 
+#                    eqparams page
+#
+#     OPEN_IN_NEW_WINDOW 
+#                    a flag {1=TRUE | 0=FALSE} that determines whether the
+#                    link is opened in a new window.  Specifically it specifies
+#                    whether an html TARGET field is specified for the link.
+#
+#     WINDOW_NAME (only if OPEN_IN_NEW_WINDOW=1)
+#                    Name of the targe window where the link will be opened.
+###################################################
+#WaveformLinks PROGRAM_NAME  DESCRIPTION    OPEN_IN_NEW_WINDOW  WINDOW_NAME
+WaveformLinks "ora2rsec_gif" "60 secs aligned on pick time" 0
+WaveformLinks "ora2rsec_gif_two" "200 secs aligned on pick time" 1 "200 secs"
+

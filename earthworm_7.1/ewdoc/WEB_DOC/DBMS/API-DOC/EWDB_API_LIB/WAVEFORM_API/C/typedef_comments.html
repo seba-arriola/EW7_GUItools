@@ -1,0 +1,123 @@
+<hr>
+<a name=EWDB_SnippetStruct></a>
+<font size=+1>EWDB_SnippetStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>TRACE_REQ</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Uh. I don't know.  We are using EWDB_SnippetStruct for a Snippet data entry struct or something, and we are copying it from the TRACE_REQ definition in the Wave_Server Client II routines <ws_clientII.h>  Help!</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_API/library_comments.html#WAVEFORM_API>WAVEFORM_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_WaveformStruct></a>
+<font size=+1>EWDB_WaveformStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_WaveformStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure containing waveform information and a raw waveform snippet.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>There should probably also be an iStorageMethod value that indicates how the data is stored (in the DB, out of the DB as a file, at an ftp site, etc.), but it has yet to be implemented.</td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idWaveform</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the Waveform snippet.</td>
+    </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>Database ID of the channel that this pick came from.</td>
+    </tr>
+    <tr>
+     <td>tStart</td>
+     <td>double</td>
+     <td>Beginning time of the waveform snippet.  Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>tEnd</td>
+     <td>double</td>
+     <td>Ending time of the waveform snippet.  Expressed as seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>iDataFormat</td>
+     <td>int</td>
+     <td>Format of the actual waveform snippet data.  See <a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/constant_comments.html#EWDB_WAVEFORM_FORMAT_UNDEFINED>EWDB_WAVEFORM_FORMAT_UNDEFINED</a>.</td>
+    </tr>
+    <tr>
+     <td>iByteLen</td>
+     <td>int</td>
+     <td>Length of the actual waveform snippet data in bytes.</td>
+    </tr>
+    <tr>
+     <td>binSnippet</td>
+     <td>char *</td>
+     <td>Actual waveform snippet.  Its length is specified by iByteLen and its format is specified by iDataFormat.  This is just a pointer.  Space for the waveform snippet must be dynamically allocated.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_API/library_comments.html#WAVEFORM_API>WAVEFORM_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

@@ -1,0 +1,41 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+
+###############################
+#Set APP to your program name.
+###############################
+APP = stainfo
+FULL_APP_NAME = $(WEB_BIN)$(APP)$(EXE)
+
+###############################
+#Set APP_OBJECTS to your object 
+# files
+#Set APP_OTHER to any other bind
+# options or libraries that you
+# need specially for your app.
+###############################
+APP_OBJECTS = 	$(APP).$(OBJ)  webhelper.$(OBJ) htmlreply.$(OBJ) config.$(OBJ) 
+				
+
+APP_OTHER = 
+
+###############################
+#Set ALL_CLIENT_LIBS to all non DB
+# objects needed by your app.
+###############################
+ALL_CLIENT_LIBS = 	$(EW_LIB)gd.$(OBJ) \
+										$(EW_LIB)gdfontg.$(OBJ) \
+										$(EW_LIB)gdfontl.$(OBJ) \
+ 		  			       	$(EW_LIB)gdfontmb.$(OBJ) \
+										$(EW_LIB)gdfonts.$(OBJ) \
+										$(EW_LIB)gdfontt.$(OBJ) \
+										$(APPS_LIB)webparse.$(OBJ) \
+ 	  		           	$(APPS_LIB)draw_map.$(OBJ) \
+										$(APPS_LIB)mapserver.$(OBJ) \
+										$(APPS_LIB)html_common.$(OBJ) \
+ 	  		           	$(APPS_LIB)time_functions.$(OBJ) 
+
+

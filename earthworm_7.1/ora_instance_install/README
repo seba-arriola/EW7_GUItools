@@ -1,0 +1,36 @@
+Install Oracle
+
+Download the contents of EW_HOME/EW_VERSION/ora_instance_install directory 
+  - ewdb_create_instance.bat
+  - ewdbrun.sql
+  - initewdb.ora
+
+For Oracle 9I, copy initedwb.ora to c:\oracle\ora92\database
+For Oracle 8.0.5, copy initedwb.ora to c:\orant\database 
+
+Run ewdb_create_instance script
+ - this will create the instance EWDB with :
+     user internal, password earthworm1
+     user system, password earthworm
+ - Check the output of this command -- it is logged to the file c:\ewdb_create_log
+        
+
+Set up listener for instance EWDB
+
+
+Edit ewdb_create_database.sql script from the release and update
+the passwords and/or the service name. 
+
+Change directory into the sql_scripts dir;
+Connect to the EWDB instance as user system;
+Execute 
+   SQL> @ewdb_create_database.sql
+
+
+Load station lists;
+
+Load response files;
+
+
+
+NOTES: waveform table, creation script

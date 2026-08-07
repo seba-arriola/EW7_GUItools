@@ -1,0 +1,91 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.3 2007/03/28 15:26:44 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.3  2007/03/28 15:26:44  paulf
+#     minor MACOSX changes, mostly removing malloc.h since that should be defined in platform.h already
+#
+#     Revision 1.2  2005/07/25 16:15:22  friberg
+#     fixed makefile.ux for export_scnl_ack
+#
+#     Revision 1.1  2005/07/25 16:07:40  friberg
+#      cloned solaris makefile to makefile.ux
+#
+#
+#
+
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+BINARIES = export.o $L/mem_circ_queue.o $L/chron3.o $L/kom.o \
+	$L/getsysname_ew.o $L/getutil.o $L/logit_mt.o $L/transport.o \
+	$L/sleep_ew.o $L/socket_ew.o $L/socket_ew_common.o \
+	$L/time_ew.o $L/threads_ew.o $L/sema_ew.o $L/swap.o
+
+BINARIESACK = export_ack.o $L/mem_circ_queue.o $L/chron3.o $L/kom.o \
+	$L/getsysname_ew.o $L/getutil.o $L/logit_mt.o $L/transport.o \
+	$L/sleep_ew.o $L/socket_ew.o $L/socket_ew_common.o \
+	$L/time_ew.o $L/threads_ew.o $L/sema_ew.o $L/swap.o
+
+BINARIESPRI = export_scn_pri.o $L/priority_queue.o $L/chron3.o $L/kom.o \
+	$L/getsysname_ew.o $L/getutil.o $L/logit_mt.o $L/transport.o \
+	$L/sleep_ew.o $L/socket_ew.o $L/socket_ew_common.o \
+	$L/time_ew.o $L/threads_ew.o $L/sema_ew.o $L/swap.o
+
+BINARIESACTV = export_actv.o $L/mem_circ_queue.o $L/chron3.o $L/kom.o \
+	$L/getsysname_ew.o $L/getutil.o $L/logit_mt.o $L/transport.o \
+	$L/sleep_ew.o $L/socket_ew.o $L/socket_ew_common.o \
+	$L/time_ew.o $L/threads_ew.o $L/sema_ew.o $L/swap.o
+
+
+all:
+	make -f makefile.ux export_generic
+	make -f makefile.ux export_scnl
+	make -f makefile.ux export_scnl_pri
+	make -f makefile.ux export_gen_actv
+	make -f makefile.ux export_scnl_actv
+	make -f makefile.ux export_ack
+	make -f makefile.ux export_scnl_ack
+
+
+export_generic: $(BINARIES) genericfilter.o
+	cc -o $B/export_generic $(BINARIES) genericfilter.o   -lpthread -lc
+
+export_scnl: $(BINARIES) scnfilter.o $L/rdpickcoda.o
+	cc -o $B/export_scnl $(BINARIES) scnfilter.o $L/rdpickcoda.o   -lpthread -lc
+
+export_scnl_pri: $(BINARIESPRI) scnfilter.o $L/rdpickcoda.o
+	cc -o $B/export_scnl_pri $(BINARIESPRI) scnfilter.o $L/rdpickcoda.o   -lpthread -lc
+
+export_gen_actv: $(BINARIESACTV) genericfilter.o
+	cc -o $B/export_gen_actv $(BINARIESACTV) genericfilter.o   -lpthread -lc
+
+export_scnl_actv: $(BINARIESACTV) scnfilter.o $L/rdpickcoda.o
+	cc -o $B/export_scnl_actv $(BINARIESACTV) scnfilter.o $L/rdpickcoda.o   -lpthread -lc
+
+export_ack: $(BINARIESACK) genericfilter.o
+	cc -o $B/export_ack $(BINARIESACK) genericfilter.o   -lpthread -lc
+
+export_scnl_ack: $(BINARIESACK) scnfilter.o $L/rdpickcoda.o
+	cc -o $B/export_scnl_ack $(BINARIESACK) scnfilter.o $L/rdpickcoda.o  -lpthread -lc
+
+
+
+lint:
+	lint export.c export_ack.c export_actv.c export_scn_pri.c genericfilter.c scnfilter.c  $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/export_generic* $B/export_scnl* $B/export_*actv* $B/export_*ack*

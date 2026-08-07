@@ -1,0 +1,756 @@
+
+<HTML>
+<HEAD>
+<TITLE>Earthworm Modules: Shakemapfeed commands</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FADFAF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF
+0000">
+
+<CENTER><H1>Shakemapfeed Configuration File Commands</H1>
+<I>(last revised 12 April 2002)</I></CENTER>
+						  	 
+Page Index:<BR>
+1.  <A HREF="#example">Example configuration file</A><BR>
+2.  <A HREF="#function">Functional command listing</A><BR>
+3.  <A HREF="#alphabet">Alphabetic command listing & description</A><BR>
+<P>
+<!-- ADD HERE: Paragraph "On startup, xxxx reads the..." -->
+On startup, shakemapfeed reads the configuration file named on the command
+line.   In the configuration file, lines may begin with a 
+valid shakemapfeed command (listed below) or with one of 2 special characters:
+<BLOCKQUOTE><PRE>
+#  marks the line as a comment (example: # This is a comment).<BR>   
+@  allows control files to be nested; one control file can be 
+   accessed from another with the command "@" followed by 
+   a string representing the path name of the next control file 
+   (example: @velocity.d). 
+</BLOCKQUOTE></PRE>
+Command names must be typed in the control file exactly as shown in this
+document (upper/lower case matters!). 
+<P>
+<A NAME="example">
+<H2>1.   EXAMPLE CONFIGURATION FILE</H2>
+<PRE>
+# shakemapfeed's parameter file
+
+# Basic Earthworm setup
+#----------------------
+MyModuleId         MOD_SHAKEMAPFEED # module id for this instance
+RingName           HYPO_RING        # shared memory ring for input/output
+HeartBeatInterval  30               # seconds between heartbeats
+LogFile            1                # 0 = log to screen only
+                                    # 1 = log to disk and screen
+                                    # 2 = log to disk only
+Debug              1                # 0 for no debug messages
+                                    # non-zero logs debug messages
+
+# List the message logos to grab from transport ring -
+# shakemapfeed can process three different message types:
+#  GetEventsFrom     command is required (at least one).
+#  GetMagnitudesFrom command is optional.
+#  GetEQDeletesFrom  command is optional.
+#                 Installation    Module     # Message Types
+#--------------------------------------------------------------
+GetEventsFrom     INST_WILDCARD MOD_WILDCARD # TYPE_HYP2000ARC (hardcoded)
+GetMagnitudesFrom INST_WILDCARD MOD_WILDCARD # TYPE_MAGNITUDE  (hardcoded)
+GetEQDeletesFrom  INST_WILDCARD MOD_WILDCARD # TYPE_EQDELETE   (hardcoded)
+
+# Set criteria for creating files for shakemap
+#---------------------------------------------
+MagThresh         3.5               # Minimum magnitude to feed shakemap
+MagWeightThresh   2.0               # Minimum magnitude weight (~no. of stas)
+
+DelayFirstFeed    30                # Seconds to wait between receiving archive
+                                    #   msg and starting first feed to shakemap.
+UpdateInterval    10                # Minutes between updates to shakemap
+                                    #   once an "interesting event" happens.
+UpdateDuration    120               # Keep creating updates for shakemap
+                                    #   until this many minutes after the
+                                    #   event origin time.  Assumes your
+                                    #   computer's clock is set close to UTC.
+TempDir          /home/tmp          # Full path of working directory.
+OutputDir        /home/shakemap     # Full path of directory in which to
+                                    #   write completed shakemap files.
+ShakemapFormat    2                 # Specify format of output files:
+                                    #   1=shakemap1, 2=shakemap2(XML)
+UseEventID        1                 # Specify which eventid to write in output:
+                                    #   1=binder eventid, 2=DBMS eventid
+LogShakemapFile   1                 # non-zero causes shakemap file to be
+                                    #   written to shakemapfeeder's log
+QuakeAuthor       014024003         # MsgLogo of original TYPE_HYP2000ARC
+                                    #   msg, written as a 9-char ascii string
+                                    #   msgtype-moduleid-installationid.
+                                    #   Used with binder's eventid to look up
+                                    #   the DBMS is of the event.
+MappingFile       NCSN.map          # File contain mappings of instrument type,
+                                    #   long station names and agency names
+                                    #   MappingFile is optional.
+
+# Set criteria for requesting strongmotion data from the DBMS
+#------------------------------------------------------------
+DBservice         db_service        # which instance DBMS to connect to
+DBuser            db_user           # as this user name
+DBpassword        db_pswd           # with this password
+MaxDataPerEvent   1000              # Maximum number of channels of SM data
+                                    #   to retrieve from DBMS for each event.
+LatitudeRange     5.0               # request data within Y degrees lat of eq.
+LongitudeRange    6.0               # request data within X degrees lon of eq.
+
+# Add list of components to block (optional):
+BlockComponent VHZ
+BlockComponent HV1
+
+# Set up time tolerance in seconds (how sloppy are timestamps?)
+DefaultTimeTolerance     1.0   # tolerance for unlisted networks
+NetTimeTolerance     PG 30.0
+NetTimeTolerance     NP 30.0
+NetTimeTolerance     CE 50.0
+
+# Specify a simple velocity model ala binder_ew
+# One "lay depth-to-top P-velocity" command per layer
+lay  0.0 6.5
+lay 25.0 8.0
+psratio 1.78
+
+# List page groups to notify when a shakemap file is generated (optional).
+# One group per command, up to 10 PageOnShakemapFeed commands.
+PageOnShakemapFeed jack_seismologist
+PageOnShakemapFeed jill_seismologist
+
+
+</PRE>
+<P>
+<A NAME="function">
+<H2>2.  FUNCTIONAL COMMAND LISTING</H2>
+<P>  
+<!-- ADD HERE: Paragraph "Below are the commands recognized..." -->
+Below are the configure commands recognized by Shakemapfeed, grouped by the function 
+they influence.  Command names must be typed in the control file exactly as shown in this
+document (upper/lower case matters!).  Most of the commands are required. 
+
+<!-- ADD HERE: The pre-formatted functional command listing      -->
+<!-- To make an anchor for each command, surround it with these: -->
+<PRE>
+        Earthworm system setup:
+ 		<A HREF="#MyModuleId">MyModuleId</A>	   	required
+		<A HREF="#RingName">RingName</A>	   	required
+		<A HREF="#HeartBeatInterval">HeartBeatInterval</A>	required
+		<A HREF="#GetEventsFrom">GetEventsFrom</A> 	   	required
+		<A HREF="#GetEQDeletesFrom">GetEQDeletesFrom</A>
+		<A HREF="#GetMagnitudesFrom">GetMagnitudesFrom</A>
+
+        DBMS access:
+		<A HREF="#DBservice">DBservice</A>	   	required
+		<A HREF="#DBuser">DBuser</A>	   		required
+		<A HREF="#DBpassword">DBpassword</A>	   	required
+
+
+	Shakemap file creation:
+		<A HREF="#MagThresh">MagThresh</A>	   	required       
+		<A HREF="#MagWeightThresh">MagWeightThresh</A>	   	required 
+		<A HREF="#DelayFirstFeed">DelayFirstFeed</A>	   	required             
+		<A HREF="#UpdateInterval">UpdateInterval</A>	   	required         
+		<A HREF="#UpdateDuration">UpdateDuration</A>	   	required
+		<A HREF="#TempDir">TempDir</A>	   		required  
+		<A HREF="#OutputDir">OutputDir</A>	   	required  
+		<A HREF="#ShakemapFormat">ShakemapFormat</A>	   	required
+		<A HREF="#UseEventID">UseEventID</A>	   	required 
+		<A HREF="#MappingFile">MappingFile</A>
+
+        Data selection & filtering criteria:
+		<A HREF="#MaxDataPerEvent">MaxDataPerEvent</A>	   	required
+		<A HREF="#LatitudeRange">LatitudeRange</A>	   	required
+		<A HREF="#LongitudeRange">LongitudeRange</A>	   	required
+		<A HREF="#QuakeAuthor">QuakeAuthor</A> 	   	required
+		<A HREF="#lay">lay</A>	   		required
+		<A HREF="#psratio">psratio</A>
+		<A HREF="#DefaultTimeTolerance">DefaultTimeTolerance</A>	required
+		<A HREF="#NetTimeTolerance">NetTimeTolerance</A>
+		<A HREF="#BlockComponent">BlockComponent</A>
+
+	Output Control:
+		<A HREF="#Debug">Debug</A>		   	required
+		<A HREF="#LogFile">LogFile</A>		   	required
+		<A HREF="#LogShakemapFile">LogShakemapFile</A>	   	required
+		<A HREF="#PageOnShakemapFeed">PageOnShakemapFeed</A>
+
+</PRE>
+
+<A NAME="alphabet">
+<H2>3.  ALPHABETIC COMMAND LISTING & DESCRIPTION</H2>
+<P>
+In the following section, all configuration file commands are listed 
+in alphabetical order.  Listed along with the command (bold-type) are 
+its arguments (in red), and the function within the module that the command influences. 
+A detailed description of the command and is also given.  Default values 
+and example commands are listed after each command description.
+<PRE><B>
+command <font color=red>arg1</font>						function
+</PRE></B>
+<HR>
+
+<!-- ADD HERE: all commands; below is a sample command blank: -->
+
+
+<A NAME="BlockComponent">  <!-- command name as anchor inside quotes -->	
+<PRE><B>BlockComponent <font color=red>XYZ</font></B>		 			Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Optional command lists a component code that shakemapfeed should not write
+to its output file.  <font color=red>XYZ</font> is the 3-letter component
+code that appears in the channel's station-component-network codes.
+<PRE><!-- Default and example go here   -->
+Example:  BlockComponent VHZ
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+</BLOCKQUOTE>
+<A NAME="DBpassword">  <!-- command name as anchor inside quotes -->	
+<PRE><B>DBpassword <font color=red>password</font></B>					DBMS access
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Password of the database user that has read/write access to all the strongmotion tables
+that shakemapfeed uses.  To access the DBMS, shakemapfeed must
+first log in as the database user, giving the correct <font color=red>password</font>.
+See also DBuser and DBservice commands.
+<PRE><!-- Default and example go here   -->
+Example:  DBpassword abc123				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+</BLOCKQUOTE>
+<A NAME="DBservice">  <!-- command name as anchor inside quotes -->	
+<PRE><B>DBservice <font color=red>servicename</font></B>					DBMS access
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Name of the database service that shakemapfeed will retreive data from.
+This <font color=red>servicename</font> is a character string that is mapped to a tcp/ip
+address and port number in Oracle's tnsnames.ora file on the shakemapfeed
+computer.  See also DBuser and DBpassword commands.
+<PRE><!-- Default and example go here   -->
+Example:  DBservice myeqs				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+</BLOCKQUOTE>
+<A NAME="DBuser">  <!-- command name as anchor inside quotes -->	
+<PRE><B>DBuser <font color=red>username</font></B>						DBMS access
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Name of the database user that has read/write access to all the strongmotion tables
+that shakemapfeed uses.  To access data in the DBMS, shakemapfeed must
+first log in as <font color=red>username</font>. See also DBpassword and DBservice commands.
+<PRE><!-- Default and example go here   -->
+Example:  DBuser equser				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+
+</BLOCKQUOTE>
+<A NAME="Debug">  <!-- command name as anchor inside quotes -->	
+<PRE><B>Debug <font color=red>flag</font></B>						Output Control
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Optional command to control the amount of logging done by shakemapfeed. 
+If <font color=red>flag</font> is zero, debug-level logging is turned off; 
+shakemapfeed will do normal logging of start, stop, error conditions, and
+brief descriptions of how it has handled each message it received. 
+If <font color=red>flag</font> is non-zero, shakemapfeed will include details 
+about its strong-motion filtering decisions.
+<PRE><!-- Default and example go here   -->
+Example:  Debug 0				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+
+<A NAME="DefaultTimeTolerance">  <!-- command name as anchor inside quotes -->	
+<PRE><B>DefaultTimeTolerance <font color=red>nsec</font></B>				Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets a default value for how sloppy the timestamps on strongmotion data can be.
+Shakemapfeed will write a set of strongmotion data to its output file if its
+timestamp +/- <font color=red>nsec</font> is within the expect traveltime range 
+for that station.  Shakemapfeed calculates traveltimes using the simple velocity
+model specified with the lay and psratio commands.  You can specify different
+time tolerances for different network codes using the NetTimeTolerance command.
+Any network code not specifically listed will be assigned the default tolerance.
+<PRE><!-- Default and example go here   -->
+Example:  DefaultTimeTolerance 1.0
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="DelayFirstFeed">  <!-- command name as anchor inside quotes -->	
+<PRE><B>DelayFirstFeed <font color=red>delaysec</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls when shakemapfeed creates the first shakemap files for an event.
+After receiving a TYPE_HYP2000ARC message for a new qualifying event, shakemapfeed
+sets the "feed shakemap" timer to the current system time plus <font color=red>delaysec</font> seconds.  This allows time for strongmotion data to be inserted into the DBMS.
+<PRE><!-- Default and example go here   -->
+Example:  DelayFirstFeed 15
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+</BLOCKQUOTE>
+<A NAME="GetEQDeletesFrom">  <!-- command name as anchor inside quotes -->	
+<PRE><B>GetEQDeletesFrom <font color=red>inst mod_id</font></B>				Earthworm setup
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Optional command which controls the event deletion messages (TYPE_EQDELETE) input to shakemapfeed.  Shakemapfeed will only 
+process eqdelete messages that come from module <font color=red>mod_id</font> at installation 
+<font color=red>inst</font>.  <font color=red>inst</font> and <font color=red>mod_id</font> are character strings (valid strings are 
+listed in earthworm.h/earthworm.d) which are related to single-byte numbers that uniquely identify each installation and module.  
+Wildcards (INST_WILDCARD and 
+MOD_WILDCARD) will force shakemapfeed to process all eqdelete messages, 
+regardless of their place of origin.<BR>
+<PRE><!-- Default and example go here   -->
+Example:  GetEQDeletesFrom INST_MENLO MOD_WILDCARD				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+</BLOCKQUOTE>
+<A NAME="GetMagnitudesFrom">  <!-- command name as anchor inside quotes -->	
+<PRE><B>GetMagnitudesFrom <font color=red>inst mod_id</font></B>				Earthworm setup
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Optional command which controls the magnitude messages (TYPE_MAGNITUDE) input to shakemapfeed.  Shakemapfeed will only 
+process magnitudes that come from module <font color=red>mod_id</font> at installation 
+<font color=red>inst</font>.  <font color=red>inst</font> and <font color=red>mod_id</font> are character strings (valid strings are 
+listed in earthworm.h/earthworm.d) which are related to single-byte numbers that uniquely identify each installation and module.  
+Wildcards (INST_WILDCARD and 
+MOD_WILDCARD) will force shakemapfeed to process all magnitude messages, 
+regardless of their place of origin.<BR>
+<PRE><!-- Default and example go here   -->
+Example:  GetMagnitudesFrom INST_MENLO MOD_WILDCARD				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+</BLOCKQUOTE>
+<A NAME="GetEventsFrom">  <!-- command name as anchor inside quotes -->	
+<PRE><B>GetEventsFrom <font color=red>inst mod_id</font></B>				Earthworm setup
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls the event messages (TYPE_HYP2000ARC) input to shakemapfeed.  Shakemapfeed will only 
+process events that come from module <font color=red>mod_id</font> at installation 
+<font color=red>inst</font>.  <font color=red>inst</font> and <font color=red>mod_id</font> are character strings (valid strings are 
+listed in earthworm.h/earthworm.d) which are related to single-byte numbers that uniquely identify each installation and module.  
+Wildcards (INST_WILDCARD and 
+MOD_WILDCARD) will force shakemapfeed to process all event messages, 
+regardless of their place of origin.<BR>
+<PRE><!-- Default and example go here   -->
+Example:  GetEventsFrom INST_MENLO MOD_EQFILTER				
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="HeartBeatInterval">  <!-- command name as anchor inside quotes -->	
+<PRE><B>HeartBeatInterval <font color=red>nsec</font></B>					Earthworm setup		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Defines the minimum number of seconds <font color=red>nsec</font> between 
+TYPE_HEARTBEAT messages issued by shakemapfeed. 
+<PRE><!-- Default and example go here   -->
+Example:  HeartbeatInt 30
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+
+<A NAME="LatitudeRange">  <!-- command name as anchor inside quotes -->	
+<PRE><B>LatitudeRange <font color=red>latrange</font></B>					Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the latitude range (in degrees) for requesting strongmotion
+data from the DBMS. Shakemapfeed uses space-time box to request
+associated and unassociated strongmotion data.  The latitude boundaries
+of the space box is set to the epicenter latitude +/- <font color=red>latrange</font> degrees. The longitude range is set with the LongitudeRange command.
+<PRE><!-- Default and example go here   -->
+Example:  LatitudeRange 5.0
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="LogFile">  <!-- command name as anchor inside quotes -->	
+<PRE><B>LogFile <font color=red>switch</font></B>						Output Control
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the on-off switch for writing a log file to disk.  If <font color=red>switch</font>
+is 0, no log file will be written, but messages may go to stderr and/or stdout.  
+If <font color=red>switch</font> is 1, shakemapfeed 
+will write to stderr/stdout and to a daily log file(s) called shakemapfeedxx.log_ccyymmdd 
+where xx is shakemapfeed's module id (set with "MyModuleId" command) 
+and ccyymmdd is the current UTC date (ex: 19960123) on the system clock.  
+The file(s) will be written in the EW_LOG directory (environment 
+variable).  If <font color=red>switch</font> is 2, the log file will be written, but
+no messages will go to stderr or stdout.
+<PRE><!-- Default and example go here   -->
+Example:  LogFile 1
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+
+<A NAME="LogShakemapFile">  <!-- command name as anchor inside quotes -->	
+<PRE><B>LogShakemapFile <font color=red>switch</font></B>					Output Control
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the on-off switch for including shakemapfeed's output files in its daily log.  
+If <font color=red>switch</font> is non-zero, shakemapfeed will write its output files
+to its log.  
+If <font color=red>switch</font> is 0, it won't. 
+<PRE><!-- Default and example go here   -->
+Example:  LogShakemapFile 1
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="lay">  <!-- command name as anchor inside quotes -->
+<PRE><B>lay <font color=red>depth velocity</font></B>					Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Defines the layered velocity structure to be used for calculating 
+travel times.  <font color=red>depth</font> is the distance (km) to the top of the layer, 
+and <font color=red>velocity</font> is the seismic P-wave velocity (km/sec) within that 
+layer.  No default velocity structure is defined; therefore, the user
+ must always supply one in the control file.  Up to 20 layers can be 
+specified, and they should be listed in order of increasing depth.
+<PRE>
+Example:  lay   0.0  4.0
+          lay   3.5  5.9
+          lay  15.0  6.85
+          lay  25.0  7.85
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="LongitudeRange">  <!-- command name as anchor inside quotes -->	
+<PRE><B>LongitudeRange <font color=red>lonrange</font></B>					Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the longitude range (in degrees) for requesting strongmotion
+data from the DBMS. Shakemapfeed uses space-time box to request
+associated and unassociated strongmotion data.  The longitude boundaries
+of the space box is set to the epicenter longtitude +/- <font color=red>lonrange</font> degrees. The latitude range is set with the LatitudeRange command.
+<PRE><!-- Default and example go here   -->
+Example:  LongitudeRange 6.0
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+
+<A NAME="PageOnShakemapFeed">  <!-- command name as anchor inside quotes -->	
+<PRE><B>PageOnShakemapFeed <font color=red>pagegroup</font></B>				Output Control
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Optional command to enable pager message output.  <font color=red>pagegroup</font> is
+a string (up to 30 characters) that identifies a page recipient in your installation's paging
+system. Up to 10 PageOnShakemapFeed commands may be used.  Shakemapfeed will 
+produce a TYPE_PAGE message addressed to each <font color=red>pagegroup</font> every 
+time it produces shakemap files (message includes eventid, cumulative number of feeds for this event, and time elapsed since event origin) and every time it removes an event from the
+processing list. 
+<PRE><!-- Default and example go here   -->
+Example:  PageOnShakemapFeed  joe_seismologist
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="psratio">
+<PRE><B>psratio <font color=red>value</font></B>                                		Data selection & filtering</PRE>
+<BLOCKQUOTE>
+Sets the value of the P/S seismic velocity ratio.  Used in calculating travel times.
+<PRE>
+Default:  psratio  1.72                 
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="QuakeAuthor">  <!-- command name as anchor inside quotes -->	
+<PRE><B>QuakeAuthor <font color=red>author</font></B>					Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Identifies the earthworm author of the earthquake's eventid. <font color=red>author</font>
+(a 9-character string) is the ascii representation of the earthworm MSG_LOGO of the 
+original TYPE_HYP2000ARC message for the event.  The logo is written with
+3-digits each for message type, module id, and installation id.
+The message type should always be 014 (for TYPE_HYP2000ARC from earthworm_global.d), the module
+id will usually be MOD_EQPROC (look number up in your earthworm.d), and the
+installation id is installation-dependent (see earthworm_global.d).
+This <font color=red>author</font> string is used in conjunction with 
+the eventid (found in the TYPE_HYP2000ARC message) to look up the 
+DBMS id of the event.  Knowing the DBMS id, shakemapfeed can easily request
+all strongmotion data in the DBMS that is associated with
+the event.
+<PRE><!-- Default and example go here   -->
+Example:  QuakeAuthor 014024003
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MagThresh">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MagThresh <font color=red>magthresh</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the minimum magnitude event for shakemapfeed to work on. Shakemapfeed reads the
+magnitude value and magnitude weight for both the preferred and duration magnitudes
+from the first line of the TYPE_HYP2000ARC message.  Shakemapfeed uses the preferred magnitude if its weight
+is non-zero.   Otherwise,
+shakemapfeed uses the duration magnitude.  If the event magnitude is greater than 
+or equal to <font color=red>magthresh</font> and its weight is greater than or equal to the magnitude weight threshold (set with MagWeightThresh command), shakemapfeed will enter
+the event into its processing list and set timers for generating shakemap files.
+<PRE><!-- Default and example go here   -->
+Example:  MagThresh 3.5
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+
+<A NAME="MagWeightThresh">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MagWeightThresh <font color=red>magwtthresh</font></B>				Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the minimum magnitude weight for an event to qualify for shakemapfeed. 
+In most cases, the magnitude weight is an approximation of the number of stations that
+were used in the magnitude determination; shakemapfeed reads <font color=red>magwtthresh</font> as a floating point number. Shakemapfeed reads the
+magnitude value and magnitude weight for both the preferred and duration magnitudes
+from the first line of the TYPE_HYP2000ARC message.  Shakemapfeed uses the preferred magnitude if its weight is non-zero.   Otherwise, shakemapfeed uses the duration 
+magnitude.  If the event magnitude is greater than 
+or equal to the magnitude threshold (set with MagThresh command) and its weight is greater than or equal to <font color=red>magwtthresh</font>, shakemapfeed will enter
+the event into its processing list and set timers for generating shakemap files.
+If shakemapfeed receives a TYPE_MAGNITUDE message, it will replace the event's existing magnitude with the new magnitude only if its weight is greater than or equal to <font color=red>magwtthresh</font>.
+<PRE><!-- Default and example go here   -->
+Example:  MagWeightThresh 2.0
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MappingFile">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MappingFile <font color=red>fname</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Identifies the optional mapping file <font color=red>fname</font> to be 
+used for producing ShakemapFormat 2 (XML) files.  This file
+maps 2-letter network codes and station codes to longer, possibly more
+descriptive, character strings.  These longer strings are included
+in the XML output.  Hopefully this mapping file will become obsolete when
+this kind of information is contained in the DBMS.
+<PRE><!-- Default and example go here   -->
+Example: MappingFile YourNetwork.map
+
+Sample Mapping file:
+
+# Mapping file contains tables of instrument types, long station names
+# and agency names.
+# Agency net agency-name # net is standard network code;
+#    agency-name: the long agency name, up to 40 characters
+Agency NC   Northern California Seismic Network
+Agency BK   Berkeley Digital Seismic Network
+#
+#
+# Station sta net longName
+#  sta and net are standard station and network codes;
+#  longName is the long station name, up to 20 characters
+Station  ARC   BK     Arcata Humbolt Stat
+Station  BDM   BK     Black Diamond Mines
+Station  BKS   BK     UC Berkeley -Byerly
+Station  BRIB  BK     Briones Russel Rsrv
+#
+# Inst sta comp net inst-type
+#   sta, comp and net are standard station, component and network codes
+#   inst-type is the instrument description, up to 50 characters
+Inst  ARC     BHZ   BK   Unknown Type
+Inst  ARC     HLE   BK   Kinemetrics FBA-23
+Inst  ARC     HLN   BK   Kinemetrics FBA-23
+Inst  ARC     HLZ   BK   Kinemetrics FBA-23
+Inst  BDM     HLE   BK   Unknown Accelerometer
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MaxDataPerEvent">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MaxDataPerEvent <font color=red>maxdata</font></B>					Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls the number of strongmotion data sets shakemapfeed can retrieve from the DBMS for each event. 
+All the information contained in one TYPE_STRONGMOTIONII message (PGA,PGV,PGD,spectral accelerations,etc) counts as one data set.  If a channel reports a preliminary
+and a final TYPE_STRONGMOTIONII message, that counts as 2 data sets.  Therefore,
+<font color=red>maxdata</font> should be set to allow for the number of individual
+strongmotion channels in your network plus duplicate data (if applicable).
+Before writing shakemap files, shakemapfeed does filter out duplicate data, using the set loaded
+into the database last.
+<PRE><!-- Default and example go here   -->
+Example:  MaxDataPerEvent 1000
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MyModuleId">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MyModuleId <font color=red>mod_id</font></B>					Earthworm setup
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the module id for labeling all outgoing messages. <font color=red>mod_id</font> is
+a character string (valid strings are listed in earthworm.d) that
+relates (in earthworm.d) to a unique single-byte number.
+<PRE><!-- Default and example go here   -->			
+Example:  MyModuleId MOD_SHAKEMAPFEED
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="NetTimeTolerance">  <!-- command name as anchor inside quotes -->	
+<PRE><B>NetTimeTolerance <font color=red>net nsec</font></B>				Data selection & filtering
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets a value for how sloppy the timestamps on strongmotion data from a specific
+network can be.  This is an optional command. <font color=red>net</font> is the 2-letter code that identifies
+the network in the data,  <font color=red>nsec</font> is the tolerance in seconds.
+Shakemapfeed will write a set of strongmotion data to its output file if its
+timestamp +/- <font color=red>nsec</font> is within the expect traveltime range 
+for that station.  Shakemapfeed calculates traveltimes using the simple velocity
+model specified with the lay and psratio commands.  
+Any network code not specifically listed will be assigned the default tolerance
+set in the DefaultTimeTolerance.
+<PRE><!-- Default and example go here   -->
+Example:  NetTimeTolerance  PG  30.0
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="OutputDir">  <!-- command name as anchor inside quotes -->	
+<PRE><B>OutputDir <font color=red>outputpath</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the path to shakemapfeed's final output directory. <font color=red>outputpath</font>
+is any string up to 55 characters.
+Shakemapfeed creates its output files in the directory specified by
+the TmpDir command.
+When complete, it moves them to <font color=red>outputpath</font>.  
+Any program using the output of shakemapfeed should look only in the <font color=red>outputpath</font>
+directory.
+<PRE><!-- Default and example go here   -->
+Example: OutputDir /home/earthworm/run/shakemapfeed
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="RingName">  <!-- command name as anchor inside quotes -->	
+<PRE><B>RingName <font color=red>ring</font></B>						Earthworm setup
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Tells shakemapfeed which shared memory region to use for input and output. <font color=red>ring</font> 
+is a character string (valid strings are listed in earthworm.d) that relates (in earthworm.d) 
+to a unique number for the key to the shared memory region. 
+<PRE>		
+Example:  RingName HYPO_RING
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="ShakemapFormat">  <!-- command name as anchor inside quotes -->	
+<PRE><B>ShakemapFormat <font color=red>format</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls what format shakemapfeed's output will be in.  Valid values
+for <font color=red>format</font> are 1 or 2.  Format 1 is an outdated
+ascii file that contains both event origin and strongmotion data and was
+used by shakemap version 1.
+Format 2 produces XML files, one for the event and a second for the 
+associated strongmotion data.  Format 2 is used as input by shakemap version 2.
+<PRE><!-- Default and example go here   -->
+Example: ShakemapFormat 2
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="TempDir">  <!-- command name as anchor inside quotes -->	
+<PRE><B>TempDir <font color=red>tmppath</font></B>						Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the path to shakemapfeed's temporary working directory.
+<font color=red>tmppath</font>
+is any string up to 55 characters.
+Shakemapfeed creates its output files in <font color=red>tmppath</font>.
+When complete, it moves them to the final output directory specified
+in the OutputDir command.  This temporary work space is necessary to keep
+shakemap or other programs from trying to process a partially-complete
+shakemap file.
+<PRE><!-- Default and example go here   -->
+Example: TempDir /home/earthworm/run/tmp
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="UpdateDuration">  <!-- command name as anchor inside quotes -->	
+<PRE><B>UpdateDuration <font color=red>totalduration</font></B>				Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls when shakemapfeed will stop updating shakemap files for an event.
+When shakemapfeed gets a TYPE_HYP2000ARC message for a qualifying event,
+it sets the "stop automatic updating" time to the event origin time plus
+<font color=red>totalduration</font> minutes.  When the system clock
+passes this time, shakemapfeed will stop producing shakemap files automatically . 
+Note that since shakemapfeed uses event origin time to set an absolute
+"stop" time, you'll want to keep the computer's clock fairly close to UTC
+(within a minute).  If shakemapfeed gets a new piece of information (TYPE_HYP2000ARC
+or TYPE_MAGNITUDE message) for an event whose update duration has already
+expired, it will force the creation of one set of shakemap files immediately.
+This feature allows manual re-runs of older events (use file2ring to write the
+contents of an ascii file into an Earthworm ring).
+<PRE><!-- Default and example go here   -->
+Example: UpdateDuration 120
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="UpdateInterval">  <!-- command name as anchor inside quotes -->	
+<PRE><B>UpdateInterval <font color=red>nmin</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls how frequently shakemapfeed creates the shakemap files for an event.
+After creating a set of shakemap files, shakemapfeed
+resets the "feed shakemap" timer to the current system time plus <font color=red>nmin</font> minutes.  When the timer expires, shakemapfeed will
+query the DBMS for strongmotion data. It will generate new shakemap files only if new
+strongmotion data has been received or if the event magnitude has been updated since the last feed.
+<PRE><!-- Default and example go here   -->
+Example: UpdateInterval 10
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="UseEventID">  <!-- command name as anchor inside quotes -->	
+<PRE><B>UseEventID <font color=red>idtype</font></B>					Shakemap file creation
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Controls which eventid shakemapfeed will write to its output file.
+Set <font color=red>idtype</font>=1 to use binder's eventid, 
+<font color=red>idtype</font>=2 to use the DBMS eventid.
+<PRE><!-- Default and example go here   -->
+Example: UseEventID 1
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<CENTER> 
+<A HREF="../dbms-modules.html">Module Index</A> | 
+<A HREF="../ovr/shakemapfeed_ovr.html">Shakemapfeed Overview</A>
+</CENTER>
+
+<!-- USGS-required stuff at the end -->
+<HR>
+<ADDRESS>
+The URL of this page is  <B>[http://gldbrick.cr.usgs.gov/ew-doc/DBMS/cmd/shakemapfeed_cmd.html]</B><BR>
+Contact: <B>bogaert@usgs.gov</B><BR>
+</ADDRESS>
+</BODY>
+</HTML>
+
+
+

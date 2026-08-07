@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0055)http://gldrocky.cr.usgs.gov/ew-doc/cmd/restart_cmd.html -->
+<HTML><HEAD><TITLE>Earthworm Modules: Restart commands</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4522.1800" name=GENERATOR></HEAD>
+<BODY text=#000000 vLink=#551a8b aLink=#ff0000 link=#0000ee bgColor=#fadfaf>
+<CENTER>
+<H1><BR>Orareport Configuration File</H1><I>(last revised August 3, 
+2001)</I></CENTER>
+<PRE>
+#
+# This is orareport's parameter file
+
+#  Basic Earthworm setup:
+#
+MyModuleId         MOD_REPORT_B   # module id for this instance of report 
+RingName           HYPO_RING      # ring to get input from
+LogFile            1              # 0 to completely turn off disk log file
+HeartBeatInt       15             # seconds between heartbeats
+
+# List the message logos to grab from transport ring
+#              Installation       Module          Message Types
+GetEventsFrom  INST_WILDCARD    MOD_EQPROC     # hinvarc 
+
+# Set up database stuff
+DBservice   db_service
+DBuser      db_user
+DBpassword  db_pwd
+
+# Optional command for debug output.  Comment out to turn off debug output.
+# Debug 
+
+#
+# Optional command: If uncommented, orareport will run the alarms
+#  system after inserting the event.
+#
+DoAlarms
+
+#
+# NetworkCode: two letter network designation code to be used
+#  in building QDDS alarm messages. OPTIONAL, set to blank otherwise.
+#
+NetworkCode	 UU
+</PRE>
+
+
+</CENTER><!-- USGS-required stuff at the end -->
+<HR>
+
+<ADDRESS>The URL of this page is 
+<B>[http://gldbrick.cr.usgs.gov/ew-doc/DBMS/cmd/orareport_cmd.htm]</B><BR>Contact: 
+<B>bogaert@usgs.gov</B><BR></ADDRESS></CENTER></BODY></HTML>

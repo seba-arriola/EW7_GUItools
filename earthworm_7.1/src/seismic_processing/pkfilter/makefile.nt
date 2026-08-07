@@ -1,0 +1,48 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.3 2006/11/21 23:04:50 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.3  2006/11/21 23:04:50  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.2  2004/05/14 18:00:52  dietz
+#     rdpickcoda moved to EW library
+#
+#     Revision 1.1  2004/04/22 18:01:56  dietz
+#     Moved pkfilter source from Contrib/Menlo to the earthworm orthodoxy
+#
+#
+#
+
+#     Nmake File For pkfilter - Windows NT version
+
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = pkfilter    
+O = $(APP).obj 
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+$B\$(APP).exe: pkfilter.obj 
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) $O $L\rdpickcoda.obj \
+    $L\logit.obj $L\getutil.obj $L\transport.obj $L\sleep_ew.obj \
+    $L\kom.obj $L\time_ew.obj $L\chron3.obj -out:$B\$(APP).exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	del a.out core *.o *.obj *% *~
+
+clean_bin:
+	del $B\pkfilter*

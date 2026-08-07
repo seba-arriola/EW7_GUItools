@@ -1,0 +1,61 @@
+
+#
+# usnsn_loc2ora
+
+#  Basic Earthworm setup:
+#
+MyModuleId         MOD_USNSN_LOC2ORA  # module id for this instance of template 
+RingName           NSN_RING           # shared memory ring for input/output
+LogFile            1                  # 0 to completely turn off disk log file
+HeartBeatInterval  15                 # seconds between heartbeats
+
+# List the message logos to grab from transport ring
+#              Installation       Module          Message Types
+GetMsgsFrom    INST_WILDCARD    MOD_WILDCARD    # TYPE_USNSN only
+
+#
+# OPTIONAL: Debug level
+#
+Debug    2
+
+#
+# OPTIONAL: Debug directory - where output files are written
+#
+Debug_Dir  /tmp/oralog
+
+
+#
+# Database connection configuration.
+#
+DBuser          db_user
+DBpassword      db_pwd
+DBservice       db_service
+
+#
+# Cheater file that translates from NEIC stations names to S-C-N
+#
+NeicCheaterFile  ./neic2scn.d
+
+#
+# Optional command: If uncommented, orareport will run the alarms
+#  system after inserting the event.
+#
+DoAlarms
+
+#
+# NetworkCode: two letter network designation code to be used
+#  in building QDDS alarm messages. OPTIONAL, set to blank otherwise.
+#
+NetworkCode  UU
+#
+# Nearest Town display options -- OPTIONAL
+#
+#   minPopulation:  towns with more than this are considered BIG
+#   showPopulation:  if set to non-zero, populations of towns will be shown
+#
+#    if these are not present, minPopulation = 1; showPopulation = 0
+#
+minPopulation   30000
+showPopulation  1
+
+

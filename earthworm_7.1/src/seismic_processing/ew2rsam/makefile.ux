@@ -1,0 +1,50 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.1 2005/07/20 00:48:09 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/20 00:48:09  friberg
+#     added in makefile.ux
+#
+#     Revision 1.2  2000/08/08 18:11:30  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 17:18:52  lucky
+#     Initial revision
+#
+#
+#
+
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+SRCS = ew2rsam.c
+OBJS = ew2rsam.o
+
+LIBS = -lm -lpthread
+
+EW2RSAM = $(OBJS) $L/logit.o $L/kom.o $L/getutil.o $L/sleep_ew.o \
+           $L/time_ew.o $L/transport.o $L/swap.o $L/mem_circ_queue.o \
+		   $L/threads_ew.o $L/sema_ew.o 
+
+ew2rsam: $(EW2RSAM)
+	cc -o $B/ew2rsam $(EW2RSAM) $(LIBS) 
+
+
+lint:
+	lint ew2rsam.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/ew2rsam*

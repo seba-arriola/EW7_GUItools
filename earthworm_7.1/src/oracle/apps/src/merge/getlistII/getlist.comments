@@ -1,0 +1,37 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY getlist
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+LINK_NAME Sample Config File
+LINK getlist.d.txt
+
+LINK_NAME Programmer Notes
+LINK programmer_notes.txt
+
+DESCRIPTION "getlist" is a cgi-bin program that generates
+customized maps of earthquakes.  A list of events(earthquakes) 
+is retrieved from an EWDB, and then  a web page that lists 
+all of the retrieved  events(in both text-list and 
+graphical-map form), along with summary information for 
+each event, is created.  It contains links
+to other programs that provide detailed information for a
+chosen event.  In certain modes getlist will also display
+stations on the same map as the events.
+<br><br>
+
+Initial version  1999/05/05 18:19:24  lucky
+<br><br>
+
+*************************************************
+************************************************/
+

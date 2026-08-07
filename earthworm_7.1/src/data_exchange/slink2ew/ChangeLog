@@ -1,0 +1,61 @@
+2006.3.7: version 1.4
+	- Fix parsing of Stream definition (NET_STA) for single
+	character network codes.
+
+2006.1.27: version 1.3
+	- Update to libslink 1.6 including minor bug fixes.
+
+2005.7.14: version 1.2.2
+	- Fix the forcetracebuf logic so the correct message type
+        is used when the trace buf type is forced.
+
+2005.4.15: version 1.2.1
+	- Fix some uninitialized variables and compiler warnings.
+
+2005.4.14: version 1.2
+	- Implement a progressive throttling mechanism on the main loop
+	to fix data collection with high data rates.  The previous
+	throttling was too agressive and would not allow the TCP buffers
+	to be cleared fast enough.
+
+2005.4.13: version 1.1
+	- Add comments to the documentation about maximum expected
+	TRACEBUF message size.
+	- Update to libslink 1.5.
+
+2005.4.12: version 1.1pre3
+	- Fix comparison of non-NULL terminated string in mseed2ewring.
+	Thanks Jim Luetgert.
+
+2005.4.8: version 1.1pre2
+	- Add capability to create TRACEBUF2 messages on systems
+	that support them.  TRACEBUF2 messages include location codes.
+	- Add 'ForceTraceBuf1' config option to force the creation of
+	TRACEBUF messages on systems that support TRACEBUF2.
+
+2005.4.7: version 1.1pre1
+	- Update to libslink 1.5pre2.
+
+2004.1.21: version 1.0
+	- Add StateFileInt option.
+	- Update to libslink 1.0.
+
+2003.8.13: version 0.9.6
+	- Remove some unnecessary variables and #include <time.h>.
+	- Cleanup NT makefile.
+
+2003.8.12: version 0.9.5
+	- Cleanup and (hopefully) simplify the module configuration code,
+	removing the need for the interlaced parameter structures.  Most
+	of the parameters were moved to global variables.
+	- Changed the 'StateFile' configuration parameter to a boolean
+	flag, the filename is 'slink<mod id>.state' and placed in the 
+	parameter directory indicated with the EW_PARAMS environment
+	variable.  Less flexible but easier for the user.
+	- Use the current logging scheme, writing a log file during init
+	no matter what the logging level.
+	- Rename parameters: MyModId -> MyModuleId, OutRing -> RingName
+	- Update to libslink 0.9.
+
+mid-2003: version 0.9.1
+	- Initial version based on liss2ew sources.

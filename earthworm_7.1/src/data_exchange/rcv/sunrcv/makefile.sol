@@ -1,0 +1,100 @@
+# Added Earthworm-like makefile stuff. LDD
+#
+OSNAME = SOLARIS
+CC= cc
+CFLAGS= -c -D$(OSNAME) -D_REENTRANT $(GLOBALFLAGS)
+#CC= gcc
+#CFLAGS= -c -ansi -D$(OSNAME)
+INCLUDE= -I../STEIM123 -I../cmpnsn 
+#LFLAGS= -g
+LDLIBS=
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+#* Earthworm binaries 
+EWBINARIES = $L/chron3.o $L/getutil.o $L/kom.o \
+	     $L/sleep_ew.o $L/time_ew.o $L/threads_ew.o $L/transport.o 
+LOGIT      = $L/logit.o
+LOGIT_MT   = $L/logit_mt.o $L/sema_ew.o
+#*
+#* Make all necessary parts of rcv/station
+#*
+all:
+	make -f makefile.sol rcv
+	make -f makefile.sol station
+	make -f makefile.sol install
+#	make -f makefile.sol tstpktlog
+	make -f makefile.sol chkpktlog
+#*
+#*	nsnrcvtt test program
+#*
+nsnrcvtt: nsnrcvtt.o
+	$(CC) $(LFLAGS) nsnrcvtt.o -o nsnrcvtt -lm
+nsnrcvtt.o: nsnrcvtt.c
+	$(CC) $(CFLAGS) $(INCLUDE)  nsnrcvtt.c
+#*
+#*	RCV - Receive data from a VSAT and distribute to multiple STATIONS.
+#*
+rcv: rcv.o nsnrcvtt.o rcvqsub.o rcvcmd.o rcvtcp.o user_proc_ew.o user_heartbeat_ew.o \
+     exit_handler.o tcpholding.o safetcp.o juldat.o $(EWBINARIES) $(LOGIT)
+	$(CC) $(LFLAGS)  rcv.o rcvcmd.o rcvqsub.o rcvtcp.o nsnrcvtt.o exit_handler.o \
+     tcpholding.o safetcp.o juldat.o user_proc_ew.o user_heartbeat_ew.o $(EWBINARIES) $(LOGIT) \
+     -o rcv -lm -lnsl -lsocket -lposix4
+
+rcv.o:	rcv.c rcv.h
+	$(CC) $(CFLAGS) $(INCLUDE)  rcv.c
+rcvcmd.o:  rcvcmd.c rcv.h
+	$(CC) $(CFLAGS) $(INCLUDE	) rcvcmd.c
+rcvtcp.o:  rcvtcp.c rcv.h
+	$(CC) $(CFLAGS) $(INCLUDE) rcvtcp.c
+user_proc_ew.o: ../user_proc_ew.c $(EWBINARIES)
+	$(CC) $(CFLAGS) $(INCLUDE) ../user_proc_ew.c
+exit_handler.o: exit_handler.c
+	$(CC) $(CFLAGS) $(INCLUDE) exit_handler.c
+user_heartbeat_ew.o: ../user_heartbeat_ew.c
+	$(CC) $(CFLAGS) $(INCLUDE) ../user_heartbeat_ew.c
+#*
+#*	STATION - Process one station at the end of a pipe from RCV
+#*
+station: station.o  dcmprs.o tcpholding.o rcvqsub.o user_proc_ew.o stationcmd.o exit_handler.o \
+        safetcp.o juldat.o $(EWBINARIES) $(LOGIT_MT)
+	$(CC) $(FLAGS) station.o dcmprs.o rcvqsub.o user_proc_ew.o \
+          stationcmd.o tcpholding.o safetcp.o juldat.o exit_handler.o \
+		  ../STEIM123/steimlib.o $(EWBINARIES) $(LOGIT_MT) \
+         -o station -lm -mt -lnsl -lsocket -lposix4 -lthread -lc
+station2: station.o  dcmprs.o rcvqsub.o user_proc_vdl.o stationcmd.o
+	$(CC) $(FLAGS) station.o dcmprs.o rcvqsub.o user_proc_vdl.o stationcmd.o ../STEIM123/steimlib.o -o station -lm
+station.o:	station.c rcv.h
+	$(CC) $(CFLAGS) $(INCLUDE) station.c
+user_proc_vdl.o: user_proc_vdl.c 
+	$(CC) $(CFLAGS) $(INCLUDE) user_proc_vdl.c
+rcvqsub.o: rcvqsub.h rcvqsub.c
+	$(CC) $(CFLAGS) $(INCLUDE) rcvqsub.c
+dcmprs.o: ../cmpnsn/dcmprs.c 
+	$(CC) $(CFLAGS) $(INCLUDE) ../cmpnsn/dcmprs.c 
+tcpholding.o: tcpholding.c safetcp.h
+	$(CC) $(CFLAGS) $(INCLUDE) tcpholding.c
+safetcp.o: safetcp.c safetcp.h
+	$(CC) $(CFLAGS) $(INCLUDE) safetcp.c
+juldat.o: juldat.c
+	$(CC) $(CFLAGS) $(INCLUDE) juldat.c
+stationcmd.o:  stationcmd.c rcv.h
+	$(CC) $(CFLAGS) $(INCLUDE) stationcmd.c
+tstgetseed: tstgetseed.o
+	$(CC) $(FLAGS) tstgetseed.o -o tstgetseed -lm
+tstgetseed.o : tstgetseed.c
+	$(CC) $(CFLAGS) $(INCLUDE) tstgetseed.c 
+#*
+#*	tst - Process one station at the end of a pipe from RCV
+#*
+tstpktlog: tstpktlog.o  rcvqsub.o user_proc_ew.o $(EWBINARIES) $(LOGIT_MT)
+	$(CC) $(FLAGS) tstpktlog.o  rcvqsub.o user_proc_ew.o $(EWBINARIES) $(LOGIT_MT) \
+         -o tstpktlog -lm -mt -lposix4 -lthread -lc
+chkpktlog.o: chkpktlog.c
+	$(CC) $(CFLAGS) $(INCLUDE) chkpktlog.c
+chkpktlog: chkpktlog.o
+	$(CC) $(FLAGS) chkpktlog.o $(EWBINARIES)  -o chkpktlog -lm -mt -lposix4 -lc
+#*
+#*      Copy executables to bin directory
+#*
+install:
+	cp station rcv $B

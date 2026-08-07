@@ -1,0 +1,1010 @@
+
+/*
+ *   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+ *   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+ *
+ *    $Id: retrieve_pick.c-good,v 1.1 2001/05/15 02:15:43 davidk Exp $
+ *    Revision history:
+ *
+ *    $Log: retrieve_pick.c-good,v $
+ *    Revision 1.1  2001/05/15 02:15:43  davidk
+ *    Initial revision
+ *
+ *    Revision 1.8  2001/02/28 17:30:23  lucky
+ *    Massive schema redesign and cleanup.
+ *
+ *    Revision 1.7  2000/12/06 17:49:44  lucky
+ *    *** empty log message ***
+ *
+ *    Revision 1.6  2000/09/21 16:59:22  lucky
+ *    Added logit message which are printed only in DEBUG mode -- clean up
+ *    debugging output.
+ *
+ *    Revision 1.5  2000/09/20 19:42:49  lucky
+ *    Clean up logit messages
+ *
+ *    Revision 1.4  2000/09/18 17:25:00  lucky
+ *    Final version before v5.1
+ *
+ *    Revision 1.3  2000/08/09 16:58:31  lucky
+ *    Lint Cleanup
+ *
+ *    Revision 1.2  2000/08/09 16:49:21  lucky
+ *    *** empty log message ***
+ *
+ *    Revision 1.1  2000/08/07 19:53:14  lucky
+ *    Initial revision
+ *
+ *
+ *
+ */
+  
+
+#include "../include/review_function.h"
+#include <time_functions.h>
+#include <webparse.h>
+
+#define		MAX_FORMAT_LEN		64
+
+
+typedef struct _ChanInfo
+{
+	char	Sta[9];
+	char	Comp[9];
+	char	Net[9];
+	char	Phase[9];
+	char	Onset;
+	char	Fm;
+	double	PickTime;
+	double	ErrMag;
+	double	CodaDur;
+	double	Amp;
+	double	Period;
+} Pick;
+
+typedef struct _PickInfo
+{
+
+	int			EventID;
+	int			NumPicks;
+	Pick		pick[DB_MAX_PHS_PER_EQ];	
+	char		Format[MAX_FORMAT_LEN];
+
+} PickInfo;
+
+int		GetNextToken (char *, int, char *, int *);
+int		ParsePickInfo (char *, int, PickInfo *);
+int		ProcessData (char *, int, Pick *, int	*);
+
+extern	double  SAC_reftime (struct SAChead *);
+extern	size_t  SAC_Ktostr (char *, int, char *);
+
+
+#define		PBUFLEN		5000
+#define		NUM_DATA	16
+
+
+main ()
+{
+	int			i, c;
+	double		tref;
+	char		*configfile = "../params/eqreview.d"; 
+	char		*ParamBuffer;
+	PickInfo	pickinfo;
+	char		SACfilename[1000];
+	char		EVTfilename[1000];
+	char		REVfilename[1000];
+	FILE		*fp;
+	char		Sta[10];
+	char		Comp[10];
+	char		Net[10];
+	char		*sachead;
+	char		*sacdata;
+	char		*outbuf;
+	char		*tmp;
+	int			datasize, totalsize;
+	struct SAChead      *psachd;                /* pointer to SAC header */
+	int					done, j, retsize, k;
+	char				EventDir[256];
+    DBEventInfoStruct           EventInfo;
+    DBEventInfoStruct           LocEvent;
+	EWDB_StationStruct			*pSta1;
+	EWDB_StationStruct			*pSta2;
+
+
+	
+
+
+
+	/* Initialize some stuff
+	 ***********************/
+	DEBUG = 0;
+
+	/* Read the configuration file (path hardcoded relative to executable)
+	 *********************************************************************/
+	ReadConfig (configfile);
+
+	/* Cleanup, logfile should match config file name */
+	logit_init ("retrieve_pick", 1, (PBUFLEN+1024), 1);  
+
+
+	if ((ParamBuffer = (char *) malloc (PBUFLEN * sizeof (char))) == NULL)
+	{
+		logit ("", "Could not malloc ParamBuffer\n");
+		return EW_FAILURE;
+	}
+
+	Webparse_GetDecodedWebString (ParamBuffer, PBUFLEN);
+
+
+	/* Write input to log file */
+	logit ("t", "Retrieved %s\n", ParamBuffer);
+
+
+    html_header ();
+    printf ("<PRE><CENTER><BR><HR>\n");
+    printf ("The following was retrieved from standard input:\n");
+    printf ("%s\n", ParamBuffer);
+
+    printf ("<BR><HR></CENTER></PRE>\n");
+
+
+
+	/** Decode the param string -- fill the pick info struct */
+
+	if (ParsePickInfo (ParamBuffer, PBUFLEN, &pickinfo) != EW_SUCCESS)
+	{
+		logit ("", "Call to ParsePickInfo failed\n");
+		return EW_FAILURE;
+	}
+
+	if (DEBUG == 1)
+	{
+		logit ("", "Parsed %d picks\n", pickinfo.NumPicks);
+
+		for (i = 0; i < pickinfo.NumPicks; i++)
+		{
+			logit ("", "%s.%s.%s %s %c %c %0.2f %0.2f %0.2f %0.2f\n", 
+							pickinfo.pick[i].Sta,
+							pickinfo.pick[i].Comp,
+							pickinfo.pick[i].Net,
+							pickinfo.pick[i].Phase,
+							pickinfo.pick[i].Onset,
+							pickinfo.pick[i].Fm,
+							pickinfo.pick[i].ErrMag,
+							pickinfo.pick[i].CodaDur,
+							pickinfo.pick[i].Amp,
+							pickinfo.pick[i].Period);
+		}
+	}
+
+	/* Read the binary event file file */
+
+	/* Build the file name */
+	sprintf (EventDir, "%s/%d", ReviewTmpDir, pickinfo.EventID);
+	sprintf (EVTfilename, "%s/EvtStruct.bin", EventDir);
+
+	if ((fp = fopen (EVTfilename, "rb")) == NULL)
+	{
+		logit ("", "can't open %s\n", EVTfilename);
+		return EW_FAILURE;
+	}
+
+	/* Read the contents of the event file */
+	fread ((void *) &EventInfo, sizeof (DBEventInfoStruct), 1, fp);
+
+	/* Read the channel info structs */
+	if ((EventInfo.pChanInfo = (EWChannelDataStruct *) malloc
+			(EventInfo.iNumChans * sizeof (EWChannelDataStruct))) == NULL)
+	{
+		logit ("", "Can't malloc pChanInfo.\n");
+		return EW_FAILURE;
+	}
+	EventInfo.iNumAllocChans = EventInfo.iNumChans;
+
+	fread ((void *) EventInfo.pChanInfo, sizeof (EWChannelDataStruct),
+														EventInfo.iNumChans, fp);
+
+	fclose (fp);
+
+	/*  Go over the retrieved picks and update EventInfo struct */
+	for (i = 0; i < pickinfo.NumPicks; i++)
+	{
+		/* build the name of the sac file  */
+
+		sprintf (EventDir, "%s/%d", ReviewTmpDir, pickinfo.EventID);
+		sprintf (SACfilename, "%s/%s.%s.%s", 
+						EventDir, 
+						pickinfo.pick[i].Sta,
+						pickinfo.pick[i].Comp,
+						pickinfo.pick[i].Net);
+	
+
+		if ((fp = fopen (SACfilename, "rb")) == NULL)
+		{
+			logit ("", "Can't open %s\n", SACfilename);
+			return EW_FAILURE;
+		}
+
+
+		/* Allocate space for SAC header */
+		if ((sachead = (char *) malloc (SACHEADERSIZE)) == NULL)
+		{
+			logit ("", "Could not malloc sachead.\n");
+			return EW_FAILURE;
+		}
+
+
+		/* Read contents of the SAC file */
+		psachd = (struct SAChead *) sachead;
+
+
+		if (fread (sachead, sizeof (char), 
+				(size_t) SACHEADERSIZE, fp) != (size_t) SACHEADERSIZE)
+		{
+			logit ("", "Error reading header from file: %s!\n", SACfilename);
+			fclose (fp);
+			return EW_FAILURE;
+		}
+
+
+		datasize = psachd->npts * sizeof(float);
+		totalsize = datasize + SACHEADERSIZE;
+	
+        /* Allocate space for SAC data */
+		if ((sacdata = (char *) malloc (datasize)) == NULL)
+		{
+			logit ("", "Could not malloc sachead.\n");
+			return EW_FAILURE;
+		}
+
+
+        if (fread (sacdata, sizeof (float), 
+				(size_t) psachd->npts, fp) != (size_t) psachd->npts)
+		{
+			logit ("", "Error reading %d bytes of data from file: %s!\n",
+														psachd->npts, SACfilename);
+			fclose (fp);
+			return EW_FAILURE;
+		}
+
+		/* Close file */
+		fclose (fp);
+
+
+		SAC_Ktostr (Sta,  7, psachd->kstnm);
+		SAC_Ktostr (Comp, 9, psachd->kcmpnm);
+		SAC_Ktostr (Net,  9, psachd->knetwk);
+
+         
+		/* modify SAC header with new pick info */
+
+		/* Absolute event origin time
+		******************************/
+		if ((tref = SAC_reftime (psachd)) < 0)
+		{
+			logit ("", "Call to SAC_reftime failed.\n");
+			return EW_FAILURE;
+		}
+
+		/* is this a P-pick */
+		if ((pickinfo.pick[i].Phase[0] == 'P') || 
+				(pickinfo.pick[i].Phase[0] == 'p'))
+		{
+
+			for (k = 0; k < K_LEN; k++)
+				 psachd->ka[k] = ' ';
+
+			/* pick time */
+			psachd->a = (float) (pickinfo.pick[i].PickTime - tref);
+
+			/* label and first motion */
+			psachd->ka[0] = 'P';
+			psachd->ka[1] = pickinfo.pick[i].Fm;
+
+			/* weight */
+			if (pickinfo.pick[i].ErrMag <= 0.02)
+				psachd->ka[2] = '0';
+			else if (pickinfo.pick[i].ErrMag <= 0.03)
+				psachd->ka[2] = '1';
+			else if (pickinfo.pick[i].ErrMag <= 0.05)
+				psachd->ka[2] = '2';
+			else if (pickinfo.pick[i].ErrMag <= 0.08)
+				psachd->ka[2] = '3';
+			else
+				psachd->ka[2] = '4';
+
+			/* onset */
+			psachd->ka[3] = pickinfo.pick[i].Onset;
+
+		} /* P-pick */
+
+		/* is this an S-pick */
+		else if ((pickinfo.pick[i].Phase[0] == 'S') || 
+				(pickinfo.pick[i].Phase[0] == 's'))
+		{
+
+			for (k = 0; k < K_LEN; k++)
+				 psachd->kt0[k] = ' ';
+
+			/* pick time */
+			psachd->t0 = (float) (pickinfo.pick[i].PickTime - tref);
+
+			/* label and first motion */
+			psachd->kt0[0] = 'S';
+			psachd->kt0[1] = pickinfo.pick[i].Fm;
+
+			/* weight */
+			if (pickinfo.pick[i].ErrMag <= 0.02)
+				psachd->kt0[2] = '0';
+			else if (pickinfo.pick[i].ErrMag <= 0.03)
+				psachd->kt0[2] = '1';
+			else if (pickinfo.pick[i].ErrMag <= 0.05)
+				psachd->kt0[2] = '2';
+			else if (pickinfo.pick[i].ErrMag <= 0.08)
+				psachd->kt0[2] = '3';
+			else
+				psachd->kt0[2] = '4';
+
+			/* onset */
+			psachd->kt0[3] = pickinfo.pick[i].Onset;
+
+		}
+		/* is this a coda pick */
+		else if (pickinfo.pick[i].Phase[0] == '_')
+		{
+			psachd->f = (float) (pickinfo.pick[i].PickTime - tref);
+		}
+		else
+		{
+			logit ("", "Pick %d: Unknown pick type: %c\n", 
+							i, pickinfo.pick[i].Phase[0]);
+			return EW_FAILURE;
+		}
+
+
+		/* Write the SAC header back to file */
+		if ((fp = fopen (SACfilename, "wb")) == NULL)
+		{
+			logit ("", "Can't open %s\n", SACfilename);
+			return EW_FAILURE;
+		}
+
+
+		/* create an output buffer */
+		if ((outbuf = (char *) malloc (totalsize)) == NULL)
+		{
+			logit ("", "Could not malloc outbuf.\n");
+			return EW_FAILURE;
+		}
+
+
+		memcpy (outbuf, psachd, SACHEADERSIZE);
+		tmp = outbuf + SACHEADERSIZE;
+		memcpy (tmp, sacdata, datasize);
+
+		if (fwrite ((const void *) outbuf, totalsize, 1, fp) != 1)
+		{
+			logit ("", "Call to fwrite failed.\n");
+			return EW_FAILURE;
+		}
+
+		fclose (fp);
+
+
+		/*
+		* Now, touch the S.C.N.rev file so that the rest of the
+		* system knows that we received info from the applet
+		*/
+
+
+		sprintf (REVfilename, "%s/%s.%s.%s.rev",
+										EventDir,
+										pickinfo.pick[i].Sta,
+										pickinfo.pick[i].Comp,
+										pickinfo.pick[i].Net);
+	
+		if ((fp = fopen (REVfilename, "wt")) == NULL)
+		{
+			logit ("", "can't open %s\n", REVfilename);
+			return EW_FAILURE;
+		}
+	
+		sprintf (outbuf, "%ld", time (NULL));
+	
+		if (fwrite ((const void *) outbuf, sizeof (outbuf), 1, fp) != 1)
+		{
+			logit ("", "Call to fwrite failed.\n");
+			return EW_FAILURE;
+		}
+
+		fclose (fp);
+
+	
+		/* 
+	 	 * Now, update the EventInfo so that the rest of the review 
+		 * system knows about the new pick info
+		 */
+
+
+		/* Initialize LocEvent to only hold one pChanInfo struct */
+		LocEvent.iNumChans = 0;
+		LocEvent.iNumAllocChans = 1;
+		memset (&LocEvent.Event, 0, sizeof(EWDB_EventStruct));
+		memset (&LocEvent.PrefMag, 0, sizeof(EWDB_MagStruct));
+		memset (&LocEvent.PrefOrigin, 0, sizeof(EWDB_OriginStruct));
+
+
+		/* Allocate one single channel struct to pass to Sac2EWEvent */
+		if ((LocEvent.pChanInfo = (EWChannelDataStruct *) malloc
+								(1 * sizeof (EWChannelDataStruct))) == NULL)
+		{
+			logit ("", "Could not malloc pChanInfo.\n");
+			return EW_FAILURE;
+		}
+
+		InitEWChan (&LocEvent.pChanInfo[0]);
+
+		if (Sac2EWEvent (&LocEvent, psachd, sacdata, 0) != EW_SUCCESS)
+		{
+			logit ("", "Call to Sac2EWEvent failed.\n");
+			return EW_FAILURE;
+		}
+
+		free (sachead);
+		free (sacdata);
+		free (outbuf);
+
+
+		/* 
+		 * Go through the channels of EventInfo and update those
+		 * that have changed 
+		 */
+
+		for (c = 0; c < EventInfo.iNumChans; c++)
+		{
+			pSta1 = &EventInfo.pChanInfo[c].Station;
+			pSta2 = &LocEvent.pChanInfo[0].Station;
+			if ((strcmp (pSta1->Sta, pSta2->Sta) == 0) &&
+					(strcmp (pSta1->Comp, pSta2->Comp) == 0) &&
+					(strcmp (pSta1->Net, pSta2->Net) == 0))
+			{
+				for (j = 0; j < LocEvent.pChanInfo[0].iNumArrivals; j++)
+				{
+					/* Find corresponding pick type in the EventInfo structure */
+					k = 0;
+					done = FALSE;
+					while ((done == FALSE) && (k < EventInfo.pChanInfo[c].iNumArrivals))
+					{
+						if (EventInfo.pChanInfo[c].Arrivals[k].szObsPhase[0] ==
+									LocEvent.pChanInfo[0].Arrivals[j].szObsPhase[0])
+						{
+							done = TRUE;
+						}
+						else
+							k = k + 1;
+					}
+
+					if (done == FALSE)
+					{
+						/* we don't have this pick type in EventStruct */
+
+						if ((EventInfo.pChanInfo[c].iNumArrivals + 1) >= MDPCPE)
+						{
+							logit ("", "Max number of arrivals (%d) reached; exiting.\n", MDPCPE);
+							return EW_FAILURE;
+						}
+							
+						/* Set unknown values */
+						EventInfo.pChanInfo[c].Arrivals[k].tResPick = 0.0;
+						EventInfo.pChanInfo[c].Arrivals[k].dWeight = 0.0;
+						EventInfo.pChanInfo[c].Arrivals[k].dDist = 0.0;
+						EventInfo.pChanInfo[c].Arrivals[k].dTakeoff = 0.0;
+						EventInfo.pChanInfo[c].Arrivals[k].dAzm = 0.0;
+						EventInfo.pChanInfo[c].Stamags[k].dWeight = 0.0;
+						EventInfo.pChanInfo[c].Stamags[k].dMag = 0.0;
+
+						EventInfo.pChanInfo[c].iNumArrivals = 
+									EventInfo.pChanInfo[c].iNumArrivals + 1;
+						EventInfo.pChanInfo[c].iNumStaMags = 
+									EventInfo.pChanInfo[c].iNumStaMags + 1;
+
+					}
+	
+					/* Update the Arrivals struct */
+/**
+					strcpy (EventInfo.pChanInfo[c].Arrivals[k].szObsPhase,
+								LocEvent.pChanInfo[0].Arrivals[j].szObsPhase);
+**/
+					EventInfo.pChanInfo[c].Arrivals[k].szObsPhase[0] = 
+								LocEvent.pChanInfo[0].Arrivals[j].szObsPhase[0];
+					EventInfo.pChanInfo[c].Arrivals[k].szObsPhase[1] = '\0'; 
+
+					EventInfo.pChanInfo[c].Arrivals[k].tObsPhase =
+								LocEvent.pChanInfo[0].Arrivals[j].tObsPhase;
+					EventInfo.pChanInfo[c].Arrivals[k].cMotion =
+								LocEvent.pChanInfo[0].Arrivals[j].cMotion;
+					EventInfo.pChanInfo[c].Arrivals[k].cOnset =
+								LocEvent.pChanInfo[0].Arrivals[j].cOnset;
+					EventInfo.pChanInfo[c].Arrivals[k].dSigma =
+								LocEvent.pChanInfo[0].Arrivals[j].dSigma;
+
+					/* Update the Stamags struct */
+					EventInfo.pChanInfo[c].Stamags[k].dMeasurementCalc =
+								LocEvent.pChanInfo[0].Stamags[j].dMeasurementCalc;
+
+				} /* j-loop over LocEvent Arrivals */
+
+			} /* is this the correct channel? */
+
+		} /* c-Loop over channels */
+
+	} /* i-loop over retrieved picks */
+
+
+	/* Write out the modified event structure */
+
+	if ((fp = fopen (EVTfilename, "wb")) == NULL)
+	{
+		logit ("", "can't open %s\n", EVTfilename);
+		return EW_FAILURE;
+	}
+
+	EventInfo.iNumAllocChans = EventInfo.iNumChans;
+
+	fwrite ((void *) &EventInfo, sizeof (DBEventInfoStruct), 1, fp);
+
+	/* append channel info structs */
+
+	fwrite ((void *) EventInfo.pChanInfo, sizeof (EWChannelDataStruct),
+													EventInfo.iNumChans, fp);
+
+	fclose (fp);
+
+	logit("","retrieve_pick: terminating\n" );
+
+	return EW_SUCCESS;
+
+}  /* end main */
+
+
+/******************************************************
+     Dumps HTML header, title, and beginning page
+ **********************************************************/
+void    html_header( void )
+{
+
+   printf("Content-type: text/html\n\n");
+   printf("<html>\n");
+   printf("<HEAD><TITLE>Retrieve Pick Information</TITLE></HEAD>\n"
+          "<BODY BGCOLOR=#EEEEEE TEXT=#333333>\n" );
+   printf("<center>\n");
+   printf("<H1><FONT COLOR=blue>Retrieve Pick Information<br></FONT></H1>\n" );
+  printf("</center>\n");
+
+}  
+
+
+
+/******************************************************
+     Get next XML token from the Buffer
+ **********************************************************/
+int		GetNextToken (char *ParamBuffer, int BufLen, char *token, int *TokLen)
+{
+
+	int		i = 0;
+	int		j = 0;
+
+	if ((ParamBuffer == NULL) || (token == NULL))
+	{
+		logit ("", "Invalid arguments passed in\n");
+		return EW_FAILURE;
+	}
+
+
+	/* Look for opening < */
+	while ((ParamBuffer[i] != '<') && (i < BufLen))
+		i = i + 1;
+
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find start of next token.\n");
+		return EW_FAILURE;
+	}
+
+	i = i + 1;
+
+
+	/* Look for closing > */
+	while ((ParamBuffer[i] != '>') && (i < BufLen))
+	{
+		token[j] = ParamBuffer[i];
+		i = i + 1;
+		j = j + 1;
+	}
+	token[j] = '\0';
+	
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find end of next token.\n");
+		return EW_FAILURE;
+	}
+
+	*TokLen = i + 1;
+
+	return EW_SUCCESS;
+
+}
+
+
+/******************************************************
+     Parse stdin string into PickInfo structure
+ **********************************************************/
+int		ParsePickInfo (char *ParamBuffer, int BufLen, PickInfo *pickinfo)
+{
+
+	int		i, j, TokenLen;
+	int		done;
+	char	token[PBUFLEN];
+	char	tmpstr[PBUFLEN];
+
+
+	if ((ParamBuffer == NULL) || (pickinfo == NULL) || (BufLen <= 0))
+	{
+		logit ("", "Invalid arguments passed in\n");
+		return EW_FAILURE;
+	}
+
+
+	/** Start decoding the string - get the first token **/
+	TokenLen = 0;
+	if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+	{
+		logit ("", "Call to GetNextToken failed.\n");
+		return EW_FAILURE;
+	}
+	ParamBuffer = ParamBuffer + TokenLen;
+
+	/* ingore the first token, go for the next one, shoud be Event */
+	TokenLen = 0;
+	if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+	{
+		logit ("", "Call to GetNextToken failed.\n");
+		return EW_FAILURE;
+	}
+	ParamBuffer = ParamBuffer + TokenLen;
+
+	i = 0;
+	while ((token[i] != ' ') && (i < BufLen))
+	{
+		tmpstr[i] = token[i];
+		i = i + 1;
+	}
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find Event token.\n");
+		return EW_FAILURE;
+	}
+	tmpstr[i] = '\0';
+	
+	if (strcmp (tmpstr, "Event") != 0)
+	{
+		logit ("", "XML ERROR: expecting <Event>, got %s\n", tmpstr);
+		return EW_FAILURE;
+	}
+
+	/* Look for start of EventID */
+	j = 0;
+	while ((token[i] != '"') && (i < BufLen))
+		i = i + 1;
+
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find start of EventID.\n");
+		return EW_FAILURE;
+	}
+
+	i = i + 1;
+
+	/* Look for end of EventID */
+	while ((token[i] != '"') && (i < BufLen))
+	{
+		tmpstr[j] = token[i];
+		i = i + 1;
+		j = j + 1;
+	}
+	tmpstr[j] = '\0';
+
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find end of EventID.\n");
+		return EW_FAILURE;
+	}
+
+	pickinfo->EventID = atoi (tmpstr);
+
+
+	/* Look for the <ReadingList> token */
+	TokenLen = 0;
+	if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+	{
+		logit ("", "Call to GetNextToken failed.\n");
+		return EW_FAILURE;
+	}
+	ParamBuffer = ParamBuffer + TokenLen;
+
+
+	i = 0;
+	while ((token[i] != ' ') && (i < BufLen))
+	{
+		tmpstr[i] = token[i];
+		i = i + 1;
+	}
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find ReadingList token.\n");
+		return EW_FAILURE;
+	}
+	tmpstr[i] = '\0';
+
+	if (strcmp (tmpstr, "ReadingList") != 0)
+	{
+		logit ("", "XML ERROR: expecting <ReadingList>, got %s\n", tmpstr);
+		return EW_FAILURE;
+	}
+
+	/* Look for start of format subtoken */
+	i = 0;
+	j = 0;
+	while ((token[i] != '"') && (i < BufLen))
+		i = i + 1;
+
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find start of Format subtoken.\n");
+		return EW_FAILURE;
+	}
+
+	i = i + 1;
+
+	/* Look for end of format subtoken */
+	while ((token[i] != '"') && (i < BufLen))
+	{
+		tmpstr[j] = token[i];
+		i = i + 1;
+		j = j + 1;
+	}
+	tmpstr[j] = '\0';
+
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - can't find end of Format subtoken.\n");
+		return EW_FAILURE;
+	}
+
+	if (strlen (tmpstr) >= MAX_FORMAT_LEN)
+	{
+		logit ("", "Format string too long: %s\n", tmpstr);
+		return EW_FAILURE;
+	}
+		
+	strcpy (pickinfo->Format, tmpstr);
+
+
+	/* Look for the <Reading> tokens */
+	TokenLen = 0;
+	if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+	{
+		logit ("", "Call to GetNextToken failed.\n");
+		return EW_FAILURE;
+	}
+	ParamBuffer = ParamBuffer + TokenLen;
+
+	pickinfo->NumPicks = 0;
+	if (strcmp (token, "Reading") == 0)
+	{
+		done = FALSE;
+		/* loop until </ReadingList> is found */
+		while (done == FALSE)
+		{
+			/* Got a reading */
+
+			/* read data */
+			TokenLen = 0;
+			if (ProcessData (ParamBuffer, BufLen, 
+					&pickinfo->pick[pickinfo->NumPicks], &TokenLen) != EW_SUCCESS)
+			{
+				logit ("", "Call to ProcessData failed.\n");
+				return EW_FAILURE;
+			}
+			ParamBuffer = ParamBuffer + TokenLen;
+
+
+			/* look for /Reading */
+			pickinfo->NumPicks = pickinfo->NumPicks + 1;
+			TokenLen = 0;
+			if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+			{
+				logit ("", "Call to GetNextToken failed.\n");
+				return EW_FAILURE;
+			}
+			ParamBuffer = ParamBuffer + TokenLen;
+
+			if (strcmp (token, "/Reading") != 0)
+			{
+				logit ("", "XML ERROR: expecting </Reading>, got %s\n", token);
+				return EW_FAILURE;
+			}
+
+			/* look for Reading */
+			/* if no Reading found, set done to TRUE */
+			TokenLen = 0;
+			if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+			{
+				logit ("", "Call to GetNextToken failed.\n");
+				return EW_FAILURE;
+			}
+			ParamBuffer = ParamBuffer + TokenLen;
+
+			if (strcmp (token, "Reading") != 0)
+			{
+				if (strcmp (token, "/ReadingList") != 0)
+				{
+					logit ("", "XML ERROR: expecting </ReadingList>, got %s\n", token);
+					return EW_FAILURE;
+				}
+				else
+				{	
+					done = TRUE;
+				}
+			}
+
+		}
+
+		/* look for </Event> and exit */
+		TokenLen = 0;
+		if (GetNextToken (ParamBuffer, BufLen, token, &TokenLen) != EW_SUCCESS)
+		{
+			logit ("", "Call to GetNextToken failed.\n");
+			return EW_FAILURE;
+		}
+		ParamBuffer = ParamBuffer + TokenLen;
+
+		if (strcmp (token, "/Event") != 0)
+		{
+			logit ("", "XML ERROR: expecting </Reading>, got %s\n", token);
+			return EW_FAILURE;
+		}
+	}
+	else if (strcmp (token, "/ReadingList") == 0)
+	{
+
+		/* look for </Event> and exit */
+
+	}
+	else 
+	{
+		logit ("", "XML ERROR: expecting </ReadingList>, got %s\n", token);
+		return EW_FAILURE;
+	}
+
+	if (DEBUG == 1)
+		logit ("", "Done Processing: Got %d readings\n", pickinfo->NumPicks);
+	
+	return EW_SUCCESS;
+}
+
+
+/******************************************************
+     Process Pick data and stuff it into pickinfo
+ **********************************************************/
+int		ProcessData (char *ParamBuffer, int BufLen, Pick *pick, int	*TokenLen)
+{
+
+	int		i, j;
+	char	data[NUM_DATA][PBUFLEN];
+	char	line[PBUFLEN];
+	char	tmpstr[PBUFLEN];
+	float	secs;
+
+
+	if ((ParamBuffer == NULL) || (BufLen <= 0) || 
+			(pick == NULL)  || (TokenLen == NULL))
+	{
+		logit ("", "Invalid arguments passed in.\n");
+		return EW_FAILURE;
+	}
+
+	/* look for start of next token */
+	i = 0;
+	while ((ParamBuffer[i] != '<') && (i < BufLen))
+	{
+		line[i] = ParamBuffer[i]; 
+		i = i + 1;
+	}
+
+	if (i >= BufLen)
+	{
+		logit ("", "Invalid XML line - cannot find start of next token.\n");
+		return EW_FAILURE;
+	}
+
+	line[i] = '\0';
+
+	sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", 
+				data[0], data[1], data[2], data[3], data[4],
+				data[5], data[6], data[7], data[8], data[9],
+				data[10], data[11], data[12], data[13], data[14], data[15]);
+
+
+	if (DEBUG == 1)
+	{
+		logit ("", "sta is %s\n", 		data[0]);
+		logit ("", "comp is %s\n", 		data[1]);
+		logit ("", "net is %s\n", 		data[2]);
+		logit ("", "inst is %s\n", 		data[3]);
+		logit ("", "comp is %s\n", 		data[4]);
+		logit ("", "onset is %s\n",		data[5]);
+		logit ("", "desc is %s\n", 		data[6]);
+		logit ("", "fm is %s\n", 		data[7]);
+		logit ("", "date is %s\n", 		data[8]);
+		logit ("", "time is %s\n", 		data[9]);
+		logit ("", "secs is %s\n", 		data[10]);
+		logit ("", "error is %s\n", 	data[11]);
+		logit ("", "errmag is %s\n", 	data[12]);
+		logit ("", "coda is %s\n", 		data[13]);
+		logit ("", "amp is %s\n", 		data[14]);
+		logit ("", "period is %s\n",	data[15]);
+	}
+
+	strcpy (pick->Sta, data[0]);
+	strcpy (pick->Comp, data[1]);
+	strcpy (pick->Net, data[2]);
+
+	strcpy (pick->Phase, data[6]);
+
+	if (data[5][0] != '?')
+		pick->Onset = data[5][0]; 
+	else
+		pick->Onset = ' ';
+
+
+	/* first check the "official" first motion field */
+	if (data[7][0] != '?')
+		pick->Fm = data[7][0];
+	else if ((data[6][1] != ' ') && (data[6][1] != '\0') && (data[6][1] != '\n'))
+	{
+		/* now check the second character of the phase description */
+		pick->Fm = data[6][1];
+	}
+	else
+	{
+		/* If all else fails, punt */
+		pick->Fm = ' ';
+	}
+
+	pick->ErrMag = atof (data[12]);
+	pick->CodaDur = atof (data[13]);
+	pick->Amp = atof (data[14]);
+	pick->Period = atof (data[15]);
+
+	/* convert time */
+	if ((secs = (atof (data[10]))) < 0.0)
+	{
+		logit ("", "Call to atof failed. \n");
+		return EW_FAILURE;
+	}
+
+	sprintf (tmpstr, "%s%s%0.2f", data[8], data[9], secs); 
+
+	if (epochsec17 (&pick->PickTime, tmpstr) != 0)
+	{
+		logit ("", "Call to epochsec17 failed.\n");
+		return EW_FAILURE;
+	}
+
+	*TokenLen = i;
+
+	return EW_SUCCESS;
+
+}

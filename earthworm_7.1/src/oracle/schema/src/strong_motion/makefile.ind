@@ -1,0 +1,38 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.2 2004/09/09 17:24:46 davidk Exp $
+#
+#    Revision history:
+#     $Log: makefile.ind,v $
+#     Revision 1.2  2004/09/09 17:24:46  davidk
+#     Added ewdb_api_Delete* functions
+#
+#     Revision 1.1  2001/05/23 22:51:13  davidk
+#     Initial revision
+#
+#################################################################
+
+
+
+
+API_OBJECTS = \
+          ewdb_api_DeleteSMMessage.$(OBJ) \
+          ewdb_api_DeleteSMMessagesBeforeTime.$(OBJ) \
+          ewdb_api_PutSMMessage.$(OBJ) \
+          ewdb_api_GetSMData.$(OBJ) \
+          ewdb_api_GetSMDataWithChannelInfo.$(OBJ) 
+
+INTERNAL_OBJECTS = \
+          ewdb_internal_CreateSMMotion.$(OBJ) \
+          ewdb_internal_GetAllSMMessages.$(OBJ) \
+          ewdb_internal_GetSMMessages.$(OBJ) \
+          ewdb_internal_GetSMMotionsForMessage.$(OBJ) \
+          ewdb_internal_CreateSMMessage.$(OBJ) 
+
+
+ALL:  $(API_OBJECTS) $(INTERNAL_OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts
+

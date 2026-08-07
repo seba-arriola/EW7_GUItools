@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<HTML>
+
+<HEAD>
+
+   <TITLE>Earthworm DBMS Modules: Index</TITLE>
+
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (X11; I; OSF1 V3.2 alpha) [Netscape]">
+
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FAC0A2" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+
+<a href="http://www.usgs.gov/"><img src="../images/dark_blue.gif" width="480" height="72" border="0" alt="Visual identity banner and link to the U.S. Geological Survey's home page."></a> 
+
+
+<H1> <CENTER>EARTHWORM DBMS MODULES LIST </center></H1>
+
+
+
+<DIV ALIGN=right><P><B>April 17, 2002</B></P></DIV>
+
+
+
+<H2> DBMS LOADING MODULES <H2>
+
+<TABLE BORDER=2 >
+
+<TR>
+
+<TH>Module name </TH>
+
+<TH>Its function, briefly </TH>
+
+<TH colspan=2>more info (<A HREF="#note 1">note 1</A>)</TH>
+
+</TR>
+
+
+
+<TR>
+
+<TD align=center>orareport</TD>
+
+
+
+<TD>Inserts the parametric data from an Earthworm Message TYPE_HYP2000ARC into the database. </TD>
+
+<TD>  -------- </TD>
+
+<TD align=center><A HREF="cmd/orareport_cmd.html"> commands</A> </TD>
+
+</TR>
+
+
+
+<TR>
+
+<TD align=center>ora_trace_save </TD>
+
+<TD>Reads an Earthworm Message TYPE_TRIGLIST, retrieves the asssociated waveforms and inserts them into the database.</TD>
+
+<TD align=center>-------</TD>
+
+<TD align=center><A HREF="cmd/ora_trace_save_cmd.html"> commands</A> </TD>
+
+</TR>
+
+<TR>
+
+<TD align=center>mag2ora </TD>
+
+<TD>mag2ora is an Earthworm module that reads magnitude messages(TYPE_MAGNITUDE) from an EW ring, and creates magnitudes in an EWDB and associates the Magnitudes with Events.</TD>
+
+<TD><A HREF="API-DOC/EWDB_APPLICATIONS/mag2ora/details.html">overview</A> </TD>
+
+<TD align=center><A HREF="API-DOC/EWDB_APPLICATIONS/mag2ora/mag2ora.d.txt"> commands</A> </TD>
+
+</TR>
+
+
+<TR>
+
+<TD align=center>sm_ew2ora</TD>
+
+<TD>Reads TYPE_STRONGMOTIONII messages from an earthworm ring, and writes them to an EW DBMS.</TD>
+
+<TD align=center> ------ </TD>
+
+<TD align=center><A HREF="API-DOC/EWDB_APPLICATIONS/sm_ew2ora/sm_ew2ora.d.txt"> commands</A> </TD>
+
+</TR>
+
+<TR>
+
+<TD align=center>nsn_pz2ora</TD>
+
+<TD>Reads AUTODRM response output, and inserts the response parameters into the database.</TD>
+
+<TD><A HREF="ovr/nsn_pz2ora_ovr.html">overview</A> </TD>
+
+<TD align=center><A HREF="cmd/nsn_pz2ora_cmd.html"> commands</A> </TD>
+
+</TR>
+
+<TR>
+
+<TD align=center>stalist_hinv2ora</TD>
+
+<TD>Reads station list in Hypoinverse foramt, and inserts the station parameters into the database.</TD>
+
+<TD align=center> ------ </TD>
+
+<TD align=center><A HREF="cmd/stalist_hinv2ora_cmd.html"> commands</A> </TD>
+
+</TR>
+
+<TR>
+
+<TD align=center>stalist_usnsn2ora</TD>
+
+<TD>Reads station list in NEIC foramt, and inserts the station parameters into the database.</TD>
+
+<TD align=center> ------ </TD>
+
+<TD align=center><A HREF="cmd/stalist_usnsn2ora_cmd.html"> commands</A> </TD>
+
+</TR>
+
+<TR>
+<TD align=center>usnsn_loc2ora</TD>
+
+<TD>Reads an Earthworm message TYPE_USNSN and inserts the location and magnitude parameters into the database.</TD>
+
+<TD align=center> ------ </TD>
+
+<TD align=center><A HREF="cmd/usnsn_loc2ora_cmd.html"> commands</A> </TD>
+
+</TR>
+
+<TR>
+<TD align=center>concierge</TD>
+
+<TD>Concierge is the name given to a new method of waveform archiving to the Earthworm database. 
+The Concierge makes multiple attempts at archiving the data, and provides incremental results that improve over time.
+ The previous versions of  waveform archivers made only one attempt and were subject to incomplete data retrievals.
+</TD>
+
+<TD align=center> <A HREF="API-DOC/EWDB_APPLICATIONS/ora_trace_fetch/details.html"> overview</A> </TD>
+
+<TD align=center> ------ </TD>
+
+</TR>
+
+<TR>
+<TD align=center>ora_trace_req (Part of Concierge)</TD>
+
+<TD>Reads an Earthworm message TYPE_TRIGLIST2K, converts the channel-trigger lines to 
+    snippet requests, and inserts the snippet requests into the DB.  (Front half of
+	Concierge)</TD>
+
+<TD align=center> <A HREF="API-DOC/EWDB_APPLICATIONS/ora_trace_req/library_comments.html"> overview</A> </TD>
+
+<TD align=center><A HREF="API-DOC/EWDB_APPLICATIONS/ora_trace_req/ora_trace_req.d.txt"> commands</A> </TD>
+
+</TR>
+
+
+<TR>
+<TD align=center>ora_trace_fetch (Part of Concierge)</TD>
+
+<TD>Reads SnippetRequests from the database, and repeatedly attempts to retrieve 
+    snippets to fulfill the requests.  It stuffs the snippets into the DB and 
+	updates/deletes the requests.  (Back half of Concierge)</TD>
+
+<TD align=center> <A HREF="API-DOC/EWDB_APPLICATIONS/ora_trace_fetch/library_comments.html"> overview</A> </TD>
+
+<TD align=center><A HREF="API-DOC/EWDB_APPLICATIONS/ora_trace_fetch/ora_trace_fetch.d.txt"> commands</A> </TD>
+
+</TR>
+
+</TABLE>
+
+<H2> DBMS RETRIEVAL MODULES </H2>
+
+
+
+<TABLE BORDER=2 >
+
+<TR>
+
+<TH>Module name </TH>
+
+<TH>Its function, briefly </TH>
+
+<TH colspan=2>more info (<A HREF="#note 1">note 1</A>)</TH>
+</TR>
+
+
+<TR>
+
+<TD align=center>shakemapfeed </TD>
+
+<TD>Retreive strong motion from the database and creates a Shakemap2 format file. </TD>
+
+<TD><A HREF="ovr/shakemapfeed_ovr.html">overview</A> </TD>
+
+<TD align=center><A HREF="cmd/shakemapfeed_cmd.html"> commands</A> </TD>
+
+</TR>
+
+<TR>
+
+<TD align=center>gencatalog   </TD>
+
+<TD>Queries the database to obtain a formatted list of events</TD>
+
+<TD><A HREF="ovr/gencatalog_ovr.html">overview</A> </TD>
+
+<TD align=center>------</TD>
+
+</TR>
+
+
+<TR>
+
+
+</TABLE>
+
+
+<H2> ALARM MODULES </H2>
+
+<TABLE BORDER=2 >
+
+<TR>
+
+<TH>Module name </TH>
+
+<TH>Its function, briefly </TH>
+
+<TH colspan=2>more info (<A HREF="#note 1">note 1</A>)</TH>
+
+</TR>
+
+<TR>
+
+<TD align=center>email_sender</TD>
+
+<TD>picks up TYPE_EMAIL_MSG messages from the ring, parses them 
+and calls the <I>SendMail()</I> earthworm library routine to delivery the message. 
+Then, it updates the appropriate entry in the AlarmsAudit table to indicate that 
+the message has been delivered.
+</TD>
+
+<TD align=center>------</TD>
+
+<TD align=center><A HREF="cmd/email_sender_cmd.html">commands </A></TD>
+
+</TR>
+<TR>
+
+<TD align=center>qdds_sender</TD>
+
+<TD>picks up TYPE_QDDS_MSG messages from the ring, parses them and writes the text 
+of the message to the specified QDDS target directory. For now, this program only 
+deals with placing the files in CUBE format into the correct directory, leaving the 
+bulk of the delivery work to an outside QDDS-capable process. 
+</TD>
+
+<TD align=center>------</TD>
+
+<TD align=center><A HREF="cmd/qdds_sender_cmd.html">commands </A></TD>
+
+</TR>
+
+</TABLE>
+
+
+<H2> INTERACTIVE DISPLAY PROGRAMS </H2>
+
+<TABLE BORDER=2 >
+
+<TR>
+
+<TH>Module name </TH>
+
+<TH>Its function, briefly </TH>
+
+<TH colspan=2>more info (<A HREF="#note 1">note 1</A>)</TH>
+
+</TR>
+
+
+<TR>
+
+
+<TD align=center>Jiggle</TD>
+<TD>Jiggle was developed at USGS Pasadena for routine analysis of data collected on 
+150 broadband stations by TriNet in Southern California. 
+The Golden development team has incorporated
+the Jiggle analysis package with the earthworm DBMS. 
+</TD>
+
+<TD align=center>------</TD>
+
+<TD><A HREF="cmd/jiggle_install.html">Installation<BR></a></TD>
+
+</TR>
+
+<TD align=center>Quick Review</TD>
+<TD>Quick review is a web-based earthquake analysis tool. It is a customized version of SeisGram2K, 
+a java applet written by Anthony Lomax (<http://alomax.free.fr/software.html>). 
+
+</TD>
+
+<TD><A HREF="ovr/quick_review_ovr.html">Overview<BR>
+
+</a><TD><A HREF="ovr/quick_review_ovr.html"></a><a href="Review_UserDoc.htm">User Guide<BR>
+
+
+</a></TABLE>
+
+
+<TR>
+<H2> ARCHIVE and MAINTENANCE PROGRAMS </H2>
+
+<TABLE BORDER=2 >
+
+<TR>
+
+<TH>Module name </TH>
+
+<TH>Its function, briefly </TH>
+
+<TH colspan=2>more info (<A HREF="#note 1">note 1</A>)</TH>
+
+</TR>
+
+
+<TR>
+
+
+<TD align=center>archive</TD>
+
+
+
+<TD>saves the contents of one or more DB Events to SAC directory(s). archive can then, optionally,  delete  the data for each Event from the database. 
+</TD>
+
+<TD><A HREF="API-DOC/EWDB_APPLICATIONS/archive/details.html">Usage <BR>
+
+</A><A HREF="API-DOC/EWDB_APPLICATIONS/archive/archive.d.txt">Configuratin File</A> </TD>
+
+</TR>
+
+<TR>
+
+<TD align=center>db_cleanup2</TD>
+<TD>db_cleanup2 is a catch-all, time based archiver. Based on rules set in the config file, it saves/deletes Events and unassociated data 
+based on time limits. Rules schedule the archiving/deletion of data based on time, magnitude, and location of Events. 
+</TD>
+
+<TD><A HREF="API-DOC/EWDB_APPLICATIONS/db_cleanup2/details.html">overview</A> </TD>
+<TD align=center><A HREF="API-DOC/EWDB_APPLICATIONS/db_cleanup2/db_cleanup2.d.txt">commands</A> </TD>
+</TR>
+<TR>
+<TD align=center>reaper</TD>
+<TD>This program is meant to be run out of cron(or some other periodic invocation method). Its function is to keep the number of events in the database manageable, by deleting the oldest events.
+</TD>
+<TD align=center>------</TD>
+<TD align=center><A HREF="API-DOC/EWDB_APPLICATIONS/reaper/reaper.d.txt">commands</A> </TD>
+
+
+
+
+</TR>
+
+
+</TABLE
+
+><spacer type=vertical size=10>
+<P><A NAME="note 1"></A>Note 1: The configuration files in this table should be verified by comparison with the configuration file examples in the source directory of each module.</P>
+
+
+
+<table width="87%" border="0">
+  <tr>
+    <td width="74%"><a href="http://www.doi.gov/">U.S. Department of the Interior</a>,
+      U.S. Geological Survey, Reston, VA, USA<br>
+      <address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address> <br>
+      <a href="http://www.usgs.gov/privacy.html">Privacy Statement</a> || <a href="http://www.usgs.gov/disclaimer.html">Disclaimer</a>
+
+      || <a href="http://www.usgs.gov/foia/">FOIA</a> || <a href="http://www.usgs.gov/accessibility.html">Accessibility</a>
+      <br>
+    </td>
+    <td width="26%"><a href="http://firstgov.gov/"><img src="../images/first_gov2_beveled.gif" width="160" height="47" border="0" alt="Li
+nk to First Gov web site."></a></td>
+  </tr>
+</table>
+      <p>&nbsp;</p>
+      <P>Date Last Modified: April 17, 2002 
+    </h2>
+</h2></BODY>
+
+</HTML>
+

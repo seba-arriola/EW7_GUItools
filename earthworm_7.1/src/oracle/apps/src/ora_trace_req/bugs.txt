@@ -1,0 +1,48 @@
+/* bugs.txt */
+
+####################
+KNOWN ISSUES  (BUGS)
+####################
+
+1) Error Reconnecting to the Database
+
+SYMPTOMS
+ora_trace_req  occasionally quits with the error 
+"Could not reconnect to the database!"
+"ora_trace_req : ERROR Snippet making thread died. Exiting"
+
+
+CAUSE
+Unknown.  It is believed, that some sort of pointer or
+memory within the Oracle library is overwritten, or some
+other memory related leak is causing a strange problem.
+The connection parameters have been validated, and they
+remain correct.
+
+
+EFFECT
+The program has been seen to fail every 3 or 4 days due
+to this problem.  The program exits upon failing to connect
+to the database, and must be restarted.  
+
+When the program kills itself and restarts, it Clears the
+EW Ring that it reads from, so you lose all trigger messages
+starting with the one that caused the program to attempt to
+reconnect to the database, through the last one that is written
+on the EW Ring before the program clears the Ring upon startup.
+
+If you are running statmgr and have ora_trace_req set for 
+"Auto-Restart" within statmgr, then you should normally lose 
+the contents of only 1 trigger message each time the program kills 
+itself and is restarted.
+
+If you do not have auto-restarts enabled, or are not running statmgr,
+then you will lose data from the time of the kill, until the time
+of the restart, which could be lots of time/messages.
+
+
+CAUSES_DATA_LOSS
+Yes
+
+
+

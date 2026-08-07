@@ -1,0 +1,576 @@
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Microsoft Developer Studio">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>IDC Schema</TITLE>
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>International Data Centre</H1>
+</CENTER>
+
+<CENTER>
+<H2>Introduction</H2>
+</CENTER>
+
+<P>
+Without question, the design in use at the IDC (International
+Data Centre) for Comprehensive Test Ban compliance monitoring is
+the "grandaddy" of seismic schemata.
+It has its roots in the CSS (Center for Seismic Studies) approach that
+has been tested and improved for decades.
+At is core lies what is referred to as the CSS 3.0 core, a set of
+low level tables and relationships that are the main focus of
+all seismic systems.
+These core tables contain the sanctified event (seismic) catalog,
+seismic phase arrival information, magnitudes and supporting
+amplitudes as well as a referential mechanism for accessing raw
+waveform data.
+</P>
+
+<P>
+The purpose of the schema design is in many respects very similar
+to the regional network requirements, associating asynchronously
+received phase arrival information into a reliable catalog of
+seismic events.
+It is also very different, in that the focus of the effort is much
+narrower, the detection of one particular kind of seismic event
+in certain places and the winnowing out of natural occuring signals.
+The scope of the IDC is of course much broader than this, but the
+discussion here is limited to seismic components.
+The primary result of this is that many devices by which data might
+be entered into a regional network archive are precluded by the
+overall system design.
+For example, as will be discussed in greater detail below, as
+diagrammed the IDC schema has no provision for an earthquake origin
+that is not associated with at least one phase arrival.
+Initially I thought that the IDC
+schema based on the CSS 3.0 core was some kind of a "gold standard"
+which should be emulated as closely as possible.
+In light of subsequent analysis I now feel that is should be considered
+a good source of reliable information and experience, but the
+problems to be solved for organizing real-time seismic network data
+is sufficiently unique as to demand a fresh approach.
+It also suffers some of the problems of being one of the first
+seismic schemata and shows some signs of late <I>ad hoc</I>
+modification to correct portions of the design that had
+already been "cast in stone".
+Part of the joy of not being first is learning from
+the experiences of one's predecessors.
+</P>
+
+<CENTER>
+<H2>Discussion</H2>
+</CENTER>
+
+<P>
+The figure below shows that portion of the IDC schema referred to
+as the CSS 3.0 core.
+The tables and relationships in the diagram are shown in bold, as
+they are in the other schemata addressed in this study.
+</P>
+
+<TABLE>
+<TR>
+	<TD>
+		<IMG SRC=images/idc.gif>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		ERD_IDC: Entity relation diagram (ERD) showing what has
+		come to be called the CSS 3.0 core schema.
+	</TD>
+</TR>
+</TABLE>
+
+<CENTER><H3>
+	Catalog Layer
+</H3></CENTER>
+
+<P>
+The only table in the Catalog layer is <B>event</B>.
+Most of the non key attributes of the <B>event</B> table
+are foreign keys represented as pointers and identifiers.
+The main purpose of the <B>event</B> table, as it is in all of
+the other schemata, is to select a preferred entry in the
+<B>origin</B> table.
+Non key attributes include a textual event name, an authority field,
+a comment and a load date.
+The load date occurs in all changing tables in all three schemata
+and is used behind the scenes to monitor updates and transactions.
+It will not be discussed further in this study.
+The pair of relationships with the <B>origin</B> table are
+also fairly standard.
+These relations require that every row in <B>event</B> must
+point to exactly one row in the <B>origin</B> table.
+Stated another way, there must be at least one row in
+the <B>origin</B> table associated with every row in the
+<B>event</B> table.
+The one to many relationship is shown in the upper relationship,
+where <B>evid</B> in the <B>origin</B> table associates multiple
+rows with one row in the <B>event</B> table.
+Also, the structure permits entries in the <B>origin</B>
+table that neither have a counterpart in the <B>event</B> table
+nor need there necessarily be a row in the <B>event</B> table
+relating to it as a preferred event.
+The data structure does permit an <B>origin</B> to be associated
+with an <B>event</B> through its <B>prefor</B> foreign key even
+though it is not related through the <B>evid</B> column in the
+<B>origin</B> table.
+This is, of course, absurd and presumably handled elsewhere as
+"business rules" are enforced in updating applications.
+</P>
+
+<P>
+Selecting an <B>origin</B> simply requires changing the <B>prefor</B>
+foreign key, retaining such attributes as the common event name and
+posting authority.
+This structure, even though widely implemented, does pose minor 
+problems associated with selecting earthquakes from a "standard"
+catalog, since the <B>origin</B> table and the <B>event</B> table
+need to be joined prior to selection to insure a search on
+authorized events.
+Alternatively, performing a join on the results of selection on
+the "raw" <B>origin</B> table requires a non indexed search on
+a possibly much larger catalog, a task that could become quite
+significant as the number of <B>origin</B> rows increases.
+None of the approaches examined presents an interesting solution
+to this problem.
+</P>
+
+<CENTER><H3>
+	Summary Layer
+</H3></CENTER>
+
+<P>
+The relationship of the <B>origin</B> table to the <B>event</B>
+table has already been discussed.
+The <B>origin</B> table contains one or more rows corresponding to
+different origins for the same event.
+These might arise when, for example, an automatic analysis system
+is backed up by human analysts (or vice versa) or possibly
+for data warehousing applications combining data from multiple
+networks where the local origin calculations are retained.
+Columns in the <B>origin</B> table comprise hypocentral parameters,
+parameters directly related to the location process, such as the
+number of stations in the solution or the algorithm used,
+as well as body wave, surface wave, and local magnitudes.
+Each magnitude, if not null, is also associated with a row
+in the <B>netmag</B> table through the relationship labelled
+<B>mxid</B> in the entity relationship diagram.
+</P>
+
+<P>
+The <B>netmag</B> table is also related to both the <B>origin</B>
+and <B>event</B> tables through its <B>orid</B> and <B>evid</B>
+foreign keys repsectively.
+Also, both relationships are the same, each <B>netmag</B> row is
+related to exactly one <B>event</B> or <B>origin</B>.
+Although either <B>event</B> or <B>origin</B> rows can have no
+associated netmag, or many, it is required that each <B>netmag</B>
+row must associate both an <B>event</B> and a <B>origin</B> row.
+In other words, an <B>netmag</B> row cannot exist until both
+its <B>origin</B> and <B>event</B> counterparts have been
+created.
+It would appear, that such restrictions might create complexity
+with respect to the real-time association of seismic phases and
+amplitudes, especially at that point in the analysis when the
+number and identity of events is still being determined.
+</P>
+
+<P>
+Each origin is also related to several rows in the <B>netmag</B>
+table through the relation labelled <B>mxid</B>.
+In fact, this represents three relationships supported by
+foreign keys <B>mbid</B>, <B>msid</B>, and <B>mlid</B> encoding
+body-wave, surface-wave, and local magnitudes respectively.
+The relationship shown should represent any one of these foreign
+keys, which is impossible since many magnitudes of a given type
+cannot be related to an origin through a single foreign key.
+The relationship between origins and magnitudes of a given type
+should presumably be optionally one to optionally one.
+This would be interpretted as a magnitude of a given type can
+be at most the preferred magnitude of that type for a given
+origin, and that an origin can have at most one preferred magnitude
+of a given type.
+Since in general a magnitude is dependant on a single origin through
+its <B>evid</B> foreign key, it would make no sense for it to be
+the preferred magnigute of an event it was not dependant upon.
+Furthermore, if the origin is change, possibly drastically, the
+magnitude might be rendered incorrect until subsequent processing
+corrected the magnitude estimates to be consistant with the new
+origin.
+For the duration, the database would be internally inconsistant, a
+problem that might be exacerbated further in a real-time response
+network.
+This is an example of the kind of convolution regarding sub-dependancies
+on the <B>SUMMARY</B> layer that would seem to require a great deal
+of further consideration and analysis.
+</P>
+
+<P>
+The only remaining summary table is <B>origerr</B>.
+This table contains uncertainties in the parameters reported in
+the <B>origin</B> row referenced by its <B>orid</B> foreign key.
+The relationship is exclusive but optional in the sense that all
+<B>origerr</B> records must reference a <B>origin</B> row, although
+<B>origin</B> rows do not necessarily have an associated <B>origerr</B>.
+The non-key attributes include the entire 4 by 4 covariance matrix
+excluding symmetric elements, as well as several dependant statistics.
+Since <B>orid</B> is the primary key, at most one <B>origerr</B> can
+be associated with any given <B>origin</B>.
+</P>
+
+<P>
+There is another table, <B>origaux</B>, which is not part of the
+CSS 3.0/3.1 core, and is not shown on the related entity relationship
+diagram which is of interest.
+This is an example of a number of tables ending in <B>...aux</B>
+that parallel and add additional information to a corresponding
+table.
+It is related to the <B>origin</B> and <B>event</B> 
+through its <B>orid</B> and <B>evid</B> foreign keys.
+Its attributes appear to be somewhat specialized to a particular
+location algorithm.
+Included among them are gap, distance to closest station,
+and flags relating to fixing hypocentral parameters.
+This model demonstrates one way to
+deal with variations in various regional networks processing
+protocols and requirements.
+Such an approach, using adjacent tables to reflect parameter
+requirements that vary considerably from one regional network
+to another, would appear to be of value in the design of a
+general seismic network processing schema.
+</P>
+
+<CENTER><H3>
+	Link Layer
+</H3></CENTER>
+
+<P>
+Two tables are important here, <B>assoc</B>, associating phase
+arrivals with corresponding <B>origin</B>, and <B>stamag</B>,
+linking <B>netmag</B> to <B>amplitude</B>.
+The tables on this layer are required to implement the many to
+many relationship within the context of a relational database.
+For <B>assoc</B> the pair of foreign keys, <B>arid</B> and
+<B>orid</B>, are also in combination the primary key.
+With this device, a single phase can be linked to any number
+of trial hypocenters in the <B>origin</B> table, and similarly
+an <B>origin</B> can be related to any number of <B>arrivals</B>.
+Interestingly, the relationship diagram shows that an <B>origin</B>
+cannot exist if it references no <B>arrival</B>.
+This would seem to follow from processing protocols at the IDC,
+wherein apparently, <B>arrival</B> data is always entered before
+<B>origin</B> rows are created.
+On the other side, <B>arrival</B> rows may remain unassociated.
+In a seismic data warehousing application,
+a more relaxed approach might be appropriate, especially for some
+older data.
+</P>
+
+<P>
+There is a considerable amount of ancillary data stored in the
+rows of the <B>assoc</B> table related to <B>arrival</B>, <B>origin</B>
+pairs.
+Typical examples include phase identification, which can
+vary from one origin to another for the same arrival, azimuth and back
+azimuth, slowness, incidence angle, and solution weights.
+There are some very intriguing problems that come to the fore
+here related to the association process itself.
+For regional network processing there may well be two associators,
+one for local earthquakes and another associating plane wave
+arrivals from distant teleseisms.
+In one sense, these processes are quite separate, but the
+ancillary data supporting them are disaggragated.
+One requires distances and possibly azimuths to local earthquakes,
+the other involves distance in space-time relative to a fourth
+dimensional plane.
+To further complicate things, these two processes cannot be treated
+independantly, since it makes no sense at all to associate the
+same arrival with both a local event and a teleseism.
+For response oriented seismic network processing systems, these
+issues would seem to be amoungst the most critical with respect
+to schema design on the <B>LINK</B> layer.
+</P>
+
+<P>
+The other important <B>LINK</B> layer table is <B>stamag</B>.
+There is some complexity here that is a bit puzzling.
+The table description and the associated entity relationship
+diagram show three foreign keys, <B>orid</B>, <B>evid</B>,
+and <B>arid</B>, suggesting relationships with the <B>origin</B>,
+<B>event</B>, and <B>arrival</B> tables respectively.
+However, the diagram does not show these relationships, even
+though all entities appear.
+I have taken this to suggest that these foreign keys are not
+directly supported by processing applications, except perhaps
+to facilitate subsequent access.
+Of course, referencing the core schema, <B>orid</B> and <B>evid</B>
+are available through its the <B>magid</B> relationship with a
+<B>netmag</B> object, albeit requiring a simple join.
+This kind of downward denormalization leads to update
+anomolies and degradation of internal database integrity manifested
+as relation conflicts.
+Such denormalization should probably be restricted to data
+warehousing applications where query efficiency is the primary
+relevant consideration.
+</P>
+
+<P>
+The link to <B>arrival</B> is easy to understand, since
+some but not all types of elemental magnitude data require such
+an association.
+In a general schema one would expect to find this column
+declared as optional.
+There is also a dependancy of some amplitude measurements on hypocentral
+parameters,  a classical example being local (Richter) magnitude through
+its epicentral distance correction.
+Again, this parameter is perceived as optional in the most general
+approach.
+The <B>evid</B> foreign key is puzzling and potentially problematical.
+Links crossing over an intervening layer of the architecture are
+especially subject to update anomolies and inconsistant keys.
+The <B>origin</B>-<B>event</B> relationship is subject to changes,
+such as during the splitting and recombination situations that
+arise during regional association, and such changes would engender
+a considerable restructuring of low level data by applications
+that should not probably even know about these layers.
+The <I>a priori</I> association of an amplitude could seemingly
+only occur with respect to the analysis and recording of
+unnatural or prescheduled seismic events.
+</P>
+
+<CENTER><H3>
+	Data Layer
+</H3></CENTER>
+
+<P>
+There are two kinds of data depicted on the <B>DATA</B>
+layer, that related to raw digital waveforms, and information
+derived from waveform data as phase picks and amplitudes.
+The former could best be represented by a <B>WAVEFORM</B>
+layer left of the <B>DATA</B> layer.
+In this report these two layers will be discussed separately.
+In the <B>CSS 3.0</B> core, derived data is contained in two
+tables, <B>arrival</B> and <B>amplitude</B>.
+In recent documentation, the current <B>amplitude</B> table is
+not treated as a fundamental core feature, although it is
+included here because of it fundamental nature.
+Perhaps the reason for this was that more restrictive provision
+for amplitude in the <B>arrival</B> table, as there is now,
+and more generality was required as functional specifications
+evolved.
+Regardless, this homologous tables are ubiquitous in schemata
+based on the core standard.
+</P>
+
+<P>
+Arrivals described in the <B>arrival</B> table were obviously
+derived from multiple component sites which may also have
+comprised spatial arrays.
+Parameters describe beam characteristics such as emergence
+angles, azimuths, and slowness.
+Amplitudes and periods are provided, redundantly with respect
+to similar values in the <B>amplitude</B> table.
+There is a foreign key, <B>stassid</B>, which ties together
+phases from a single wave train thought to be associated by
+the field analyst to be associated with a single event.
+Additional information regarding this wave train, such as the
+apparent teleseismic distance from relative phase times, are
+provided in the <B>stassoc</B> table keyed on <B>stassid</B>.
+This is a feature which is often dropped, but should be retained
+to allow integration of global analysis capabilities.
+There is no accomodation of the sort of descriptive phase pick
+information such as first motions or impulsivity
+that regional network opearators consider important.
+The primary key of the <B>arrival</B> table is an ordered composite
+of station name and arrival time.
+Since the primary key must be unique, this imposes a bazaar
+restriction that two instruments at a single site cannot
+have identical arrival times, even though individual
+arrivals are identified by channel in non-key attributes.
+</P>
+
+<P>
+The other significant <B>DATA</B> layer table is <B>amplitude</B>.
+As noted this table seems to be an extension of data that was
+originally found in <B>arrival</B>.
+There is a foreign key, <B>parid</B> that connects to predicted
+arrival time information.
+Predicted arrival times are not carried forward into schemata
+derived from the CSS core schema but perhaps it should be considered.
+Such would provide the capability of decoupling complicated
+travel-time programs associative applications.
+Reflecting the focussed nature of the mission, the <B>amplitude</B>
+table is much more limitted than that required to
+support the needs of representing magnitude datums for regional
+seismic networks.
+Columns are also provided for an absolute measurement time and for
+association with a given sensor at a known instrument site.
+</P>
+
+<CENTER><H3>
+	Waveforms
+</H3></CENTER>
+
+<P>
+The relationship between stations, channels, and components of
+arrays is something that all real-time seismic systems must face
+in some measure.
+Because of the complexity of IDC sensor geometry, the approach
+taken here is quite rich and deserves considerable analysis.
+For convenience, that part of the schema dealing with arrivals,
+associated waveforms, and the necessary relationships with 
+instrumentation sites is reproduced in the standard convention
+adopted in this report.
+In a sense there should be two additional layers shown on the
+entity relationship diagrams for this report.
+As previously discussed, the <B>WAVEFORM</B> layer has been combined
+with the  <B>DATA</B> layer, even though the raw digital waveforms
+are more primitive than phase picks.
+Also, there is an <B>INFRASTRUCTURE</B> layer that reflects the
+architecture of the stations and the arrays of which they are
+a part.
+This includes things like the geographical coordinates of the
+sensors, what sensors or channels are available for a specific
+site, and the organization of sites into geometrical arrays
+or clusters.
+These are issues that will need to be addressed in the design
+of a distributed seismic network schema as well.
+The discussion and entity relationship diagram below describes
+how these issues are manifest in the CSS 3.0 core.
+</P>
+
+<CENTER>
+<TABLE BORDER=1 CELLSPACING=0>
+<TR>
+	<TD>
+		<IMG SRC=images/idc_sta.gif>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		Entity relationship diagram (ERD) focussing on
+		waveform data, and the supporting tables in the
+		<B>INFRASTRUCTURE</B> layer.
+	</TD>
+</TR>
+</TABLE>
+</CENTER>
+<BR CLEAR=ALL>
+
+<P>
+Although on the surface, the approach might seem a bit complicated,
+in fact there is a certain elegance revealed in the design.
+The hub of this part of the schema is a table called <B>wftag</B>.
+In a sense on object in the <B>wftag</B> table comprises two or
+more rows, its function is to create transparent links to two
+or more rows in two or more different tables.
+All three attributes, <B>tagname</B>, <B>tagid</B>, and
+<B>wfid</B>, are also components of the primary key with
+cardinality in the order given.
+All rows with common values of <B>wfid</B> are related, and in
+the sense discussed above part of one multichannel connector 
+object.
+The <B>tagname</B> is actually the name of another table, and
+<B>tagid</B> is the single numerical key to that table.
+Only tables with a single numerical key can be joined in this
+fashion.
+Although I have personally used this device in other projects,
+I have always felt a bit degraded by the experience.
+On one level it seems devishly clever, on another I think there
+is something intrinsically evil in using the value of a table
+name as an attribute in another table.
+The three tables, <B>wfdisc</B>, <B>arrival</B>, and <B>origin</B>
+are tied together by this device.
+The one to many relationship shown above is a bit suspect, since
+it seems impossible that an arrival to be associated with more
+than one waveform.
+In this part of the IDC documentation, there is considerable
+inconsistancy with respect to connectivity from one diagram to
+the next.
+</P>
+
+<P>
+The <B>wfdisc</B> table describes the location of a flat file
+containing the digital waveform data.
+On offset attribute is provided so that the same file can
+be used for more than one wave fragment.
+This is an example of waveform storage inwhich the database
+only contains pointers, file name and directory, to external
+waveform files.
+The <B>wfid</B> attribute is the primary key in this table.
+</P>
+
+<P>
+The remaining tables of interest here are all concerned with
+network infrastructure.
+This includes the locations of individual instrument sites,
+arrangements of sites into arrays, and descriptions of
+sensors at each site together with calibration information.
+It would seem that the structures provided are meant to store
+pointers to raw data in flat files, with enough information
+retained in the database to locate waveform fragments and
+to convert digital seismic records to physical ground motion.
+It does not appear that processed data is stored in the database,
+which seems like a good thing, since fixing a calibration
+error would appear to be rather difficult otherwise.
+The two tables discussed here are <B>site</B>,
+and <B>sitechan</B>.
+</P>
+
+<P>
+The <B>site</B> table contains the the geographical location
+of an instrument vault together with a time interval over which
+the data is to be considered valid.
+The primary key is a composite of the station name (up to 6
+characters) and the beginning time of the valid interval,
+<B>ondate</B>.
+The record valid for any given date can thus be found with a
+simple query.
+There is also a provision in the <B>site</B> table to describe
+the geometry of an array.
+Where appropriate, a site may provide a rectilinear offset from a
+base station, hence the recursive relation in the previous
+diagram.
+I find this a bit puzzling, since redundant information would seem
+to be carried in the location parameters with sufficient
+accuracy, so that all that should be required is an array
+identifier to associate members of arrays.
+</P>
+
+<P>
+The <B>sitechan</B> table provides a breakdown of the sensors
+available at a given instrument site.
+The primary key is comrpised of three columns, <B>sta</B>, <B>chan</B>,
+and <B>ondate</B>.
+As with the <B>site</B> table, <B>ondate</B> is paired with a non-key
+attribute to define an interval of validity.
+It is noted in the documentation that this interval is to be consistant
+with that in the corresponding entry in the <B>site</B> table.
+The data contained in non-key attributes is limited, mostly to
+horizontal axis orientation and a site dependant component name.
+There is an adjacent table, <B>sensor</B>, which provides greater
+detail on the sensor types for each component, as well as
+time range indexed calibration information in an <B>instrument</B>
+table.
+The latter provides pointers to response spectral curves stored in
+flat files.
+Of note is that there is an numerical key, <B>chanid</B>,
+provided in each row of the <B>sitechan</B> table that is defined
+as an alternate key.
+This key is used in the <B>arrival</B> and <B>wfdisc</B> tables to
+provide much access to channel and instrumentation information
+by means of simple queries.
+Otherwise such accesses would require expensive temporal joins
+resulting in a substantial reduction in transaction processing
+efficiency.
+Such devices should be employed with due consideration in a real-time
+seismic schema.
+</P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,78 @@
+<hr>
+<a name=ewdb_internal_CreateSnippetRequest></a>
+<font size=+2>ewdb_internal_CreateSnippetRequest()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_CreateSnippetRequest(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</i> pSnipReq</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/concierge/ewdb_internal_CreateSnippetRequest.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The Function creates a SnippetRequest record in the DB. The record describes snippet data that the caller wants stored in the DB. (This call does not retrieve snippet data, it only records the request.) A snippet is essentially a piece of data from a given channel for a given time interval.  The <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> passed by the caller describes both the snippet to be retrieved and also the frequency for attempting to retrieve the snippet.  The function will write the DB ID of the newly created snippet request back to pSnipReq->idSnipReq.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>The function ignores pSnipReq->ComponentInfo and pSnipReq->idExistingWaveform.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pSnipReq</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> that contains parameters describing what waveform snippet should be retrieved.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST-INTERNAL/library_comments.html#WAVEFORM_REQUEST-INTERNAL>WAVEFORM_REQUEST-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

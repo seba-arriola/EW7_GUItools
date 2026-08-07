@@ -1,0 +1,1919 @@
+<hr>
+<a name=ewdb_api_CreateArrival></a>
+<font size=+2>ewdb_api_CreateArrival()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreateArrival(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</i> pArrival</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an arrival from the caller supplied information in pArrival.  The function assumes that the caller has supplied all information for an arrival including origin-phase information.  The pArrival->idOrigin must be a valid existing origin DB ID.  Upon successful completion, the function writes the DB ID of the newly created phase pick(Pick) and the newly created OriginPick to pArrival->idPick and pArrival->idOriginPick respectively.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pArrival</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateEvent></a>
+<font size=+2>ewdb_api_CreateEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreateEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> *</i> pEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an event in the DB using the information provided by the caller in pEvent.  Upon successful completion, the function writes the DB ID of the newly created event to pEvent->idEvent. <br> If the caller specifies a Source and a SourceEventID, and there is an existing Event with that same Source/SourceEventID, then the idEvent of the existing event will be returned, instead of creating a new event.  The function will return success in this case even though it has not actually created a new Event.  If a matching Event already exists, then the Comment passed by the caller is ignored.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateMagnitude></a>
+<font size=+2>ewdb_api_CreateMagnitude()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreateMagnitude(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> *</i> pMag</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a magnitude in the DB using the information provided by the caller in pMag.  If pMag->bBindToEvent is set to <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>, then the function will attempt to associate the new magnitude with an existing event(pMag->idEvent).  If both pMag->bBindToEvent and pMag->bSetPreferred are <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>, then the function will attempt to set the magnitude as the preferred one for the Event. Upon successful completion, the function writes the DB ID of the newly created magnitude to pMag->idMag.  <br> The call will fail under any of the following circumstances: If bBindToEvent is <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>, and idEvent is not a valid existing idEvent in the DB <br> If idOrigin is set to a non-zero value, and it does not match an existing idOrigin in the DB<br> szSource is not a valid source/author string.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pMag</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateOrigin></a>
+<font size=+2>ewdb_api_CreateOrigin()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreateOrigin(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</i> pOrigin</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an origin in the DB using the information provided by the caller in pOrigin.  If pOrigin->BindToEvent is set to <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>, then the function will attempt to associate the new origin with an existing event(pOrigin->idEvent).  If both pOrigin->BindToEvent and pOrigin->SetPreferred are <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>, then the function will attempt to set the origin as the preferred one for the Event.  Upon successful completion, the function writes the DB ID of the newly created origin to pOrigin->idOrigin.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateOriginPick></a>
+<font size=+2>ewdb_api_CreateOriginPick()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreateOriginPick(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</i> pArrival</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an association between a pick and an origin. The information must be supplied by the caller in pArrival.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pArrival</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreatePick></a>
+<font size=+2>ewdb_api_CreatePick()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreatePick(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</i> pArrival</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an unassociated pick from the caller supplied information in pArrival.  This function creates a Pick in the DB but it does not associate the Pick with an Origin.  To associate Picks with an Origin, either call <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/function_comments.html#ewdb_api_CreateArrival>ewdb_api_CreateArrival</a>() to create the entire arrival at once, or call <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/function_comments.html#ewdb_api_CreateOriginPick>ewdb_api_CreateOriginPick</a>() after creating a naked pick..</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pArrival</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_DeleteEvent></a>
+<font size=+2>ewdb_api_DeleteEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_DeleteEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>int</i> IN_idEvent</NOBR>, <NOBR><i>int</i> IN_bDeleteTraceOnly</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Deletes trace and/or parametric data for an event from the database. Note that this means that the deleted data is permanently gone.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td>int</td>
+  <td>DB id of the event to delete.</td>
+ </tr>
+ <tr>
+  <td>IN_bDeleteTraceOnly</td>
+  <td>int</td>
+  <td>If set to <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#TRUE>TRUE</a>, delete only trace, otherwise delete both trace and parametric data for this event.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetAmpsByEvent></a>
+<font size=+2>ewdb_api_GetAmpsByEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetAmpsByEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a> *</i> pAmpBuffer</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pStationBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type that are associated with a given DB Event.  Use idEvent to define the DB Event for which you want a list of associated amplitudes.  If you want station information for the channel associated with each amplitude, allocate space for pStationBuffer, otherwise set pStationBuffer to NULL, and station information will not be retrieved.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function only retrieves amplitudes that are directly associated with an Event.  It will not retrieve amplitudes that have been associated with an Event via a Magnitude.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of amplitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB identifier of the Event for which the caller wants a list of associated amplitudes.</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pStationBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station/channel info associated with the amplitudes retrieved.  If pStationBuffer is set to NULL by the caller, then the function will not attempt to retrieve Station information for the retrieved amplitudes.  If pStationBuffer is NOT NULL, then the function will fill out an <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> for the channel associated with each amplitude.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a>. (example: 15 structs)  If pStationBuffer is not NULL, then it must also contain space for this many <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> records.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetAmpsByOrigin></a>
+<font size=+2>ewdb_api_GetAmpsByOrigin()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetAmpsByOrigin(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idOrigin</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a> *</i> pAmpBuffer</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pStationBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type that are associated with a given DB Origin.  Use idOrigin to define the DB Origin for which you want a list of associated amplitudes.  If you want station information for the channel associated with each amplitude, allocate space for pStationBuffer, otherwise set pStationBuffer to NULL, and station information will not be retrieved.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function only retrieves amplitudes that are directly associated with an Origin, or the Event with which that Origin is associated. It will not retrieve amplitudes that have been associated with an Origin via a Magnitude.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of amplitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB identifier of the Origin for which the caller wants a list of associated amplitudes.</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pStationBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station/channel info associated with the amplitudes retrieved.  If pStationBuffer is set to NULL by the caller, then the function will not attempt to retrieve Station information for the retrieved amplitudes.  If pStationBuffer is NOT NULL, then the function will fill out an <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> for the channel associated with each amplitude.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a>. (example: 15 structs)  If pStationBuffer is not NULL, then it must also contain space for this many <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> records.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetAmpsByTime></a>
+<font size=+2>ewdb_api_GetAmpsByTime()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetAmpsByTime(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>time_t</i> tStart</NOBR>, <NOBR><i>time_t</i> tEnd</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a> *</i> pAmpBuffer</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pStationBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type for a given time window.  Use tStart and tEnd to specify the time window for which you are interested in amplitudes.  If you want station information for the channel associated with each amplitude, allocate space for pStationBuffer, otherwise set pStationBuffer to NULL, and station information will not be retrieved.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of amplitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>time_t</td>
+  <td>Start time of criteria window.  (Secs since 1970)</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>time_t</td>
+  <td>End time of criteria window.  (Secs since 1970)</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pStationBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station/channel info associated with the amplitudes retrieved.  If pStationBuffer is set to NULL by the caller, then the function will not attempt to retrieve Station information for the retrieved amplitudes.  If pStationBuffer is NOT NULL, then the function will fill out an <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> for the channel associated with each amplitude.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_PeakAmpStruct>EWDB_PeakAmpStruct</a>. (example: 15 structs)  If pStationBuffer is not NULL, then it must also contain space for this many <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a> records.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetArrivals></a>
+<font size=+2>ewdb_api_GetArrivals()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetArrivals(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idOrigin</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</i> pArrivals</NOBR>, <NOBR><i>int *</i> pNumArrivalsFound</NOBR>, <NOBR><i>int *</i> pNumArrivalsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of arrivals that are associated with a given origin.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> for a description of the information retrieved for each associated arrival.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of arrivals was retrieved, but the caller's buffer was not large enough to accomadate all of the arrivals found.  See pNumArrivalsFound for the number of arrivals found and pNumArrivalsRetrieved for the number of arrivals placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>This function retrieves a list of arrivals associated with an origin.  idOrigin is the database ID of the origin for which the caller wants a list of arrivals.</td>
+ </tr>
+ <tr>
+  <td>pArrivals</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of arrivals.</td>
+ </tr>
+ <tr>
+  <td>pNumArrivalsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of found arrivals.</td>
+ </tr>
+ <tr>
+  <td>pNumArrivalsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of arrivals placed in the callers buffer(pArrivals).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pArrivals buffer as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a>. (example: 15 structs)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetEventForOrigin></a>
+<font size=+2>ewdb_api_GetEventForOrigin()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetEventForOrigin(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idOrigin</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> idEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function returns the DB ID of the Event associated with the given Origin.  If "zero" or "more than one" Events are associated with the given origin, then an error is returned.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Origin for which the caller wants to obtain the DB Event.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> value, where the function will write the DB ID of the Event associated with the given Origin.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetEventInfo></a>
+<font size=+2>ewdb_api_GetEventInfo()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetEventInfo(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> *</i> pEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves information about the Event identified by idEvent.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> for a description of the information provided.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Event for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>pEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventStruct>EWDB_EventStruct</a> allocated by the caller, where the function will write the information about the Event.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetEventList></a>
+<font size=+2>ewdb_api_GetEventList()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetEventList(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> len</NOBR>, <NOBR><i>int</i> StartTime</NOBR>, <NOBR><i>int</i> EndTime</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</i> pCriteria</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</i> pMaxEvent</NOBR>, <NOBR><i>int *</i> pNumEvents</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Returns the list of all events in the database, in a given time range, that meet the criteria specified in pCriteria.  For each Event found to meet the given criteria, an <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> is returned. This is the primary function used for searching for a subset of the events in the DB.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>A list of events was successfully retrieved.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>The function experienced a fatal error while retrieving a list of events.</td>
+ </tr>
+ <tr>
+  <td>-x < -1</td>
+  <td>(-x) is returned where x > 1 when the size of the caller's buffer is insufficient to hold all of the events that matched the caller's criteria.  x is the size of the buffer required to retrieve all of the events that were found.  The function places as many events as possible into the caller's existing buffer.  This is not a failure condition, just a warning that the caller did not receive all of the requested data.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</td>
+  <td>Buffer allocated by the caller, in which the function will place the list of events matching the caller's criteria.</td>
+ </tr>
+ <tr>
+  <td>len</td>
+  <td>int</td>
+  <td>Length of pBuffer as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a>.</td>
+ </tr>
+ <tr>
+  <td>StartTime</td>
+  <td>int</td>
+  <td>Minimum(oldest) time acceptable for an event. Expressed as seconds since 1970(time_t).</td>
+ </tr>
+ <tr>
+  <td>EndTime</td>
+  <td>int</td>
+  <td>Maximum(youngest) time acceptable for an event. Expressed as seconds since 1970(time_t).</td>
+ </tr>
+ <tr>
+  <td>pCriteria</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</td>
+  <td>Pointer to the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> that contains part of the selection criteria for the list, including: minimum lattitude, minimum longitude, minimum depth, minimum magnitude, and source limitations.  Source criteria is:             <br>          "*"  events from all sources             <br>          "**" events from only human sources      <br>          ""   (blank string)all automatic sources <br> Any other string will be matched against the source identifier, such as the logo of the earthworm module that created a solution, or the dblogin of a human reviewer.</td>
+ </tr>
+ <tr>
+  <td>pMaxEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</td>
+  <td>Pointer to the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_EventListStruct>EWDB_EventListStruct</a> that contains part of the selection criteria for the list, including: maximum lattitude, maximum longitude, maximum depth, and maximum magnitude.</td>
+ </tr>
+ <tr>
+  <td>pNumEvents</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function writes the number of events it put in pBuffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetMagnitude></a>
+<font size=+2>ewdb_api_GetMagnitude()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetMagnitude(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idMag</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> *</i> pMag</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves information about the Magnitude identified by idMag.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> for a description of the information provided.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idMag</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Magnitude for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>pMag</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> allocated by the caller, where the function will write the information about the Magnitude.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetMagsForOrigin></a>
+<font size=+2>ewdb_api_GetMagsForOrigin()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetMagsForOrigin(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idOrigin</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> *</i> pMags</NOBR>, <NOBR><i>int *</i> pNumMagsFound</NOBR>, <NOBR><i>int *</i> pNumMagsRetrieved</NOBR>, <NOBR><i>int</i> IN_BufferRecLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optionally, write a description of what the function does and how it behaves.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>Optionally, write a note about the function here.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>Default_Return_Value</td>
+  <td>Description of the default return value</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Optional description of (IN_idOrigin)</td>
+ </tr>
+ <tr>
+  <td>pMags</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_MagStruct>EWDB_MagStruct</a> *</td>
+  <td>Optional description of (pMags)</td>
+ </tr>
+ <tr>
+  <td>pNumMagsFound</td>
+  <td>int *</td>
+  <td>Optional description of (pNumMagsFound)</td>
+ </tr>
+ <tr>
+  <td>pNumMagsRetrieved</td>
+  <td>int *</td>
+  <td>Optional description of (pNumMagsRetrieved)</td>
+ </tr>
+ <tr>
+  <td>IN_BufferRecLen</td>
+  <td>int</td>
+  <td>Optional description of (IN_BufferRecLen)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetOrigin></a>
+<font size=+2>ewdb_api_GetOrigin()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetOrigin(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idOrigin</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</i> pOrigin</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves information about the Origin identified by idOrigin.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> for a description of the information provided.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Origin for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>pOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> allocated by the caller, where the function will write the information about the Origin.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetOriginsForEvent></a>
+<font size=+2>ewdb_api_GetOriginsForEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetOriginsForEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idEvent</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</i> pOrigins</NOBR>, <NOBR><i>int *</i> pNumOriginsFound</NOBR>, <NOBR><i>int *</i> pNumOriginsRetrieved</NOBR>, <NOBR><i>int</i> IN_BufferRecLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> This function retrieves information for each Origin that is associated with the event(idEvent) given by the caller.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td> Then entire <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> is not filled!  Only the following fields are filled by this function:  idOrigin, tOrigin, dLat, dLon, dDepth, iAssocPh, iUsedPh, iFixedDepth, sSource, and sRealSource.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Origin records found successfully, but one or more records were unable to be retrieved.  Most likely indicates that the caller's buffer is not large enough to hold all of the records found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Event for which the caller wishes to retrieve origins.</td>
+ </tr>
+ <tr>
+  <td>pOrigins</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</td>
+  <td>Pointer to a buffer (allocated by the caller) where the function will put information for the Origins found for the given Event.</td>
+ </tr>
+ <tr>
+  <td>pNumOriginsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer (caller allocated) where the function will write the number of origins found for the given idEvent.  Note:  this is not the number actually retrieved.</td>
+ </tr>
+ <tr>
+  <td>pNumOriginsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer (caller allocated) where the function will write the number of origins retrieved into the caller's buffer for the given idEvent</td>
+ </tr>
+ <tr>
+  <td>IN_BufferRecLen</td>
+  <td>int</td>
+  <td>The size of the pOrigins buffer allocated by the caller.  (In terms of number of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_OriginStruct>EWDB_OriginStruct</a> records)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetPreferredSummaryInfo></a>
+<font size=+2>ewdb_api_GetPreferredSummaryInfo()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetPreferredSummaryInfo(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidOrigin</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidMagnitude</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidMech</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the DB IDs for the preferred summary information(origin, magnitude, and mechanism) for the Event identified by idEvent.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier for the Event for which the caller wants summary info.</td>
+ </tr>
+ <tr>
+  <td>pidOrigin</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the DB ID of the preferred origin for the Event.  0 will be written as the ID if there is no preferred origin for the given Event.</td>
+ </tr>
+ <tr>
+  <td>pidMagnitude</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the DB ID of the preferred magnitude for the Event.  0 will be written as the ID if there is no preferred magnitude for the given event.</td>
+ </tr>
+ <tr>
+  <td>pidMech</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the DB ID of the preferred mechanism for the Event.  0 will be written as the ID if there is no preferred mechanism for the given event.  (Note: Mechanism are currently only supported in a trivial manner)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetStaMags></a>
+<font size=+2>ewdb_api_GetStaMags()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetStaMags(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idMagnitude</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pStaMags</NOBR>, <NOBR><i>int *</i> pNumStaMagsFound</NOBR>, <NOBR><i>int *</i> pNumStaMagsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of station magnitudes that are associated with a given summary magnitude.  See <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> for a description of the information retrieved for each associated station magnitude.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of station magnitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the station magnitudes found.  See pNumStaMagsFound for the number of station magnitudes found and pNumStaMagsRetrieved for the number of station magnitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idMagnitude</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>This function retrieves a list of station magnitudes associated with an summary magnitude.  idMagnitude is the database ID of the magnitude for which the caller wants a list of station magnitudes.</td>
+ </tr>
+ <tr>
+  <td>pStaMags</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station magnitudes.</td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes placed in the caller's buffer(pStaMags).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pStaMags buffer as a multiple of <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a>. (example: 15 structs)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_InsertCodaWithMag></a>
+<font size=+2>ewdb_api_InsertCodaWithMag()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_InsertCodaWithMag(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pCodaDur</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_api_InsertcodaWithMag.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a coda duration based station magnitude from the caller supplied information in pCodaDur.  The function assumes that the caller has supplied all station magnitude information including summary magnitude data in the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a>.  The caller need not fill in PeakAmp related information as it is inappropriate.  The pCodaDur->idMagnitude and pCodaDur->StaMagUnion.CodaDur.idPick values must be valid existing Magnitude and Pick DB IDs respectively.  The pCodaDur->idChan value must also be filled in with the DB ID of a valid existing channel.  Upon successful completion, the function writes the DB IDs of the newly created coda duration, coda termination, and station magnitude to pCodaDur->idCodaDur, pCodaDur->idTCoda, and pCodaDur->idMagLink respectively. This function performs a full insertion of a coda, complete with how that coda (duration) contributed to an overall duration magnitude.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>You should use this function instead of using <a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/C/function_comments.html#ewdb_internal_CreateTCoda>ewdb_internal_CreateTCoda</a>(), <a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/C/function_comments.html#ewdb_internal_CreateCodaDur>ewdb_internal_CreateCodaDur</a>, and <a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/C/function_comments.html#ewdb_internal_CreateStaMag>ewdb_internal_CreateStaMag</a>(), unless you are VERY SURE that you know what you are doing, and know exactly how to use those functions.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pCodaDur</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_InsertPeakAmpWithMag></a>
+<font size=+2>ewdb_api_InsertPeakAmpWithMag()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_InsertPeakAmpWithMag(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</i> pPeakAmp</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/parametric/ewdb_api_InsertPeakAmpWithMag.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a peak amplitude based station magnitude from the caller supplied information in pPeakAmp.  The function assumes that the caller has supplied all station magnitude information including summary magnitude data in the <a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a>.  The caller need not fill in CodaDur related information as it is inappropriate. This function performs a full insertion of an amplitude, complete with how that amplitude contributed to an overall magnitude.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>You should use this function instead of using <a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/C/function_comments.html#ewdb_internal_CreatePeakAmp>ewdb_internal_CreatePeakAmp</a>(), and <a href=../../.././EWDB_API_LIB/PARAMETRIC-INTERNAL/C/function_comments.html#ewdb_internal_CreateStaMag>ewdb_internal_CreateStaMag</a>(), unless you are VERY SURE that you know what you are doing, and know exactly how to use those functions.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pPeakAmp</td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/C/typedef_comments.html#EWDB_StationMagStruct>EWDB_StationMagStruct</a> *</td>
+  <td>Pointer to a EWDB_PhaseAmpStruct filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_UpdateComment></a>
+<font size=+2>ewdb_api_UpdateComment()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_UpdateComment(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> szFieldTypeName</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idCore</NOBR>, <NOBR><i>char *</i> szUpdatedComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Updates a comment for any record in the DB.  Enter the tablename and the record ID for the table that the comment belongs to, and the function will update the comment for that record.  This requires that the caller know DB layout, which is a bad thing.  What we need is a lookup table for the comment types, and we can perform a conversion from the lookup table to the actual DB table type within the DB.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>szFieldTypeName</td>
+  <td>char *</td>
+  <td>Name of the table to updated</td>
+ </tr>
+ <tr>
+  <td>idCore</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>id of the record to update</td>
+ </tr>
+ <tr>
+  <td>szUpdatedComment</td>
+  <td>char *</td>
+  <td>Text of the updated comment.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/PARAMETRIC_API/library_comments.html#PARAMETRIC_API>PARAMETRIC_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

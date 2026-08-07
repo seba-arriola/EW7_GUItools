@@ -1,0 +1,31 @@
+<hr>
+<a name=unlocker></a>
+<font size=+2>unlocker</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Group:</b></td>
+  <td><a href=../.././EWDB_APPLICATIONS/library_comments.html#EWDB_APPLICATIONS>EWDB_APPLICATIONS</a></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td><b>unlocker</b> is a utiltity for unlocking stale locked snippet requests.  It is the wicked-stepsister of the Concierge family. It will attempt to unlock all locked snippet requests that are older than <HoursTillUnlocking> hours.  If <a href=../.././EWDB_APPLICATIONS/ora_trace_fetch/library_comments.html#ora_trace_fetch>ora_trace_fetch</a> is running and it dies while processing a request, it will leave a bunch of requests in limbo, because it had reserved them and then died before it could free them.  The <b>unlocker</b> is set to run as a cron job, and unlocks any requests that it deems to be stale.  That way they are freed up to be processed by <a href=../.././EWDB_APPLICATIONS/ora_trace_fetch/library_comments.html#ora_trace_fetch>ora_trace_fetch</a> again. <p> This program is meant to be run out of cron(or some other periodic invocation method). Its function is to recover requests from unexpected crashes in <a href=../.././EWDB_APPLICATIONS/ora_trace_fetch/library_comments.html#ora_trace_fetch>ora_trace_fetch</a>(bad!!!). <p> This program is untested as of 2002/05/15 <p><br> Initial version by DavidK 2002/05/15</td>
+ </tr>
+ <tr>
+  <td colspan=2>
+   <table><tr>
+<td><a href=unlocker.d.txt>Sample Config File</a></td>
+    </tr>
+   </table></td></tr>
+ <tr><td colspan=2>
+  <DIR>
+       </DIR>
+     </DIR>
+   </DIR>
+  </td>
+ </tr>
+</table>
+
+<br><br>
+
+

@@ -1,0 +1,28 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.1 2004/09/09 06:04:28 davidk Exp $
+#
+#################################################################
+
+
+API_OBJECTS = \
+          ewdb_api_GetMergeList.$(OBJ) \
+          ewdb_api_CreateCoincidence.$(OBJ) \
+          ewdb_api_CreateTrigger.$(OBJ) \
+          ewdb_api_CreatePhenomenon.$(OBJ) \
+          ewdb_api_CreateMerge.$(OBJ) \
+          ewdb_api_UpdateMergePreference.$(OBJ) \
+          ewdb_api_DeleteMerge.$(OBJ) \
+          ewdb_api_DeletePhenomenon.$(OBJ) \
+          ewdb_api_GetCoincidence.$(OBJ) \
+          ewdb_api_GetTriggerList.$(OBJ) 
+
+
+INTERNAL_OBJECTS = 	
+
+
+ALL:  $(API_OBJECTS) $(INTERNAL_OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts

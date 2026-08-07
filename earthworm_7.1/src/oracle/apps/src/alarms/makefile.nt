@@ -1,0 +1,78 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+
+#
+#  This top level makefile creates all alarms subdirectories
+#
+
+
+default: do_web do_crit do_del do_town
+clean: web_clean crit_clean del_clean town_clean
+clean_bin: web_clean_bin crit_clean_bin del_clean_bin town_clean_bin
+
+do_web:
+	cd web 
+	nmake nt
+	cd ..
+
+do_crit:
+	cd crit_programs 
+	nmake nt
+	cd ..
+
+do_del:
+	cd delivery_modules 
+	nmake nt
+	cd ..
+
+do_town:
+	cd nearest_town 
+	nmake nt
+	cd ..
+
+
+web_clean:
+	cd web 
+	nmake clean_nt
+	cd ..
+
+crit_clean:
+	cd crit_programs 
+	nmake clean_nt
+	cd ..
+
+del_clean:
+	cd delivery_modules 
+	nmake clean_nt
+	cd ..
+
+town_clean:
+	cd nearest_town 
+	nmake clean_nt
+	cd ..
+
+
+web_clean_bin:
+	cd web 
+	nmake clean_bin_nt
+	cd ..
+
+crit_clean_bin:
+	cd crit_programs 
+	nmake clean_bin_nt
+	cd ..
+
+del_clean_bin:
+	cd delivery_modules 
+	nmake clean_bin_nt
+	cd ..
+
+town_clean_bin:
+	cd nearest_town 
+	nmake clean_bin_nt
+	cd ..
+

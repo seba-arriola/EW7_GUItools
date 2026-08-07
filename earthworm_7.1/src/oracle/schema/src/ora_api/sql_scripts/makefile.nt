@@ -1,0 +1,13 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+SQL_DIR = $(SCHEMA_DIR)\sql_scripts
+
+all:	install 
+
+install:
+	copy *.sql $(SQL_DIR)
+	-copy README* $(SQL_DIR)
+

@@ -1,0 +1,26 @@
+/configure.c/1.3/Fri Oct 25 17:59:44 2002//
+/decimate.c/1.6/Mon Feb 26 19:42:20 2007//
+/decimate.d/1.5/Tue May 11 18:14:17 2004//
+/decimate.desc/1.3/Fri Mar 15 23:29:26 2002//
+/decimate.h/1.6/Tue May 11 18:53:40 2004//
+/decimate_cmd.html/1.2/Tue May 11 18:14:17 2004//
+/decimate_ovr.html/1.2/Tue May 11 18:14:17 2004//
+/decthrd.c/1.4/Wed Jul 20 15:28:00 2005//
+/do1stg.c/1.2/Tue May 11 18:14:17 2004//
+/filtdecim.c/1.4/Tue May 11 18:14:18 2004//
+/hqr.c/1.2/Fri Oct 25 17:59:44 2002//
+/initpars.c/1.3/Tue May 11 18:14:18 2004//
+/makefile.lnx/1.1/Mon Feb 14 16:56:25 2000//
+/makefile.nt/1.6/Tue Nov 21 23:04:30 2006//
+/makefile.sol/1.3/Tue May 11 18:14:18 2004//
+/makefile.ux/1.1/Tue Jul 19 21:01:10 2005//
+/matchscn.c/1.2/Tue May 11 18:14:18 2004//
+/readcnfg.c/1.4/Tue May 11 18:14:18 2004//
+/readewh.c/1.3/Tue May 11 18:14:18 2004//
+/remeznp.c/1.1/Mon Feb 14 16:56:25 2000//
+/resetsta.c/1.1/Mon Feb 14 16:56:25 2000//
+/setdecstg.c/1.2/Fri Oct 25 17:59:44 2002//
+/setstafilt.c/1.2/Fri Oct 25 17:59:44 2002//
+/statrpt.c/1.3/Mon Feb 26 13:44:40 2007//
+/zeroes.c/1.1/Mon Feb 14 16:56:25 2000//
+D

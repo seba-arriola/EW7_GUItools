@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0055)http://gldrocky.cr.usgs.gov/ew-doc/cmd/restart_cmd.html -->
+<HTML><HEAD><TITLE>Earthworm Modules:  usnsn_loc2ora commands</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4522.1800" name=GENERATOR></HEAD>
+<BODY text=#000000 vLink=#551a8b aLink=#ff0000 link=#0000ee bgColor=#fadfaf>
+<CENTER>
+<H1><BR> Usnsn_loc2ora Usage and Configuration File</H1><I>(last revised August 3, 
+2001)</I></CENTER>
+<P>
+USNSN_LOC2ORA USAGE
+<P>
+Usage: usnsn_loc2ora <configfile> 
+</P>
+<P>
+USNSN_LOC2ORA CONFIGURATION FILE
+
+<PRE>
+
+#
+# usnsn_loc2ora
+
+#  Basic Earthworm setup:
+#
+MyModuleId         MOD_USNSN_LOC2ORA  # module id for this instance of template
+RingName           NSN_RING           # shared memory ring for input/output
+LogFile            1                  # 0 to completely turn off disk log file
+HeartBeatInterval  15                 # seconds between heartbeats
+
+# List the message logos to grab from transport ring
+#              Installation       Module          Message Types
+GetMsgsFrom    INST_WILDCARD    MOD_WILDCARD    # TYPE_USNSN only
+
+#
+# OPTIONAL: Debug level
+#
+Debug    2
+
+#
+# OPTIONAL: Debug directory - where output files are written
+#
+Debug_Dir  /tmp/oralog
+
+
+#
+# Database connection configuration.
+#
+DBuser          db_user
+DBpassword      db_pwd
+DBservice       db_service
+
+#
+# Cheater file that translates from NEIC stations names to S-C-N
+#
+NeicCheaterFile  ./neic2scn.d       
+</PRE>
+
+<P>
+<A HREF="neic2scn.d.txt"> SAMPLE NEIC CHEATER FILE</A> 
+</P>
+</PRE>
+
+
+<HR>
+
+<ADDRESS>The URL of this page is 
+<B>[http://gldbrick.cr.usgs.gov/ew-doc/DBMS/cmd/nsn_pz2ora_cmd.html]</B><BR>Contact: 
+<B>bogaert@usgs.gov</B><BR></ADDRESS></CENTER></BODY></HTML>

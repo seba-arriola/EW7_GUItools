@@ -1,0 +1,34 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+
+###############################
+#Set APP to your program name.
+###############################
+APP = arc2trigII
+FULL_APP_NAME = $(EW_BIN)$(APP)$(EXE)
+
+###############################
+#Set APP_OBJECTS to your object 
+# files
+#Set APP_OTHER to any other bind
+# options or libraries that you
+# need specially for your app.
+###############################
+APP_OBJECTS = $(APP).$(OBJ) 
+				
+
+APP_OTHER = 
+
+###############################
+#Set ALL_CLIENT_LIBS to all non DB
+# objects needed by your app.
+###############################
+
+	
+ALL_CLIENT_LIBS    = 	$(EW_LIB)transport.$(OBJ) \
+											$(EW_LIB)read_arc.$(OBJ) \
+											$(EW_LIB)make_triglist.$(OBJ) \
+											$(EW_LIB)geo_to_km.$(OBJ) 

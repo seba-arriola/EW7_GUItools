@@ -1,0 +1,42 @@
+
+#Create Site
+SITE    |ADD  |              FAKE DK         "Fake station added by DK"
+
+#Create Components
+#BHZ BHN BHE
+COMP     ADD                 FAKE DK BHZ  -- "New fake component from DK"
+COMP     ADD                 FAKE DK BHN  -- "New fake component from DK"
+COMP     ADD                 FAKE DK BHE  -- "New fake component from DK"
+
+#Set Site Time   1000000100 9999999999  32 -130 470
+SITET   |ADD  |              FAKE DK         32 -130 470 1000000100 9999999999 "New fake SITET by DK"
+
+#Set Comp Time   1000000100 9999999999  32.002 -130.001 471 0 90 BHZ
+COMPT   |ADD  |              FAKE DK BHZ     32.002 -130.001 471 0 90 1000000100 9999999999 "new fake time period"
+#Set Comp Time   1000000100 9999999999  32.002 -130.001 471 0  0 BHN
+COMPT   |ADD  |              FAKE DK BHN     32.002 -130.001 471 0  0 1000000100 9999999999 "new fake time period"
+#Set Comp Time   1000000100 9999999999  32.002 -130.001 471 90 0 BHE
+COMPT   |ADD  |              FAKE DK BHE     32.002 -130.001 471 90 0 1000000100 9999999999 "new fake time period"
+
+#Assoc Chan 1000000100 9999999999
+CHAN    |ADD  |   100000???? FAKE DK BHZ  1000000100 9999999999
+CHAN    |ADD  |   100000???? FAKE DK BHN  1000000100 9999999999
+CHAN    |ADD  |   100000???? FAKE DK BHE  1000000100 9999999999
+
+#Split Chans 1000123100
+CHANT   |SPLIT|   100000???? FAKE DK BHE  1000100100
+CHANT   |SPLIT|   100000???? FAKE DK BHE  1000100100
+CHANT   |SPLIT|   100000???? FAKE DK BHE  1000100100
+
+
+#Set Resp for ChanT   100hz 2.473e4 PZ P 1.234e4 4.321e2 Z 0.0 0.0
+RESP     ADD      100000????              100 2.473e+004 PZ FAKE Test Function P 1234.52 432.199 Z 0.0 0.0
+RESP     ADD      100000????              100 2.473e+004 100000000?
+RESP     ADD      100000????              100 2.473e+004 100000000?
+
+#Set Resp for ChanT   100hz 2.473e1 PZ P 1.234e4 4.321e2 Z 0.0 0.0
+RESP     ADD      100000????              100 2.473e+001 PZ FAKE Test Function P 1234.52 432.199 Z 0.0 0.0
+RESP     ADD      100000????              100 2.473e+001 100000000?
+RESP     ADD      100000????              100 2.473e+001 100000000?
+
+

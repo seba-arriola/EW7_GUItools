@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>Earthworm Program: pidpau overview</TITLE>
+</HEAD>
+<BODY  bgcolor="#ffffff">
+<CENTER>
+  <H1>Earthworm Modules:<BR>
+    Stopmodule Overview</H1>
+  <I>(last revised March 1, 2007)</I> 
+</CENTER>
+
+<P> The <strong>stopmodule</strong> command line utility requests that a Earthworm 
+  terminates the particular module associated with the PID (Process ID) you give 
+  stopmodule as a parameter. The module should stop itself if it's behaving properly. 
+<P>The program attaches to earthworm's shared memory region(s) and sets the flag 
+  in the header to the given value (pid). This is intended to signal that processid 
+  to terminate gracefully. 
+<P>Startstop will mark this module as &quot;Stop&quot; and statmgr should not 
+  restart it. (If startstop is quit, and restarted, and the module you stopped 
+  is still in the startstop*d, the stopped module from the previous WILL start 
+  up in the new session.) 
+<P>Warning: On Solaris there's a shell command called &quot;stop&quot;. If you 
+  accidentally type &quot;stop &lt;pid&gt;&quot; instead of &quot;stopmodule &lt;pid&gt;&quot;, 
+  Solaris won't be able to stop or restart the module in question. The solution: 
+  in a unix command prompt, &quot;kill &lt;pid&gt;&quot;, then &quot;restart &lt;pid&gt;&quot;, 
+  then finally &quot;stopmodule &lt;newpid&gt;&quot;
+<P>
+  <CENTER>
+    <b><A HREF="../modules.html">Module Index</A> | <A HREF="../cmd/stopmodule_cmd.html">Stopmodule 
+    Commands</A> </b> 
+  </CENTER>
+<B>
+<HR>
+<ADDRESS> <BR>
+<address> Questions? Issues? <a href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw" target="_blank">Subscribe to the Earthworm List (earthw). </a></address> </ADDRESS>
+</b> 
+</BODY>
+</HTML>

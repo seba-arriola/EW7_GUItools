@@ -1,0 +1,30 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.7 2001/07/01 21:55:29 davidk Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.7  2001/07/01 21:55:29  davidk
+#     Cleanup of the Earthworm Database API and the applications that utilize it.
+#     The "ewdb_api" was cleanup in preparation for Earthworm v6.0, which is
+#     supposed to contain an API that will be backwards compatible in the
+#     future.  Functions were removed, parameters were changed, syntax was
+#     rewritten, and other stuff was done to try to get the code to follow a
+#     general format, so that it would be easier to read.
+#
+#     Applications were modified to handle changed API calls and structures.
+#     They were also modified to be compiler warning free on WinNT.
+#
+#     Revision 1.9  2001/05/23 22:51:02  davidk
+#     Modified makefiles so that the latest (post Magnitude addition)
+#     version of the EWDB_API and apps now build on NT.
+#
+#
+##################################################################
+
+!include $(APPS_DIR)/src/make_defs.nt
+!include makefile.ind
+!include $(APPS_DIR)/src/make_apps_base.nt
+

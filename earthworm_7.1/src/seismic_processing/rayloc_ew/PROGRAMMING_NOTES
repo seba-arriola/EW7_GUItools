@@ -1,0 +1,15 @@
+Files rayloc_message_rw.h and rayloc_message_rw.c contain
+API for reading and writing TYPEi_RAYLOC messages.
+
+File rayloc_message_rw.h is installed in $EW_HOME/include
+File rayloc_message_rw.o is installed in $EW_HOME/lib
+
+Protocol and formats are described in the comments of 
+rayloc_message_rw.h
+
+Separate program read_rayloc_msg has been written as an
+example of the code which reads and parses 
+TYPE_RAYLOC msg.
+
+Ilya Dricker (i.dricker@isti.com)
+and ISTI team

@@ -1,0 +1,312 @@
+<hr>
+<a name=EWDB_ChanTCTFStruct></a>
+<font size=+1>EWDB_ChanTCTFStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_ChanTCTFStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure for storing the Poles/Zeroes transfer function for a channel/time range, including gain and samplerate.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idChanT</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the channel validity range(ChanT) for which the associated transform function is valid.</td>
+    </tr>
+    <tr>
+     <td>dGain</td>
+     <td>double</td>
+     <td>Scalar gain of the channel for the ChanT.</td>
+    </tr>
+    <tr>
+     <td>dSampRate</td>
+     <td>double</td>
+     <td>Digital sample rate of the waveforms exiting the channel for the ChanT.</td>
+    </tr>
+    <tr>
+     <td>tfsFunc</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a></td>
+     <td>Poles and Zeroes transform function for the channel time interval.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/library_comments.html#COOKED_INFRASTRUCTURE_API>COOKED_INFRASTRUCTURE_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_PZNum></a>
+<font size=+1>EWDB_PZNum</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_PZNum</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Describes a Pole/Zero as a complex number.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>dReal</td>
+     <td>double</td>
+     <td>Real portion of this number.</td>
+    </tr>
+    <tr>
+     <td>dImag</td>
+     <td>double</td>
+     <td>Imaginary portion of this number.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/library_comments.html#COOKED_INFRASTRUCTURE_API>COOKED_INFRASTRUCTURE_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_StationStruct></a>
+<font size=+1>EWDB_StationStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_StationStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure that provides information on seismic station components. Specifically it describes the name, location, and orientation of the sensor component for a channel. ComponentStruct would have been a better name than StationStruct since there may be multiple components at a Site/Station, and each component may have a different location/orientation.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>The Database ID of the Channel.</td>
+    </tr>
+    <tr>
+     <td>idComp</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>The Database ID of the Component.</td>
+    </tr>
+    <tr>
+     <td>Sta</td>
+     <td>char[10]</td>
+     <td>The Station code of the SCNL for the Component.</td>
+    </tr>
+    <tr>
+     <td>Comp</td>
+     <td>char[10]</td>
+     <td>The Channel/Component code of the SCNL for the Component.</td>
+    </tr>
+    <tr>
+     <td>Net</td>
+     <td>char[10]</td>
+     <td>The Network code of the SCNL for the Component.</td>
+    </tr>
+    <tr>
+     <td>Loc</td>
+     <td>char[10]</td>
+     <td>The Location code of the SCNL for the Component.</td>
+    </tr>
+    <tr>
+     <td>Lat</td>
+     <td>float</td>
+     <td>The lattitude of the Component.  Expressed in Degrees.</td>
+    </tr>
+    <tr>
+     <td>Lon</td>
+     <td>float</td>
+     <td>The longitude of the Component.  Expressed in Degrees.</td>
+    </tr>
+    <tr>
+     <td>Elev</td>
+     <td>float</td>
+     <td>The elevation of the Component above sea level. Expressed in meters.</td>
+    </tr>
+    <tr>
+     <td>Azm</td>
+     <td>float</td>
+     <td>The horizontal orientation of the Component. Expressed in degrees clockwise of North.</td>
+    </tr>
+    <tr>
+     <td>Dip</td>
+     <td>float</td>
+     <td>The vertical orientation of the Component. Expressed in degrees below horizontal.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/library_comments.html#COOKED_INFRASTRUCTURE_API>COOKED_INFRASTRUCTURE_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_TransformFunctionStruct></a>
+<font size=+1>EWDB_TransformFunctionStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_TransformFunctionStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure for describing Poles and Zeros based transform/transfer functions.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idCookedTF</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the transfer function.</td>
+    </tr>
+    <tr>
+     <td>szCookedTFDesc</td>
+     <td>char[50]</td>
+     <td>Function name or description.</td>
+    </tr>
+    <tr>
+     <td>iNumPoles</td>
+     <td>int</td>
+     <td>Number of Poles in the function.</td>
+    </tr>
+    <tr>
+     <td>iNumZeroes</td>
+     <td>int</td>
+     <td>Number of Zeroes in the function.</td>
+    </tr>
+    <tr>
+     <td>Poles</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_PZNum>EWDB_PZNum</a> [<a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/constant_comments.html#EWDB_MAX_POLES_OR_ZEROES>EWDB_MAX_POLES_OR_ZEROES</a>]</td>
+     <td>Poles of the function.</td>
+    </tr>
+    <tr>
+     <td>Zeroes</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_PZNum>EWDB_PZNum</a> [<a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/constant_comments.html#EWDB_MAX_POLES_OR_ZEROES>EWDB_MAX_POLES_OR_ZEROES</a>]</td>
+     <td>Zeroes of the function.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/library_comments.html#COOKED_INFRASTRUCTURE_API>COOKED_INFRASTRUCTURE_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

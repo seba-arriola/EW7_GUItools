@@ -1,0 +1,152 @@
+<hr>
+<a name=ewdb_api_CreateOrAlterExternalStation></a>
+<font size=+2>ewdb_api_CreateOrAlterExternalStation()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_CreateOrAlterExternalStation(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/EXTERNAL_API/C/typedef_comments.html#EWDB_External_StationStruct>EWDB_External_StationStruct</a> *</i> pStation</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates or updates a component and associated channel in the DB using an external station table and a a cheater table to go from external station to chan.  Upon successful completion it writes the DB ID of the new External Station to pStation->StationID. This function ignores the pStation->idComp parameter.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>  If station with the scnl is already in the table, its STATIONID will be set in the pStation struct, AND all non-zero, and non-empty character values will be updated. <br><br> If this is a new record, all values from the pStation struct will be stored in the table.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pStation</td>
+  <td><a href=../../.././EWDB_API_LIB/EXTERNAL_API/C/typedef_comments.html#EWDB_External_StationStruct>EWDB_External_StationStruct</a> *</td>
+  <td>Pointer to an <a href=../../.././EWDB_API_LIB/EXTERNAL_API/C/typedef_comments.html#EWDB_External_StationStruct>EWDB_External_StationStruct</a> filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/EXTERNAL_API/library_comments.html#EXTERNAL_API>EXTERNAL_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetIdChanFromStationExternal></a>
+<font size=+2>ewdb_api_GetIdChanFromStationExternal()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetIdChanFromStationExternal(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidChan</NOBR>, <NOBR><i>int</i> IN_StationID</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Given the DB StationID of the external station(component), the function will return find and return the idChan for it.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function uses a "cheater table" mechanism to convert from a StationID to an idChan.  This "cheater table" has theoretically been setup beforehand by the DB operator, to map the names on the data channels coming in, to idChans.  This is a task that must be done by the operator, because it usually requires a priori knowledge about what names refer to what channels(since more than one channel may have the same name).</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidChan</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the idChan for this external station.</td>
+ </tr>
+ <tr>
+  <td>IN_StationID</td>
+  <td>int</td>
+  <td>Database StationID of the external station.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/EXTERNAL_API/library_comments.html#EXTERNAL_API>EXTERNAL_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

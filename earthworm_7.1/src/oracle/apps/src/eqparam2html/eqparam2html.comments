@@ -1,0 +1,35 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY eqparam2html
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+LINK_NAME Sample Config File
+LINK eqparam2html.d.txt
+
+LINK_NAME Programmer Notes
+LINK programmer_notes.txt
+
+DESCRIPTION <b>eqparam2html</b> generates a web-page
+with parametric information about an Event as well
+as a map depicting the location of the event and
+surrounding stations.  It also provides links to 
+other programs that allow the user to view record
+sections(waveform snippets), and station information.
+<br><br> 
+Initial version by DavidK 04/20/1999 
+<br><br> 
+Last touched by DavidK 2001/07/01 
+
+
+*************************************************
+************************************************/
+

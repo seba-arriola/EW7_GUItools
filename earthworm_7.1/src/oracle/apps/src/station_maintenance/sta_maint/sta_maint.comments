@@ -1,0 +1,30 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY sta_maint
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK ../station_maintenance/station_maintenance.html#sta_maint
+
+DESCRIPTION <b>sta_maint</b> is one of a collection of tools developed
+to manage station metadata in an Earthworm database.  <b>sta_maint</b>
+modifies station metadata in an Earthworm database based upon commands
+read from a flat file.  The flat file is generally written by <b>sta_display</b>
+and then modified by a user, to affect the desired changes.
+Please see the details page for more information.
+<br><br>
+Initial blame to DavidK 2003/12/12
+<br><br>
+Last touched by  DavidK 2003/12/12
+
+
+*************************************************
+************************************************/
+
+

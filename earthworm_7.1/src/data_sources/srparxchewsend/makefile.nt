@@ -1,0 +1,77 @@
+# FILE: makefile.nt                 Copyright (c), Symmetric Research, 2004-2007
+#
+#           Nmake file for SrParxchEwSend  - Windows 2K/XP version
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+# Insist that Earthworm environment is set
+
+!if "$(EW_HOME)" == ""
+!message Please run ew_nt.cmd to set the Earthworm environment before continuing.
+!error EW_HOME not defined
+!endif
+
+
+
+
+# The following lines set the location of the SR PARxCH and PARGPS 
+# library functions needed to compile SrParxchEwSend.  Un-comment the
+# first line below when compiling from the earthworm directory tree
+# and the second when compiling from the SR directory tree.
+
+SR_HOME=$(EW_HOME)\$(EW_VERSION)\src\data_sources\srparxchewsend
+#SR_HOME=\sr
+
+PARXCH=$(SR_HOME)\parxch
+PARGPS=$(SR_HOME)\pargps
+
+PARXCHINC = $(PARXCH)\include
+PARGPSINC = $(PARGPS)\include
+PARXCHLIB = $(PARXCH)\lib\parxch.c
+PARGPSLIB = $(PARGPS)\lib\pargps.c
+
+VSDEF = /D_CRT_SECURE_NO_DEPRECATE /D_USE_32BIT_TIME_T
+PDEF  = $(VSDEF) /DSROS_WIN2K /DSRA2D_PARANY /DGPS_AVAILABLE
+
+APP = srparxchewsend
+O = $(APP).obj parxch.obj pargps.obj
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+EW_LIBS = $L\getutil.obj  \
+          $L\kom.obj      \
+          $L\logit.obj    \
+          $L\sleep_ew.obj \
+          $L\time_ew.obj  \
+          $L\transport.obj 
+
+EW_FLAGS = /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags)
+EW_LFLAGS = /NODEFAULTLIB /INCREMENTAL:NO /NOLOGO
+
+
+$B\$(APP).exe: $O
+   $(link) $(conlflags) $(conlibsmt) $(EW_LIBS) $O \
+   -out:$B\$(APP).exe
+
+$(APP).obj: $(APP).c
+   $(cc)  $(GLOBALFLAGS) /c $(EW_FLAGS) $(PDEF) /I$(PARXCHINC) /I$(PARGPSINC) $(APP).c
+
+parxch.obj: $(PARXCHLIB)
+   $(cc)  $(GLOBALFLAGS) /c $(EW_FLAGS) $(PDEF) /I$(PARXCHINC) /I$(PARGPSINC) $(PARXCHLIB)
+
+pargps.obj: $(PARGPSLIB)
+   $(cc)  $(GLOBALFLAGS) /c $(EW_FLAGS) $(PDEF) /I$(PARGPSINC) $(PARGPSLIB)
+
+.c.obj:
+   $(cc)  $(GLOBALFLAGS) $(EW_FLAGS) $<
+
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\$(APP)*

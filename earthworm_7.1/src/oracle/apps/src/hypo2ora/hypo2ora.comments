@@ -1,0 +1,31 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY hypo2ora
+
+LOCATION THIS_FILE
+
+#LINK_NAME Details
+#LINK details.html
+
+LINK_NAME Sample Config File
+LINK hypo2ora.d.txt
+
+LINK_NAME Programmer Notes
+LINK programmer_notes.txt
+
+DESCRIPTION <b>hypo2ora</b> reads an ARC(Hypoinverse Archive message) file and 
+writes the event info to the EW DBMS.
+<br>
+Usage: hypo2ora <b>"config file"</b> <b>"ARC file name"</b>
+<br><br>
+Initial version  unclaimed
+<br><br>
+
+*************************************************
+************************************************/
+

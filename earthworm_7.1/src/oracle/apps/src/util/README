@@ -1,0 +1,5 @@
+sql_to_c.c is a small program for generating a template api call
+from a sql procedure prototype.  It probably should be placed 
+somewhere under the schema subtree.
+
+DK 03/17/2004.

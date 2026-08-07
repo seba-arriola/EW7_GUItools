@@ -1,0 +1,350 @@
+<hr>
+<a name=ewdb_internal_GetChanCTFForChannel></a>
+<font size=+2>ewdb_internal_GetChanCTFForChannel()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetChanCTFForChannel(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_ChanTCTFStruct>EWDB_ChanTCTFStruct</a> *</i> pChanCTF</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/infra/ewdb_internal_GetChanCTFForChannel.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the gain, sample rate, and ID of the poles and zeroes based transform function, for a given channel time interval identified by pChanCTF->idChanT.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/function_comments.html#ewdb_api_GetTransformFunctionForChan>ewdb_api_GetTransformFunctionForChan</a>() should generally be called instead of this function.  It provides the whole suite of transfer function information, including the transfer function.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pChanCTF</td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_ChanTCTFStruct>EWDB_ChanTCTFStruct</a> *</td>
+  <td>Pointer to a caller allocated <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_ChanTCTFStruct>EWDB_ChanTCTFStruct</a>. The function will read the idChanT(channel time interval identifier) from the struct, and then write the gain(dGain), sample rate(dSampRate), and cooked transform function identifier(idCookedTF) associated with the given idChanT back to the structure.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE-INTERNAL/library_comments.html#COOKED_INFRASTRUCTURE-INTERNAL>COOKED_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetTransformFunction></a>
+<font size=+2>ewdb_internal_GetTransformFunction()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetTransformFunction(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idCookedTF</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> *</i> pCookedTF</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/infra/ewdb_internal_GetTransformFunction.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the poles/zeroes based transform function identified by idCookedTF from the DB.  The transform Function is used to transform recorded waveforms back into ground motion.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>Call <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/function_comments.html#ewdb_api_GetTransformFunctionForChan>ewdb_api_GetTransformFunctionForChan</a>() to retrieve the transform function for a given channel along with gain and sample rate.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idCookedTF</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the cooked transform function that the caller wants to retrieve.</td>
+ </tr>
+ <tr>
+  <td>pCookedTF</td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> *</td>
+  <td>Pointer to a caller allocated <a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> where the function will write the cooked transform function requested by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE-INTERNAL/library_comments.html#COOKED_INFRASTRUCTURE-INTERNAL>COOKED_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetTransformFunctionDesc></a>
+<font size=+2>ewdb_internal_GetTransformFunctionDesc()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetTransformFunctionDesc(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idCookedTF</NOBR>, <NOBR><i>char *</i> szCookedTFDesc</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/infra/ewdb_internal_GetTransformFunctionDesc.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Retrieves the description for a Transform function from the DB, using the CookedTF record identifier (idCookedTF).</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idCookedTF</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>Database ID for the cooked infrastructure record.</td>
+ </tr>
+ <tr>
+  <td>szCookedTFDesc</td>
+  <td>char *</td>
+  <td>Output description for this record.  This field should point to a buffer (allocated by the caller) of atleast sizeof(<a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a>.szCookedTFDesc) bytes.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE-INTERNAL/library_comments.html#COOKED_INFRASTRUCTURE-INTERNAL>COOKED_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_SetChanParams></a>
+<font size=+2>ewdb_internal_SetChanParams()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_SetChanParams(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idChan</NOBR>, <NOBR><i>double</i> tOn</NOBR>, <NOBR><i>double</i> tOff</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idCompT</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idDeviceSlot</NOBR>, <NOBR><i>int</i> iPlexor</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</i> pidChanT</NOBR>, <NOBR><i>char *</i> szComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/oracle/schema-working/src/infra/ewdb_internal_SetChanParams.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function sets the variable parameters of a channel for a given time interval.  Variable parameters include the starting device in the channel in the waveforms to ground motion direction, and the component that the channel is associated with.  The function will write the DB ID of the newly created/updated channel time interval record to pidChanT.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>idDeviceSlot/iPlexor are currently ignored due to a lack of infrastructure schema.  Please set the values to 0. <br><br> The time interval (tOn-tOff) must be a subset of the time validity range of idCompT.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the channel the caller wants to set parameters for.</td>
+ </tr>
+ <tr>
+  <td>tOn</td>
+  <td>double</td>
+  <td>The start of the time interval for which the caller wants the channel parameters to be valid.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>tOff</td>
+  <td>double</td>
+  <td>The end of the time interval for which the caller wants the channel parameters to be valid.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>idCompT</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the component time interval that the caller wants to associate with the channel.</td>
+ </tr>
+ <tr>
+  <td>idDeviceSlot</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the first device slot in the channel(in order of finished waveforms -> ground motion).</td>
+ </tr>
+ <tr>
+  <td>iPlexor</td>
+  <td>int</td>
+  <td>The connection pin on the first device slot in the channel, that corresponds to this channel.  (More than one channel can come from the same device/device slot.  See raw infrastructure documentation if available).</td>
+ </tr>
+ <tr>
+  <td>pidChanT</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to an <a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a> where the function will write the DB ID of the updated or newly created channel tme interval(ChanT).</td>
+ </tr>
+ <tr>
+  <td>szComment</td>
+  <td>char *</td>
+  <td>Optional comment regarding the channel time interval(ChanT).  It may be blank, and should be a maximum of 4k characters. It may not be NULL!</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE-INTERNAL/library_comments.html#COOKED_INFRASTRUCTURE-INTERNAL>COOKED_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

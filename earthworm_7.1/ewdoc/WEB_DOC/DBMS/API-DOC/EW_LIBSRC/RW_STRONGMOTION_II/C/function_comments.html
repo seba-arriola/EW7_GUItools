@@ -1,0 +1,230 @@
+<hr>
+<a name=log_strongmotionII></a>
+<font size=+2>log_strongmotionII()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>void log_strongmotionII(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> *</i> sm</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/libsrc/util/rw_strongmotionII.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Writes the contents of a <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> structure to an Earthworm log file.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>void</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>sm</td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> *</td>
+  <td> Pointer to an <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> struct whose contents the function will log to a file.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/library_comments.html#EW_LIBSRC>EW_LIBSRC</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/library_comments.html#RW_STRONGMOTION_II>RW_STRONGMOTION_II</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./include/rw_strongmotionII.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=rd_strongmotionII></a>
+<font size=+2>rd_strongmotionII()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int rd_strongmotionII(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> msg</NOBR>, <NOBR><i>int</i> msglen</NOBR>, <NOBR><i><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> *</i> sm</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/libsrc/util/rw_strongmotionII.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function reads an ascii TYPE_STRONGMOTION2 message and fills in a <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> structure.  It returns 0 on success, -1 on failure.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td> Example of a TYPE_STRONGMOTION2 message. <br><br><font size=-1 face=monospace> SCNL: CMB.BHZ.BK.                                   <br> TIME: 2001/02/25 02:37:00.000                       <br> ALT:  2001/02/25 02:40:40.000 CODE: 1               <br> PGA: 6.846210 TPGA: 2001/02/25 02:37:00.000         <br> PGV: 0.140000 TPGV: 2001/02/25 02:37:00.000         <br> PGD: 0.000000 TPGD: 2001/02/25 02:37:00.000         <br> RSA: 3/0.30 4.415404/1.00 0.925639/3.00 0.297907    <br> QID: 41059467 014024003:UCB                         <br> </b></font></td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Failure.  See logfile for details.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>msg</td>
+  <td>char *</td>
+  <td> The strong motion message.  The first line of the message should be the SCNL line.</td>
+ </tr>
+ <tr>
+  <td>msglen</td>
+  <td>int</td>
+  <td> The length of the msg in bytes.</td>
+ </tr>
+ <tr>
+  <td>sm</td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> *</td>
+  <td> A pointer to an <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> struct allocated by the caller, where the function will result the <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> struct derived from the message.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/library_comments.html#EW_LIBSRC>EW_LIBSRC</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/library_comments.html#RW_STRONGMOTION_II>RW_STRONGMOTION_II</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./include/rw_strongmotionII.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=wr_strongmotionII></a>
+<font size=+2>wr_strongmotionII()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int wr_strongmotionII(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> *</i> sm</NOBR>, <NOBR><i>char *</i> buf</NOBR>, <NOBR><i>int</i> buflen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>src/libsrc/util/rw_strongmotionII.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Reads a <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> structure and writes an ascii TYPE_STRONGMOTION2 message (null terminated). It returns 0 on success, and -1 on failure.  See rd_strongmotion for an example of a TYPE_STRONGMOTION2 message.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Failure.  This is caused by a buffer overflow, where the caller's buffer was too small to hold the entire message generated by the function.  If the caller believes their buffer should be adequately large, then one or more of the strings in the <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> struct may not be properly terminated.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>sm</td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> *</td>
+  <td> Pointer to an <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a> struct that the function will read to get the information for the TYPE_STRONGMOTION2 message.</td>
+ </tr>
+ <tr>
+  <td>buf</td>
+  <td>char *</td>
+  <td> Pointer to a buffer allocated by the caller where the function will write the TYPE_STRONGMOTION2 message.</td>
+ </tr>
+ <tr>
+  <td>buflen</td>
+  <td>int</td>
+  <td> The length of the caller's buffer(buf) in bytes.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/library_comments.html#EW_LIBSRC>EW_LIBSRC</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/library_comments.html#RW_STRONGMOTION_II>RW_STRONGMOTION_II</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./include/rw_strongmotionII.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

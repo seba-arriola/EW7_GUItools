@@ -1,0 +1,35 @@
+<!-- details.html  db_cleanup2 details page -->
+
+<html>
+<title>EWDB Applications: db_cleanup2: details</title>
+<b><font size=+2>DB_CLEANUP2: </font><font size=+1>Details</font></b>
+<br><br>
+<b>db_cleanup2</b> determines what data to archive/delete when, by 
+applying rules setup in the config file.  There are two sets of rules:
+Event Rules, and Unassociated Data(Other Data) rules.  Each rule can be
+broken into two parts:  criteria and action.  The criteria specifies which
+data in the EWDB is subject to the rule's action, and the action specifies 
+what is done to the data that satisfies the rule's criteria.
+<br>
+There may be zero or more Event rules.  The rule's are run in succession
+against the Events in the database, so if both Rule1 and Rule2 would apply
+to a given Event, and Rule1 deletes the Event, then Rule2 will never be processed
+against the Event.  (Make sure you have the rules in the right order).  Criteria
+for Event Rules may be a combination of Preferred Origin time, Magnitude, 
+Location(Lat/Lon), and the dubiousness of the Event(dubiocity).
+Action for Event Rules can be a combination of Save/Delete parametric, waveform,
+and other data.
+<br>
+There may be zero or one Unassociated Data rules.  The rule's criteria specifies the
+maximum number of days that non-summary data is allowed to exist in the EWDB.  Data
+older than X days will be deleted.  Delete is currently the only action supported for
+Unassociated Data Rules.
+<br><br>
+<b>Archive Formats</b><br>
+All saved data is written into SAC Directories.  Other formats could be supported
+by replacing the existing archive_event.c module with one that wrote to another format.
+<br><br>
+<b>Saved Data</b><br>
+Currently parametric data is not saved for a channel unless there is also waveform
+data for that channel.
+<br><br>

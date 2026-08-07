@@ -1,0 +1,36 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY reaper
+
+LOCATION THIS_FILE
+
+LINK_NAME Sample Config File
+LINK reaper.d.txt
+
+DESCRIPTION <b>reaper</b> is a catch-all, database cleanup program.
+It deletes all parametric, waveform, and strong motion data from
+the database that is more than X days old, where X is the value set
+for <DaysTillReckoning> in the config file. <br><br>  
+<b>(Nothing survives the reaper!)</b>.  It deletes data based
+on both Origin time of events and also timestamps for unassociated
+data.  The functionality of the <b>reaper</b> is a subset of db_cleanup2.
+It does not do archiving, and it deletes all data older than a given number
+of days.  <br><br>
+This program is meant to be run out of cron(or some other 
+periodic invocation method). Its function is to keep the 
+amount of data in the database manageable, by deleting the
+oldest data.  This is done so that the database
+doesn't fill-up or incur problems because of data build-up over time.
+<br><br> 
+Adapted from <b>db_cleanup</b>.
+Initial version by DavidK 2001/07/14
+
+
+*************************************************
+************************************************/
+

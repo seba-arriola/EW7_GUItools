@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>Earthworm Modules: PsnAdSend Overview</TITLE>
+<BODY TEXT="#000000" BGCOLOR="#FADFAF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+<CENTER><H1>Earthworm Modules: <BR> PsnAdSend for Earthworm 7.0 Overview</H1>
+<i>Created July 10 2006 by Larry Cochrane</i></CENTER>
+
+<P>PsnAdSend is another digitizing program similar to ADsend for Earthworm. This module runs under Windows
+2000 or XP and produces demultiplexed data to one of the transport data
+rings. This program was designed to work with the Webtronics 16-Bit 8-Channel <a href="http://www.seismicnet.com/serialatod.html">PSN-ADC-SERIAL</a>
+RS-232 serial output Analog to Digital board. This ADC board can record 1 to 8 channels
+at up to 200 SPS each. To use this board you will need one free RS-232 Comm
+port. If the system only has USB ports, a USB to RS-232 converter can be used
+between the computer and the ADC board.&nbsp;
+
+<P>This module was built using Microsoft Visual C++ 6.0. The program (PsnAdSend.exe)
+has been tested using Earthworm version 7.0 The PsnAdSend program uses
+the PSNADBoard.dll to interface between the program and the ADC board. See this <a href="http://www.seismicnet.com/PSNADBoardDLL.html">page</a>
+for more information on the DLL.
+<h3>
+Data Time Stamping:</h3>
+<P>The PSN-ADC-SERIAL board and the PSNADBoard.dll can use various methods to
+time stamp the data. The most accurate timing (&lt; 4 milliseconds) can be achieved
+using a GPS receiver connected to the ADC board. Currently the board supports the
+Garmin GPS 16, <a href="http://www.seismicnet.com/gps/gps18.html">Garmin GPS 18</a> Sensors or the Motorola ONCORE receiver series.&nbsp; WWV,
+with the optional WWV circuitry on the ADC board, can also be used here in the
+United States. This option requires a Short-wave receiver tuned to one of the
+WWV transmitter stations at 2.5, 5, 10 or 15 Mhz.&nbsp; Using this method as a
+time reference, the user can achieve an accuracy of 20 to 30 milliseconds. The
+computer's time can also be used to time stamp the data. If the system is
+running a program like the NT port of NTP, the user can expect an overall
+accuracy of around +-50 milliseconds.<P>See the link below for a list of
+commands used to control the PsnAdSend module.
+<p><CENTER><a HREF="../cmd/PsnAdSend_cmd.html">PsnAdsend Commands</A></CENTER>
+</BODY>
+</HTML>

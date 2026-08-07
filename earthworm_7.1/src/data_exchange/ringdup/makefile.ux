@@ -1,0 +1,46 @@
+
+#
+#    $Id: makefile.ux,v 1.3 2007/03/28 16:51:38 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.3  2007/03/28 16:51:38  paulf
+#     removed malloc.h and tweeked make for MACOSX
+#
+#     Revision 1.2  2005/07/27 19:04:36  friberg
+#     fixed up makefile.ux to be SNCL compat
+#
+#
+#
+
+LIBS = -mt -lpthread -lm
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+E = ../export
+
+BINARIES = ringdup.o $L/mem_circ_queue.o $L/kom.o \
+	$L/getsysname_ew.o $L/getutil.o $L/logit_mt.o $L/transport.o \
+	$L/sleep_ew.o $L/time_ew.o $L/threads_ew.o $L/sema_ew.o $L/swap.o         
+
+all:
+	make -f makefile.ux ringdup_generic
+	make -f makefile.ux ringdup_scn
+
+ringdup_generic: $(BINARIES) $E/genericfilter.o
+	cc -o $B/ringdup_generic $(BINARIES) $E/genericfilter.o $(LIBS)
+
+ringdup_scn: $(BINARIES) $E/scnfilter.o
+	cc -o $B/ringdup_scn $(BINARIES) $L/chron3.o $L/rdpickcoda.o $E/scnfilter.o $(LIBS)
+
+
+lint:
+	lint ringdup.c genericfilter.c scnfilter.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/ringdup_generic* $B/ringdup_scn*

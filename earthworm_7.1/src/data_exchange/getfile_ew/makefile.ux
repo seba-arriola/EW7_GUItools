@@ -1,0 +1,43 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.2 2007/03/28 17:03:11 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/28 17:03:11  paulf
+#     cleaned up OS dependencies relateing to MACOSX
+#
+#     Revision 1.1  2005/07/27 18:44:43  friberg
+#     added in Unix makefile
+#
+#
+#
+
+CFLAGS = ${GLOBALFLAGS}
+
+#LIBS = -lm -lnsl -lpthread -lc
+LIBS = -lm -lpthread -lc
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+getfile_ew: getfile_ew.o getfile_socket.o 
+	cc -o $B/getfile_ew getfile_ew.o getfile_socket.o \
+	$L/getutil.o $L/kom.o $L/dirops_ew.o $L/transport.o \
+	$L/sleep_ew.o $L/logit.o  $L/time_ew.o $L/threads_ew.o \
+	$L/socket_ew.o $L/socket_ew_common.o \
+	$(LIBS)
+
+
+lint:
+	lint getfile_ew.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/getfile_ew*

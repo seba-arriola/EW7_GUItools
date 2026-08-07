@@ -1,0 +1,19 @@
+
+
+nt_libs:
+	@echo "Making  platform independent libraries"
+	nt_comp util
+	@echo "Making  winnt libraries"
+	nt_comp winnt
+	@echo "Making lib330"
+	nt_comp lib330
+
+clean_nt:
+	@echo "Removing EW library objects"
+  -del ..\..\lib\*.obj
+	@echo "Cleaning  platform independent libraries"
+	nt_clean util
+	@echo "Cleaning  winnt libraries"
+	nt_clean winnt
+	@echo "Cleaning lib330"
+	nt_clean lib330

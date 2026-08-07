@@ -1,0 +1,125 @@
+<hr>
+<a name=EWDB_SnippetRequestStruct></a>
+<font size=+1>EWDB_SnippetRequestStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_SnippetRequestStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure for storing parameters for a waveform request. This structure is used to store (in the database) a request for waveform data.  Requests are presumably later gathered by a concierge type program that recovers as many desired waveforms as possible.  This structure describes a time interval of interest for which it is interested in data from a particular channel.  It defines the channel whose data it is interested in, the time interval for which it wants data, how many attempts should be made to retrieve the data, how often each attempt should be made, and what DB idEvent if any that the data should be associated with when retrieved.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idSnipReq</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the waveform request(SnipReq) that this structure's data is associated with.</td>
+    </tr>
+    <tr>
+     <td>idChan</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the sesimic data channel for which the request wants data.</td>
+    </tr>
+    <tr>
+     <td>tStart</td>
+     <td>double</td>
+     <td>Starting time of the desired time interval.</td>
+    </tr>
+    <tr>
+     <td>tEnd</td>
+     <td>double</td>
+     <td>Ending time of the desired time interval.</td>
+    </tr>
+    <tr>
+     <td>idEvent</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of the Event with which the desired data should be associated.</td>
+    </tr>
+    <tr>
+     <td>iNumAttempts</td>
+     <td>int</td>
+     <td>Number of attempts that should be made to retrieve the desired data.</td>
+    </tr>
+    <tr>
+     <td>tNextAttempt</td>
+     <td>time_t</td>
+     <td>This field has a dual purpose.  When retrieving a list of Snippet Requests from the DB, this field will contain the time that the current snippet request is scheduled for a retrieval attempt.  When used in the reverse manner (updating a snippet request), the "data retriever"/scheduler should put the "time till next attempt" in this field, meaning the time that the scheduler wants the request to be attempted minus the current time.  (The deltaT).   The number is done as a delta to ensure that updated requests are not scheduled for the past.</td>
+    </tr>
+    <tr>
+     <td>idExistingWaveform</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB ID of a Waveform in the DB that contains partial data for the original request.</td>
+    </tr>
+    <tr>
+     <td>tInitialRequest</td>
+     <td>time_t</td>
+     <td>Time of the initial snippet request.  That is the time that it is created in the DB.  Seconds since 1970.</td>
+    </tr>
+    <tr>
+     <td>iRequestGroup</td>
+     <td>int</td>
+     <td>Request Group of the snippet request.  Requests can be placed in a Request Group so that different requests can be handled differently, or can be handled by separate data retrievers(like ora_trace_fetch).</td>
+    </tr>
+    <tr>
+     <td>iNumAlreadyAtmptd</td>
+     <td>int</td>
+     <td>Number of times that a data retriever has already attempted to retrieve the subject of the request.  It is up to the retriever to update this number.  This number field is used for informational purposes.  It is up to the data retriever to delete the snippet request when it feels it has been attempted enough times.  Theoretically, a request could be attempted 100 times, even if iNumAttempts was only set to 5, since it is up to the retriever to delete the request.</td>
+    </tr>
+    <tr>
+     <td>iRetCode</td>
+     <td>int</td>
+     <td>This is the return code that the retriever gives to the request after it attempts to process it.  There are currently no generally agreed upon return codes.</td>
+    </tr>
+    <tr>
+     <td>iLockTime</td>
+     <td>int</td>
+     <td>The Lock value associated with the snippet request. In order to provide a mechanism for concurrent data retrievers, snippet requests must be locked before being processed.  iLockTime is the key to the Lock for the snippet request.  After the request has been processed, the key must be used to access the locked snippet request, so that the request can be updated.</td>
+    </tr>
+    <tr>
+     <td>szNote</td>
+     <td>char[100]</td>
+     <td>This is a note that the retriever may include with the snippet request.  It is free to put whatever it likes in this field, such as its name, strategy params, a log, etc.</td>
+    </tr>
+    <tr>
+     <td>ComponentInfo</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+     <td>Station/Component information for the channel associated with this snippet request.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

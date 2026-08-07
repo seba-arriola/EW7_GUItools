@@ -1,0 +1,43 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: make_lib_base.nt,v 1.4 2004/03/17 20:33:06 davidk Exp $
+#
+#    Revision history:
+#     $Log: make_lib_base.nt,v $
+#     Revision 1.4  2004/03/17 20:33:06  davidk
+#     old change.
+#     removed -c $(CFLAGS) from the .c compile statement.  It was redundant.
+#
+#     Revision 1.3  2001/08/03 21:25:28  lucky
+#     Changed cflags to CFLAGS -- can't compile otherwise
+#
+#     Revision 1.2  2001/05/25 21:49:29  lucky
+#     CFLAGS must be in lowercase
+#
+#     Revision 1.1  2001/05/23 22:51:11  davidk
+#     Initial revision
+#
+#
+##################################################################
+
+
+
+######################################
+# Define common behaviors needed for
+# all schema makefiles.
+######################################
+.c.$(OBJ):
+	$(CC) $(cflags) $(INCLUDE_FLAGS) $<
+
+clean:
+	$(DELETE_FORCE) *.$(OBJ)
+
+sql_scripts:
+	@echo Making in sql_scripts
+	cd sql_scripts
+	nmake -f makefile.nt
+  cd ..
+
+

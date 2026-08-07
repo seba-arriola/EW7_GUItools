@@ -1,0 +1,15 @@
+
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+# Clean-up rules
+clean:
+	cd STEIM123 
+	-del a.out core *.o *.obj *% *~
+	cd ..\sunrcv 
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\rcv* $B\station*

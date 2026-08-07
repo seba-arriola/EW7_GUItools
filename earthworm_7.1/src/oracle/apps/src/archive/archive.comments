@@ -1,0 +1,38 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY archive
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+LINK_NAME Sample Config File
+LINK archive.d.txt
+
+#LINK_NAME Programmer Notes
+#LINK programmer_notes.txt
+
+DESCRIPTION <b>archive</b> saves the contents of one or more DB Events to 
+SAC directory(s).  <b>archive</b> then deletes the data for each Event 
+from the DB.  
+<br><br>
+Events are selected by specifying a range of DB idEvents as a set of command 
+line parameters to the program.
+<br><br>
+By using command line parameters, the user can also tweak the actions of <b>archive</b>,
+so that it does not save data to a SAC directory, or so it does not delete any
+or part of the Event data from the DB.
+<br>
+
+Initial version: lucky 02/15/00
+
+
+*************************************************
+************************************************/
+

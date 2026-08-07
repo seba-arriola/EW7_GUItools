@@ -1,0 +1,384 @@
+EARTHWORM5 QUICK REVIEW
+
+Document Version 1.0 (2000/09/15)
+
+
+1.	OBJECTIVE
+
+The objective of the Earthworm5 Quick Review (EQR) is to provide Earthworm with a remote, 
+rapid event review capability. Its intended use is permit a duty seismologist to rapidly respond to 
+a significant event. It was not designed to serve as a routine analysis facility, as there are 
+substantial ongoing efforts to provide such capabilities. 
+Its features include:
+	* Requires only browser access to the Internet.
+	* Interacts with events via the Earthworm DBMS.
+	* Viewing and editing of automatic event parameters.
+	* Graphic re-picking.
+	* Event relocation and re-insertion into DBMS.
+	* Supports both low- and high-bandwidth connections.
+	* Supports interlocks for concurrent reviewers.
+
+
+2.	SYSTEM OVERVIEW
+
+The EQR system works by allowing the analyst to retrieve an event from the DBMS, modify its 
+parameters, relocate the event, and subsequently decide whether to reinsert the new solution or to 
+delete the event from the DBMS.
+
+The basic editing mechanism is the Hypoinverse Archive File (Arc) format. Retrieved events are 
+written in Arc format on the WWW server's local disk. The reviewer can then manually edit that 
+file (e.g., with vi or textedit), or use the suite of web-based review tools which allow the user to 
+graphically modify the event, while at the same time updating the underlying Arc file. 
+
+The Text-based and Web-based review methods (described in detail below) are based on the 
+same suite of library routines. This enables the programmer to efficiently modify the review 
+system, as change to a single routine affects both review methods.
+
+
+3.	TEXT-BASED REVIEW
+
+3.1. CONFIGURATION AND DIRECTORY STRUCTURE
+
+Text-based EQR needs a single configuration file with the following parameters:
+
+
+
+
+# configuration file for text based event review
+
+
+#
+# Database connection parameters
+#
+#
+DBuser     p3_main
+DBpassword main
+DBservice  eqsg.usgs
+
+#
+# Logfiledir - where log files are written
+#
+Logfiledir ./log/
+
+#
+# Debug (OPTIONAL)
+#
+Debug    1
+
+#
+# ArcFileName: Full path to the name of the Hypoinverse ARC file
+#   in which the event info is written
+#
+ArcFileName   /tmp/ArcFile
+
+
+Besides the typical Earthworm% directory structure, no further special directories are needed, 
+except for the directory where the ArcFileName file is located. Note that the directory where the 
+Arc file will be written must exist and must be writeable to the user operating EQR.
+
+3.2. COMMANDS
+
+The following programs make up the text-based EQR. The source code is located in:
+
+$EW_HOME/$EW_VERSION/src/oracle/apps/src/review/text
+
+The default location for compiled binaries is: 
+
+$EW_HOME/$EW_VERSION/bin
+
+
+
+3.2.1.	DB2FILE
+
+db2file retrieves an event from the database and writes it to the local disk in the hypoinverse 
+archive format in the file specified by the ArcFileName parameter.
+
+Usage:    
+db2file configuration_file event_id
+
+3.2.2.	DELETE_EVENT
+
+delete_event deletes the event from the database.
+
+Usage:
+delete_event configuration_file event_id
+
+3.2.3.	FILE2DB
+
+file2db inserts the information about the event described by the hypoinverse archive file arc_file 
+into the database. Note that the event_id of the event to be inserted should be in the Arc file.
+
+
+Usage:    
+file2db configuration_file arc_file
+
+
+3.3. TYPICAL REVIEW SEQUENCE
+
+To review the event with event_id 1001, using the parameters in the configuration file 
+text_review.d above:
+
+# db2file text_review.d 1001       (retrieve event information)
+# vi /tmp/ArcFile                  (edit the pick parameters)
+# hyp2000                          (run hypoinverse to relocate the event)
+# ls hypo.arc                      (output Arc file from hypoinverse)
+# file2db text_review.d hypo.arc   (insert event info into DBMS)
+
+
+
+
+
+
+4.	WEB-BASED REVIEW
+
+4.1. PROGRAMS
+
+The following programs make up the web-based EQR. The source code is located in:
+
+$EW_HOME/$EW_VERSION/src/oracle/apps/src/review/web
+
+The default location for compiled binaries is: 
+
+$EW_HOME/web/bin
+
+The configuration files must be located in: 
+
+$EW_HOME/web/params
+
+4.1.1.	GETLIST_REVIEW
+
+Uses configuration file named getlist_review.d identical to the one used by getlist in the original 
+DBMS web pages.
+
+Similar in function to getlist in the original DBMS web pages, this program produces HTML to 
+display a list of events in the database which fit specified criteria such as location, depth, 
+magnitude, and event time limits. 
+
+To accommodate a wide range of bandwidth requirements, the default start page is produced 
+without a map of the default region. The user is allowed to click on the link at the top of the page 
+which causes the ShowMap Web option to be set before re-invoking getlist_review. In this 
+mode, a clickable map of the default region is shown, allowing the user to select an event for 
+review either by clicking on the event on the map, or by clicking on the link of the EventID in 
+the list of events.
+
+Either mode of selecting an event for review invokes eqreview.
+
+4.1.2.	EQREVIEW
+
+Very similar to eqparam2html in the original DBMS web pages, it uses configuration file named 
+eqreview.d of the following format:
+
+
+#
+#  Configuration file for eqreview
+#
+
+#
+# Database connection parameters
+#
+DBservice       eqsg.usgs
+DBuser          p3_main
+DBpassword      main
+
+Debug
+Logfiledir      ../log/
+
+#
+# hostname of the machine holding up web pages
+#
+WebHost		gldzappa.cr.usgs.gov
+
+
+#
+# Directory where temporary review files are written. This is 
+# where Arc files, as well as SAC files for each arrival are
+# temporarily stored
+#
+# NOTE: this directory must be under the web's earthworm directory
+#  because this is where the review applet needs to find the 
+#  SAC files
+#
+ReviewDir           /home/earthworm/web/html/review
+
+#
+# WebDir: Web mapping of ReviewDir
+#
+WebDir				/earthworm/review
+
+#
+# Full path to the hypoinverse program
+#
+PathToHypoBin		/home/earthworm/working/bin/hyp2000
+
+
+#
+# Full path to the hypoinverse directory
+#
+HypoinverseDir		/home/earthworm/web/params/hypoinverse
+
+#
+# Name of the hypoinverse configuration file
+#
+HypoConfig		ncal2000.hyp
+
+
+#
+# Name of the file containing Lomax javascript. 
+# NOTE: It must exist under ReviewDir/lomax
+#
+#
+JavascriptFile		lomax_new.js
+
+#
+# Output format (platform): sparc or intel
+#
+SacFormat		sparc
+
+
+eqreview, when first invoked from getlist_review, runs in the GetFromDB mode where creates a 
+review directory for this event under the directory specified by the parameter ReviewDir/tmp. 
+The event's review directory is named after the event's database EventID.
+ 
+Into the newly created event review directory, eqreview retrieves the information about the event 
+from the database and writes it as a hypoinverse archive file named. Also, for every available 
+trace snippet, a SAC file is written into the same directory.
+
+Then, eqreview produces HTML to display the parameters of the event, such as location and 
+magnitude, as well as detailed parameters for each pick. The resulting page allows the user to:  
+-	modify the event's magnitude, 
+-	delete each pick,
+-	modify the time of each pick, and
+-	modify the weight of each pick.
+
+
+For each available trace snippet, the user is able to invoke the SeisGram2K applet (written by 
+Anthony Lomax) by clicking on the hyperlink over the name of the channel. See Section 4.1.2.1 
+below for more information on the SeisGram2K applet.
+
+4.1.2.1. SeisGram2K applet
+
+SeisGram2K is a Java applet written by Anthony Lomax. The applet is invoked by clicking on an 
+HTML link which formats the command line and passes along the name of the SAC file 
+containing the trace and parametric data for a channel. eqreview produces HTML code 
+necessary to invoke the applet. The necessary Java code to run the applet is in the JAR file. Some 
+additional Javascript code needs to be incorporated into the HTML code in order to invoke the 
+applet.
+
+To that end, the eqreview.d configuration file parameter JavascriptFile should contain the name 
+of the file with the javascript code. Within the javascript code the name and location of the JAR 
+file must be specified.
+
+SeisGram2K makes web requests to the server to retrieve the SAC file and also to send back to 
+the server the modified pick information. To accomplish this, the parameter WebHost must be set 
+to the name of the web server running the review system, and WebDir must be the top level of 
+the review directory tree as it is mapped by the web server.
+
+After the user is finished repicking a channel using SeisGram2K, the user can send back the 
+updated information. SeisGram2K is passed the name of the CGI program on the review server – 
+retrieve_pick – which updates the ArcFile and the SAC files on the server with the new pick 
+information (See section 4.1.6 for more details).
+
+
+4.1.2.2. Buttons
+
+The web page produced by eqreview contains three buttons: Refresh, Cancel, and Done. They 
+are implemented as a web-form which invokes the program review_process with appropriate 
+arguments. 
+
+4.1.2.3. Operating Modes
+
+eqreview operates in several modes:
+
+a)	GetFromDB. Retrieves event information from the database, saves it in the ArcFile and 
+SAC files, saves the original author of the event in the file Author, and continues in the 
+Refresh mode.
+b)	Override. If the temporary event directory already exists, someone else might be 
+reviewing that event, or the directory was left over from an abnormal termination of the 
+review process. In this mode, the user is told about the conflict and allowed to click on a 
+link which causes the offending directory to be removed. From there on, eqreview 
+proceeds as if it were in GetFromDB mode.
+c)	Relocate. Invokes the hypoinverse program which must be located in the place specified 
+by the PathToHypoBin parameter. Hypoinverse relocates the event based on the 
+information in the ArcFile, and based on the hypoinverse parameters specified by the 
+HypoConfig parameter.  The archive file resulting from the relocation is copied over the 
+original ArcFile, and eqreview continues in the Refresh mode.
+d)	Refresh. This is the default mode where eqreview reads the ArcFile and produces HTML 
+with modifiable event information based on the ArcFile.
+
+4.1.3.	REVIEW_PROCESS
+
+review_process is an intermediate processing step. It is called from eqreview and passed a series 
+of arguments:
+-	EventID
+-	Potentially modified magnitude
+-	List of potentially modified pick times and weights
+-	List of picks to delete
+-	Action parameter: Refresh, Cancel, or Done
+
+4.1.3.1. Cancel
+
+If the user pressed Cancel in eqreview, review_process removes the temporary review directory 
+for this event and displays HTML explaining this operation to the user. This is the end of the 
+review chain for this event. The local disk has been cleaned up, and no changes to the event were 
+made in the database.
+
+4.1.3.2. Refresh
+
+Clicking Refresh causes review_process to produce a simple HTML page which contains a link 
+back to eqreview invoking it in the Refresh mode.
+
+4.1.3.3. Done
+
+If the user clicked Done in eqreview, review_process reads the original ArcFile and updates it 
+with the new magnitude and pick information. Then, the user is presented with three buttons 
+allowing the user to chose what to do with the modified ArcFile. The buttons are: Relocate, 
+Delete, and Reinsert. 
+
+Clicking on Relocate invokes eqreview in Relocate mode. 
+
+Clicking on Delete or Reinsert invokes the program confirm with the appropriate parameters.
+
+4.1.4.	CONFIRM
+
+This is a very simple program which merely puts up HTML to prompt the user to confirm the 
+choice to delete or re-insert the event, made in review_process. confirm may be invoked in two 
+modes, Delete or Reinsert. In either case, the user is presented with two buttons: One to confirm 
+the operation, and one to cancel.
+
+If the user clicks Cancel, eqreview is invoked in the Refresh mode. This shows the user the 
+original page with modifiable event information. From here the user can either continue the 
+review process, or terminate it by clicking Cancel.
+
+If the user confirms the operation, the program process is invoked with appropriate parameters.
+
+4.1.5.	PROCESS
+
+This is where the real work of deleting or inserting the event is done. process can be invoked in 
+two modes: Insert or Delete.
+
+In the Insert mode, process reads the ArcFile and makes the appropriate API calls to insert the 
+information from the ArcFile into the database. Note that the author field of the new Origin is 
+created by prepending the string REV_ to the original author field, saved in the file Author, to 
+signify that this event is being re-inserted into the database after it was reviewed by a human.
+
+In the Delete mode, process makes the appropriate API calls to delete the event from the 
+database. 
+
+Upon completion of either operation, process produces HTML informing the user of the 
+operation, and then deletes the temporary review directory for the event. This is the normal 
+termination point of the review process for this event.
+
+
+4.1.6.	RETRIEVE_PICK
+
+This program is called by the SeisGram2K applet in order to send the modified pick information 
+back to the server. retrieve_pick reads from standard input a single line formatted in the 
+modified NON_LIN_LOC format. The input contains the information about the picks that the 
+user defined for the given channel of data. 
+
+This input line is first parsed, and then retrieve_pick updates the information in the SAC file 
+associated with that channel, and also in the ArcFile.
+
+
+9
+

@@ -1,0 +1,27 @@
+#
+
+# Configuration file for pick2ora:
+# I listen to magnitude messages (TYPE_PICK2K), and stuff the contents
+# into an Oracle server. It uses rw_mag.h to go from magnitude name to the
+# official number - which the DB recognizes.
+
+LogFile 1		# 0 means don't create a disc log file. 1=> do.
+MyModuleId
+RingName
+HeartBeatInt
+
+
+# What message logos to listen to. Can be more than one.
+# The type is hard coded to TYPE_MAGNITUDE
+
+GetEventsFrom	INST_USNSN	MOD_WILDCARD
+
+
+# Data Base Server Identification. Not for the security squeamish.
+DBservice     db_service
+DBpassword    db_pwd
+DBuser        db_user
+
+# Debug switch: the token "Debug" (without the quotes) can be stated.
+# If it is, lots of weird debug messages will be produced 
+Debug

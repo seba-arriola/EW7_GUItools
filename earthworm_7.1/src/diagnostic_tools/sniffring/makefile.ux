@@ -1,0 +1,29 @@
+#
+#    $Id: makefile.ux,v 1.1 2005/07/26 20:48:01 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/26 20:48:01  friberg
+#     added UNIX makefile
+#
+
+CFLAGS = ${GLOBALFLAGS}
+LIBS = -lpthread -lm
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+sniffring: sniffring.o $L/getutil.o $L/kom.o $L/sleep_ew.o $L/transport.o $L/errexit.o
+	cc -o $B/sniffring sniffring.o $L/getutil.o $L/kom.o $L/transport.o \
+          $L/sleep_ew.o $L/errexit.o  $(LIBS)
+
+lint:
+	lint sniffring.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/sniffring*

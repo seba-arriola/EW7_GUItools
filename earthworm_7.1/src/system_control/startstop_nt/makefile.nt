@@ -1,0 +1,60 @@
+#
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.6 2007/02/28 23:43:56 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.6  2007/02/28 23:43:56  stefan
+#     linebreaks
+#
+#     Revision 1.5  2007/02/20 22:54:18  stefan
+#     start lock
+#
+#     Revision 1.4  2006/11/21 23:04:58  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.3  2006/04/04 18:16:51  stefan
+#     startstop with reconfigure and libraries
+#
+#     Revision 1.2  2003/05/06 20:49:43  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2000/02/14 19:37:19  lucky
+#     Initial revision
+#
+#
+#
+
+#
+#                    Nmake File For startstop_nt
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP=startstop
+O=$(APP).obj
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+$B\$(APP).exe: $O
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) $O \
+   $L\transport.obj $L\getutil.obj $L\kom.obj $L\logit_mt.obj $L\sema_ew.obj\
+    $L\sleep_ew.obj $L\time_ew.obj $L\threads_ew.obj $L\startstop_lib.obj \
+    $L\startstop_winlib.obj $L\service_ew.obj $L\lockfile.obj $L\lockfile_ew.obj \
+    -out:$B\$(APP).exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\startstop*

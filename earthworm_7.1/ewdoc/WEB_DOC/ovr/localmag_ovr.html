@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<TITLE>Earthworm Modules: localmag overview</TITLE>
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ee" VLINK="#551a8b" BGCOLOR="#ffffff">
+<H1 ALIGN=CENTER>Earthworm Modules:</H1>
+<H1 ALIGN=CENTER>Localmag Overview</H1>
+<P ALIGN=CENTER><I>(last revised 1 April 2006)</I></P>
+
+<P ALIGN=LEFT>Localmag can run as an Earthworm module or as a
+standalone program. It can be used in several different ways for
+calculating the local (or Richter) magnitude of an event. There are a
+large number of options that can be specified in the configuration
+file or on the command line for this program. But don't let them
+scare you: once you decide how you want to use localmag, you will
+need to set only a portion of these parameters.</P>
+
+<P ALIGN=LEFT>When run as an Earthworm module, localmag connects to
+a transport ring and reads HYP2000_ARC messages, produced by
+hypoinverse. Localmag also uses the transport ring for sending
+heartbeat and status messages as is common practice for Earthworm
+modules. Localmag reads the summary line of the HYP2000_ARC message,
+starts collecting trace data from one or more wave_servers, and
+processes that data for that event. Once the processing (described
+below) is completed, the localmag module becomes dormant, waiting
+for the next event to arrive and beating its heart at the specified
+interval.</P>
+
+<P ALIGN=LEFT>As a standalone program, localmag is run one or more times for
+each event. It can get event information from a number of different sources:
+HYP2000_ARC messages (read from standard input), SAC files, an Earthworm
+Database among others.  Localmag can get trace data (if necessary) from
+wave_servers, SAC files of raw trace data or previously synthesized
+Wood-Anderson traces, or from other sources. And instead of reading trace
+data, localmag can read Wood-Anderson amplitudes (from SAC files or other
+sources) and compute local magnitudes directly from these. These methods could
+be used to as part of the review process after localmag module generated the
+initial automatic local magnitude.</P>
+
+<P ALIGN=LEFT>After localmag prepares (the new data for processing
+by checking for gaps (if the data was obtained from wave servers) and
+ removes the mean. Then localmag synthesizes these traces into
+Wood-Anderson traces. This conversion is done by a frequency domain
+convolution to remove the original instrument response and replace it
+with the Wood-Anderson response. The frequency response function (generated 
+as an intermediate step in this process) may optionally have a cosine taper
+applied to either or both the low and high ends of the frequency range.</P>
+
+<P ALIGN=LEFT>When the synthetic Wood-Anderson traces have been
+returned to the time domain, the peak amplitude is located for each trace.
+The search for peak amplitude is done within a time window 
+related to the estimated Sg phase arrival time. One or two `peak' values
+may be located. First, the largest (absolute value) zero-to-peak is
+found. This zero-to-peak value is compared to the largest zero-to-peak found
+before the estimated P arrival. If the event zero-to-peak does not exceed the
+pre-event zero-to-peak by the factor <A HREF="../cmd/cmd_localmag.d:#z2pThresh">
+z2pThresh</A>, then that trace is not used for local magnitude calculations
+and no further peak searches are performed for that trace. This threshold
+should prevent the use of station/channels that are far from a small event or
+have a lot of background noise. It may also prevent localmag from processing
+traces where one event is preceeded by the coda of another large event.</P>
+
+<P ALIGN=LEFT>The second peak value is a "sliding window" search, in which
+the largest plus-to-minus or minus-to-plus swing is found within a specified
+interval (normally 0.8 seconds, the free period of the Wood-Anderson
+instrument.) The motivation for this algorithm is to reduce the chances of
+picking a noise glitch instead of seismic signal. When computing the local
+magnitude, localmag uses one half of this peak-to-peak signal. Note that one
+half of peak-to-peak will usually be a smaller value than the largest
+zero-to-peak value.</P>
+
+<P ALIGN=LEFT>The Wood-Anderson traces may optionally be saved in SAC (or
+other format) files, along with the peak amplitude picks, for review by human
+beings. If pick locations are changed or bad traces are thrown out, the traces
+or picks can be read back in by localmag to update the calculated
+magnitude.</P>
+
+<P ALIGN=LEFT>Besides the peak amplitude values from the Wood-Anderson
+traces, localmag needs the -log(A0) values to correct for attenuation with
+station-hypocenter distance. The table of these values is read from a
+file. Thus regional networks can use their own attenuation relations
+in place of the one Richter (later Richter &amp; Guttenburg)
+developed of Southern California. This table can be configured to use
+station to epicenter distance or station to hypocenter distance. For each
+horizontal component that has a valid trace (no data gaps, not clipped,
+sufficient event signal) localmag computes a local magnitude value.</P>
+
+<P ALIGN=LEFT>The magnitude values from all the traces are combined in the
+following manner. For stations with traces from both horizontal components
+(East and North) of a given instrument band (broadband or accelerometer), a
+station `band' local magnitude is found in one of two ways. Either the mean of
+the component magnitudes is used, or the mean of the component amplitudes is
+used to compute a station magnitude. If a station has more than one band of
+instrument (both broadband and accelerometer), the station magnitude is always
+the mean of the band magnitudes.</P>
+
+<P ALIGN=LEFT>Finally, all the station magnitude values are averaged; the
+standard deviation and the median are computed. 
+These results are logged in all cases. When localmag is connected to
+an Earthworm transport ring, the results are sent to transport as a
+LOCALMAG message; other forms of output may be selected as well.</P>
+
+<P ALIGN=LEFT>Localmag will wait for trace data to appear in the wave_servers,
+when run as an Earthworm module. It computes the time need to wait from event
+origin until the trace window has propagted to the maximum distance to be
+used. When an event message arrives, localmag compares the origin time with
+the system time and sleeps until sufficient time has passed. This means that
+you should run localmag on a computer which is accurately set to CUT, the same
+time as is used to timestamp phase picks.
+
+<P>Some warnings about this program: Localmag uses a quite a bit of CPU time,
+depending on the number and 
+duration of traces requested. If this and other CPU-intensive modules such as
+gmaew are running on the same machine, they will have a significant impact on
+the machine load after one or more large events. Until Earthworm has some sort
+of scheduling system, you may want to run these programs at reduced priority.
+
+<P>When run as an earthworm module, localmag will gradually use increasing
+amounts of memory. This is normal. It is keeping information about FFT factors
+and trig functions, so that these do not need to be recalculated for each
+trace calculation.
+
+<H4 ALIGN=CENTER>Acknowledgement</H4>
+<P ALIGN=LEFT>I give thanks here to Jim Pechmann of UUSS for providing many
+useful comments and his SAC macros for local magnitude calculations. Many
+features of this program are the result of his ideas.
+
+<P ALIGN=CENTER STYLE="margin-bottom: 0in"><A HREF="../modules.html">Module
+Index</A> | <A HREF="../cmd/localmag_cmd.html">Localmag Commands</A></P>
+<hr><address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</BODY>
+</HTML>

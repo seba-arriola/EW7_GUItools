@@ -1,0 +1,53 @@
+<!-- details.html  <b>getimage</b> details page -->
+
+<html>
+<title>EWDB Applications: <b>getimage</b>: details</title>
+<b><font size=+2><b>getimage</b>: </font><font size=+1>Details</font></b>
+<br><br>
+<b>Operation</b><br>
+<b>getimage</b> is a cgi-bin program that is called by a webserver.  It
+looks for <b>GL_IMAGE_ID</b> in the <b>QUERY_STRING</b> environment
+variable, associated with http GET requests.  It retrieves a file 
+number from GL_IMAGE_ID value, and puts together a filename that is
+a constant string plus the number.  It then opens up the GIF file and
+reads in the contents, and closes it.  It then sends some header 
+information back to the webserver identifying the content type, followed
+by the contents of the GIF file.  When it is done sending the data, it
+deletes the GIF file.<br>
+If anything goes wrong along the way, it will dump an error message back
+to the webserver, and the web-client will get a broken picture icon in
+their browser.
+<br><br>
+<b>Images Don't Get Deleted</b><br>
+If you have one or more web based programs running that generate dynamic
+gifs(maps, record sections), then you may eventually get overrun 
+by old images.  Under perfect circumstances, someone loads a webpage that 
+creates a dynamic GIF, the program that generates the webpage runs and
+produces the web page as well as a GIF.  Part of that webpage is a link
+to <b>getimage</b>.  The browser receives the webpage, and makes another request
+to <b>getimage</b> in order to retrieve the image.  <b>getimage</b> is called, it 
+dumps the image back to the client, and then deletes it.  The client gets
+their dynamic webpage, and the server is none the worse.<br>
+However, sometimes things go awry.  The web user changes their mind
+and cancels the web request partway through, or there is a network
+problem, or it takes too long to wait for the page, so they hit ReLoad.  
+The first program may complete, and so the dynamic GIF is created, but
+since the web browser never receives the finished page and never requests
+the image from <b>getimage</b>, <b>getimage</b> never gets called and the file never
+gets deleted.  This happens a lot, and so you may need to implement an
+automated backup scheme for deleting old images.
+<br><br>
+<b>Potential Bug on NT</b><br>
+This program may not work on NT with older versions of Apache or
+Netscape Fasttrack.  The webserver opens up a pipe from the stdout
+of the cgi-bin program(this one) to the webserver.  On NT, that pipe
+was getting opened in "text" mode, which meant that everytime the
+pipe saw a bare linefeed without a carriage return, it would add a
+carriage return.  This causes problems with GIFs and other binary 
+files.  You can call _setmode() as in below, to force stdout to 
+binary mode, if you wish to use this program with older versions
+of webservers on NT.  (Solution found by cjbryan).
+<pre>
+    result = _setmode( _fileno( stdout ), _O_BINARY );
+</pre>
+</html>

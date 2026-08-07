@@ -1,0 +1,54 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.2 2005/07/20 15:21:40 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2005/07/20 15:21:40  friberg
+#     removed a space at the end of the makefile.ux B variable
+#
+#     Revision 1.1  2005/07/20 14:25:17  friberg
+#     added in makefile.ux
+#
+#     Revision 1.2  2004/05/14 18:00:52  dietz
+#     rdpickcoda moved to EW library
+#
+#     Revision 1.1  2004/04/22 18:01:56  dietz
+#     Moved pkfilter source from Contrib/Menlo to the earthworm orthodoxy
+#
+#
+#
+
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS)
+
+SRCS = pkfilter.c
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+OBJ = pkfilter.o $L/rdpickcoda.o $L/logit.o $L/getutil.o $L/time_ew.o \
+      $L/chron3.o $L/transport.o $L/kom.o $L/sleep_ew.o 
+
+pkfilter: $(OBJ)
+	cc -o $B/pkfilter  $(OBJ) -lm -lpthread
+
+.c.o:
+	cc -c ${CFLAGS} $<
+
+lint:
+	lint pkfilter.c $(GLOBALFLAGS)
+
+depend:
+	makedepend -fmakefile.ux -- $(CFLAGS) -- $(SRCS)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/pkfilter*

@@ -1,0 +1,100 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.11 2005/02/17 23:03:34 mark Exp $
+#
+#    Revision history:
+#     $Log: makefile.ind,v $
+#     Revision 1.11  2005/02/17 23:03:34  mark
+#     Added WipeAllAlarmsInfo fn
+#
+#     Revision 1.10  2005/02/03 20:41:14  mark
+#     Added GetRecipientDeliverySummary and groups APIs
+#
+#     Revision 1.9  2004/12/14 16:57:57  mark
+#     Added ewdb_api_UpdateRulePolygon
+#
+#     Revision 1.8  2004/12/07 23:30:42  mark
+#     Added new files
+#
+#     Revision 1.7  2004/12/01 20:46:55  mark
+#     Additional polygon files
+#
+#     Revision 1.6  2004/11/23 17:25:52  mark
+#     Added more polygon files
+#
+#     Revision 1.5  2004/11/23 16:58:37  mark
+#     Added polygon files
+#
+#     Revision 1.4  2001/08/07 16:51:51  lucky
+#     Pre v6.0 checkin
+#
+#     Revision 1.3  2001/07/28 00:46:57  lucky
+#     Added custom delivery stuff
+#
+#     Revision 1.2  2001/06/26 17:24:47  lucky
+#     Added Qdds delivery stuff
+#
+#     Revision 1.1  2001/05/23 22:51:06  davidk
+#     Initial revision
+#
+#################################################################
+
+
+
+
+OBJECTS = ewdb_api_GetAlarmsRecipientList.$(OBJ) \
+          ewdb_api_GetAlarmsRecipientSummary.$(OBJ) \
+          ewdb_api_GetAlarmsCriteriaList.$(OBJ) \
+          ewdb_api_GetAlarmsFormats.$(OBJ) \
+          ewdb_api_GetEmailDeliveries.$(OBJ) \
+          ewdb_api_GetEmailRecipient.$(OBJ) \
+          ewdb_api_GetPagerDeliveries.$(OBJ) \
+		  ewdb_api_GetPagerRecipient.$(OBJ) \
+          ewdb_api_GetPhoneDeliveries.$(OBJ) \
+		  ewdb_api_GetPhoneRecipient.$(OBJ) \
+		  ewdb_api_GetPolygons.$(OBJ) \
+		  ewdb_api_GetPolygonVertices.$(OBJ) \
+          ewdb_api_GetQddsDeliveries.$(OBJ) \
+          ewdb_api_GetCustomDeliveries.$(OBJ) \
+          ewdb_api_GetAlarmsRules.$(OBJ) \
+          ewdb_api_GetAlarmsAudit.$(OBJ) \
+          ewdb_api_GetAndIncrementCubeVersion.$(OBJ) \
+		  ewdb_api_GetRecipientSummary.$(OBJ) \
+		  ewdb_api_GetRecipientDeliverySummary.$(OBJ) \
+		  ewdb_api_GetAlarmsGroupList.$(OBJ) \
+		  ewdb_api_GetAlarmsGroupRecipients.$(OBJ) \
+          ewdb_api_CreateAlarmAudit.$(OBJ) \
+          ewdb_api_CreateAlarmsGroup.$(OBJ) \
+          ewdb_api_CreateAlarmsRecipient.$(OBJ) \
+          ewdb_api_CreateAlarmsFormat.$(OBJ) \
+          ewdb_api_CreateAlarmsRule.$(OBJ) \
+          ewdb_api_CreateEmailDelivery.$(OBJ) \
+          ewdb_api_CreateGroupRecipient.$(OBJ) \
+          ewdb_api_CreatePagerDelivery.$(OBJ) \
+          ewdb_api_CreatePhoneDelivery.$(OBJ) \
+          ewdb_api_CreateQddsDelivery.$(OBJ) \
+		  ewdb_api_CreatePolygon.$(OBJ) \
+		  ewdb_api_CreatePolygonVert.$(OBJ) \
+          ewdb_api_CreateCustomDelivery.$(OBJ) \
+          ewdb_api_CreateAlarmsCriteria.$(OBJ) \
+          ewdb_api_DeleteEmailDelivery.$(OBJ) \
+          ewdb_api_DeleteGroup.$(OBJ) \
+          ewdb_api_DeleteGroupRecipient.$(OBJ) \
+          ewdb_api_DeletePagerDelivery.$(OBJ) \
+          ewdb_api_DeletePhoneDelivery.$(OBJ) \
+          ewdb_api_DeletePolygon.$(OBJ) \
+          ewdb_api_DeleteQddsDelivery.$(OBJ) \
+          ewdb_api_DeleteCustomDelivery.$(OBJ) \
+          ewdb_api_DeleteAlarmsFormat.$(OBJ) \
+          ewdb_api_DeleteAlarmsRule.$(OBJ) \
+          ewdb_api_DeleteAlarmsRecipient.$(OBJ) \
+          ewdb_api_DeleteCritProgram.$(OBJ) \
+		  ewdb_api_UpdateRulePolygon.$(OBJ) \
+		  ewdb_api_WipeAllAlarmsInfo.$(OBJ)
+
+ALL:  $(OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts
+

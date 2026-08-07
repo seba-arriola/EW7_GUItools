@@ -1,0 +1,32 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.3 2004/04/08 23:42:18 davidk Exp $
+#
+#    Revision history:
+#     $Log: makefile.ind,v $
+#     Revision 1.3  2004/04/08 23:42:18  davidk
+#     Added ewdb_api_SelectExternalStation()
+#
+#     Revision 1.2  2001/09/26 21:47:45  lucky
+#     Added UH stuff.
+#
+#     Revision 1.1  2001/05/23 22:51:09  davidk
+#     Initial revision
+#
+#################################################################
+
+
+
+OBJECTS = ewdb_api_GetIdChanFromStationExternal.$(OBJ) \
+          ewdb_api_CreateOrAlterExternalStation.$(OBJ) \
+          ewdb_api_SelectExternalStation.$(OBJ) \
+          ewdb_api_UH_CreateExternalInfraRecord.$(OBJ) \
+          ewdb_api_UH_GetExternalInfraRecord.$(OBJ) 
+
+
+ALL:  $(OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts
+

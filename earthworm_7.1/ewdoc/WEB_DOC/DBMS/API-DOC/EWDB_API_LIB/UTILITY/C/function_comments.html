@@ -1,0 +1,200 @@
+<hr>
+<a name=ewdb_api_Init></a>
+<font size=+2>ewdb_api_Init()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_Init(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> DBuser</NOBR>, <NOBR><i>char *</i> DBpassword</NOBR>, <NOBR><i>char *</i> DBservice</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Initialization function for the API.  This function should be called prior to any other API calls.  It initializes the API environment and validates the database connection parameters (DBuser, DBpassword, DBservice).</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>The API environment was successfully initialized.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>The API environment failed to initialize.  Please see stderr or a logfile for details of the failure.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>The API environment was already initialized.  If the client needs to reinitialize the API environment with different parameters, they must first call <a href=../../.././EWDB_API_LIB/UTILITY/C/function_comments.html#ewdb_api_Shutdown>ewdb_api_Shutdown</a> to uninitialize the existing environment.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>DBuser</td>
+  <td>char *</td>
+  <td>The database user that the program should run as.</td>
+ </tr>
+ <tr>
+  <td>DBpassword</td>
+  <td>char *</td>
+  <td>The password for user DBuser.</td>
+ </tr>
+ <tr>
+  <td>DBservice</td>
+  <td>char *</td>
+  <td>The network serviceID of the database to connect to. In Oracle environments, the serviceID is usually defined in either a tnsnames.ora file or by an Oracle Names server.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/library_comments.html#UTILITY>UTILITY</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_Set_Debug></a>
+<font size=+2>ewdb_api_Set_Debug()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>void ewdb_api_Set_Debug(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>int</i> IN_iDebug</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Set the debug level for the API (and supporting) functions.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>void</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_iDebug</td>
+  <td>int</td>
+  <td>Flag indicating the level of debug information that the caller wishes the API to log. See <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_DEBUG_DB_BASE_NONE>EWDB_DEBUG_DB_BASE_NONE</a> for information on the various debug level constants.  Constants can be bitwise OR'd together to form the proper debug level.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/library_comments.html#UTILITY>UTILITY</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_Shutdown></a>
+<font size=+2>ewdb_api_Shutdown()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_Shutdown(</NOBR></font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Shutdown the API environment and free any related memory and handles.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>The API environment was successfully de-initialized.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>The API environment failed to de-initialize.  Please see stderr or a logfile for details of the failure.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>The API environment had not been initialized using <a href=../../.././EWDB_API_LIB/UTILITY/C/function_comments.html#ewdb_api_Init>ewdb_api_Init</a>.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/library_comments.html#UTILITY>UTILITY</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

@@ -1,0 +1,265 @@
+<HTML>
+<HEAD>
+<TITLE>Earthworm Modules: Tankplayer commands</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FADFAF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF
+0000">
+
+<CENTER><H1>Tankplayer Configuration File Commands</H1>
+<I>(last revised 19 May 2006)</I></CENTER>
+						  	 
+Page Index:<BR>
+1.  <A HREF=#example>Example configuration file</A><BR>
+2.  <A HREF=#function>Functional command listing</A><BR>
+3.  <A HREF=#alphabet>Alphabetic command listing & description</A>
+<P>
+<!-- ADD HERE: Paragraph "On startup, xxxx reads the..." -->
+Tankplayer reads file(s) containing waveform messages (of either TYPE_ADBUF,
+TYPE_TRACEBUF, or TYPE_TRACEBUF2) from a single data source.  It places the
+waveform messages
+into shared memory in simulated real time, using the delta-t between 
+time-stamps in successive message headers to determine its timing.
+
+On startup, tankplayer reads the configuration file named on the command
+line.  Commands in this file set up all parameters used in playing back
+waveform messages from a file to a shared memory ring.  In the control file, 
+lines may begin with a valid tankplayer command (listed below) or with one 
+of 2 special characters:
+
+<BLOCKQUOTE><PRE>
+#  marks the line as a comment (example: # This is a comment).<BR>   
+@  allows control files to be nested; one control file can be 
+   accessed from another with the command "@" followed by 
+   a string representing the path name of the next control file 
+   (example: @model.d).
+</BLOCKQUOTE></PRE>
+Command names must be typed in the control file exactly as shown in this
+document (upper/lower case matters!).
+<P>
+<A NAME="example">
+<H2>1.  EXAMPLE CONFIGURATION FILE</H2>
+<P>
+<PRE>
+
+# tankplayer config file for playing TYPE_TRACEBUF2 waveforms
+# tankplayer config file for playing waveform files
+
+RingName      WAVE_RING        # play waveforms into this ring
+MyModuleId    MOD_ADSEND_A     # as this module id
+PlayMsgType   TYPE_TRACEBUF2   # msg type to read from file
+LogFile       1                # 0=no log; 1=keep log file
+HeartBeatInt  30               # seconds between heartbeats
+Pause         10               # seconds to pause between wavefiles
+StartUpDelay  10               # seconds to wait before playing 1st file
+ScreenMsg     1                # (optional) if non-zero, informational messages will be
+                               #   written to the screen as data is played
+# SendLate      10.0           # (optional) if present, packets will be
+                               #   timestamped this many seconds before
+                               #   current time;
+                               # if absent, packets will have original time
+                               #   stamps
+                               #
+Debug         1                # for verbosity
+
+# List of files to play (up to 50 allowed):
+WaveFile      e:\QAnew\900819a.ew1.tbuf
+
+# IgnoreTBVersionNumbers -
+# Prevents tankplayer from objecting to tracebuf2 packets that don't have
+# the correct version field.  Not recommended.
+#IgnoreTBVersionNumbers 0
+</PRE>
+<P>
+<A NAME="function">
+<H2>2.  FUNCTIONAL COMMAND LISTING</H2>
+<P>  
+<!-- ADD HERE: Paragraph "Below are the commands recognized..." -->
+Below are the commands recognized by tankplayer, grouped by the function 
+they influence.  All of the commands are required; they must be specified 
+in the control file in order for tankplayer to operate.
+
+<!-- ADD HERE: The pre-formatted functional command listing      -->
+<!-- To make an anchor for each command, surround it with these: -->
+
+<PRE>	Earthworm system setup:
+		<A HREF=#HeartBeatInt>HeartBeatInt</A> 	 	required
+ 		<A HREF=#MyModuleId>MyModuleId</A>	   	required
+		<A HREF=#RingName>RingName</A>	   	required
+
+	Waveform Playback:
+		<A HREF=#Pause>Pause</A>			required
+		<A HREF=#PlayMsgType>PlayMsgType</A>		required
+		<A HREF=#StartUpDelay>StartUpDelay</A>		required
+		<A HREF=#WaveFile>WaveFile</A>		required
+		<A HREF=#IgnoreTBVersionNumbers>IgnoreTBVersionNumbers</A>	optional
+    
+	Output Control:
+		<A HREF=#LogFile>LogFile</A>		   	required
+
+</PRE>
+
+<A NAME="alphabet">
+<H2>3.  ALPHABETIC COMMAND LISTING & DESCRIPTION</H2>
+<P>
+In the following section, all configuration file commands are listed 
+in alphabetical order.  Listed along with the command (bold-type) are 
+its arguments (in red), the name of the subroutine that processes the 
+command, and the function within the module that the command influences. 
+A detailed description of the command and is also given.  Default values 
+and the values used by Calnet are listed after each command description.
+<PRE><B>
+command <font color=red>arg1</font>				processed by		function
+</PRE></B>
+<HR>
+
+<!-- ADD HERE: all commands; below is a sample command blank: -->
+
+<A NAME="HeartBeatInt">  <!-- command name as anchor inside quotes -->	
+<PRE><B>HeartBeatInt <font color=red>nsec</font> 			tankplayer_config	Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Defines the number of seconds <font color=red>nsec</font> between TYPE_HEARTBEAT messages
+issued by tankplayer.
+<PRE><!-- Default and example go here   -->
+Default:  none				Calnet:  HeartBeatInt 15
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="IgnoreTBVersionNumbers">
+<PRE><B>IgnoreTBVersionNumbers <font color=red>switch</font>		tankplayer_config	Playback</B>
+</PRE>
+<BLOCKQUOTE>
+Prevents tankplayer from objecting to tracebuf2 packets that don't have
+the correct version field.  Not recommended.
+<PRE>
+Default: 0	False
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="LogFile">  <!-- command name as anchor inside quotes -->	
+<PRE><B>LogFile <font color=red>switch</font>				tankplayer_config	output</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the on-off switch for writing a log file to disk.  If <font color=red>switch</font>
+is 0, no log file will be written.  If <font color=red>switch</font> is 1, tankplayer 
+will write a daily log file(s) called tankplayerxx.log_yymmdd 
+where xx is tankplayer's module id (set with "MyModuleId" command) 
+and yymmdd is the current UTC date (ex: 960123) on the system clock.  
+The file(s) will be written in the EW_LOG directory (environment 
+variable).  
+<PRE><!-- Default and example go here   -->
+Default:  none
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="MyModuleId">  <!-- command name as anchor inside quotes -->	
+<PRE><B>MyModuleId <font color=red>mod_id</font>			tankplayer_config	Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Sets the module id for labeling all outgoing messages. <font color=red>mod_id</font> is
+a character string (valid strings are listed in earthworm.d) that
+relates (in earthworm.d) to a unique single-byte number.  Tankplayer 
+also places this module id in the module id field of each waveform 
+message header before it puts the message into shared memory.
+<PRE><!-- Default and example go here   -->
+Default:  none				
+Example:  MyModuleId MOD_ADSEND_A
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="Pause">  <!-- command name as anchor inside quotes -->	
+<PRE><B>Pause <font color=red>nsec</font>				tankplayer_config	Playback</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Defines the integer number of seconds <font color=red>nsec</font> to pause after completing 
+the playback of one waveform file before starting the playback of 
+the next.  Tankplayer will continue to issue its heartbeat while
+it is in pause-mode.
+<PRE><!-- Default and example go here   -->
+Default:  none
+Example:  Pause 15
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="PlayMsgType">  <!-- command name as anchor inside quotes -->	
+<PRE><B>PlayMsgType <font color=red>type</font>			tankplayer_config	Playback</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Tells tankplayer what type of message the waveform file(s) contain.  
+<font color=red>type</font> is a character string (valid strings are listed in earthworm.d) 
+that relates (in earthworm.d) to a unique single-byte number.  By the 
+message-type, tankplayer knows the format of the waveform message; 
+currently tankplayer only knows how to read and manipulate TYPE_ADBUF 
+TYPE_TRACEBUF, and TYPE_TRACEBUF2 waveform messages.
+<PRE><!-- Default and example go here   -->
+Default:  none
+Example:  PlayMsgType TYPE_TRACEBUF2
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="RingName">  <!-- command name as anchor inside quotes -->	
+<PRE><B>RingName <font color=red>ring</font>				tankplayer_config	Earthworm setup</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Tells tankplayer which shared memory region to use for output.
+<font color=red>ring</font> is a character string (valid strings are listed in earthworm.d) 
+that relates (in earthworm.d) to a unique number for the key to the
+shared memory region.
+<PRE><!-- Default and example go here   -->
+Default:  none				Calnet:  RingName WAVE_RING
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="StartUpDelay">  <!-- command name as anchor inside quotes -->	
+<PRE><B>StartUpDelay <font color=red>xsec</font>			tankplayer_config	Playback</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Defines the integer number of seconds <font color=red>xsec</font> to wait on startup
+before beginning the playback of the first waveform file.  
+Tankplayer will continue to issue its heartbeat while it is in 
+startup-delay mode.
+<PRE><!-- Default and example go here   -->
+Default:  none
+Example:  StartUpDelay 45
+</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<A NAME="WaveFile">  <!-- command name as anchor inside quotes -->	
+<PRE><B>WaveFile <font color=red>path-file</font>			tankplayer_config	Playback</B><!-- command args ... -->		
+</PRE>
+<BLOCKQUOTE> <!-- command description goes here -->
+Gives the name <font color=red>path-file</font> of one waveform file that tankplayer should
+play back.  <font color=red>path-file</font> is a character string up to 45 characters long.
+Up to 50 "WaveFile" commands may be issued.  Tankplayer will play
+the files in the order that they were listed in the configuration 
+file, pausing between files by amount of time set in the "Pause"
+command.  All files must contain the same type of waveform message
+(specified in the "PlayMsgType" command).
+<PRE><!-- Default and example go here   -->
+Default:  none
+Example:  WaveFile  event1.waves</PRE>
+</BLOCKQUOTE>
+<HR>
+
+<CENTER> 
+<A HREF="../modules.html">Module Index</A> | 
+<A HREF="../ovr/tankplayer_ovr.html">Tankplayer Overview</A>
+</CENTER>
+
+
+<!-- USGS-required stuff at the end -->
+<HR>
+<ADDRESS>
+Contact: <B><address> Questions? Issues? <a href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw" target="_blank">Subscribe to the Earthworm List (earthw). </a></address></B><BR>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,25 @@
+/ChangeLog/1.1/Wed Feb  7 05:40:06 2007//
+/INSTALL/1.1/Wed Feb  7 05:40:06 2007//
+/Makefile/1.1/Wed Feb  7 05:40:06 2007//
+/Makefile.wat/1.1/Wed Feb  7 05:40:06 2007//
+/Makefile.win/1.1/Wed Feb  7 05:40:06 2007//
+/README/1.1/Wed Feb  7 05:40:06 2007//
+/README.byteorder/1.1/Wed Feb  7 05:40:06 2007//
+/fileutils.c/1.1/Wed Feb  7 05:40:06 2007//
+/genutils.c/1.1/Wed Feb  7 05:40:06 2007//
+/gswap.c/1.1/Wed Feb  7 05:40:06 2007//
+/libmseed.h/1.1/Wed Feb  7 05:40:06 2007//
+/lmplatform.c/1.1/Wed Feb  7 05:40:06 2007//
+/lmplatform.h/1.1/Wed Feb  7 05:40:06 2007//
+/lookup.c/1.1/Wed Feb  7 05:40:06 2007//
+/makefile.sol/1.2/Wed Feb  7 06:44:00 2007//
+/msrutils.c/1.1/Wed Feb  7 05:40:06 2007//
+/pack.c/1.1/Wed Feb  7 05:40:06 2007//
+/packdata.c/1.1/Wed Feb  7 05:40:06 2007//
+/packdata.h/1.1/Wed Feb  7 05:40:06 2007//
+/steimdata.h/1.1/Wed Feb  7 05:40:06 2007//
+/traceutils.c/1.1/Wed Feb  7 05:40:06 2007//
+/unpack.c/1.1/Wed Feb  7 05:40:06 2007//
+/unpackdata.c/1.1/Wed Feb  7 05:40:06 2007//
+/unpackdata.h/1.1/Wed Feb  7 05:40:06 2007//
+D

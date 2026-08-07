@@ -1,0 +1,91 @@
+
+<HTML>
+<HEAD>
+<TITLE>Earthworm Modules: Tankplayer overview</TITLE>
+</HEAD>
+<CENTER><H1>Tankplayer Overview</H1>
+<I>(last revised 19 May 2006)</I></CENTER>
+
+<P>
+"tankplayer" is part of the four-program set for recording and playing back the trace data for selected time intervals. See also <A HREF="trig2disk_ovr.html">trig2disk</A>, <A HREF="waveman2disk_ovr.html">waveman2disk</A>, and <A HREF="wave_serverV_ovr.html">wave_serverV</A>. 
+<P>
+Tankplayer has two common uses:
+<P>
+Tuning Operating Earthworms:
+<P>
+For example, an Earthworm system fails to locate a significant earthquake.  The waveform data for the earthquake is requested from the wave_server and saved in tankplayer format.  Using an experimental Earthworm, the event is played back with tankplayer, tuning the operational parameters until Earthworm performs satisfactorally.  The operational parameters are then changed to those used in the test.
+<P>
+Quality Assurance:
+<P>
+One is to perform quality assurance tests. For such tests, an experimental Earthworm system would be set up, and one or more tankplayers would be connected as the data source. Each tankplayer would be given a lengthy list of data files, and "tankplayer" would play (broadcast into the earthworm) the trace data from these files, one after another, generally overnight. The earthworm system under test would then process the incoming data. In the morning, we would come in and examine the rubble. 
+<P> 
+Menlo Park has created a collection of over 50 historic trace data files, representing the trace data traffic during various 'moments of horror' at CalNet. These include the Loma Prieta mainshock, swarms during wind storms, concurrent events in different parts of the net, events during telemetry malfunctions, etc. These files were painfully created by reformatting CUSP data archive files. The format of these files is simple: it is a series of messages of TYPE_ADBUF, written with a binary write.
+<P>
+How Tankplayer Works:
+<P>
+On startup, tankplayer reads its configuration file. This specifies the message ring into which to inject the data, and the module name to use. Tankplayer is generally told to imitate a real data source, such as an A/D module, or a digital acquisition module. The parameter file also lists the data files to be played back. It also specifies a pause period. This was implemented to prevent the earthworm associator (binder) from becoming confused by rapid jumps in time between data files. This time period should be set to be larger than binder's association memory, to prevent it from trying to associate phase arrivals from different data files.
+<P>
+In operation, tankplayer places the waveform messages from its input file(S) into shared memory in simulated real time, using the delta-t between time-stamps in successive message headers to determine its timing. When the end of file is reached, it waits "Pause" number of seconds, and goes on to the next file, as specified in the parameter file.
+</P>
+<P>
+Tankplayer is location code compliant and backward compatible.  It accepts
+messages of either tracebuf or tracebuf2 as configured using the PlayMsgType
+parameter.
+</P>
+
+<hr>
+<p>
+Tankplayer Tools:
+<p>
+Separate from tankplayer are tools to help create tankfiles from sac format
+files.  One can also
+archive tank files using <a href="waveman2disk_ovr.html">waveman2disk</a>
+and configuring appropriate output format.  The two tools are <i>sac2tb</i>
+and <i>remux_tbuf</i>.  The notes from Pete Lombard about these tools:
+<p>
+<blockquote>
+This is sac2tb, a utility for turning SAC data files into tracebuf files.
+Usage: sac2tb [-n samples] sacfile > tbuf-file
+
+<p>
+Without the -n option, sac2tb defaults to 100 samples per packet.
+
+<p>
+The intended use is that you run sac2tb on a bunch of SAC files for a given
+event or time period, "cat" all the files together, and then run remux_tbuf
+to make a tankplayer file. For example, in a directory of SAC files:
+
+<p>
+<pre>
+  foreach m (*)
+  sac2tb $m >> tbuf
+  end
+
+  remux_tbuf tbuf test.tnk
+</pre>
+<p>
+SAC doesn't have a provision for byte-swapping, so to my knowledge, SAC files
+are only in SPARC byte-order. At least that's the assumption here. If sac2tb
+is run on an intel machine, the SAC file will be swapped into intel byte-order
+and the resulting tracebuf messages will be marked accordingly.
+
+<p>
+Pete Lombard, 19 May 2001
+</blockquote>
+</p>
+
+<hr>
+
+
+<CENTER> 
+<A HREF="../modules.html">Module Index</A> | 
+<A HREF="../cmd/tankplayer_cmd.html">Tankplayer Commands</A>
+</CENTER>
+
+<HR>
+<ADDRESS>
+Contact: <B><address> Questions? Issues? <a href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw" target="_blank">Subscribe to the Earthworm List (earthw). </a></address></B><BR>
+</ADDRESS>
+</BODY>
+</HTML>
+

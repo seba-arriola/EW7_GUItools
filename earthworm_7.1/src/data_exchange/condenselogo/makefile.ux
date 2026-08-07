@@ -1,0 +1,31 @@
+CFLAGS = $(GLOBALFLAGS)
+
+SRCS = condenselogo.c
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+OBJ = condenselogo.o $L/logit.o $L/getutil.o $L/time_ew.o \
+      $L/transport.o $L/kom.o $L/sleep_ew.o
+
+condenselogo: $(OBJ)
+	cc -o $B/condenselogo $(OBJ) -lm  -lpthread
+
+.c.o:
+	cc -c ${CFLAGS} $<
+
+lint:
+	lint condenselogo.c $(GLOBALFLAGS)
+
+depend:
+	makedepend -fmakefile.ux -- $(CFLAGS) -- $(SRCS)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/condenselogo*

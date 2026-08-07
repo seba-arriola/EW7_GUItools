@@ -1,0 +1,51 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+# INCLUDE THIS FILE FROM makefiles.XXX
+
+
+OBJS = \
+	ewdb_apps_ArcFile2DB.$(OBJ) \
+	ewdb_apps_CreatePolygon.$(OBJ) \
+	ewdb_apps_DB2ArcFile.$(OBJ) \
+	ewdb_apps_PutCoincidenceInfo.$(OBJ) \
+	ewdb_apps_GetDBEventInfo.$(OBJ) \
+	ewdb_apps_GetFullComment.$(OBJ) \
+	ewdb_apps_PutDBEventInfo.$(OBJ) \
+	ewdb_apps_RetrieveIdChanExternal.$(OBJ) \
+	ewdb_apps_putaway.$(OBJ) \
+	ewdb_apps_GetArrivalsFromDB.$(OBJ) \
+	ewdb_apps_UpdateFullComment.$(OBJ) \
+	ora2sac_utils.$(OBJ) \
+	draw_map.$(OBJ) \
+	determine_alarms.$(OBJ) \
+	execute_alarms.$(OBJ) \
+	html_common.$(OBJ) \
+	mapserver.$(OBJ) \
+	time_functions.$(OBJ) \
+	alarms_api_utils.$(OBJ) \
+	core_api_utils.$(OBJ) \
+	concierge_api_utils.$(OBJ) \
+	merge_api_utils.$(OBJ) \
+	nearest_town_api_utils.$(OBJ) \
+	PolygonArea.$(OBJ) \
+	AlarmsWebhelper.$(OBJ) \
+	AlarmsConfig.$(OBJ) \
+	text_review_config.$(OBJ) \
+	EQRconfig.$(OBJ) \
+	EQRwebhelper.$(OBJ) \
+	EQRreview_function.$(OBJ) \
+	uh_parse_stalist.$(OBJ) \
+  init_ewevent.$(OBJ) \
+  sac_2_ewevent.$(OBJ) \
+  arc_2_ewevent.$(OBJ) \
+	webparse.$(OBJ) \
+	ewdb_apps_GetLatestOriginForEventBySource.$(OBJ)
+
+all: $(OBJS) install
+
+  
+

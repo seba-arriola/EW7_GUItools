@@ -1,0 +1,107 @@
+/* bugs.txt */
+
+####################
+KNOWN ISSUES  (BUGS)
+####################
+
+1) Snippet Channel Mixup
+
+SYMPTOMS
+ora_trace_fetch complains about not being able to merge
+two snippets that have a rather large overlap.
+
+
+CAUSE
+Unknown.  It is believed thate either a pointer does not
+get reinitialized, and is thus still pointing at old data,
+or that some sort of a memory overread, causes some old data
+to be read when it shouldn't.
+
+EFFECT
+The program has been seen to complain about merged snippet,
+problems, and under investigation shows that the saved
+waveform snippet is from a different channel than the request.
+The worst case would be corrupted data where a final snippet
+merged a chunk of data from one channel with a chunk of data
+from another.  While all data is still in whole tracebuf packets
+and thus theoretically not corrupted, it is effectively corrupted
+because most programs only check the header of the first tracebuf
+in a snippet.  The consequences of corrupted data are ugly at best. 
+
+
+
+CAUSES_DATA_LOSS
+Possibly, but more likely data mixing/corruption.
+
+
+2) Oversized Snippets
+
+SYMPTOMS
+ora_trace_fetch complains about a snippet being too large
+to handle, and funny things may start happening.
+
+
+CAUSE
+There are two situations where ora_trace_fetch will complain
+about a snippet being too large.  One is when the snippet it
+retrieves from a wave_server is larger than the TraceBufferLen.
+The second is when there is an existing waveform that was 
+retrieved earlier, and a second waveform that is retrieved
+from the wave_server now, and the size of the merged snippet
+that results from combining the two is large than TraceBufferLen.
+This problem applies only to the first case.
+The program fills it's trace buffer up with data, and there
+is still data from the snippet to be retrieved from the
+wave_server.  Because the wave_server has put the entire snippet
+into the TCP buffer, there is still data in the TCP buffer to
+be received by the program.  So the next time the program 
+goes to read from the socket, it will get trace data from the
+prior request.  This should end up being treated like garbage,
+and the program should complain, but that doesn't neccessarily
+happen. 
+
+
+EFFECT
+Strange behavior may occur from the time that the overflow occurs
+until the time that the program disconnects from that wave_server.
+This may be related to Problem #1
+
+
+CAUSES_DATA_LOSS
+Probably Not
+
+FIX
+This could probably be fixed by causing the program to disconnect
+from the wave_server after an overflow, or by creating a temporary
+buffer and grabbing the remaining data out of the socket buffer
+and into a temporary.   
+
+
+3) Frequent Wave_server timeout	
+
+SYMPTOMS
+The program frequently complains of wave_server errors, and
+the logfiles show that the errors are timeouts.
+
+
+CAUSE
+If the program is handling requests for large snippets, and the
+wave_server timeout (TimeoutSeconds in the ora_trace_fetch config
+file), is not set to a large enough value, then the wave_server
+will timeout while retrieving the snippet.  For example, 30 seconds
+seems like a reasonable timeout value for a wave_server, but remember
+that the timeout value is used to limit the time that the program
+waits for data.  If the program has made a request for a 1MB snippet,
+and the timeout is only 30 seconds, then the program must retrieve
+the snippet at a rate of more than 30kb/sec, which is unlikely if the
+wave_server is not in the building.
+
+The timeout problem may cause you great grief if you wish to pull
+large snippets from one quality wave_server over a network 
+and smaller snippets from another wave_server over a bad network connection.  
+(You may have to set the timeout level fairly high to get the big snippets,
+and then wait a long time for a connection to timeout on the bad server
+when requesting snippets from it.)
+ 
+
+

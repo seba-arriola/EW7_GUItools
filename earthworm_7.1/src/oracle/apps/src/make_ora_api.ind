@@ -1,0 +1,8 @@
+
+###############################
+#All object files for this app.
+###############################
+ALL_APP_OBJECTS =  $(APP_OBJECTS)
+
+ALL_LIB_OBJECTS =  $(ALL_CLIENT_LIBS)  $(ALL_ORA_API_LIBS)
+

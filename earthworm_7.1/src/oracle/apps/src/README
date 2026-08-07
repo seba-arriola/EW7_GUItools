@@ -1,0 +1,21 @@
+In order to build earthworm DBMS applications(ON A SOLARIS SYSTEM), a 
+change must be made to an Oracle makefile (/opt/oracle/rdbms/lib/env_rdbms.mk)
+
+Go to the bottom of the file and comment out all lines in the file starting
+with the $(LIBCLNTSH) target definition, so that the file looks as below.
+The example provided is from Oracle8.
+#$(LIBCLNTSH): \
+#            ${ORACLE_HOME}/lib/libclient.a ${ORACLE_HOME}/lib/libsql.a \
+#            ${ORACLE_HOME}/lib/libnetv2.a ${ORACLE_HOME}/lib/libnttcp.a \
+#            ${ORACLE_HOME}/lib/libnetwork.a ${ORACLE_HOME}/lib/libncr.a \
+#            ${ORACLE_HOME}/lib/libcommon.a ${ORACLE_HOME}/lib/libgeneric.a \
+#            ${ORACLE_HOME}/lib/libmm.a ${ORACLE_HOME}/rdbms/lib/xaondy.o \
+#            ${ORACLE_HOME}/lib/libnlsrtl3.a ${ORACLE_HOME}/lib/libcore4.a \
+#            ${ORACLE_HOME}/lib/libepc.a
+# $(SILENT)$(ECHO) "Building client shared library libclntsh.so ..."
+# $(SILENT)$(ECHO) "Call script $$ORACLE_HOME/bin/genclntsh ..."
+# $(GENCLNTSH)
+# $(SILENT)$(ECHO) "Built $$ORACLE_HOME/lib/libclntsh.so ... DONE"
+
+Davidk 2001/05/24
+

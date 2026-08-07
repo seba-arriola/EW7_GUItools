@@ -1,0 +1,11 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+SQL_DIR = $(SCHEMA_DIR)/sql_scripts
+
+
+all:
+	-cp -f *.sql $(SQL_DIR)
+

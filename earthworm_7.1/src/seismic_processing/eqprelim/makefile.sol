@@ -1,0 +1,49 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.4 2004/05/17 22:16:54 dietz Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.4  2004/05/17 22:16:54  dietz
+#     Modified to work with TYPE_PICK_SCNL and TYPE_CODA_SCNL as input
+#     and to output TYPE_EVENT_SCNL.
+#
+#     Revision 1.3  2002/11/03 19:12:07  lombard
+#     Added CFLAGS definition
+#
+#     Revision 1.2  2000/08/08 18:11:30  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 17:10:42  lucky
+#     Initial revision
+#
+#
+#
+
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+EQPRELIM = eqprelim.o $L/site.o $L/tlay.o $L/logit.o $L/time_ew.o $L/kom.o \
+          $L/chron3.o $L/mnbrak.o $L/brent.o $L/getutil.o $L/pipe.o \
+          $L/rdpickcoda.o $L/sleep_ew.o $L/transport.o
+
+
+eqprelim: $(EQPRELIM)
+	cc -o $B/eqprelim  $(EQPRELIM)  -lm -lposix4
+
+lint:
+	lint eqprelim.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/eqprelim*

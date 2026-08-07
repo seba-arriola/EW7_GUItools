@@ -1,0 +1,53 @@
+<HTML><HEAD>
+<TITLE>Earthworm Modules: WinSDR to Earthworm (ws2ew.exe) commands</TITLE>
+</HEAD>
+
+<BODY TEXT="#000000" BGCOLOR="#FADFAF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+<CENTER><H1> WinSDR to Earthworm for EW Version 7.0 Configuration File</H1> 
+<I><P>Created July 10, 2006 by Larry Cochrane</P></I></CENTER>
+<P align="left">Below is a typical ws2ew.d configuration file. This file should
+be located in the \earthworm\run\params directory. The ModuleId must be added to
+the earthworm.d file also located in this directory.</P>
+<PRE>
+#
+#                    CONFIGURATION FILE FOR WS2EW
+#                    -----------------------------
+ModuleId         MOD_WS2EW_A    # Module id of this instance of Ws2Ew
+OutRing          WAVE_RING      # Transport ring to write waveforms to
+Host             10.0.0.10      # Host name or IP address of the system running WinSDR
+Port             16064          # Port number to use when connecting to WinSDR 
+HeartbeatInt     15             # Heartbeat interval in seconds
+AdcDataSize      2              # ADC trace buffer data size in bytes. Can be 2 or 4 bytes
+#
+#                        OPTION PARAMETERS
+SocketTimeout   60              # Socket timeout in seconds (default = 60)
+RestartWaitTime 60              # Seconds to wait between reconnects (default = 60)
+NoDataWaitTime  45              # Seconds to wait before resetting connection
+NoHostMessages  1               # If 1 log messages from the host will not be processed (default = 0) 
+#
+#                        CHANNEL CONFIGURATION
+Nchan            8              # Number of channels running on the host WinSDR system
+ChanRate         100            # Sampling rate of the WinSDR system
+#
+#
+#     SCNL (Station/Component/Network/Location) VALUES FOR EACH DAQ CHANNEL
+# Chan lines must follow the Channel Configuration lines in this file.
+#
+#     DAQ      Station/
+#   Channel    Comp/Net/Loc    Send to Earthworm
+#   -------   --------------   -----------
+Chan    0     PSN1 BHZ PN NC       YES
+Chan    1     PSN1 BHN PN NC       NO
+Chan    2     PSN1 BHE PN NC       YES
+Chan    3     PSN1 LHZ PN NC       YES
+Chan    4     PSN1 LHN PN NC       NO
+Chan    5     PSN1 LHE PN NC       NO
+Chan    6     PSN1 SHZ PN NC       NO
+Chan    7     PSN1 SHN PN NC       YES
+#
+</PRE>
+<CENTER> 
+<A HREF="../ovr/Ws2Ew_ovr.html">WinSDR to Earthworm Overview</A>
+</CENTER>
+</BODY>
+</HTML>

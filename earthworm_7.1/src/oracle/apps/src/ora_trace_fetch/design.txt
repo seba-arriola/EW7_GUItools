@@ -1,0 +1,44 @@
+On a "network up", rerun the whole list, without update.
+On a "wake up", wake up and check list
+On a Trigger message, wake up and check list
+
+Config file command:
+RunMode
+	0	No delta T based runs, only informational
+	1	Every delta T, act as if "wake up" message received
+	2       Every delta T, act as if "network up" message received
+	Others Undefined
+
+
+Update Snippet
+(In lieu of deleting snippets, we would like to update a snippet,
+so that we don't lose the relationships within which that snippet
+is involved.  So when we do a snippet merge, instead of deleting
+the original snippet, and then inserting a new "merged" snippet, 
+we would like to update the old snippet in place.)
+
+
+
+# ActionInterval
+#  The interval (in seconds) between attempts by the program to
+#  process data.  Processing of data has different meanings depending
+#  on what mode the program is running in.  Default is 20.
+# ActionInterval 20
+
+# ProgramMode
+#  The mode that the program is running in.  Supported modes are:
+#  ALWAYS_CHECK_LIST
+#   Each time the program "processes data" it connects to the database,
+#   checks the list of snippets scheduled to be retrieved, and attempts
+#   to retrieve the ones that are scheduled to be retrieved now.
+#  ALWAYS_GET_SNIPPETS
+#   Each time the program "processes data" it connects to the database,
+#   and attempts to retrieve snippet data for each request in the database
+#   regardless of whether it is scheduled to be retrieved or not.
+#  STANDARD_DATA_MODE
+#   Only connect to the database when the program knows that there 
+#   are snippets currently scheduled for retrieval, or when the program
+#   receives an ALERT or TRIGGER message via an Earthworm Ring.
+#
+#  The default mode is STANDARD_DATA_MODE
+# ProgramMode  STANDARD_DATA_MODE

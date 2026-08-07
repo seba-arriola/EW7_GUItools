@@ -1,0 +1,41 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY ora2snippet_gif
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+LINK_NAME Sample Config File
+LINK ora2snippet_gif.d.txt
+
+LINK_NAME Programmer Notes
+LINK programmer_notes.txt
+
+DESCRIPTION <b>ora2snippet_gif</b> generates a web-page
+displaying snippets from an Event as record sections
+in GIF format.
+<br>
+There are config file parameters that control which
+traces are displayed, how the traces are aligned, how
+long the display is, and many other properties that 
+will probably never change from the defaults.  Please see 
+the <a href = details.html>details page </a> and the 
+<a href = ora2snippet_gif.d.txt> sample config file</a>
+for more detailed information.
+
+<br><br> 
+Initial blame unclaimed. (Earthworm Central)
+<br><br> 
+Last touched by DavidK 2002/03/21
+
+
+*************************************************
+************************************************/
+

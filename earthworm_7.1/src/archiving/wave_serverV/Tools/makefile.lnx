@@ -1,0 +1,46 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.lnx,v 1.1 2000/02/14 20:00:08 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.lnx,v $
+#     Revision 1.1  2000/02/14 20:00:08  lucky
+#     Initial revision
+#
+#
+#
+
+
+
+CFLAGS = $(GLOBALFLAGS) -I..
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+ALL: inspect_tank read_index read_struct
+
+inspect_tank: inspect_tank.o
+	cc -g -o inspect_tank inspect_tank.o
+
+read_index: read_index.o
+	cc -g -o read_index read_index.o
+
+read_struct: read_struct.o
+	cc -g -o read_struct read_struct.o
+
+
+
+.c.o:
+	$(CC) $(CFLAGS) -g $(CPPFLAGS) -c  $(OUTPUT_OPTION) $<
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $(ALL)

@@ -1,0 +1,81 @@
+X-Authentication-Warning gldnbuffs.cr.usgs.gov lucky@localhost didn't use HELO protocol
+To Alex Bittenbinder <alex@gldmutt.cr.usgs.gov>,
+        Barbara Bogaert <bogaert@gldmutt.cr.usgs.gov>,
+        Lynn Dietz <dietz@bruno.wr.usgs.gov>,
+        Carl Johnson <carl@poliahu.uhh.hawaii.edu>,
+        David Kragness <davek@katylyst.com>,
+        Lucky Vidmar <Lucky.Vidmar@Colorado.EDU>
+Subject RCS is coming!!! RCS is coming!!!
+Date Wed, 05 May 1999 131855 -0600
+From Lucky Vidmar <lucky@gldnbuffs.cr.usgs.gov>
+Content-Type text
+X-UIDL fbccf5146c4a9c8507ff9d72add2e205
+
+Hi everyone, while most of you are enjoying the sights and sounds of
+Seattle, /home/phaseIII/working/src on gldzappa has been RCS-ed. What
+this means, in a nutshell, is that all *.c, *.h, *.d, *.desc, and
+makefile* files have been checked in.
+
+They are all (or at least should be) read-only until they are checked
+out using the command checkout <file name>. Once a file is checked out
+no one else can modify it before it is checked back in.
+
+When new files are added to any module they should also be checked in.
+Before doing so the following should be put at the top of the file
+
+Source code (.h and .c files)
+
+/*
+ *   This file is under RCS - do not modify unless you have
+ *   checked it out using the command checkout.
+ *
+ *    $Id: RCS_doc.txt,v 1.1 2004/03/18 01:21:41 lombard Exp $
+ *    Revision history
+ *
+ *    $Log: RCS_doc.txt,v $
+ *    Revision 1.1  2004/03/18 01:21:41  lombard
+ *    Initial revision
+ *
+ *
+ */
+
+For non-source code
+
+#
+#  This file is under RCS - do not modify unless you have
+#  checked it out using the command checkin.
+#
+#  $Id: RCS_doc.txt,v 1.1 2004/03/18 01:21:41 lombard Exp $
+#  Revision history
+#
+#  $Log: RCS_doc.txt,v $
+#  Revision 1.1  2004/03/18 01:21:41  lombard
+#  Initial revision
+#
+#
+ 
+
+This will cause RCS log messages to be written into the files, making
+it easier to track changes.
+
+While I was submerged into the guts of PhaseIII source code I created
+a top level Makefile, in the same spirit as that of Earthworm. It
+lists all modules, both for NT and Solaris - in general, it works the
+same as the top level Makefile under Earthworm.
+
+I still have quite a bit of clean-up to do - particularly adding
+directives to all makefiles for checking in and out of files
+automatically. I have also noticed that ora2sac does not compile
+(David?)
+
+Lastly, I have a stupid question which machine should hold the
+orthodoxy? I seem to remember some talk of gldrocky being that
+machine, but it appears to me that it only houses a whole bunch of
+ .tar.Z  files, and that the latest stuff is on gldzappa. For the
+record, I RCS-ed the source tree on gldzappa. Let me know if I was
+mistaken and I'll do the same on rocky. 
+
+	Lucky
+checkin and checkout are under /usr/local/bin on gldzappa.  I added
+/usr/local/bin to the path definition in p3_sol_sparc.cmd so that
+things should work for you now.

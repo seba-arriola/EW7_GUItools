@@ -1,0 +1,18 @@
+# NT Makefile for idatap library
+
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+library = ..\idatap.lib
+
+objs = case.obj client.obj common.obj compress.obj convert.obj ezio.obj \
+globals.obj misc.obj parse.obj rdwr.obj string.obj swap.obj syserr.obj \
+timefunc.obj getline.obj
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo /I..\include $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+$(library): $(objs)
+	lib /out:$(library) $(objs)
+

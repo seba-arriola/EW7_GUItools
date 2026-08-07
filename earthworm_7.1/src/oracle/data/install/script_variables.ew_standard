@@ -1,0 +1,173 @@
+# EW ORACLE SCRIPT VARIABLES
+
+############################################
+#
+#############################
+# EW STANDARD CONFIGURATION
+#############################
+# This config file assumes that you are running the
+# standardized EW hardware configuration:
+# C:\  IDE HARD DRIVE with system files and swap file
+# D:\  CD-ROM
+# E: - J:  6 (18 GB SCSI drives)
+#
+#
+# Performance is optimized around the insertion/retrieval
+# of parametric data.
+# Reading and writing of Events, Origins, Magnitudes, Picks
+# and Amplitudes should be executed near-instantaneously.  < 100 ms
+# Any waveform related operations are permitted longer 
+# delays, since they should involve applications that must
+# process waveform data, which is typically a longer ( > 30 s )
+# process.
+# 
+# To optimize parameteric performance, we would like to do the following
+# 1) Keep as much parametric and cooked infrastructure data in memory
+#    as possible.
+# 2) Spread simultaneous disk activity required for parametric operations
+#    across as many disks as possible.
+#
+#
+#  Assumption: typical activity for a parametric write, would include 
+#  the following: (Pick entry is used for example)
+#  1) Write to the Pick table.
+#  2) Write to the Pick index.
+#  3) Write to the Redo Log.
+#  4) Write to the Rollback Segment.
+#  5) Write to the Swap file.
+#  6) Possible write to the system tablespace ???
+#
+#
+#  With this in mind, we would like to do the follwing:
+#
+#  1) Maximize Buffer Cache and Shared Pool Size
+#     By maximizing Buffer Cache, we can keep more 
+#     Parametric blocks in memory, and
+#     we can handle a burst of reads/writes
+#     without having to access Parametric data on Disk.
+#     By making shared Pool Size large enough we can
+#     keep neccessary cursors and Stored Procedures in memory.
+#
+#     We expect the Parametric data space to include up to 300 MB of data
+#     We expect the Cooked Infrastructure data space to include up to 20 MB of data.
+#     We expect the Index data space to include up to 25 MB of data.
+#
+#     The system tablespace will also invariable take up space
+#     in cache.  (somewhere betwee 15MB and 300MB)
+#
+#
+#     The database is designed to hold an average of 8 days of data.
+#     With a favorable record distribution, we might be able to 
+#     assume, that records from the last 24 hours would require
+#     1/3 of the blocks from the parametric tablespace.
+#     So, before considering SnippetSpace requirements, we would desire
+#     a buffer cache of atleast (300/3 + 20 + 25 + 15) or 160 MB.
+#     Considering the inexpensiveness of memory, and the importance
+#     of the applications, we would wish to push for as large a 
+#     buffer cache as possible ( > 500 MB), but would expect a minmum
+#     of 200 MB.
+#
+#     No idea what the required Shared Pool Size would be.  80MB would
+#     probably be more than sufficient.
+#
+#
+#  2) Divide simultaneous writes among as many disks as possible, and
+#     assign disks as follows:
+#
+#  C:    OS files, Swap file, Application Logs  (State Manager)
+#  E:    System Data (System TableSpace)
+#  F:    Rollback Segment  (Undo TableSpace)  not-separating Parametric and Waveform
+#                                 undo disk activity may become a large bottleneck.
+#                                 especially during waveform deletion.
+#  G:    Redo Log
+#  H:    Parametric Data / Parametric Index / Cooked Infrastructure Data & Index
+#                                            (In a perfect world with non-striped
+#                                             disks, we would put the tables and
+#                                             the indexes on different disks.
+#                                             but, instead we're going to hope that
+#                                             we can keep enough data in memory,
+#                                             and are gross i/o loads are low enough
+#                                             that we will be able to avoid any 
+#                                             single disk i/o overloads, even during
+#                                             spirt activity.)
+#  I:    Primary Snippet data  4x4GB
+#  J:    Primary Snippet data  4x4GB
+#  
+############################################
+############################################
+
+
+
+# Instance configuration
+# EW_ORACLE_BASE is the base directory for oracle files
+# EW_ORACLE_HOME is the relative ORACLE_HOME subdirectory,
+#   such that executable oracle files are expected to be in
+#   $(EW_ORACLE_BASE)\$(EW_ORACLE_HOME)\bin
+# EW_ORACLE_SID is the SID of the Oracle instance
+#   the core db instance files will be put in
+#   $(EW_ORACLE_BASE)\oradata\$(EW_ORACLE_SID)\
+# EW_ORACLE_DOMAIN is the domain of the SID
+#   this is used in the init file as a domain listing
+EW_ORACLE_BASE c:\oracle
+EW_ORACLE_HOME ora92
+EW_ORACLE_SID  ewdb
+EW_ORACLE_DOMAIN usgs
+
+
+# EW_ORACLE_CONTROL_DIRX
+# These are the directories where the db instance control files
+#   will be placed.  The default is 
+#   $(EW_ORACLE_BASE)\oradata\$(EW_ORACLE_SID)\
+EW_ORACLE_CONTROL_DIR1  E:\oradata\ewdb
+EW_ORACLE_CONTROL_DIR2  F:\oradata\ewdb
+EW_ORACLE_CONTROL_DIR3  G:\oradata\ewdb
+
+
+# EW_ORACLE_LOG_DIRX
+# These are the directories where the db instance log files
+#   will be placed.  The default is 
+#   $(EW_ORACLE_BASE)\oradata\$(EW_ORACLE_SID)
+EW_ORACLE_LOG_DIR1 G:\oradata\ewdb
+#EW_ORACLE_LOG_DIR2
+#EW_ORACLE_LOG_DIR3
+
+# SYSTEM_PSWD is the password for the db instance "system" user - 
+#   default earthworm
+# SYS_PSWD is the password for the db "sys" user
+#   default earthworm1
+#SYSTEM_PSWD earthworm
+#SYS_PSWD earthworm1
+
+# EW_SYSTEM_DIR
+# The directory where the instance System tablespace datafile
+#   will be placed.  The default is 
+#   $(EW_ORACLE_BASE)\oradata\$(EW_ORACLE_SID)\
+EW_SYSTEM_DIR E:\oradata\ewdb
+
+# EW_ROLLBACK_TABLESPACE is the oracle tablespace to be used for
+#   creating the EW rollback segments.  The default tablespace
+#   under 9i is UNDOTBS1
+#EW_ROLLBACK_TABLESPACE UNDOTBS1
+
+# EW_UNDO_DIR
+# The directory where the db undo tablespace datafile
+#   will be placed.  The default is 
+#   $(EW_ORACLE_BASE)\oradata\$(EW_ORACLE_SID)\
+EW_UNDO_DIR H:\oradata\ewdb
+
+# EW_DATA_XXX
+#   These are the directories where the EW Oracle datafiles will
+#   be placed.
+#   EW_DATA_CORE EW_DATA_INFRA and EW_DATA_WAVEFORM_1 all default
+#   to $(EW_ORACLE_BASE)\oradata\$(EW_ORACLE_SID)\
+#   all other WAVEFORM data files default to the location of 
+#   EW_DATA_WAVEFORM_1
+EW_DATA_CORE  I:\oradata\ewdb
+EW_DATA_INFRA J:\oradata\ewdb
+EW_DATA_WAVEFORM_1 I:\oradata\ewdb
+EW_DATA_WAVEFORM_2 J:\oradata\ewdb
+#EW_DATA_WAVEFORM_3 g:\oradata\ewdb
+#EW_DATA_WAVEFORM_4 h:\oradata\ewdb
+#EW_DATA_WAVEFORM_5 i:\oradata\ewdb
+#EW_DATA_WAVEFORM_6 j:\oradata\ewdb
+

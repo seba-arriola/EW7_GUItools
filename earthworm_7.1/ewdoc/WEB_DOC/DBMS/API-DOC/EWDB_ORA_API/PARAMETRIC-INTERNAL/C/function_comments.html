@@ -1,0 +1,437 @@
+<hr>
+<a name=ewdb_internal_GetAmpsByEvent></a>
+<font size=+2>ewdb_internal_GetAmpsByEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetAmpsByEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i>EWDB_PeakAmpStruct *</i> pAmpBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type that are associated with a given DB Event.  Use idEvent to define the DB Event for which you want a list of associated amplitudes.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function only retrieves amplitudes that are directly associated with an Event.  It will not retrieve amplitudes that have been associated with an Event via a Magnitude.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_WARNING</td>
+  <td>Partial success.  A list of amplitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>DB identifier of the Event for which the caller wants a list of associated amplitudes.</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td>EWDB_PeakAmpStruct *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of EWDB_PeakAmpStruct. (example: 15 structs)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td>EWDB_ORA_API</td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>PARAMETRIC-INTERNAL</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetAmpsByEvent_w_StaInfo></a>
+<font size=+2>ewdb_internal_GetAmpsByEvent_w_StaInfo()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetAmpsByEvent_w_StaInfo(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i>EWDB_PeakAmpStruct *</i> pAmpBuffer</NOBR>, <NOBR><i>EWDB_StationStruct *</i> pStationBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type, along with associated station/channel info, that are associated with a given DB Event.  Use idEvent to define the DB Event for which you want a list of associated amplitudes.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function only retrieves amplitudes that are directly associated with an Event.  It will not retrieve amplitudes that have been associated with an Event via a Magnitude.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_WARNING</td>
+  <td>Partial success.  A list of amplitudes was retrieved, along with associated channel/station information, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>DB identifier of the Event for which the caller wants a list of associated amplitudes.</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td>EWDB_PeakAmpStruct *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pStationBuffer</td>
+  <td>EWDB_StationStruct *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station/channel info associated with the amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of EWDB_PeakAmpStruct. (example: 15 structs)  pStationBuffer must also contain space for this many EWDB_StationStruct records.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td>EWDB_ORA_API</td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>PARAMETRIC-INTERNAL</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetAmpsByTime></a>
+<font size=+2>ewdb_internal_GetAmpsByTime()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetAmpsByTime(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>time_t</i> tStart</NOBR>, <NOBR><i>time_t</i> tEnd</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i>EWDB_PeakAmpStruct *</i> pAmpBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type for a given time window.  Use tStart and tEnd to specify the time window for which you are interested in amplitudes.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_WARNING</td>
+  <td>Partial success.  A list of amplitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>time_t</td>
+  <td>Start time of criteria window.  (Secs since 1970)</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>time_t</td>
+  <td>End time of criteria window.  (Secs since 1970)</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td>EWDB_PeakAmpStruct *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of EWDB_PeakAmpStruct. (example: 15 structs)  If pStationBuffer is not NULL, then it must also contain space for this many EWDB_StationStruct records.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td>EWDB_ORA_API</td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>PARAMETRIC-INTERNAL</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_internal_GetAmpsByTime_w_StaInfo></a>
+<font size=+2>ewdb_internal_GetAmpsByTime_w_StaInfo()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_internal_GetAmpsByTime_w_StaInfo(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>time_t</i> tStart</NOBR>, <NOBR><i>time_t</i> tEnd</NOBR>, <NOBR><i>AMPLITUDE_TYPE</i> iAmpType</NOBR>, <NOBR><i>EWDB_PeakAmpStruct *</i> pAmpBuffer</NOBR>, <NOBR><i>EWDB_StationStruct *</i> pStationBuffer</NOBR>, <NOBR><i>int *</i> pNumAmpsFound</NOBR>, <NOBR><i>int *</i> pNumAmpsRetrieved</NOBR>, <NOBR><i>int</i> iBufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a list of amplitudes of a given type, plus associated station/channel info for a given time window. Use tStart and tEnd to specify the time window for which you are interested in amplitudes.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_WARNING</td>
+  <td>Partial success.  A list of amplitudes (plus associated channel/station info) was retrieved, but the caller's buffer was not large enough to accomadate all of the amplitudes found.  See pNumAmpsFound for the number of arrivals found and pNumAmpsRetrieved for the number of amplitudes placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>time_t</td>
+  <td>Start time of criteria window.  (Secs since 1970)</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>time_t</td>
+  <td>End time of criteria window.  (Secs since 1970)</td>
+ </tr>
+ <tr>
+  <td>iAmpType</td>
+  <td>AMPLITUDE_TYPE</td>
+  <td>Type of amplitude the caller is searching for. "Amplitude Type" constants are defined in <earthworm_defs.h>.</td>
+ </tr>
+ <tr>
+  <td>pAmpBuffer</td>
+  <td>EWDB_PeakAmpStruct *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of amplitudes retrieved.</td>
+ </tr>
+ <tr>
+  <td>pStationBuffer</td>
+  <td>EWDB_StationStruct *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station/channel info associated with the amplitudes retrieved.  pStationBuffer must point to an allocated buffer with room for atleast (iBufferLen) EWDB_StationStructs.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumAmpsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of amplitudes retrieved and placed in the caller's buffer(pAmpBuffer).</td>
+ </tr>
+ <tr>
+  <td>iBufferLen</td>
+  <td>int</td>
+  <td>Size of the pAmpBuffer buffer in as a multiple of EWDB_PeakAmpStruct. (example: 15 structs)  pStationBuffer must also contain space for this many EWDB_StationStruct records.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td>EWDB_ORA_API</td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td>PARAMETRIC-INTERNAL</td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_internal_functions.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

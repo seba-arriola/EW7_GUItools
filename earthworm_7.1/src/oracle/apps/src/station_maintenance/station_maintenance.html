@@ -1,0 +1,1060 @@
+<h1>Station Maintenance Tools</h1>
+
+The "station maintenance aka "meta-data" aka "cooked infrastructure" tools are
+a collection of programs with the combined purpose of manipulation 
+station, channel, and basic response data within an EWDB database.
+<br>
+<br>
+<a href=#Overview>Overview</a><br>
+<a href=#HOWTO>How To</a><br>
+<a href=#sta_export>sta_export</a><br>
+<a href=#sta_import>sta_import</a><br>
+<a href=#sta_display>sta_display</a><br>
+<a href=#sta_maint>sta_maint</a><br>
+<br>
+
+<h2><a name=Overview>Overview</a></h2>
+There are four(4) existing tools, and one more to be developed:<br>
+
+<b>1) Export tool  (<a href=#sta_export>sta_export</a>)</b><br>
+The Export tool extracts the meta-data information from an EW Database
+and outputs it to an OS File in a proprietary format. (See format 
+description below).
+<br>
+
+<b>2) Import tool  (<a href=#sta_import>sta_import</a>)</b><br>
+The Import tool reads an OS File in proprietary format(written by 
+sta_export), and attempts to create the appropriate rows in a database.
+<br>
+
+<b>3) Display tool  (<a href=#sta_display>sta_display</a>)</b><br>
+The Display tool is similar to the export tool, except that it allows
+you to extract a subset of the meta-data from a database.  The display
+tool has a suite of commandline configurable options, that allow the 
+caller to specify precisely what data they want to see.  Data is written
+out to an OS file in  the same proprietary form as the Export tool.
+<br>
+
+<b>4)  Station Maintenance tool  (<a href=#sta_maint>sta_maint</a>)</b><br>
+The Station Maintenance tool allows a user to manipulate the meta-data
+in an EW Database.  It takes a proprietary format(similar to the import/export
+format) file as input.  Each applicable line of the file, contains
+a command describing what the caller wants to mainpulate and how, along with 
+the relevant data.
+<br>
+
+<b>5)  GUI Station Maintenance tool (To Be Completed) </b><br>
+This tool does not yet exist.  It is envisioned that it would do the
+equivalent of the combined Display and Station Maintenance tools, but
+with an interactive GUI instead of batch based processing.
+<br>
+
+
+<h2><a name=HOWTO>HOWTO</a></h2>
+
+Below is a list of probable maintenance tasks, and how they would be
+accomplished with the four(4) existing tools from above.
+<br>
+
+<h3>1)Backing up / resotring the station metadata in a database.</h3>
+	a) Use the export tool to copy all of the meta-data from the DB
+		into an OS file.  (this file is your backup)
+	b) To restore data, first delete all of the metadata in the database.
+	c) Use the import tool to copy all of the meta-data from the
+		file back into the DB.
+
+<h3>2)Copying / replicating station meta-data from one DB instance to another.</h3>
+	a) Use the export tool to copy all of the meta-data from the DB
+		into an OS file. 
+	c) Use the import tool to copy all of the meta-data from the
+		file into another DB.
+	(*note  The import tool is designed to accomodate existing 
+	  matching/overlapping records in the DB, but for matching results
+	  it is recommended that you delete existing meta-data from the
+	  DB before doing a full-import (assuming you want the two DB's to match).
+
+<h3>3)Modifying meta-data in a DB</h3>
+	a) Use the display tool to extract the data-of-interest from the DB
+	into an OS file.
+	b) Modify the OS file generated above.  Add commands in the appropriate
+	place, and manipulate the data in the file.
+	c) Use the station maintenance tool to write the changes back to the database.
+
+<br><br>
+
+
+<h2><a name="sta_export">1) Export tool  (sta_export)</a></h2>
+The Export tool extracts the meta-data information from an EW Database
+and outputs it to an OS File in a proprietary format. 
+
+<br>
+<a href=#sta_export-summary>Summary</a><br>
+<a href=#sta_export-format>File Format</a><br>
+<a href=#sta_export-usage>Usage</a><br>
+
+<h3><a name="sta_export-summary"></a>SUMMARY</h3>
+This program exports station meta-data information from a database
+into an OS flat file.
+
+<h3><a name="sta_export-format"></a><a name="export_fileformat">FILE/FORMAT (Station Import/Export)</a></h3>
+Below is a sample block of output from the export tool.
+The format style is a combination of fixed and variable length fields.
+The fixed length portion is the same for all lines, it includes
+the scope definition, space for a command(for sta_maint), a database 
+record identifier, and SCNL.
+The variable length portion is different for each scope definition,
+and contains a list of information relative to that scope.
+
+<h4>PRECISE FORMAT</h4>
+<pre>
+Col Len Description
+ 1   6  Scope parameter {SITE|COMP|COMPT|CHAN|CHANT|RESP}
+10   5  Command parameter - only used in sta_maint - Scope dependent
+18  11  Database ID of the given record.(DBID)
+30   5  STA  code from SCNL
+35   3  NET  code from SCNL
+38   5  COMP code from SCNL
+43   3  LOC  code from SCNL
+46      Variable length section. < SPACE >,'(', and ')' delimited
+
+
+<b><font size=+1>SITE scope lines</font></b>
+The Database ID is the idSite for the record.
+The variable portion may include the following in the given order,
+all of which are IGNORED by the sta_import tool:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Start time for the site  (seconds since 1970 double)
+End time for the site    (second since 1970 double)  *If the site
+                          is still operating, then the end time will
+						  be 9999999999.99
+
+<b><font size=+1>SITET scope lines</font></b>
+The Database ID is the idSiteT for the record.
+The variable portion includes the following in the given order:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Start time for the site time interval (seconds since 1970 double)
+End time for the site time interval   (seconds since 1970 double)  
+                                     Note*  If the site is still 
+                                     operating, then the end time will
+						             be 9999999999.99
+
+<b><font size=+1>COMP scope lines</font></b>
+The Database ID is the idComp for the record.
+The variable portion includes the following in the given order:
+< nothing >
+
+<b><font size=+1>COMPT scope lines</font></b>
+The Database ID is the idCompT for the record.
+The variable portion includes the following in the given order:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Azimuth   (degrees - int)
+Dip       (degrees - int)
+Start time for the component time interval  
+                         (seconds since 1970 double)
+Start time for the component time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the component
+                          is still operating, then the end time will
+						  be 9999999999.99
+
+<b><font size=+1>CHAN scope lines</font></b>
+The Database ID is the idChan for the record.
+The variable portion includes the following in the given order:
+< nothing >
+
+<b><font size=+1>CHANT scope lines</font></b>
+The Database ID is the idChanT for the record.
+The variable portion includes the following in the given order:
+SampleRate (hz - double)
+Gain       (X.XXe+X - double)
+Start time for the channel time interval  
+                         (seconds since 1970 double)
+Start time for the channel time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the channel
+                          is still operating, then the end time will
+						  be 9999999999.99
+
+<b><font size=+1>RESP scope lines</font></b>
+The Database ID is the idCookedTF for the record.
+The variable portion includes the following in the given order:
+Description (string description of the function (NOT NULL TERMINATED))
+KEYWORD PZ
+KEYWORD P
+Poles (real[double] / imaginary[double])
+KEYWORD Z
+Zeroes (real[double] / imaginary[double])
+
+
+<b><font size=+1>Sample Lines</font></b>
+SITE    |     |   1000001006 FFC  II         0.0000    0.0000     0.0          (        0.00 - 9999999999.99)
+SITET   |     |   1000000026                32.0000 -130.0000   470.0          (1000000100.00 - 9999999999.00)
+COMP    |     |   1000006312         BHE              
+COMPT   |     |   1000008619                 0.0000    0.0000     0.0    0   0 (        0.00 - 9999999999.99)
+CHAN    |     |   1000006472                   
+CHANT   |     |   1000006472                20.00 3.12598e+015                 (        0.00 - 9999999999.99) STS-1 - FFC,BHE,II
+RESP    |     |   1000000003               STS-1 - FFC,BHE,II PZ P -0.012284 0.012417 -0.012284 -0.012417 -0.143362 0.000000 -0.162689 0.000000 -40.056877 48.407547 -40.056877 -48.407547 -78.539818 0.000000 -565.486694 0.000000 -32.170601 0.000000 -397.599335 0.000000 -144.231781 0.000000 -455.636505 0.000000  Z 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 -78.539818 0.000000 -0.152504 0.000000 -0.152504 0.000000 
+</pre>
+
+<h3><a name="sta_export-usage"></a>USAGE</h3>
+<pre>
+USAGE: sta_export < DB_USER > < DB_SID > < OUTPUT_FILENAME >
+< DB_USER >: The database username.
+< DB_SID >:  The database connection-descriptor(SID) identifying the
+             database the programs should use.
+< OUTPUT_FILENAME >:
+             The OS file where the exported data will be written to.
+</pre>
+<br>
+
+
+
+<h2><a name="sta_import"><h2>2) Import tool (sta_import)</a></h2>
+The Import tool reads an OS File in proprietary format(written by 
+sta_export), and attempts to create the appropriate rows in a database.
+<br><br>
+
+<br>
+<a href=#sta_import-summary>Summary</a><br>
+<a href=#sta_import-format>File Format</a><br>
+<a href=#sta_import-usage>Usage</a><br>
+
+<h3><a name="sta_import-summary"></a>SUMMARY</h3>
+This program imports station meta-data information from an OS flat file
+into an EW database.
+<br><br>
+
+<h3><a name="sta_import-format"></a>FILE/FORMAT (Station Import/Export)</h3>
+See <a href="#export_fileformat"> EXPORT FILE/FORMAT</a>
+<br><br>
+
+
+<h3><a name="sta_import-usage"></a>USAGE</h3>
+<pre>
+USAGE: sta_import < DB_USER > < DB_SID > < INPUT_FILENAME > < OUTPUT_FILENAME >
+  < DB_USER >          Database username
+  < DB_SID >           Database SID descriptor
+  < INPUT_FILENAME >   Name of file from which station data will be read
+                       and used to build database
+  < OUTPUT_FILENAME >  Name of file where actions/results will be logged
+</pre>
+<br>
+
+
+<h2><a name="sta_display">3) Display tool (sta_display)</a></h2>
+The Display tool is similar to the export tool, except that it allows
+you to extract a subset of the meta-data from a database.  The display
+tool has a suite of commandline configurable options, that allow the 
+caller to specify precisely what data they want to see.  Data is written
+out to an OS file in  the same proprietary form as the Export tool.
+<br><br>
+
+<br>
+<a href=#sta_display-summary>Summary</a><br>
+<a href=#sta_display-format>File Format</a><br>
+<a href=#sta_display-usage>Usage</a><br>
+
+<h3><a name="sta_display-summary"></a>SUMMARY</h3>
+This program imports station meta-data information from an OS flat file
+into an EW database.
+<br><br>
+
+<h3><a name="sta_display-format"></a>FILE/FORMAT (Station Import/Export)</h3>
+See <a href="#export_fileformat"> EXPORT FILE/FORMAT</a>
+<br><br>
+
+<h3><a name="sta_display-usage"></a>USAGE</h3>
+<pre>
+USAGE: stadisplay < DB_USER > < DB_SID > < OUTPUT_FILENAME > < SITE | COMP | CHAN >  
+                  < SUB-COMMANDS >
+
+SITE  [SHOWCOMP] [RESP] [SN] [TIME] [LATLON]
+COMP  [RESP] [SCNL] [TIME] [LATLON]
+CHAN  [RESP] [SCNL] [TIME] [LATLON] [CHAN]
+Sub commands
+SN < STA > < NET >
+ Display information for the given station(s).  Use * for wildcard
+ for the station or network names.
+
+TIME < tOn > < tOff >
+ Display information for only data within the given time window (tOn - tOff)
+
+LATLON < MinLat > < MinLon > < MaxLat > < MaxLon >
+  Display information for only data within the given Lat/Lon box.
+
+CHAN < idChan >
+  Display information for only the given Channel
+
+SCNL < STA > < COMP > < NET > < LOC >
+  Display information for only the given component(s).  Use * for wildcard
+  in the station, component, network, or location names.
+</pre>
+<br>
+
+
+<h2><a name="sta_maint">4)  Station Maintenance tool (sta_maint)</a></h2>
+The Station Maintenance tool allows a user to manipulate the meta-data
+in an EW Database.  It takes a proprietary format(similar to the import/export
+format) file as input.  Each applicable line of the file, contains
+a command describing what the caller wants to mainpulate and how, along with 
+the relevant data.
+<br><br>
+
+<br>
+<a href=#sta_maint-summary>Summary</a><br>
+<a href=#sta_maint-format>File Format</a><br>
+<a href=#sta_maint-usage>Usage</a><br>
+
+<h3><a name="sta_maint-summary"></a>SUMMARY</h3>
+This program imports station meta-data information from an OS flat file
+into an EW database.
+<br><br>
+
+<h3><a name="sta_maint-format"></a>FILE/FORMAT (Station Import/Export)</h3>
+See <a href="#export_fileformat"> EXPORT FILE/FORMAT</a>  for a base description
+of the file format.  See below for a list of commands, along with specific 
+syntax for each command.
+<br><br>
+
+
+<font size=+1><a href=#sta_maint_commands-prev>$(PREV) KEYWORD</a></font><br> 
+<br>
+<font size=+1><a href=#sta_maint_commands-site>Site Commands</a></font><br>  &nbsp &nbsp
+    <a href=#sta_maint_commands-site_add>ADD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-site_end>END</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-site_del>DEL</a>
+<br>
+<font size=+1><a href=#sta_maint_commands-sitet>SiteT Commands</a></font><br> &nbsp &nbsp
+    <a href=#sta_maint_commands-sitet_add>ADD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-sitet_del>DEL</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-sitet_mod>MOD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-sitet_end>END</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-sitet_modt>MODT</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-sitet_split>SPLIT</a> 
+<br>
+<font size=+1><a href=#sta_maint_commands-comp>Comp Commands</a></font><br> &nbsp &nbsp
+    <a href=#sta_maint_commands-comp_add>ADD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-comp_end>END</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-comp_del>DEL</a>
+<br>
+<font size=+1><a href=#sta_maint_commands-compt>CompT Commands</a></font><br> &nbsp &nbsp
+    <a href=#sta_maint_commands-compt_add>ADD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-compt_del>DEL</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-compt_mod>MOD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-compt_end>END</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-compt_modt>MODT</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-compt_split>SPLIT</a>
+<br>
+<font size=+1><a href=#sta_maint_commands-chan>Chan Commands</a></font><br> &nbsp &nbsp
+    <a href=#sta_maint_commands-chan_add>ADD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-chan_end>END</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-chan_assoc>ASSOC</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-chan_del>DEL</a>
+<br>
+<font size=+1><a href=#sta_maint_commands-chant>ChanT Commands</a></font><br> &nbsp &nbsp
+    <a href=#sta_maint_commands-chant_mod>MOD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-chant_modt>MODT</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-chant_modf>MODF</a>
+<br>
+<font size=+1><a href=#sta_maint_commands-resp>Resp Commands</a></font><br> &nbsp &nbsp
+    <a href=#sta_maint_commands-resp_add>ADD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-resp_mod>MOD</a> &nbsp &nbsp
+    <a href=#sta_maint_commands-resp_modc>MODC</a>
+<br>
+
+<h4>Additional Information</h4>
+<a name="sta_maint_commands-prev"></a><b>$(PREV) special identifier</b><br>
+A special $(PREV) identifier is supported by sta_maint.  It allows the user to
+reference the last DB ID of a given scope.  It is designed to be used when 
+performing a stack of operations.  For example, you want to enter information
+for all the channels at a new site.  You would first have to create the Site,
+then the components, then set the time interval for each component, then create
+the channels and response.  If $(PREV) was not supported, you would have to
+run one command(CREATE SITE), get the DB ID for the newly created site, and then
+run the program AGAIN, to create the components, using the newly created Site ID.
+By using $(PREV), you can create the Site record, and put $(PREV) in lieu of
+a SiteID on the succeeding COMP line.
+<br><br>
+Another example:<br>
+The following lines appear in a sta_maint input file.  The first line creates
+a new Component (ISCO GHZ DK --).  The second line creates a valid time interval
+for that component, supplying the lat/lon/elev/azm/dip for the Component for
+that time interval.  When the first line is executed, a new Comp record is created
+with a new idComp.  When the second line is executed, the new idComp, is substituted
+in place of the "$(PREV)" keyword, and a new CompT record is created for the 
+Component created in the first line.
+<pre>
+COMP     ADD                 ISCO DK GHZ  -- "New fake component from DK"
+COMPT   |ADD  |   $(PREV)    ISCO    GHZ     37.3 -121.4 26.0 0 180 1000000000 1250000000 "new fake comp time period"
+</pre>
+
+<br><br>
+<b><font size=+2>COMMANDS</font></b><br>
+sta_maint supports the following scopes of commands:
+<br>
+
+<a name="sta_maint_commands-site"></a><h4>SITE Commands</H4>
+<a name="sta_maint_commands-site_add"></a><h5>ADD</h5>  
+Add a new Site to the DB
+<br>
+<pre>
+<b>Format</b>
+SITE    |ADD  |              FAKE DK         "Fake station Added by DK"
+DBID     < not used >
+Variable length fields:
+Comment  (Site Comment)  *Note:  quotes are not required
+</pre>
+
+<b>Purpose</b><br>
+Create a new Site record in the database.  If successful, $(PREV) for
+idSite will become the idSite of the newly created record.
+If a Site record with matching STA/NET exists, a warning will be issued
+and the idSite of the existing record will be copied to $(PREV) idSite.
+<br><br>
+
+<a name="sta_maint_commands-site_end"></a><h5>END</h5>  
+Terminate a Site at a given time.
+<br>
+<pre>
+<b>Format</b>
+SITE    |END  |   1000000003 ISCO DK         923000000.24
+DBID     idSite
+Variable length fields:
+End Time:  seconds since 1970 (double) when the site will be terminated.
+</pre>
+
+<b>Purpose</b><br>
+Terminate a Site at a given time.  For use in recording that an active
+Site shutdown.  If successful, $(PREV) for idSite will become the idSite
+of the affected record.  This command will delete/truncate any Site
+time interval(SiteT), Component time interval(CompT), and Channel
+time interval(ChanT) records containing validity time ranges beyone the
+given termination time.
+<br><br>
+
+<b>Notes</b><br>
+An idSite or Sta/Net may be given to identify the site.  idSite takes
+precedence over Sta/Net
+<br><br>
+
+<a name="sta_maint_commands-site_del"></a><h5>DEL</h5>  
+Delete a given Site
+<br>
+<pre>
+<b>Format</b>
+SITE    |DEL  |   1000000003 ISCO DK
+DBID     idSite
+Variable length fields:
+< none >
+</pre>
+
+<b>Purpose</b><br>
+Delete a Site from the database.  The Site an all associated Components,
+and Channels will be PERMANENTLY DELETED FROM THE DATABASE!!!!
+<br><br>
+
+<b>Notes</b><br>
+An idSite or Sta/Net may be given to identify the site.  idSite takes
+precedence over Sta/Net
+<br><br>
+
+
+<a name="sta_maint_commands-sitet"><h4>SITET Commands</H4>
+<a name="sta_maint_commands-sitet_add"><h5>ADD</h5>  
+Add a new Site time interval(SiteT)to the DB
+<br>
+<pre>
+<b>Format</b>
+SITET   |ADD  |   $(PREV)                    37.5 -121.5 23 924000000 1250000000 "New fake SITET by DK"
+DBID     idSite
+Variable length fields:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Start time for the site time interval  
+                         (seconds since 1970 double)
+Start time for the site time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the site
+                          is still operating, then the end time will
+						  be 9999999999.99
+Comment  (Site Comment)  *Note:  quotes are not required
+</pre>
+
+<b>Purpose</b><br>
+Set the parameters of a Site(Lat/Lon/Elev and comment) for a time interval.
+The command creates a new Site time interval(SiteT) record in the database.  
+If successful, $(PREV) for idSiteT will become the idSiteT of the newly created record.
+If a SiteT record with matching Site and overlapping time reange exists, an error 
+is issued.
+<br><br>
+
+<a name="sta_maint_commands-sitet_del"><h5>DEL</h5>  
+Delete a given Site time interval(SiteT) and associated Component time intervals
+<br>
+<pre>
+<b>Format</b>
+SITET   |DEL  |   $(PREV)    
+DBID     idSiteT
+Variable length fields:
+< none >
+</pre>
+
+<b>Purpose</b><br>
+Delete parameters for a Site that had been entered in error.
+The command deletes a Site time interval(SiteT) from the database,
+along with component/channel time intervals for the site and
+the matching time range.  Records for the Site an all associated 
+Components, and Channels for the time range of the given SiteT
+record will be PERMANENTLY DELETED FROM THE DATABASE!!!!
+<br><br>
+
+<a name="sta_maint_commands-sitet_mod"><h5>MOD</h5>
+Modify the parameters of a Site during a given time interval
+<br>
+<pre>
+<b>Format</b>
+SITET   |MOD  |   $(PREV)                    37.30000    -121.20000     24.0 "Mod'd SITET"
+DBID     idSiteT
+Variable length fields:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Comment  (Site Comment)  *Note:  quotes are not required
+</pre>
+
+<b>Purpose</b><br>
+Modify the parameters of a Site(Lat/Lon/Elev and comment) for a given time interval.
+The command modifies a Site time interval(SiteT) record in the database.  
+If successful, $(PREV) for idSiteT will be set to the ID of the updated SiteT record.
+<br><br>
+
+<a name="sta_maint_commands-sitet_end"><h5>END</h5>  
+Terminate a Site time interval at a given time.
+<br>
+<pre>
+<b>Format</b>
+SITET   |END  |   $(PREV)                    1240000000
+DBID     idSiteT
+Variable length fields:
+End Time:  seconds since 1970 (double) when the site time interval will be terminated.
+</pre>
+
+<b>Purpose</b><br>
+Terminate a Site time interval at a given time.  If successful, $(PREV) 
+for idSiteT will become the idSite of the affected record.  This command 
+does not affect parameters or time intervals for associated Components
+or Channels.  Use the SITE END command instead, if you want to truncate
+data for all components/channels associated with the given site.
+<br><br>
+
+<a name="sta_maint_commands-sitet_modt"><h5>MODT</h5>
+Modify one of the time intervals for a Site.
+<br>
+<pre>
+<b>Format</b>
+SITET   |MODT |   $(PREV)                    923000000 1250000000
+DBID     idSiteT
+Variable length fields:
+Start time for the site time interval  
+                         (seconds since 1970 double)
+Start time for the site time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the component
+                          is still operating, then the end time will
+						  be 9999999999.99
+</pre>
+
+<b>Purpose</b><br>
+Change the time interval for a set of Site parameters.  Example:  A site existed
+on one side of the street until 1/1/1984, at which point it was moved across the
+street.  The information had been inserted as such.  Later on, someone figures out
+there was a clerical error, and the Site didn't get moved till 1985.  Two SITET MODT
+command would have to be executed.  The first would move the beginning of the
+second time interval to 1985.  The second would move the end of the first time
+interval to 1985.<br>
+If successful, $(PREV) for idSiteT will become the idSiteT of the modified record.
+If a different SiteT record exists with an overlapping time interval to the given
+one, an error is issued.  (This is why, in the example above, the second record must
+first be shrunk, before the first can be expanded.)
+<br><br>
+
+<a name="sta_maint_commands-sitet_split"><h5>SPLIT</h5>
+ Splits an existing Site time interval into two parts.
+<br>
+<pre>
+<b>Format</b>
+SITET   |SPLIT|   $(PREV)                    1020000000
+DBID     idSiteT
+Variable length fields:
+Split time for the site time interval  
+                         (seconds since 1970 double)
+</pre>
+
+<b>Purpose</b><br>
+Split an existing Site time interval.  Example:  A site exists in a farmer's
+field.  The farmer sells his land, and a new site is found just across the 
+road.  The site name is kept and the site is moved.  The existing Site time interval
+is SPLIT at the move date, and then the second record (tSplit - tNow) is updated
+with the lat/lon of the new location.<br>
+If successful, $(PREV) for idSiteT will become the idSiteT of the second(new) record,
+with range tSplit-tEnd.  The orignial record will have time interval (tStart - tSplit).
+If the tSplit time is outside the time range of the given record, an error
+is issued.
+<br><br>
+
+
+<a name="sta_maint_commands-comp"><h4>COMP Commands</H4>
+<a name="sta_maint_commands-comp_add"><h5>ADD</h5>
+Add a new Component to the DB
+<br>
+<pre>
+<b>Format</b>
+COMP     ADD                 ISCO DK GHZ  -- "New fake component from DK"
+DBID     < not used >
+Variable length fields:
+Comment  (Site Comment)  *Note:  quotes are not required
+</pre>
+
+<b>Purpose</b><br>
+Create a new Component record in the database.  If successful, $(PREV) for
+idComp will become the idComp of the newly created record.
+If a Component record with matching STA/COMP/NET/LOC exists, sucess is returned
+and the idComp of the existing record will be copied to $(PREV) idComp.
+<br><br>
+
+<a name="sta_maint_commands-comp_end"><h5>END</h5>
+Terminate a Component at a given time.
+<br>
+<pre>
+<b>Format</b>
+COMP    |END  |   1000000003 ISCO DK GHZ     1240000000
+DBID     idComp
+Variable length fields:
+End Time:  seconds since 1970 (double) when the Component will be terminated.
+</pre>
+
+<b>Purpose</b><br>
+Terminate a Component at a given time.  For use in recording that an active
+Component shutdown.  If successful, $(PREV) for idComp will become the idComp
+of the affected record.  This command will delete/truncate any 
+Component time interval(CompT), and Channel time interval(ChanT) records 
+containing validity time ranges beyond the given termination time.
+<br><br>
+
+<b>Notes</b><br>
+An idComp or Sta/Comp/Net/Loc may be given to identify the component.  idComp
+takes precedence over SCNL
+<br><br>
+
+<a name="sta_maint_commands-comp_del"><h5>DEL</h5>
+Delete a given Site
+<br>
+<pre>
+<b>Format</b>
+COMP    |DEL  |   1000000003 ISCO DK GHZ --
+DBID     idComp
+Variable length fields:
+< none >
+</pre>
+
+<b>Purpose</b><br>
+Delete a Component from the database.  The Component an all associated 
+Channels will be PERMANENTLY DELETED FROM THE DATABASE!!!!
+<br><br>
+
+<b>Notes</b><br>
+An idComp or Sta/Comp/Net/Loc may be given to identify the component.  idComp
+takes precedence over SCNL
+<br><br>
+
+
+<a name="sta_maint_commands-compt"><h4>COMPT Commands</H4>
+<a name="sta_maint_commands-compt_add"><h5>ADD</h5>
+Add a new Component time interval(CompT)to the DB
+<br>
+<pre>
+<b>Format</b>
+COMPT   |ADD  |   $(PREV)    ISCO    GHZ     37.3 -121.4 26.0 0 180 1000000000 1250000000 "new fake comp time period"
+DBID     idComp
+Variable length fields:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Azimuth   (degrees - int)
+Dip       (degrees - int)
+Start time for the component time interval  
+                         (seconds since 1970 double)
+Start time for the component time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the component
+                          is still operating, then the end time will
+						  be 9999999999.99
+Comment  (Component Comment)  *Note:  quotes are not required
+</pre>
+
+<b>Purpose</b><br>
+Set the parameters of a Component(Lat/Lon/Elev Azm/Dip and comment) for a time interval.
+The command creates a new Component time interval(CompT) record in the database.  
+If successful, $(PREV) for idCompT will become the idCompT of the newly created record.
+If a CompT record with matching Component and overlapping time reange exists, an error 
+is issued.
+<br><br>
+
+<b>Notes</b><br>
+An idComp or Sta/Comp/Net/Loc may be given to identify the component.  idComp
+takes precedence over SCNL
+<br><br>
+
+<a name="sta_maint_commands-compt_del"><h5>DEL</h5>
+Delete a given Component time interval(CompT) and associated Channel time intervals
+<br>
+<pre>
+<b>Format</b>
+COMPT   |DEL  |   $(PREV)                   
+DBID     idCompT
+Variable length fields:
+< none >
+</pre>
+
+<b>Purpose</b><br>
+Delete parameters for a Component that had been entered in error.
+The command deletes a Component time interval(CompT) from the database,
+along with channel time intervals for the Component and
+the matching time range.  Records for the Component an all associated 
+Channels for the time range of the given CompT
+record will be PERMANENTLY DELETED FROM THE DATABASE!!!!
+<br><br>
+
+<a name="sta_maint_commands-compt_mod"><h5>MOD</h5>
+Modify the parameters of a Component during a given time interval
+<br>
+<pre>
+<b>Format</b>
+COMPT   |MOD  |   $(PREV)                    37.1 -123.4 29.0 10 180
+DBID     idCompT
+Variable length fields:
+Latitude  (degrees decimal - float)
+Longitude (degrees decimal - float)
+Elev      (meters - float)
+Azimuth   (degrees - int)
+Dip       (degrees - int)
+Comment  (Component Comment)  *Note:  quotes are not required
+</pre>
+
+<b>Purpose</b><br>
+Modify the parameters of a Component(Lat/Lon/Elev and Azm/Dip) for 
+a given time interval.  The command modifies a Component time interval(CompT)
+record in the database.  If successful, $(PREV) for idCompT will be set 
+to the ID of the updated CompT record.
+<br><br>
+
+<a name="sta_maint_commands-compt_end"><h5>END</h5>
+Terminate a Component time interval at a given time.
+<br>
+<pre>
+<b>Format</b>
+COMPT   |END  |  1000000123                  1240000000
+DBID     idCompT
+Variable length fields:
+End Time:  seconds since 1970 (double) when the CompT will be terminated.
+</pre>
+
+<b>Purpose</b><br>
+Terminate a Component time interval at a given time.  If successful, $(PREV) 
+for idCompT will become the idCompT of the affected record.  This command 
+DOES AFFECT time intervals for associated Channels.  
+<br><br>
+
+<a name="sta_maint_commands-compt_modt"><h5>MODT</h5>
+Modify one of the time intervals for a Component.
+<br>
+<pre>
+<b>Format</b>
+COMPT   |MODT |   $(PREV)                    924000000 1250000000
+DBID     idCompT
+Variable length fields:
+Start time for the Component time interval  
+                         (seconds since 1970 double)
+Start time for the Component time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the component
+                          is still operating, then the end time will
+						  be 9999999999.99
+</pre>
+
+<b>Purpose</b><br>
+Change the time interval for a set of Component parameters.  See SiteT MODT
+for a somewhat far-fetched hypothetical case.<br>
+If successful, $(PREV) for idCompT will become the idCompT of the modified record.
+If a different CompT record exists with an overlapping time interval to the given
+one, an error is issued.  
+<br><br>
+
+<a name="sta_maint_commands-compt_split"><h5>SPLIT</h5>
+Splits an existing Component time interval into two parts.
+<br>
+<pre>
+<b>Format</b>
+COMPT   |SPLIT|   $(PREV)                    1250000000
+DBID     idCompT
+Variable length fields:
+Split time for the Component time interval  
+                         (seconds since 1970 double)
+</pre>
+
+<b>Purpose</b><br>
+Split an existing Component time interval.  Example:  A Component exists in a farmer's
+field.  It's current slab crumbles and a new one is pored.  When the component
+is setup in the new slab, it is angled 5 degrees off of north.  It is still the
+same component, but the azimuth is now different.<br>
+The component name is kept.  The existing Component time interval
+is SPLIT at the move date, and then the second record (tSplit - <now>) is updated
+with the azm of the new location.<br>
+If successful, $(PREV) for idCompT will become the idCompT of the second(new) record,
+with range tSplit-tEnd.  The orignial record will have time interval (tStart - tSplit).
+If the tSplit time is outside the time range of the given record, an error
+is issued.
+<br><br>
+
+
+<a name="sta_maint_commands-chan"><h4>CHAN Commands</H4>
+<a name="sta_maint_commands-chan_add"><h5>ADD</h5>
+Add a new Channel to the DB
+<br>
+<pre>
+<b>Format</b>
+CHAN     ADD                                 Generic Comment
+DBID     < not used >
+Variable length fields:
+Comment  (Chan Comment)  
+</pre>
+
+<b>Purpose</b><br>
+Create a new Channel record in the database.  If successful, $(PREV) for
+idChan will become the idChan of the newly created record.
+<br><br>
+
+<a name="sta_maint_commands-chan_end"><h5>END</h5>
+Terminate a Channel at a given time.
+<br>
+<pre>
+<b>Format</b>
+CHAN     END      $(PREV)                    1099999999
+DBID     idChan
+Variable length fields:
+End Time:  seconds since 1970 (double) when the Channel will be terminated.
+</pre>
+
+<b>Purpose</b><br>
+Terminate a Channel at a given time.  For use in recording that an active
+Channel shutdown.  If successful, $(PREV) for idChan will become the idChan
+of the affected record.  This command will delete/truncate any 
+Channel time interval(ChanT) records 
+containing validity time ranges beyond the given termination time.
+<br><br>
+
+<a name="sta_maint_commands-chan_assoc"><h5>ASSOC</h5>
+Associated a Component with a Channel for a given time interval
+<br>
+<pre>
+<b>Format</b>
+CHAN     ASSOC    $(PREV)    ISCO DK GHZ     999999799 999999999
+DBID     idChan
+Variable length fields:
+Start time for the Channel time interval  
+                         (seconds since 1970 double)
+Start time for the Channel time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the Channel
+                          is still operating, then the end time will
+						  be 9999999999.99
+</pre>
+
+<b>Purpose</b><br>
+Associate a channel with a component for a time interval.  For most components 
+there will only be one channel.  This command links a component (some instrument
+on/in the ground someplace) with a channel(some digital data feed).<br>
+If successful, $(PREV) for idChan and idChanT will become those of the modified record
+and associated component.<br>
+If a different CompT record exists with an overlapping time interval to the given
+one, an error is issued. 
+<br><br>
+
+<a name="sta_maint_commands-chan_del"><h5>DEL</h5>
+Delete a given Site
+<br>
+<pre>
+<b>Format</b>
+CHAN     DEL      $(PREV)
+DBID     idChan
+Variable length fields:
+< none >
+</pre>
+
+<b>Purpose</b><br>
+Delete a Channel from the database.  The Channel will be PERMANENTLY 
+DELETED FROM THE DATABASE!!!!
+<br><br>
+
+
+<a name="sta_maint_commands-chant"><h4>CHANT Commands</H4>
+<a name="sta_maint_commands-chant_mod"><h5>MOD</h5>
+Modify the parameters of a Channel during a given time interval
+<br>
+<pre>
+<b>Format</b>
+CHANT    MOD      $(PREV)                    0 40.00 7.16260e+009                        CMG-3N - ISCO,GHZ,DK
+DBID     idChanT
+Variable length fields:
+idCookedTF  (DB ID of the associated Cooked Transform Function - EWDBid)
+SampleRate (samples/sec - float)
+Gain       (X.XXXe+X - %e double)
+Comment  (ChanT Comment)
+</pre>
+
+<b>Purpose</b><br>
+Modify the parameters of a Channel(SampleRate, Gain, and Response) for 
+a given time interval.  The command modifies a Channel time interval(ChanT)
+record in the database.  If successful, $(PREV) for idChanT will be set 
+to the ID of the updated ChanT record.  Use 0 for idCookedTF to indicate
+there is no associated response function.
+<br><br>
+
+<a name="sta_maint_commands-chant_modt"><h5>MODT</h5>
+Modify one of the time intervals for a Channel.
+<br>
+<pre>
+<b>Format</b>
+CHANT    MODT     $(PREV)                    999999999  1010000000
+DBID     idChanT
+Variable length fields:
+Start time for the Channel time interval  
+                         (seconds since 1970 double)
+Start time for the Channel time interval  
+                         (seconds since 1970 double)  
+						  Note*  If the Channel
+                          is still operating, then the end time will
+						  be 9999999999.99
+</pre>
+
+<b>Purpose</b><br>
+Change the time interval for a set of Channel parameters.  <br>
+If successful, $(PREV) for idChanT will become the idChanT of the modified record.
+If a different ChanT record exists with an overlapping time interval to the given
+one, an error is issued.  
+<br><br>
+
+<a name="sta_maint_commands-chant_modf"><h5>MODF</h5>
+Modify the parameters of a Channel during a given time interval
+<br>
+<pre>
+<b>Format</b>
+CHANT    MODF     $(PREV)                    40.00 7.26260e+010 PZ P 123.45e+0 122.27e+0 Z 0.0e+0 0.0e+0 0.0e+0 0.0e+0 COMMENT CMG-3ME - ISCO,BHE,US
+DBID     idChanT
+Variable length fields:
+SampleRate (samples/sec - float)
+Gain       (X.XXXe+X - %e double)
+KEYWORD PZ (a keyword token "PZ" separated by spaces)
+KEYWORD P  (a keyword token "P" separated by spaces)
+Poles (zero or more double pairs interpreted as: real[double] / imaginary[double])
+KEYWORD Z  (a keyword token "Z" separated by spaces)
+Zeroes (zero or more double pairs interpreted as: real[double] / imaginary[double])
+KEYWORD COMMENT  (a keyword token "COMMENT" separated by spaces)
+Description  (Cooked Transform Function Description)
+</pre>
+
+<b>Purpose</b><br>
+Modify the parameters of a Channel(SampleRate, Gain, and Response) for 
+a given time interval.  The command modifies a Channel time interval(ChanT)
+record in the database.  If successful, $(PREV) for idChanT will be set 
+to the ID of the updated ChanT record.  This function has the same purpose
+as CHANT MOD, except that CHANT MOD uses the DB ID of an existing Cooked
+Transform Function, while MODF, includes the actual transform function as part
+of the command.
+<br><br>
+
+
+<a name="sta_maint_commands-resp"><h4>RESP Commands</H4>
+<a name="sta_maint_commands-resp_add"><h5>ADD</h5>
+Create a new Poles and Zeroes Cooked Transform Function
+<br>
+<pre>
+<b>Format</b>
+RESP     ADD                                 CMG-3N standard Function PZ P 123.45e+0 122.27e+0 127.57e+0 0 Z 0.0e+0 0.0e+0 0.0e+0 0.0e+0 0.0e+0 0.0e+0
+DBID     < none >
+Variable length fields:
+Description  (Cooked Transform Function Description)
+KEYWORD PZ (a keyword token "PZ" separated by spaces)
+KEYWORD P  (a keyword token "P" separated by spaces)
+Poles (zero or more double pairs interpreted as: real[double] / imaginary[double])
+KEYWORD Z  (a keyword token "Z" separated by spaces)
+Zeroes (zero or more double pairs interpreted as: real[double] / imaginary[double])
+</pre>
+
+<b>Purpose</b><br>
+Create a new Poles and Zeroes Cooked Transform Function in the database.
+If successful, $(PREV) for idCookedTF will be set 
+to the ID of the newly created CookedTF record.  
+<br><br>
+
+<a name="sta_maint_commands-resp_mod"><h5>MOD</h5>
+Modify an existing Poles and Zeroes Cooked Transform Function
+<br>
+<pre>
+<b>Format</b>
+RESP     MOD      $(PREV)                    CMG-3N NSN standard Function PZ P 123.45e+0 125.27e+0 Z 0.0e+0 0.1e+0 0.0e+0 0.0e+0 
+DBID     idCookedTF
+Variable length fields:
+Description  (Cooked Transform Function Description)
+KEYWORD PZ (a keyword token "PZ" separated by spaces)
+KEYWORD P  (a keyword token "P" separated by spaces)
+Poles (zero or more double pairs interpreted as: real[double] / imaginary[double])
+KEYWORD Z  (a keyword token "Z" separated by spaces)
+Zeroes (zero or more double pairs interpreted as: real[double] / imaginary[double])
+</pre>
+
+<b>Purpose</b><br>
+Modify the properties of the Cooked Transform Function identified by the 
+idCookedTF field.  Command modifies the description and Poles/Zeroes of
+the given function.
+If successful, $(PREV) for idCookedTF will be set to the ID of the 
+updated CookedTF record.  
+<br><br>
+
+<a name="sta_maint_commands-resp_modc"><h5>MODC</h5>
+Modify the description of an existing Poles and Zeroes Cooked Transform Function
+<br>
+<pre>
+<b>Format</b>
+RESP     MODC     $(PREV)                    This is the Response function for an STS-2
+DBID     idCookedTF
+Variable length fields:
+Description  (Cooked Transform Function Description)
+</pre>
+
+<b>Purpose</b><br>
+Modify the description of the Cooked Transform Function identified by the 
+idCookedTF field.  
+If successful, $(PREV) for idCookedTF will be set to the ID of the 
+updated CookedTF record.  
+<br><br>
+
+<h3><a name="sta_maint-usage"></a>USAGE</h3>
+<pre>
+USAGE: sta_maint < DB_USER > < DB_SID > < INPUT_FILENAME > < OUTPUT_FILENAME >
+  < DB_USER >          Database username
+  < DB_SID >           Database SID descriptor
+  < INPUT_FILENAME >   Name of file from which station data will be read
+                      and used to build database
+  < OUTPUT_FILENAME >  Name of file where actions/results will be logged
+</pre>
+<br>
+
+

@@ -1,0 +1,4 @@
+vdlalpha -name PDYAR -stations PDY31 -chans bz,bn,be -f 40 -secs 40 -logpath /export/data/logs/vdl/ -port 2025 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i pdy31 -n 15 -s 6 -t 1 -c 1
+vdlalpha -name ULM -stations ULM -chans bz,bn,be -f 40 -secs 12 -logpath /export/data/logs/vdl/ -port 2028 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i ulm -n 15 -s 13 -t 1 -c 1 
+vdlalpha -name ARCES -stations ARE0 -chans bz,bn,be -f 40 -secs 40 -logpath /export/data/logs/vdl/ -port 2029 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i are0 -n 15 -s 14 -t 1 -c 1 -adbg 13
+vdlalpha -name NOA -stations NAO01 -chans bz,bn,be -f 40 -secs 20 -logpath /export/data/logs/vdl/ -port 2030 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i nao01 -n 15 -s 15 -t 1 -c 1 

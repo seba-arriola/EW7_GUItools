@@ -1,0 +1,34 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+
+
+###############################
+#Set APP to your program name.
+###############################
+APP = shakemapfeed
+FULL_APP_NAME = $(EW_BIN)$(APP)$(EXE)
+
+###############################
+#Set APP_OBJECTS to your object 
+# files
+#Set APP_OTHER to any other bind
+# options or libraries that you
+# need specially for your app.
+###############################
+APP_OBJECTS =     $(APP).$(OBJ) procevent.$(OBJ) readcfg.$(OBJ)
+				
+
+APP_OTHER = 
+
+###############################
+#Set ALL_CLIENT_LIBS to all non DB
+# objects needed by your app.
+###############################
+ALL_CLIENT_LIBS =  	$(EW_LIB)kom.$(OBJ) $(EW_LIB)getutil.$(OBJ) \
+       						 	$(EW_LIB)read_arc.$(OBJ) $(EW_LIB)sleep_ew.$(OBJ) \
+      							$(EW_LIB)chron3.$(OBJ) $(EW_LIB)dirops_ew.$(OBJ) $(EW_LIB)time_ew.$(OBJ) \
+    					    	$(EW_LIB)tlay.$(OBJ) $(EW_LIB)transport.$(OBJ) $(EW_LIB)mnbrak.$(OBJ) $(EW_LIB)brent.$(OBJ) \
+										$(EW_LIB)rw_mag.$(OBJ) 
+

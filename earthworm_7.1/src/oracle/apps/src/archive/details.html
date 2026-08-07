@@ -1,0 +1,22 @@
+<!-- details.html  archive details page -->
+
+<html>
+<title>EWDB Applications: archive: details</title>
+<b><font size=+2>ARCHIVE: </font><font size=+1>Details</font></b>
+<br><br>
+Archive writes events from the DBMS to SAC directories.
+<pre>
+Usage: archive <config file> A - B  DELETE {ALL | SNIPPETS | NO | NOSAVE}
+	where:\n ");
+		<config file> is the full path to the configuration file
+		A and B are event id's, inclusive
+		DELETE ALL will delete paramateric and trace data
+		DELETE SNIPPETS will delete trace data only
+		DELETE NO will delete nothing
+		DELETE NOSAVE will delete trace data only without saving it
+	All tokens must be separated by spaces.
+
+	Log file will be written to the directory specified by the
+	EW_LOG environment variable.
+</pre>
+</html>

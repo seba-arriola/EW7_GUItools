@@ -1,0 +1,36 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY unlocker
+
+LOCATION THIS_FILE
+
+LINK_NAME Sample Config File
+LINK unlocker.d.txt
+
+DESCRIPTION <b>unlocker</b> is a utiltity for unlocking stale locked
+snippet requests.  It is the wicked-stepsister of the Concierge family.
+It will attempt to unlock all locked snippet requests that are older
+than <HoursTillUnlocking> hours.  If ora_trace_fetch is running and
+it dies while processing a request, it will leave a bunch of requests
+in limbo, because it had reserved them and then died before it could
+free them.  The <b>unlocker</b> is set to run as a cron job, and 
+unlocks any requests that it deems to be stale.  That way they are
+freed up to be processed by ora_trace_fetch again.
+<p>
+This program is meant to be run out of cron(or some other 
+periodic invocation method). Its function is to recover requests from
+unexpected crashes in ora_trace_fetch(bad!!!).
+<p> 
+This program is untested as of 2002/05/15
+<p><br>
+Initial version by DavidK 2002/05/15
+
+
+*************************************************
+************************************************/
+

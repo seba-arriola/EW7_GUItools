@@ -1,0 +1,11 @@
+vdlalpha -name MAW -stations MAW -chans bz,bn,be -f 20 -secs 30 -logpath /export/data/logs/vdl/ -port 2026 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i maw -n 15 -s 2 -t 1 -c 1 
+vdlalpha -name SCHQ -stations SCHQ -chans bz,bn,be -f 40 -secs 30 -logpath /export/data/logs/vdl/ -port 2027 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i schq -n 15 -s 3 -t 1 -c 1 
+vdlalpha -name ESDC -stations ESLA -chans bz,bn,be -f 20 -secs 10 -logpath /export/data/logs/vdl/ -port 2022 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i esla -n 15 -s 4 -t 1 -c 1 
+vdlalpha -name STKA -stations STKA -chans bz,bn,be -f 20 -secs 30 -logpath /export/data/logs/vdl/ -port 2023 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i stka -n 15 -s 7 -t 1 -c 1
+vdlalpha -name SPITS -stations SPB4 -chans bz,bn,be -f 40 -secs 40 -logpath /export/data/logs/vdl/ -port 2024 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i spb4 -n 15 -s 11 -t 1 -c 1
+vdlalpha -name BRAR -stations BR31 -chans bz,bn,be -f 20 -secs 300 -logpath /export/data/logs/vdl/ -port 2020 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i br31 -n 15 -s 9 -t 1 -c 1 
+vdlalpha -name CMAR -stations CM31 -chans bz,bn,be -f 20 -secs 300 -logpath /export/data/logs/vdl/ -port 2021 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i cm31 -n 15 -s 10 -t 1 -c 1 
+vdlalpha -name PDYAR -stations PDY31 -chans bz,bn,be -f 40 -secs 40 -logpath /export/data/logs/vdl/ -port 2025 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i pdy31 -n 15 -s 6 -t 1 -c 1
+vdlalpha -name ULM -stations ULM -chans bz,bn,be -f 40 -secs 12 -logpath /export/data/logs/vdl/ -port 2028 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i ulm -n 15 -s 13 -t 1 -c 1 
+vdlalpha -name ARCES -stations ARE0 -chans bz,bn,be -f 40 -secs 40 -logpath /export/data/logs/vdl/ -port 2029 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i are0 -n 15 -s 14 -t 1 -c 1 -adbg 13
+vdlalpha -name NOA -stations NAO01 -chans bz,bn,be -f 40 -secs 20 -logpath /export/data/logs/vdl/ -port 2030 -addr 192.239.137.222 -host nsn3.cr.usgs.gov -i nao01 -n 15 -s 15 -t 1 -c 1  

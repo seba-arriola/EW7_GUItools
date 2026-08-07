@@ -1,0 +1,40 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.1 2005/07/27 15:36:46 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/27 15:36:46  friberg
+#     added in UNIX makefile
+#
+#     Revision 1.2  2000/08/08 18:00:30  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 19:08:08  lucky
+#     Initial revision
+#
+#
+#
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+putter: putter.o $L/getutil.o $L/kom.o $L/transport.o $L/sleep_ew.o
+	cc -o $B/putter putter.o $L/getutil.o $L/kom.o $L/transport.o $L/sleep_ew.o \
+	-lm -lpthread
+
+
+lint:
+	lint putter.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/putter*

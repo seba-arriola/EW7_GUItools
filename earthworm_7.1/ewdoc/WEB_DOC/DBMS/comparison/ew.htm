@@ -1,0 +1,331 @@
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Microsoft Developer Studio">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>PG&E/USGS Schema</TITLE>
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>PG&E/USGS Schema</H1>
+</CENTER>
+
+<CENTER>
+<H2>Introduction</H2>
+</CENTER>
+
+<P>
+Of those analyzed, the PG&E/USGS schema was the only one directly
+addressing the real-time, response oriented problems.
+It should be very clearly understood that this schema was not
+ever meant general solution.
+It was meant to support some experimentation in utilizing databases
+in support of real-time systems, and as such it has performed
+admirably.
+Within the Earthworm community, whatever that might be, the
+schema was referred to as the "trash" schema in order to prevent
+it being taken too seriously.
+In fact it isn't exactly trash, and Dr. Bruce Jullian, the originator
+of the schema, built some very interesting features into its design.
+Hopefully history will not repeat itself as when the perpetrators
+of the "big bang" hypothesis selected a nomen for a similar
+reason.
+</P>
+
+<CENTER>
+<H2>Discussion</H2>
+</CENTER>
+
+<P>
+The entity relationship diagram below was redrafted from an
+original put together by David Kragness and forwarded to
+me on July 29, 1998.
+As far as I know there is no formal documentation available
+at the time of this writing and I believe this to be the
+most current description.
+</P>
+
+<TABLE>
+<TR>
+	<TD>
+		<IMG SRC=images/ew.gif>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		ERD_PGE/USGS: Entity relation diagram (ERD) showing the
+		Parametric Information Schema.
+	</TD>
+</TR>
+</TABLE>
+
+<P>
+As before, tables and relationships with a direct counterpart to
+the CSS 3.0/3.1 core are shown in bold to facilitate a direct
+comparison.
+One interesting feature of the PG&E/USGS design is that every
+table has a single, long integer value as its primary key,
+presumably all drawn from separate pools.
+Consequently all foreign keys are long integers as well.
+The consequences of such a design decision are not entirely
+obvious, but real-time performance might well be an issue here.
+The design does not appear to implement any alternate keys or
+indexing.
+This would appear to require that the <B>Event</B> table is
+only sorted on event identifier, rendering temporal queries
+increasingly less efficient as the number of rows in the table
+grows.
+Again, recall that the intent of the design was to serve as
+an experimental relational substrate for a real-time system,
+not as a general solution.
+The idea of relying more heavily on integer keys is intriguing,
+and could well be of value in improving transactional response
+times.
+A good analogy for this might be the way the IDC schema uses
+an alternate key, <B>chanid</B>, in the <B>sitechan</B> table
+to facilitate joins with the <B>arrival</B> table.
+</P>
+
+<CENTER><H3>
+	Catalog Layer
+</H3></CENTER>
+
+<P>
+As with CSS 3.0/3.1, there is only one relationship described at the
+<B>CATALOG</B> layer.
+This is the <B>Event</B> table, homologous to the <B>EVENT</B> table
+in the CSS 3.0/3.1 core.
+The only significant variation is the migration of the event type
+upward from the <B>Origin</B> table in the <B>SUMMARY</B> layer.
+This was also done in the NCEDC schema and the consequences are
+discussed in detail there.
+I think that the IDC approach is the correct one,
+and there should not be any new information at the <B>CATALOG</B>
+layer.
+Also, issues regarding multiple catalogs apply, which further
+deprecates the idea of placing the event type at this level.
+The whole idea of an event type is questionable, since
+to a large extent it is a property of the observer not the thing
+being observed, as in one networks teleseism is another networks
+local.
+It would seem that the event type could more aptly be replaced by the
+type of location algorithm used to calculate an origin.
+With increasing decentralization and exchange of data such concepts
+need to be reconsidered.
+</P>
+
+<CENTER><H3>
+	Summary Layer
+</H3></CENTER>
+
+<P>
+Three tables are shown at the <B>SUMMARY</B> layer.
+These are the <B>Origin</B>, <B>Mechanism</B>, and <B>Magnitude</B>
+tables.
+The data attributes included in the <B>Origin</B> table are much the
+same as those in the IDC table <B>origin</B> with secondary derived
+parameters replaced with their regional network counterparts.
+For example, columns such as the number of depth phases used have
+been replaced with <B>gap</B> and <B>dmin</B>.
+I remain convinced that derived parameters specific to a specific
+location methodology should be removed to a parallel table, providing
+structural support for multiple approaches.
+My preference is to restrict the origin table to the core attributes,
+such as latitude, longitude, depth, and origin time along with
+a descriptor indicating who the origin was calculated, such as
+hypoinverse or a teleseismic locator.
+The location type would then determine a table of secondary
+parameters keyed by origin identifier containing locator
+specific secondary parameters.
+The <B>origin</B> table also includes origin errors, parameters
+that the other two schema place in a parallel table.
+Spatial error are described with a minimum
+number of columns with all redundancy removed.
+There is no provision for origin time error.
+</P>
+
+<P>
+The <B>origin</B> table does provide one other interesting attribute,
+<B>ExternalID</B>.
+I'm guessing that this in some way represents an indentifier assigned
+at the source as opposed one generated locally.
+If so, then this feature begins to address some of the nasty
+problems of multicentric analysis and exchange of derived data
+between seismic processing centers.
+</P>
+
+<P>
+Each origin also contains a duration magnitude which apparently
+must be calculated by the same location program that was used for
+the origin or nulled and calculated later.
+Since the arrival data discussed below also contains coda data this
+makes a certain amount of sense.
+Furthermore, the per station magnitude summary is included in the
+link layer, facilitating real-time magnitude assessment.
+In the NCEDC design both magnitude and supporting data are broken out
+into separate tables.
+Keep in mind that the design here was not intended to express all of
+the data relationships in the general case.
+Also, this is a real-time approach, and early magnitude calculations
+are an important consideration.
+This is one example of real-time specific design, although I'm not
+convinced yet that the data should be mixed in this way.
+</P>
+
+<P>
+There is a serious problem in the relationship between the <B>Origin</B>
+and <B>Event</B> tables.
+As it is drawn there is a one to one relationship between the two.
+This is undoubtedly an error, and both connectors on the <B>Event</B>
+table side should probably have been made optional.
+Otherwise it is required that every <B>Origin</B> be the preferred
+origin of some <B>Event</B>.
+</P>
+
+<P>
+The <B>SUMMARY</B> layer also include a table for magnitude and
+a mechanism.
+Although no relationships are shown on the entity relationship
+diagram provided.
+One is implied by the existance of the <B>Origin</B>
+table key as an foreign key in each.
+Elimination of cross relationships within the <B>SUMMARY</B> layer
+would be expected to increase real-time performance with
+a concommitant slight decrease in query efficiency.
+The <B>Magnitude</B> table contains the expected magnitude and
+magnitude type.
+There is also a <B>Mad</B> field the purpose of which is unknown.
+</P>
+
+<CENTER><H3>
+	Link Layer
+</H3></CENTER>
+
+<P>
+Each of the schemata use a table of links to associate arrival data
+with origins.
+In the IDC and NCEDC cases these were the <B>assoc</B> and
+<B>AssocArO</B> tables respectively.
+The arrival and origin identifiers constituted both
+a composite primary key as well as foreign keys to the
+tables of arrival descriptions and origins.
+The PG&E/USGS schema adds a twist to this by implementing a
+serial key specific to the <B>Link</B> table which is alone on
+the <B>LINK</B> layer.
+I can't see what is gained by this device unless it is intended to
+be referenced externally.
+Otherwise I believe that the <B>Arrival</B> and <B>Origin</B> table
+keys taken as a composite keys are sufficient.
+There may possibly be a performance issue here, since for a database
+trigger implementation of an associator, the <B>Link</B> rows
+are updated frequently during seismic events.
+</P>
+
+<P>
+The ancillary parameters in the <B>Link</B> table suggest that it
+serves a dual purpose.
+It contains a phase identification, which can be a product of the
+association process, as well as travel time residuals and
+epicentral distances.
+The comparable tables in the other schemata contain similar parameters
+that are dependant on both arrival and origin.
+As mentioned above, the <B>Link</B> table also contains station
+dependant duration magnitude parameters that appear to be derived
+from coda parameters in the <B>Pick</B> table.
+The station summary information provided in the <B>Link</B> table
+parallels the "pick" and coda data provided in the <B>Pick</B> table.
+The link between origin and arrival data seems natural enough, although
+generalizing to both locals and teleseisms is not well represented.
+The magnitude data, however, is overly specialized and should probably
+be assembled into magnitude type dependant side tables.
+The caveat here is that for purposes of real-time and near real-time
+magnitude calculcations some accomodation of such estimates in the
+association with the link might be appropriate.
+</P>
+
+<CENTER><H3>
+	Data Layer
+</H3></CENTER>
+
+<P>
+The principal derived information in the <B>DATA</B> layer is
+contained in the <B>Pick</B> table.
+This table is homologous to <B>arrival</B> in the IDC schema,
+with teleseismic arrival parameters replaced with the local
+network pick description.
+The <B>Pick</B> table also contains two arrays, which is a violation
+of first normal form.
+Even though array elements are available in Oracle 8.0, it
+would probably be a good idea to avoid such useage and move
+coda segments to a parallel relation.
+This would also eliminate the restriction of 6 elements from
+the coda description.
+Rows in the <B>Pick</B> table reference station information through
+the <B>SCNID</B> external key, which is identical to the fast path
+in CSS 3.0/3.1 where <B>arrival</B> entries reference channel specific
+information through the <B>chanid</B> foreign key.
+</P>
+
+<CENTER><H3>
+	Waveforms
+</H3></CENTER>
+
+<P>
+The principal data referenced in the <B>DATA</B> layer
+and this schema offers a fairly unique solution.
+This is the <B>Snippet</B> table which not only include the starting
+times, ending times and trace length as does the <B>wfdisk</B> table
+in the IDC schema but also the entire digital waveform using
+Oracle's "LONG RAW" data type.
+Again, the intent was to determine load limits and compare internal
+storage of waveform data with other solutions involving file paths
+or Earthworm waveserver references.
+Pathnames are appropriate for entirely local installations.
+For distributed processing systems, internal storage and wave server
+references provide a more general approach.
+My personal preference is for wave server for real-time applications.
+For data warehousing and archiving system dependant pathnames are
+probably acceptable, since a product will almost certainly packaged in
+an exchange format such as SEED for delivery purposes.
+</P>
+
+<P>
+Each <B>Snippet</B> object references exactly one <B>Event</B>
+row and exactly one <B>SCN</B> table row.
+More than one snippet can be associated with a single event.
+Presumably the event type indicates an unassociated waveform
+sequence.
+The approach has the advantage of being able to store segmented
+waveform data.
+The reference from the <B>DATA</B> layer up to the <B>CATALOG</B>
+layer might be more justified here if the <B>Event</B> row and
+the first snippet are created simultaneously by some kind
+of single station trigger.
+The relationship with the <B>SCN</B> table associates each snippet
+with a particular channel (instrument) at a particular site and
+during a specified time interval.
+Unlike the NCEDC approach, this reference is not rich enough to
+express multiple signal paths from a single field instrument.
+</P>
+
+<CENTER><H3>
+	Infrastructure
+</H3></CENTER>
+
+<P>
+The <B>INFRASTRUCTURE</B> layer is very nearly the same as the
+CSS 3.0/3.1 core.
+Basically the <B>SCN</B> table mimics the IDC <B>sitechan</B> table,
+and the <B>Site</B> table follows the IDC <B>site</B> sans the
+self referential array links.
+An exception to this is the absense of an auxiliary key in the <B>SCN</B>
+table allowing searches and sequencing on station name, channel name,
+and valid interval start time.
+Adding such an auxiliary key is a trivial change to the schema and
+easily implemented.
+The <B>chanid</B>, which is an auxiliary key in the IDC <B>sitechan</B>
+table is here a primary key.
+</P>
+
+</BODY>
+</HTML>

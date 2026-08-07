@@ -1,0 +1,56 @@
+# Configuration file for evtK2ora:
+# I stuff the trace data from the K2 .evt files into the DB
+# I associate such trace snippets with pre-existing events in the DB. A snippet is 
+# associated with an event if any part of the snippet falls between P- and S-arrival
+# time, as calculated in a homogenous half-space. The P velocity is specified below.
+# S velocity is taken as P/1.73
+#
+# The station list must already be loaded into the DB.
+#
+# When a file is processed, it is moved from the input directory to the output directory.
+# When an error is enountered, the file is moved to the error directory and the
+# program continues on to the next file until the input directory is empty.
+
+#
+# LogDir: Where log file will be written
+#
+LogDir /home/earthworm/run_MRO/log/
+
+
+# Data Base Server Identification. Not for the security squeamish.
+DBservice sm.usgs
+DBpassword main
+DBuser p3_main
+
+# Directory where we should look for the pre-chewed ascii K2 files
+EVTFilesInDir	g:\SJPostStalist
+
+# Directory where the successfully processed files are put
+EVTFilesOutDir g:\SJPostOra
+
+# Directory where the problem files are put
+EVTFilesErrorDir g:\SJError
+
+
+# For each trace snippet, I'll select a suite of candidate events 
+# for association. This suite will include all events falling in the 
+# time interval between the end-time of the snippet, and MaxTravelTime
+# seconds before the start of the snippet. This is done for performance
+# reasons, and to prevent stray associations with very distant events.
+MaxTravelTime  5000000
+
+# Sizes of trace memory. Determines how much memory we'll try to grab
+TraceBufferLen 5000 	# largest trace snippet we'll ever have to deal with
+				# in bytes/1000.
+
+NetworkName AF
+
+# Local P velocity, in km/sec
+Pvelocity 5
+
+# Uncertainty of K2 clock in seconds
+ClockDoubt 1
+
+# Debug switch: the token "Debug" (without the quotes) can be stated.
+# If it is, lots of weird debug messages will be produced 
+# Debug

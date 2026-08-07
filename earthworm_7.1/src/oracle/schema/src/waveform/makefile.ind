@@ -1,0 +1,46 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#################################################################
+
+
+
+
+API_OBJECTS = \
+          ewdb_api_CreateWaveform.$(OBJ) \
+          ewdb_api_GetWaveformSnippet.$(OBJ) \
+          ewdb_api_GetWaveformListByEvent.$(OBJ) \
+          ewdb_api_UpdateWaveform.$(OBJ) \
+          ewdb_api_GetWaveformDesc.$(OBJ) \
+		      ewdb_api_DeleteSnippetRequest.$(OBJ) \
+		      ewdb_api_DeleteWaveformsBeforeTime.$(OBJ) \
+          ewdb_api_GetNextScheduledSnippetRetrievalAttempt.$(OBJ) \
+          ewdb_api_GetSnippetRequestList.$(OBJ) \
+          ewdb_api_ProcessSnippetReqs.$(OBJ) \
+          ewdb_api_UpdateSnippetRequest.$(OBJ) \
+          ewdb_api_UpdateSnippetRequestControlParams.$(OBJ) \
+          ewdb_api_GetListOfOldSnipReqs.$(OBJ) 
+
+
+INTERNAL_OBJECTS = \
+          ewdb_internal_CreateWaveformDesc.$(OBJ) \
+		  ewdb_internal_CreateSnippet.$(OBJ) \
+          ewdb_internal_GetWaveformList.$(OBJ) \
+          ewdb_internal_CheckidWaveform.$(OBJ) \
+          ewdb_internal_UpdateWaveformDesc.$(OBJ) \
+          ewdb_internal_UpdateSnippet.$(OBJ) \
+          ewdb_internal_GetWaveformListWithCompT.$(OBJ) \
+          ewdb_internal_CreateSnippetRequest.$(OBJ) \
+          ewdb_internal_GetReservedSnipReqs.$(OBJ) \
+          ewdb_internal_LockReservedSnipReqs.$(OBJ) \
+          ewdb_internal_LockSnipReq.$(OBJ) \
+          ewdb_internal_ReleaseReservedSnipReqs.$(OBJ) \
+          ewdb_internal_ReserveSnippetRequests.$(OBJ)
+
+
+ALL:  $(API_OBJECTS) $(INTERNAL_OBJECTS) 
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts
+
+

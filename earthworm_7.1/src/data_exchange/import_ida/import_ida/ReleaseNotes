@@ -1,0 +1,18 @@
+import_ida release notes
+
+2.1 04/14/2002
+    Rewrote xfer_Read logic to eliminate memory access errors
+    under NT.
+
+2.0 02/28/2002
+    Rework idatap library to make it MT-safe.  Rework program logic
+    to support one thread per connection instead of one process per
+    connection.  Port to NT.
+
+1.2 12/13/2000
+    Rework idatap library to override minimal gap
+    servers when minimal delay policy is in effect.
+    Introduce new MinimalLag parameter to support this.
+
+1.1 12/26/1997
+    initial release

@@ -1,0 +1,35 @@
+
+#
+#    $Id: makefile.ux,v 1.1 2005/07/27 15:21:25 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/27 15:21:25  friberg
+#     added UNIX makefile
+#
+#
+
+LIBS = -lm -lpthread
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+O = sniffwave.o $L/getutil.o $L/kom.o $L/transport.o $L/sleep_ew.o \
+    $L/logit.o $L/time_ew.o $L/swap.o
+
+sniffwave: $O
+	cc -o $B/sniffwave $O $(LIBS)
+
+lint:
+	lint sniffwave.c $(GLOBALFLAGS)
+
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/sniffwave*

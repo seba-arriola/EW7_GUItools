@@ -1,0 +1,14 @@
+/* arc2trigII programmer notes 
+   programmer_notes.txt */
+
+Programmer Notes:
+
+Authors
+Story: The grand idea (behind authors) is that messages which 
+relate to an event shall include an author field. 
+In particular, the trigger message shall include, after
+the "EVENT ID:", an "AUTHOR:", which is followed by the author id. The author
+id is to be a series of logos, separated by :'s. Each logo is represented as
+three sets of three ascii digits. The first logo is the logo of the module
+which originated this event, followed by the logos of the modules which
+processed it.

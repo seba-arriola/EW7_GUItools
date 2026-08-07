@@ -1,0 +1,836 @@
+<html>
+<title>
+Concierge - Details
+</title>
+
+<h1><center>CONCIERGE</center></h1>
+
+<H3>
+CONTENTS
+</H3>
+<a href=#OVERVIEW>OVERVIEW</a><br>
+<a href=#WARNINGS>WARNINGS</a><br>
+<a href="#ora_trace_req">ORA_TRACE_REQ</a><br>
+<a href="#ora_trace_fetch">ORA_TRACE_FETCH</a><br>
+<a href=#trickery>DETERMINING RETRIEVAL TIMES / SCHEDULING</a><br>
+<a href=#INSTALLING>INSTALLING CONCIERGE</a><br>
+<a href=#CONFIGURING>CONFIGURING CONCIERGE</a><br>
+<a href=#KNOWN_ISSUES>KNOWN ISSUES</a><br>
+<a href=#BLAME>BLAME</a><br>
+
+<br><br>
+
+<A NAME=OVERVIEW>
+<H3>
+OVERVIEW
+</H3>
+<a href=#HISTORY>HISTORY</a><br>
+<a href=#PURPOSE>PURPOSE</a><br>
+<a href="#OUTPUTS">OUTPUTS</a><br>
+<a href="#SUB-TOPICS">SUB-TOPICS</a><br>
+
+<A NAME=HISTORY>
+<H4>
+HISTORY
+</H4>
+
+Concierge is the name given to a project involving the 
+archiving of waveform data.  Concierge is the latest
+waveform archiving scheme, and is the latest evolution
+of the XXX_trace_save family of modules.
+<p>
+There have been many XXX_trace_save modules.
+The first incarnation of an XXX_trace_save module
+related to Oracle was db_trace_save written by 
+Lynn Dietz.
+<p>
+
+Then came ora_trace_save, a mutated version of db_trace_save
+possibly written by Alex B.
+<p>
+
+Then came ora_trace_save2, a mutated version of ora_trace_save
+modified by David K.  ora_trace_save2 was later renamed 
+ora_trace_save.
+<p>
+
+Now, their is finally Concierge.  Concierge represents the
+ultimate evolution of XXX_trace_save, (<i>atleast until the next
+one comes along</i>).
+<p>
+
+The goal of all of the XXX_trace_save modules has been to
+select and archive(into some medium) waveform data that 
+appears to be of interest.  The XXX_trace_save modules 
+have worked primarily off of Earthworm Trigger messages.  
+The trigger message is a simple chunk of data that 
+indicates that some sort of eventish thing occurred,
+and as a result someone wants to save data for certain
+channels for certain periods of time.  
+<p>
+
+The db related XXX_trace_save modules have focused on 
+archiving the trace data from a wave_server into an
+Earthworm Database.
+<p>
+
+<A NAME=PURPOSE>
+<H4>
+PURPOSE
+</H4>
+The latest incarnation of XXX_trace_save for the db is
+called Concierge.  Concierge is the name given to a new
+method of waveform archiving.  The point of Concierge is
+to break up the task of "archiving selected waveforms"
+into its two logical subtasks: 1) the selecting of waveforms to archive, and
+2) the actual archiving of the selected waveforms to the DB. 
+All previous versions of XXX_trace_save had coupled the two
+subtasks into a single module. This single module ends up
+being an imperfect retriever, because it can make only one
+attempt at the retrieval, and is thus subject to incomplete
+data retrievals due to large snippets, networking problems, 
+and wave_server errors.
+<p>
+By subdividing the the main task into two, concierge is able to
+make multiple attempts at archiving the data, and can provide
+incremental results that improve over time.
+
+<p>
+<A NAME=OUTPUTS>
+<H4>
+OUTPUTS
+</H4>
+There are three tangible outputs of the Concierge project:
+<ol>
+<li>ora_trace_req - a program that turns EW trigger messages
+ into snippet requests that it records in the database.
+ <br>(see <a href = #ora_trace_req>ora_trace_req</a> documentation for more info)
+ <br><br>
+</li>
+
+<li>ora_trace_fetch - a program that reads snippet requests
+from the database and attempts to retrieve waveform data
+from wave_servers and archive the retrieved data into the database.
+ <br>(see <a href = #ora_trace_fetch>ora_trace_fetch</a> documentation for more info)
+ <br><br>
+</li>
+<li>EWDB_WaveformRequest API - This is a collection of
+EWDB_API library code used by ora_trace_req, ora_trace_fetch, and
+potentialy other programs to read/write/update snippet
+requests in the database.  Application developers wanting to 
+request snippets via the Concierge system can utilize this API.
+ <br>(see EWDB Waveform Request API documentation for more info)
+ <br><br>
+</li>
+</ol>
+
+
+<p>
+<A NAME="SUB-TOPICS">
+<H4>
+SUB-TOPICS
+</H4>
+There are three sub-topics of interest when trying to understand how
+the Concierge works, and how it can be used.  Those three topics are:
+1)How you specify snippets to request; 2)How the snippet requests
+get fulfilled; and 3)When the snippet requests get fulfilled.
+<ol>
+<li><b>How you specify snippets to request (<a href=#ora_trace_req>ora_trace_req</a>)</b><br>
+    Literally, snippet requests are specified by calling an EWDB API function that 
+	records a request in the database.  For most folks that aren't looking to write
+	their own specialty programs every time they want to do something, the default
+	solution is to use <a href=#ora_trace_req>ora_trace_req</a>.  
+	ora_trace_req is an Earthworm module that converts Earthworm trigger messages(from a ring) 
+	to snippet requests, and stores those snippet requests in the database.  
+	This leaves you with requirement of converting your "desired snippets" list into one
+	or more Earthworm trigger messages.  
+	This can be done with an editor, or you can teach automated programs to write
+	trigger messages.  (See Earthworm Trigger Message documentation for more info.)  If you 
+	generate a trigger message by hand, then you can insert it into an Earthworm Ring using
+	the "file2ring" utility.  Carltrig and HypoInverse/arc2trig already generate trigger 
+	messages.
+</li>
+<br><br>
+<li><b>How the snippet requests get fulfilled (<a href=#ora_trace_fetch>ora_trace_fetch</a>)</b><br>
+    Snippet requests are fulfilled by an Earthworm module (<a href=#ora_trace_fetch>ora_trace_fetch</a>)
+	that periodically retrieves the requests from an EW Database.  ora_trace_fetch
+	periodically queries the given database for a list of requests.  For each request, 
+	it queries wave servers for data that matches the request, and then stores the retrieved 
+	data in the database.  Lastly it updates/deletes the request based upon the results of
+	it's data retrieval.
+</li>
+<br><br>
+<li><b>When the snippet requests get fulfilled(<a href=#trickery>Scheduling/Retrieval</a>)</b><br>
+	The fulfillment of the snippet requests is a 3-layer ordeal:
+	<ul>
+	  <li><i>When the snippet requests are scheduled to be processed</i><br>
+	      The snippet requests are scheduled to be processed based upon
+		  a scheduling algorithm that resides within the snippet-retrieval 
+		  program(ora_trace_fetch).  <br>  
+		  ora_trace_fetch contains a file schedule.c, that controls when snippets are 
+		  scheduled.  From a user point of view, the scheduling algorithm used should
+		  be specifiable in the ora_trace_fetch config file.
+	  </li><br><br>
+	  <li><i>When the snippet requests are actually processed</i><br>
+          The retrieval program may not actually process the requests at the 
+		  time they are scheduled.  This may be because of a backlog in 
+		  requests, where ora_trace_fetch cannot process the requests fast enough
+		  to stay on schedule, or this may be because ora_trace_fetch is 
+		  running in a special mode where it is processing all requests regardless
+		  of when they may be scheduled.
+	  </li><br><br>
+	  <li><i>When the requests are successfully processed</i><br>
+		  When the requests are actually processed, is described above.  However,
+		  there is no guarantee that they will be processed successfully.  The
+		  requests may ask for data that a wave_server does not yet have, or data
+		  that a wave_server no longer has.  There may not be a wave_server that has
+		  data for the requested channel, or there may be a network problem that causes
+		  the data to temporarily be unavailable.  Maybe this is way too obvious, but
+		  in order for the request to be processed successfully, the data has to be 
+		  avaiable from a wave_server that ora_trace_fetch can reach
+		  at the time ora_trace_fetch processes the request.
+	  </li>
+	</ul>
+	<br>
+    See the detailed section on <a href=#trickery>Scheduling/Retrieval</a> for more
+	information on scheduling and retrieval times.<br>
+</ol>
+
+<br><br>
+<A NAME=WARNINGS>
+<H3>
+WARNINGS
+</H3>
+
+WARNING!!! 
+As many ora_trace_req and ora_trace_fetch modules as desired may be run.<br>
+<b>Note:</b> Currently if the same trigger message is submitted to 
+multiple ora_trace_req modules writing to the same database, then multiple
+copies of each request will be generated, and thus multiple copies of the
+same snippet will be generated.<br>
+<br>
+
+<br><br>
+<font size=+2><b>MODULES</b></font>
+<A NAME=ora_trace_req>
+<H3>
+ORA_TRACE_REQ</H3>
+
+<b>OVERVIEW</b><br>
+<b>ora_trace_req</b> is an Earthworm module that converts Earthworm
+trigger messages  to waveform snippet requests.
+The program utilizes Earthworm library code to read
+trigger messages  off of an Earthworm Ring 
+and parse them.  It then uses EWDB API code to store the
+contents of the trigger messages in an EW Database.
+<p>
+
+<b>DETAILS</b><br>
+<b>ora_trace_req</b> utilizes Earthworm "transport layer" library
+code to read (TYPE_TRIGLIST2K) messages from an Earthworm ring.
+It then uses "trigger parsing" Earthworm library code (parse_trig)
+to parse the trigger messages.  It obtains the message author,
+and the author's Event ID.  It then verifies/creates an Event in
+the EW Database, associated with the trigger's Author/EventID 
+combination. (For more information on Authors, please see documentation 
+on EW Trigger Messages and Authors).<br>
+<p>
+ora_trace_req then parses each request line in the trigger message,
+again via the parse_trig library and converts each line to a
+snippet request. It then inserts each snippet request into 
+the EW Database via the Concierge (Waveform Request) 
+EWDB API library code.
+<p>
+All inserted snippet_requests are flagged, so that when the
+actual snippet is retrieved(by ora_trace_fetch), that snippet 
+will be associated with the trigger's DBEvent.
+<p>
+ora_trace_req records that a snippet is requested, and can
+optionally associate it with a Request Group, however ora_trace_req
+does not schedule the request for retrieval.  This is done
+by the retrieval module itself.  (Since requests generated by 
+ora_trace_req are new, they default to being scheduled for immediate
+retrieval.) 
+<p>
+
+<b>Note:</b> ora_trace_req formerly controlled the scheduling of
+the snippet request for retrieval.  Scheduling is now handeled exclusively 
+within the retrieval program (ora_trace_fetch), which supports 
+multiple and potentially programable retrieval strategies.
+<p>
+
+<A NAME=ora_trace_fetch>
+<H3>ORA_TRACE_FETCH</H3>
+
+
+<a href="#ora_trace_fetch-Overview">Overview</a><br>
+<a href="#ora_trace_fetch-Details">Details</a><br>
+<a href="#ora_trace_fetch-Partial_Success">Partial Success</a><br>
+<a href="#ora_trace_fetch-Retrieval_Modes">Retrieval Modes</a><br>
+<br>
+<a name="ora_trace_fetch-Overview">
+<b>OVERVIEW</b><br>
+<b>ora_trace_fetch</b> is the back half of Concierge.  It is an Earthworm
+module that reads snippet requests from the database, attempts to
+retrieve the requested snippets from wave servers, and then archive the snippets
+into an EW database.
+<p>
+
+<a name="ora_trace_fetch-Details">
+<b>DETAILS</b><br>
+<b>ora_trace_fetch</b> is an Earthworm module, that attempts to fulfill
+snippet requests.  It reads snippet requests from the database, 
+attempts to retrieve waveforms from wave servers, and then archives
+the waveforms into the database.<br>
+ora_trace_fetch utilizes Concierge (EWDB Waveform Request) API code to
+read snippet requests from an EW Database.  It then utilizes Earthworm
+wave_server client (ws_clientIII) routines to attempt to retrieve data
+from one or more wave servers(wave_serverV).  It then records the results
+of its attempt via EWDB Concierge API code and EWDB Waveform API code.
+<ul>
+<li>
+If ora_trace_fetch is able to obtain all requested data from a 
+wave_server, then it writes the retrieved data to the 
+database via the EWDB Waveform API library code, and deletes 
+the Snippet Request via the Concierge API library code.
+</li>
+<li>
+If ora_trace_fetch is unable to obtain any of the requested data 
+from a wave_server, then it reschedules the request for a later attempt,
+and updates the Snippet Request via the Concierge API library code, 
+indicating that it failed.
+</li>
+<li>
+If ora_trace_fetch is able to obtain part, but not all of the 
+request, then it writes the retrieved data to the database 
+via the EWDB Waveform API library code, reschedules the remaining portion
+of the request for a later attempt, and updates the Snippet 
+Request via the Concierge API library code, indicating that it 
+was not completely successful.
+</li>
+</ul>
+
+ora_trace_fetch now controls the scheduling of retrieval attempts for snippet
+requests.  ora_trace_fetch contains a source file(schedule.c) that provides
+potentially multiple scheduling algorithms.  An algorithm is chosen via the 
+config file(RetrievalSchedulingMethod command).
+<p>
+
+There is some <a href="#trickery">trickery</a> about how often ora_trace_fetch
+reads the table of requests, and when/how often it attempts to
+fulfill each request.
+<p>
+
+<a name="ora_trace_fetch-Partial_Success">
+<b>PARTIAL SUCCESS</b><br>
+The beauty of ora_trace_fetch and Concierge when compared to
+the previous XXX_trace_saves for the DBMS, is that the requested
+snippets can be processed multiple times, and snippets can be
+built incrementally.  When ora_trace_fetch experiences a partial success
+in the fulfillment of a request, it writes the waveform data that it WAS
+able to obtain to the database as a Snippet, and then sets a link from 
+the request to that Snippet.  It then adjusts the request, so that the 
+request now contains only that portion of the original request that was
+not obtained previously.
+<p>
+<b>Example</b>
+ora_trace_fetch retrieves a snippet request from the database, asking for
+data for AAA,EHZ,XX for the time range (0 - 100).<br>
+ora_trace_fetch attempts to retrieve the requested data.  It obtains data
+from 0 - 20.  It creates a snippet(123) in the EW DB for AAA,EHZ,XX (0 - 20).
+It then updates the request so that it is: (AAA,EHZ,XX : 20 - 100, w/Snippet 123).
+ora_trace_fetch reschedules the request for processing at a later time.
+<p>
+At a later time, ora_trace_fetch retrieves the snippet request from the database
+again.  Now the request asks for data for AAA,EHZ,XX for the time range (20 - 100),
+and indicates that there is an existing snippet(123).<br>
+ora_trace_fetch obtains data from 20 - 45 for the channel from a wave_server.
+ora_trace_fetch retrieves the existing snippet(123) from the database, and updates
+it so that it contains dat for (AAA,EHZ,XX (0 - 45)).  ora_trace_fetch also updates
+the request so that it is: (AAA,EHZ,XX : 45 - 100, w/Snippet 123).
+ora_trace_fetch reschedules the request for processing at a later time.
+<p>
+At a later time, ora_trace_fetch retrieves the snippet request from the database
+again.  Now the request asks for data for AAA,EHZ,XX for the time range (45 - 100),
+and indicates that there is an existing snippet(123).<br>
+ora_trace_fetch is unable to obtain new data for this request(maybe the network
+was down).<br>
+ora_trace_fetch reschedules the request for processing at a later time.
+<p>
+At a later time, ora_trace_fetch retrieves the snippet request from the database
+again.  Now the request asks for data for AAA,EHZ,XX for the time range (45 - 100),
+and indicates that there is an existing snippet(123).<br>
+ora_trace_fetch obtains data from 45 - 100 for the channel from a wave_server.
+ora_trace_fetch retrieves the existing snippet(123) from the database, and updates
+it so that it contains data for (AAA,EHZ,XX (0 - 100)).  ora_trace_fetch deletes the
+request because it has been completely fulfilled.<br>
+(END OF STORY)<br>
+<p>
+<a name="ora_trace_fetch-Partial_Success-Override">
+<b>Overriding the Scheduling Algorithm</b><br>
+This is no longer applicable as all scheduling is done with ora_trace_fetch.
+Check the config file and find the algorithm that best suits your needs.  If
+none work for you, write your own!
+
+<br>
+<a name="ora_trace_fetch-Retrieval_Modes">
+<h4>RETRIEVAL MODES</h4>
+ora_trace_fetch mainly follows the retrieval schedule set forth by its
+scheduling algorithm.
+<b>However</b>, like all good software(<i>sure....</i>) there are some
+exceptions.<br>
+ora_trace_fetch can be run in three modes:  
+<ol>
+<li>STANDARD_DATA_MODE<br>
+The program runs as efficiently as possible in terms of CPU and DB resources.  
+The program will only check the list of snippet_requests in the database 
+when it thinks it is time to process one.  It figures out when there will be
+a request based upon it's knowledge of what is already in the 
+database.  <br>
+</li>
+<li>ALWAYS_CHECK_LIST<br>
+The program will always check the list of snippet_requests in the database, 
+whether or not it expects to find any scheduled for retrieval.
+This mode is DB license intensive, but is not very CPU or DB intensive, 
+and is no more wave_server intensive than the standard mode.
+</li>
+<li>ALWAYS_GET_SNIPPETS<br>
+The program will attempt to process all snippet_requests in the database, 
+whether they are scheduled for processing or not.
+This mode is CPU intensive, DB intensive, and wave_server intensive.
+<br></li>
+</ol>
+<br>
+
+These three modes describe how ora_trace_fetch behaves each time it runs 
+through the main processing loop.  When we mention that in one mode, 
+the program will always check the list of requests, or always process
+any existing requests, we mean that each time through the main processing
+loop, the program will behave in the described way.
+<p>
+By running in the third mode, you can force ora_trace_fetch to constantly
+process snippet requests.  This can be useful if you are requesting large
+snippets, that contain both P & S arrivals from shaking emanating on
+the other side of the globe.  In such a case, you will want data early-on 
+so that P arrivals can be viewed, but you also want the snippet to
+be incrementally improved, so that later arriving waves can also be viewed
+and processed as soon as they are available.
+<p>
+For more detailed information on Modes, see the 
+<a href="programmer_notes.html#ora_trace_fetch_Program_Modes">Program Modes</a> 
+section in the <a href="programmer_notes.html">Programmer Notes</a>.
+<p>
+
+In addition to the various modes of operation, the behavior of ora_trace_fetch
+is altered by the reception of a trigger message.  Whenever ora_trace_fetch 
+receives a TYPE_TRIGLIST2K message, it will immediately check the request
+list again to see if there are any requests to be processed.  This behavior
+modification only has an affect when the program is running in STANDARD_DATA_MODE,
+because the other two modes already do this during each cycle of the main loop.
+
+<br>
+<A NAME=trickery>
+<h3>DETERMINING RETRIEVAL TIMES</h3>
+
+<br>
+
+
+<a name=scheduling>
+<H4>SCHEDULING SNIPPET REQUESTS</H4>
+
+All snippet requests are scheduled by ora_trace_fetch for retrieval.  This
+can only be overriden by running ora_trace_fetch in particular 
+<a href="ora_trace_fetch-Retrieval_Modes">retrieval modes</a>.
+
+There are currently (1) scheduling algorithms provided by ora_trace_fetch.
+They are described below. 
+<b>NOTE:</b>Despite the impressions given in the following examples, 
+all scheduling algorithms, do not schedule tNextAttempt.  The schedule
+tDeltaNextAttempt, that is they calculate the time between now and when
+the next attempt should take place, and they pass that value to the 
+EWDB Waveform Request API, which calculates the current time and adds
+the tDeltaNextAttempt to the current time to produce the actual tNextAttempt.
+This prevents algorithms from scheduling processing in the pass.
+<p>
+
+<b><i>SCHEDULE EXPONENTIAL</i></b><br><br>
+SCHEDULE EXPONENTIAL is the default scheduling mechanism, and as of this 
+writing, the only one that exists.  SCHEDULE EXPONENTIAL utilizes an
+exponentially increasing time scale for attempting processing of 
+snippet requests.
+<p>
+By default, SCHEDULE EXPONENTIAL is setup to attempt retrieval 11 times
+over a 7 day period.  The timing of the retrieval attempts
+is approximately as follows: <br>
+<i>Approximate time of attempts (after generation of request):<br>
+0(m)inutes, 10m, 30m, 1(h)our, 2.5h, 5h, 10h, 21h, 2(d)ays, 3.5d, 7d</i>
+<p>
+There is a caveat(atleast one).  If the request results in a partial success,
+SCHEDULE EXPONENTIAL will record the partial success and then furlough the
+request attempt for a few minutes(10), and then try again, without having
+recorded that the attempt was made.
+<p>
+
+<b><font size=+1>The Details</font></b><br>
+When a snippet request is first handled by SCHEDULE EXPONENTIAL, 
+it is  assigned a set of scheduling parameters that are used by 
+it's scheduling algorithm to calculate an exponentially increasing
+time series.
+<br>
+The current algorith has 5 variables.
+<ul>
+	<li>iNumAttempts:  The total number of times that data retrieval will be attempted
+		  for this request.</li>
+	<li>tAttemptInterval:  The base time-attempt interval.  This value is 
+      multiplied by an exponentially increasing value, in order to calculate
+      the next attempt time.</li>
+	<li>dAttemptMultiple:  This is the base value that is exponentialized, in
+  order to create an exponentialy increasing attempt time.</li>
+	<li>tCurrentTime:  This is the current time (used when updating the SnippetRequest
+  and calculating the next attempt time.</li>
+	<li>iNumRemainingAttempts:  This is the number of attempts (out of iNumAttempts)
+  that are remaining in the request's life.</li>
+</ul>
+
+The algorithm for calculating the next attempt-time is:
+
+<pre><b>  tNextAttempt = tCurrentTime + tAttemptInterval * <br>
+                               (dAttemptMultiple ** <br>
+                                (iNumAttempts - iNumRemainingAttempts - 1)<br>
+                               )</b></pre>
+<br>
+
+The process of calculating the next attempt time is as follows:
+<ul>
+<li>1)  The snippetrequest is first handled by ora_trace_fetch and 
+SCHEDULE EXPONENTIAL, and the iNumAttempts is set to the value 
+configured for the algorithm within the ora_trace_fetch config file.  
+The iNumAttempts and iNumRemainingAttempts are thereafter stored 
+with the request in the database.  tCurrentTime is always the current
+time, derived from the system clock.  The remaining parameters, 
+tAttemptInterval and dAttemptMultiple are provided
+by the ora_trace_fetch config file or are defaults.
+</li><br><br>
+<li>2)  ora_trace_fetch notices the request, and attempts to fulfill it.  Assuming it
+is not completely successful, iNumAttempts and and iNumRemaining attemps are set
+in the database and the request is updated.  ora_trace_fetch
+supplies the current time (tCurrentTime).  iNumRemainingAttempts is decremented
+since an attempt has been performed.
+SCHEDULE EXPONENTIAL calculates the next attempt time as:<br>
+<pre><b>  tNextAttempt = tCurrentTime + tAttemptInterval * <br>
+                               (dAttemptMultiple ** <br>
+                                (iNumAttempts - iNumRemainingAttempts - 1)<br>
+                               )</b></pre>
+</li><br>
+<li>3-[X-1])  Except for the final attempt, every attempt after the second one,
+is just a repeat of the 2nd.  With the exception that the tCurrentTime and
+iNumRemaining attempts will change for each successive attempt.
+
+</li><br><br>
+<li>X) After the final scheduled attempt, when the snippetrequest is updated,
+SCHEDULE EXPONENTIAL deletes the request from the DB because it has reached 
+its number of allowed attempts.
+</li>
+</ul>
+
+<b><font size=+1>Example:</font></b><br>
+<br>
+<b>REQUEST CREATION</b><br>
+A request for ABC, EHZ, XX is created by ora_trace_req.  iNumAttempts is set
+to 0.
+Because this is the creation of the request, tNextAttempt is set to 0.  (Note that
+the current time is 1000000000.<br>
+<br>
+<b>RETRIEVAL ATTEMPTS</b>
+<ul>
+<li>1) ora_trace_fetch notices the request within 5 seconds.  It attempts to retrieve
+the data from one or more wave_servers(this takes 10 seconds).  
+At time 1000000015, it completes the attemtpt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL sets the iNumAttempts and iNumRemainingAttempts for the request
+to 11.  SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 11 to 10.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<pre><b>tNextAttempt = 1000000015 + 600 * <br>
+                             (2 ** <br>
+                              (11 - 10 - 1)<br>
+                             ) =  1000000615</b><br></pre>
+tNextAttempt is updated to 1000000615. Delta T from the original request is 615. (10 minutes)
+</li><br><br>
+<li>2) at 1000000615, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 10 to 9.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000000625 + 600 * (2 ** (11 - 9 - 1)) =  1000001825</b><br>
+tNextAttempt is updated to 1000001825.  Delta T from the original request is 1825. (30 minutes)
+</li><br><br>
+
+<li>3) at 1000001825, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 9 to 8.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000001835 + 600 * (2 ** (10 - 8 - 1)) =  1000004235</b><br>
+tNextAttempt is updated to 1000004235.Delta T from the original request is 4235. (1 hour)
+</li><br><br>
+
+<li>4) at 1000004235, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 8 to 7.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000004245 + 600 * (2 ** (10 - 7 - 1)) =  1000009045</b><br>
+tNextAttempt is updated to 1000009045.  Delta T from the original request is 9045. (2.5 hour)
+</li><br><br>
+
+<li>5) at 1000009045, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 7 to 6.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000009055 + 600 * (2 ** (10 - 6 - 1)) =  1000018655</b><br>
+tNextAttempt is updated to 1000018655.  Delta T from the original request is 18655. (5 hours)
+</li><br><br>
+
+<li>6) at 1000018655, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 6 to 5.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000018665 + 600 * (2 ** (10 - 5 - 1)) =  1000037865</b><br>
+tNextAttempt is updated to 1000037865.  Delta T from the original request is 37865. (10 hours)
+</li><br><br>
+
+<li>7) at 1000037865, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 5 to 4.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000037875 + 600 * (2 ** (10 - 4 - 1)) =  1000076275</b><br>
+tNextAttempt is updated to 1000076275.  Delta T from the original request is 76275. (21 hours)
+</li><br><br>
+
+<li>8) at 1000076275, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 4 to 3.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000076285 + 600 * (2 ** (10 - 3 - 1)) = 1000153085</b><br>
+tNextAttempt is updated to 1000153085.  Delta T from the original request is 153085. (2 days)
+</li><br><br>
+
+<li>9) at 1000153085, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 3 to 2.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000153095 + 600 * (2 ** (10 - 2 - 1)) = 1000306695</b><br>
+tNextAttempt is updated to 1000306695.  Delta T from the original request is 306695. (3.5 days)
+</li><br><br>
+
+<li>10) at 1000306695, it completes the attempt.  Because it was not completely successful,
+SCHEDULE EXPONENTIAL updates the request reflecting that it attempted 
+and was not completely successful, decrementing iNumRemainingAttempts from 2 to 1.  
+SCHEDULE EXPONENTIAL computes
+the next time as:<br>
+<b>tNextAttempt = 1000306705 + 600 * (2 ** (10 - 2 - 1)) = 1000613905</b><br>
+tNextAttempt is updated to 1000613905.  Delta T from the original request is 613905. (7 days)
+</li><br><br>
+
+<li>11) at 1000613905, ora_trace_fetch attempts to process the request.  It attempts to retrieve
+the data from 1 or more wave_servers(this takes 10 seconds).  
+At time 1000613915, SCHEDULE EXPONENTIAL, prepared to update the request notices that 
+the request has been attempted its maximum number of times(11 of 11).  Instead of updating
+the request decrementing iNumRemainingAttempts from 1 to 0, SCHEDULE EXPONENTIAL 
+deletes the request.
+Note:  The request was deleted at time 1000613915, approx 7 days after its creation.
+</li>
+
+</ul>
+
+
+<p>
+<br><br>
+<a name=INSTALLING>
+<H3>
+INSTALLING CONCIERGE
+</H3>
+
+<H4>Database</h4>
+Concierge requires an Earthworm Database version > 6.1.
+If you are upgrading your Earthworm Database from Version 6.1 or prior,
+you will need to run some SQL scripts, in order to add the Concierge 
+functionality to your database.  You should run the upgrade scripts for
+version 6.2 or greater.  See documentation for upgrading your Earthworm
+Database.
+If you are starting with a post v6.1 Earthworm Database, then support 
+for Concierge should be built in.
+<H4>Executables</h4>
+Concierge consists of two executables:  <a href="#ora_trace_req">ora_trace_req</a>,
+and <a href="#ora_trace_fetch">ora_trace_fetch</a>.  These executables are designed
+to run as earthworm modules.
+
+<p>
+
+
+<a name=CONFIGURING>
+<H3>
+CONFIGURING CONCIERGE
+</H3>
+
+
+There are many ways that you can configure Concierge.  Once the database is installed
+and the executables are avaiable, configuration is choosing which executables will
+run where. 
+<p>
+<H4>ora_trace_req</h4>
+In general you want one copy of ora_trace_req running each place you have a unique
+trigger feed.  For most installations this means running one copy of ora_trace_req
+attached to a "trigger ring" on an earthworm where all of you trigger messages 
+eventually end up.  <br>
+<i>As of this time, if you run two copies of ora_trace_req that see
+overlapping/duplicate sets of triggers, then you will end up with 
+overlapping/duplicate sets of requests and thus overlapping/duplicate 
+sets of snippets in the database.</i>
+<p>
+
+<H4>ora_trace_fetch</h4>
+There are many options for how to configure ora_trace_fetch.  ora_trace_fetch does
+not have to run attached to the same earthworm as ora_trace_req.  They communicate
+only through the database. In general ora_trace_fetch only attaches to an earthworm
+ring so that it can obtain status reporting and restarting functionality through
+the Earthworm mechanisms.  You can run ora_trace_fetch as a stand alone executable
+by linking it with the transport_dk.c library in the ora_trace_fetch directory in
+lieu of the standard transport.c library in libsrc.<br>
+<i><b>NOTE: </b> If you configure ora_trace_fetch to run in Mode 1 
+(STANDARD_DATA_MODE), then you will probably want to hook it up to an Earthworm
+ring that has a "trigger" feed.  In STANDARD_DATA_MODE, ora_trace_fetch relies on 
+trigger messages to wake it up when there is new activity.</i>
+<p>
+<b>Simple</b><br>
+The simplest way to configure ora_trace_fetch is to run one copy.  Either run 
+ora_trace_fetch in STANDARD_DATA_MODE and attach it to a ring where it will get
+Trigger Messages, or run it anywhere in ALWAYS_CHECK_LIST mode.  Ensure that it
+has a large MaxTraces buffer for holding snippet requests, and let it run.
+<p>
+<b>OTHER CONFIGURATIONS</b><br>
+If you are processing a lot of snippet requests, all of your wave_servers
+are not local or homogeneous in response time, requests are of verying priority,
+you want redundancy, you have CPU power to kill, or you have other special needs,
+you may decide that the Simple configuration is not for you.  At which point you
+have a plethora of configuration options.
+<b>COMPETITIVE vs. COMPLEMENTARY</b><br>
+<p>
+When running multiple copies of ora_trace_fetch, the copies can be run in one
+of two manners:  Competitive or Complementary.  Competitive means that two copies
+of ora_trace_fetch are seeing the same data and competing to process the same
+requests.  Complementary means that you are subdividing the request in such a 
+manner that the two copies of ora_trace_fetch are seeing separate subsets of the
+master set of requests.  The two never see a mutual request.
+<p>
+<b>Dualing Banjos(COMPETITIVE)</b><br>
+If you've got CPU power to burn, a lot of requests to handle, you want redundancy,
+or you just like a brute force approach, then setting up competitive copies of
+ora_trace_fetch is for you.  Ensure that all Competing copies of ora_trace_fetch
+have access to the same wave_servers, otherwise one wave_server might have the data
+you want but the ora_trace_fetch that picked up the request doesn't know about the
+wave_server so you don't get the data.  When running competing copies of ora_trace_fetch,
+they should be configured with small MaxTrace buffers for storing requests.  That way
+the requests spend most of there time in the database, where they can be picked up
+by the first available executable.  The competing ora_trace_fetch's do not need to run
+on the same system.  They do not talk to each other at all, and all competition issues
+are handled by a locking mechanism within the Database.
+<p>
+<b>Barbershop Quartet(COMPLEMENTARY)</b><br>
+If you've got wave_servers with varying response speeds, or requests of vary priorities,
+you can group requests and then run complimentary copies of ora_trace_fetch.  This method
+involves using RequestGroups.  
+You can assign a request to a request group, either within ora_trace_req or within 
+ora_trace_fetch, and then run multiple complementary copies of ora_trace_fetch
+that each operate on a different request group.  
+This allows you to separate requests by wave_server or by priority.  You might have
+requests for local data and requests for remote wave_servers with bad network connections.
+You would like to get the remote data, but you don't want it and the quality of the network
+between you and the remote wave_server to affect the retrieval of your local data.  You
+configure the requests such that the local ones go into one group and the remotes go into
+another.<br>
+Now for the bad news: This method isn't well tested and is not designed to operate out of the box.
+The only EXISTING method for setting the RequestGroup of a request is via the ora_trace_req 
+config file.  To use this effectively you would have to presort your trigger messages, so that
+trigger messages for local data went to one copy of ora_trace_req and trigger messages for
+remote data went to another copy.  A better alternative is to write a new scheduling strategy for 
+ora_trace_fetch that examines a request and assigns it to a RequestGroup.  (That however would
+require you to WRITE a strategy to use in place of SCHEDULE EXPONENTIAL).  See programmer_notes
+if you are interested.
+<p>
+<b>East meets West(COMPETITIVE & COMPLEMENTARY)</b><br>
+There is nothing in the competitive/complementary methodologies that prevents you from mixing 
+the two.  You might have needs that require you to run complimentary fetchers, but at the same
+time you want redundancy.  Fine, just run a set of competitive ora_trace_fetch's in lieu of one
+for processing a particular request group.  It's all good.  Knock yourself silly.  This is where
+the many permutations actually come from.  By combining COMPETITIVE & COMPLEMENTARY mechansims 
+you can build yourself an army of fetchers
+<p>
+
+
+
+<br>
+
+<a name="KNOWN_ISSUES">
+<h3>KNOWN ISSUES</h3>
+<b>FROZEN LOCKS</b><br>
+A locking mechanism within the DB handles locking of snippet requests, so that two copies
+of ora_trace_fetch cannot attempt to process the same request at the same time.  For the
+most part(broad generalization) the locking mechanism works well;  however, if a copy of
+ora_trace_fetch hangs/dies/core_dumps before releasing the locks it holds, then the locks
+stay permanently locked.  Clearing old locks is as simple as executing a sql_script, however
+this is officialy frowned upon, and a simple program that clears old locks is in the works.
+<br>
+THERE IS NOW A STAND-ALONE EXECUTABLE "unlocker" that fixes this problem.  Please see its
+documentation.
+<p>
+<b>DUPLICATE SNIPPETS</b><br>
+There is currently no mechanism that attempts to prevent duplicate snippet requests or 
+duplicate snippets.  If a request gets generated three times and everything goes well,
+you will end up with three duplicate snippets in the database.
+<p>
+
+<a name=BLAME>
+<h3>BLAME</h3>
+<b>ORIGINAL BLAME</b><br>
+DK 022502
+<br>
+<p>
+<p>
+<b>MOST RECENT BLAME</b><br>
+Last Updated by DK 2002/05/15
+<br>
+
+<EOF>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</html>

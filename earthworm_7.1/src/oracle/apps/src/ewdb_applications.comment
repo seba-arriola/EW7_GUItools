@@ -1,0 +1,20 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+LOCATION THIS_FILE
+
+DESCRIPTION This is the set of all earthworm 
+modules and applications that utilize or interact
+with the Earthworm DBMS.  Because of their 
+dependence on the Earthworm DBMS, you cannot run
+most (if not all) of the programs in this group
+without the DBMS(Oracle) portion of Earthworm 
+installed.
+
+*************************************************
+************************************************/
+

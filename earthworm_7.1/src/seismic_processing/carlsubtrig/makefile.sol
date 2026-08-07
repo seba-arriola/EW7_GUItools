@@ -1,0 +1,96 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.2 2000/08/08 18:11:30 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.2  2000/08/08 18:11:30  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 16:14:42  lucky
+#     Initial revision
+#
+#
+#
+
+CFLAGS=${GLOBALFLAGS} -g
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+CTOBJS = addexttrig.o \
+	cmprscn.o \
+     carlsubtrig.o \
+	 findsta.o \
+     getsubnet.o \
+	 initpars.o \
+	 initsta.o \
+     initsub.o \
+	 prodtrig.o \
+	 prostatrg.o \
+	 readcnfg.o \
+	 readewh.o \
+	 readstas.o \
+	 readsubs.o \
+     rmstatrig.o\
+	 sbntthrd.o \
+     statrpt.o \
+	 $L/chron3.o \
+	 $L/getutil.o \
+	 $L/kom.o \
+	 $L/logit_mt.o \
+     $L/sema_ew.o \
+	 $L/sleep_ew.o \
+	 $L/swap.o \
+	 $L/time_ew.o \
+     $L/threads_ew.o \
+	 $L/transport.o
+
+carlsubtrig: $(CTOBJS)
+	cc -o $(B)/carlsubtrig $(CTOBJS) -lthread -lm -lposix4
+
+lint:
+	lint addexttrig.c cmprscn.c carlsubtrig.c findsta.c \
+			getsubnet.c initpars.c initsta.c initsub.c \
+			prodtrig.c prostatrg.c readcnfg.c readewh.c \
+			readstas.c readsubs.c rmstatrig.c sbntthrd.c \
+			statrpt.c  $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/carlsubtrig*
+
+
+.c.o:
+	cc -c $(CFLAGS) $<
+
+addexttrig.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+carlsubtrig.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h 
+carlsubtrig.o: ${EW_HOME}/${EW_VERSION}/include/transport.h
+cmprscn.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+findsta.o: carlsubtrig.h 
+getsubnet.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+initpars.o:  carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+initsta.o:  carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+initsub.o:  carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+prodtrig.o:  carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h 
+prodtrig.o: ${EW_HOME}/${EW_VERSION}/include/time_ew.h
+prodtrig.o: ${EW_HOME}/${EW_VERSION}/include/transport.h
+prostatrg.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+readcnfg.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h 
+readcnfg.o: ${EW_HOME}/${EW_VERSION}/include/kom.h
+readewh.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+readstas.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+readsubs.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+rmstatrig.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h
+sbntthrd.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h 
+sbntthrd.o: ${EW_HOME}/${EW_VERSION}/include/transport.h
+sbntthrd.o: ${EW_HOME}/${EW_VERSION}/include/time_ew.h
+statrpt.o: carlsubtrig.h ${EW_HOME}/${EW_VERSION}/include/earthworm.h 
+statrpt.o: ${EW_HOME}/${EW_VERSION}/include/transport.h

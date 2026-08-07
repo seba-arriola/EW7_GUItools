@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0055)http://gldrocky.cr.usgs.gov/ew-doc/cmd/restart_cmd.html -->
+<HTML><HEAD><TITLE>Earthworm Modules:  qdds_sender commands</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4522.1800" name=GENERATOR></HEAD>
+<BODY text=#000000 vLink=#551a8b aLink=#ff0000 link=#0000ee bgColor=#fadfaf>
+<CENTER>
+<H1><BR> Qdds_sender Configuration File</H1><I>(last revised August 3, 
+2001)</I></CENTER>
+<PRE>
+#
+#  Configuration file for qdds_sender
+#
+
+#  Basic Earthworm setup:
+#
+MyModName          MOD_QDDS_SENDER
+RingName           HYPO_RING
+LogFile            1
+HeartBeatInt       30
+
+# List the message logos to grab from transport ring
+#              Installation       Module          Message Types
+GetAlarmsFrom  INST_WILDCARD    MOD_WILDCARD      # must be TYPE_QDDS_MSG
+
+#
+# Database connection parameters
+#
+DBservice       eqsg.usgs
+DBuser          ewdb_main
+DBpassword      main
+
+#
+# Option Debug flag
+#
+Debug   1             
+</PRE>
+
+
+<HR>
+
+<ADDRESS>The URL of this page is 
+<B>[http://gldbrick.cr.usgs.gov/ew-doc/DBMS/cmd/qdds_sender_cmd.html]</B><BR>Contact: 
+<B>bogaert@usgs.gov</B><BR></ADDRESS></CENTER></BODY></HTML>

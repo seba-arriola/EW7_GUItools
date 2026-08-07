@@ -1,0 +1,72 @@
+#ORIGINAL
+SITE    |     |   1000001038 ISCO US         0.0000    0.0000     0.0
+
+#COMMAND LINES
+SITE    |ADD  |              ISCO DK         "Fake station added by DK"
+SITE    |ADD  |              FAKE DK         "Fake station Added by DK"
+SITET   |ADD  |   $(PREV)                    37.5 -121.5 23 924000000 1250000000 "New fake SITET by DK"
+SITET   |ADD  |              ISCO DK         37.5 -121.5 23 824000000 924000000  "New fake SITET by DK"
+SITET   |ADD  |   $(PREV)                    37.5 -121.5 23 924000000 1250000000 "New fake SITET by DK"
+SITE    |END  |              ISCO DK         923000000.24
+SITE    |DEL  |              ISCO DK
+SITE    |RENM |              FAKE DK         FAKE US
+SITET   |ADD  |              FAKE DK         37.5 -121.5 23 1250000000 1250000300 "New fake SITET by DK"
+SITET   |DEL  |   $(PREV)    
+SITE    |ADD  |              ISCO DK         "Fake station added by DK"
+SITET   |ADD  |   $(PREV)                    37.5 -121.5 23 924000000 1250000000 "New fake SITET by DK"
+SITET   |MOD  |   $(PREV)                    37.30000    -121.20000     24.0 "Mod'd SITET"
+SITET   |END  |   $(PREV)                    1240000000
+SITET   |MODT |   $(PREV)                    923000000 1250000000
+SITET   |SPLIT|   $(PREV)                    1020000000
+
+#COMMAND LINES
+COMP    |ADD  |              ISCO DK GHZ  -- "New fake component from DK"
+COMP    |DEL  |              ISCO DK GHZ  -- TRUE
+
+#COMP     RENM     1000008645         GHZ     EHZ 01
+
+
+#ORIGINAL
+COMPT   |     |   1000008645                 37.30000    -121.20000     24.0    0  180 (924000000 1250000000)
+
+#COMMAND LINES
+COMP     ADD                 ISCO DK GHZ  -- "New fake component from DK"
+COMPT   |ADD  |   $(PREV)    ISCO    GHZ     37.3 -121.4 26.0 0 180 1000000000 1250000000 "new fake comp time period"
+COMPT   |MODT |   $(PREV)                    924000000 1250000000
+COMPT   |ADD  |   $(PREV)    ISCO    GHZ     37.3 -121.4 26.0 0 -180 1250000000 1270000000 "new fake comp time period"
+COMP    |END  |              ISCO DK GHZ     1240000000
+COMPT   |ADD  |   $(PREV)    ISCO    GHZ     37.90 -121.4 26.0 0 180 1240000000 1260000000 "new fake comp time period"
+COMPT   |MOD  |   $(PREV)                    37.1 -123.4 29.0 10 180
+COMPT   |SPLIT|   $(PREV)                    1250000000
+COMPT   |DEL  |   $(PREV)                    TRUE
+#COMPT   |ADDWC|   $(PREV)    ISCO    GHZ     37.3 -121.4 26.0 0 -180 1250000000 1270000000 "new fake comp time period"
+
+#ORIGINAL
+CHAN    |     |   1000006498                   
+
+#COMMAND LINES
+CHAN     ADD                                 Generic Comment
+CHAN     DEL      $(PREV)
+
+CHAN     ADD                                 Generic Comment
+CHAN     ASSOC    $(PREV)    ISCO DK GHZ     999999799 999999999
+CHAN     ASSOC    $(PREV)    ISCO DK GHZ     999999999 1100000000 0 40.00 6.16260e+010   CMG-3N - ISCO,GHZ,DK
+CHAN     END      $(PREV)                    1099999999
+CHANT    MOD      $(PREV)                    0 40.00 7.16260e+009                        CMG-3N - ISCO,GHZ,DK
+CHANT    MODT     $(PREV)                    999999999  1010000000
+
+#ORIGINAL
+CHANT   |     |   1000006498                 40.00 6.16260e+010                 (         0 - 10000000000) CMG-3N - ISCO,BHE,US
+
+#COMMAND LINES
+
+#ORIGINAL
+RESP    |     |   1000000033                 CMG-3N - ISCO,BHE,US  PZ P -0.031420 -0.197900 -201.100006 -697.400024 -754.000000 -1056.000000  Z 0.000000 0.000000 0.000000 
+
+#COMMAND LINES  samp rate gain
+RESP     ADD                                 CMG-3N standard Function PZ P 123.45e+0 122.27e+0 127.57e+0 0 Z 0.0e+0 0.0e+0 0.0e+0 0.0e+0 0.0e+0 0.0e+0
+RESP     MOD      $(PREV)                    CMG-3N NSN standard Function PZ P 123.45e+0 125.27e+0 Z 0.0e+0 0.1e+0 0.0e+0 0.0e+0 
+CHANT    MOD      $(PREV)                    $(PREV) 40.00 8.13260e+009  CMG-3N - ISCO,BHE,US
+CHANT    MODF     $(PREV)                    40.00 7.26260e+010 PZ P 123.45e+0 122.27e+0 Z 0.0e+0 0.0e+0 0.0e+0 0.0e+0 COMMENT CMG-3ME - ISCO,BHE,US
+RESP     MODC     $(PREV)                    This is the Response function for an STS-2
+

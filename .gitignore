@@ -1,0 +1,8 @@
+*.o
+run_working/
+for_compile.sh
+new_develo/new_develo
+new_hypo_display/new_hypo_display
+new_staevdisp/new_staevdisp
+new_summary/new_summary
+earthworm_7.1/bin/*

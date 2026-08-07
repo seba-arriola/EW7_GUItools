@@ -1,0 +1,2277 @@
+<hr>
+<a name=Bind_Device_To_Slot></a>
+<font size=+2>Bind_Device_To_Slot()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Bind_Device_To_Slot(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idDeviceBind</NOBR>, <NOBR><i>number</i> IN_idDeviceToBind</NOBR>, <NOBR><i>number</i> IN_idSlotToBind</NOBR>, <NOBR><i>number</i> IN_idContextDevice</NOBR>, <NOBR><i>number</i> IN_tOff</NOBR>, <NOBR><i>number</i> IN_tOn</NOBR>, <NOBR><i>number</i> IN_bOverwrite</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_bind_device_to_slot.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown Error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>NULL IN_idDeviceToBind.  IN_idDeviceToBind must contain a valid idDevice value.</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>NULL IN_idSlotToBind.  IN_idSlotToBind must contain a valid idDeviceSlot value.</td>
+ </tr>
+ <tr>
+  <td>-4</td>
+  <td>Invalid foreign key.  Either IN_idSlotToBind, IN_idDeviceToBind, or IN_idContextDevice did not contain valid values. IN_idContextDevice must correspond to a Device.idDevice unless it is NULL or 0.</td>
+ </tr>
+ <tr>
+  <td>-5</td>
+  <td>Overlapping DeviceBind records exist, a IN_bOverwrite was not set to 1.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-2X</td>
+  <td>Error in <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Fix_Device_Bind>Fix_Device_Bind</a>(), where X indicates error returned by that proc.  <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Fix_Device_Bind>Fix_Device_Bind</a>() is only executed when there is an existing DeviceBind record with matching keys and an overlapping time period (tOn - tOff).</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idDeviceBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceToBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idSlotToBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idContextDevice</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOff</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOn</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_bOverwrite</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_bind_device_to_slot.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_DeviceSlot></a>
+<font size=+2>Create_DeviceSlot()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_DeviceSlot(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idDeviceSlot</NOBR>, <NOBR><i>number</i> IN_idSlotType</NOBR>, <NOBR><i>varchar2</i> IN_sSlotName</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_deviceslot.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown Error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>IN_idSlotType is NULL.  IN_idSlotType must be a valid idSlotType.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Get_SlotType_Info>Get_SlotType_Info</a>(), where X indicates error returned by that procedure.</td>
+ </tr>
+ <tr>
+  <td>-2X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that procedure.</td>
+ </tr>
+ <tr>
+  <td>-3X</td>
+  <td>Error in <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Create_ModuleTemplate>Create_ModuleTemplate</a>(), where X indicates error returned by that procedure.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return code for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idDeviceSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idSlotType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_sSlotName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_deviceslot.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_DeviceType></a>
+<font size=+2>Create_DeviceType()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_DeviceType(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idDeviceType</NOBR>, <NOBR><i>number</i> IN_idModule</NOBR>, <NOBR><i>varchar2</i> IN_sDeviceTypeName</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_devicetype.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>Null IN_idModule (NULL or 0)</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>Foreign Key violation, idModule does not correspond to a matching Module record.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idDeviceType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_sDeviceTypeName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_devicetype.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_Module></a>
+<font size=+2>Create_Module()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_Module(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idModule</NOBR>, <NOBR><i>number</i> IN_idSlotType</NOBR>, <NOBR><i>varchar2</i> IN_sModuleName</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_module.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function not only creates a module record, but creates IN_idSlotType.iNumOutputs ModuleEntry records with idSubDevSlot and iSubPlexor set to NULL.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>N_idSlotType is NULL.  IN_idSlotType must be a valid idSlotType.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Get_SlotType_Info>Get_SlotType_Info</a>(). Where X indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-2X</td>
+  <td>Error in Create_Core_idKey(). Where X indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-3X</td>
+  <td>Error in <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Create_ModuleEntry>Create_ModuleEntry</a>(). Where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idSlotType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_sModuleName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_module.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_ModuleEntry></a>
+<font size=+2>Create_ModuleEntry()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_ModuleEntry(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idModuleEntry</NOBR>, <NOBR><i>number</i> IN_idModule</NOBR>, <NOBR><i>number</i> IN_iPlexor</NOBR>, <NOBR><i>number</i> IN_idSubDevSlot</NOBR>, <NOBR><i>number</i> IN_iSubPlexor</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_moduleentry.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>NULL IN_idModule.  IN_idModule must contain a valid idModule value.</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>Invalid foreign key.  Either IN_idModule, IN_idSubDevSlot, or the combo of IN_idSubDevSlot and IN_iSubPlexor did not contain valid values.</td>
+ </tr>
+ <tr>
+  <td>-4</td>
+  <td>ModuleEntry record already exists with duplicate IN_idModule, IN_iPlexor.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idModuleEntry</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idSubDevSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iSubPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_moduleentry.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_ModuleTemplate></a>
+<font size=+2>Create_ModuleTemplate()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_ModuleTemplate(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idModuleTemplate</NOBR>, <NOBR><i>number</i> IN_idDeviceSlot</NOBR>, <NOBR><i>number</i> IN_iPlexor</NOBR>, <NOBR><i>number</i> IN_idNextDevSlot</NOBR>, <NOBR><i>number</i> IN_iNextPlexor</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_moduletemplate.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>NULL IN_idDeviceSlot.  IN_idDeviceSlot must contain a valid idDeviceSlot value.</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>Invalid foreign key.  Either IN_idDeviceSlot, IN_idNextDevSlot, or the combo of IN_idNextDevSlot and IN_iNextPlexor did not contain valid values.</td>
+ </tr>
+ <tr>
+  <td>-4</td>
+  <td>ModuleTemplate record already exists with duplicate IN_idDeviceSlot, IN_iPlexor.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idModuleTemplate</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idNextDevSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iNextPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_moduletemplate.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_Or_Update_Device></a>
+<font size=+2>Create_Or_Update_Device()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_Or_Update_Device(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> INOUT_idDevice</NOBR>, <NOBR><i>number</i> IN_idDeviceModel</NOBR>, <NOBR><i>varchar2</i> IN_sDeviceName</NOBR>, <NOBR><i>number</i> IN_idDeviceType</NOBR>, <NOBR><i>number</i> IN_bIsGeneric</NOBR>, <NOBR><i>number</i> IN_bIsRealizable</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_or_update_device.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function either attempts to create a new Device record or update an existing Device record.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>When INOUT_idDevice is 0 or NULL:   The proc will attempt to create a new Device record using the params   passed.  If IN_bIsGeneric = 1 then it will also attempt to create   a GenericDevice with matching idDevice and bIsRealizable set to   IN_bIsRealizable; otherwise (IN_bisGeneric != 1) it will attempt to   create an ActualDevice with matching idDevice.   When INOUT_idDevice != 0 and NOT NULL:   The proc will attempt to update the existing Device record with   idDevice = INOUT_idDevice, using the params passed.  If IN_bIsGeneric = 1   then the proc will attempt to update the GenericDevice record with   matching idDevice.  If a matching GenericDevice record does not exist,   (meaning the Device was originally created as an ActualDevice not a   GenericDevice) then GenericDevice will not be updated and the proc will   still return success.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>INOUT_idDevice is non-NULL, but invalid. The caller must set INOUT_idDevice to NULL(0) before calling this proc to create a new device.</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>Violated a Foreign Key constraint on idDeviceModel, idModule, or idDeviceType during insert of new Device record.</td>
+ </tr>
+ <tr>
+  <td>-4</td>
+  <td>Violated a Foreign Key constraint on idDeviceModel, idModule, or idDeviceType during update of Device record.</td>
+ </tr>
+ <tr>
+  <td>-5</td>
+  <td>Internal idDevice error.</td>
+ </tr>
+ <tr>
+  <td>-7</td>
+  <td>IN_idDeviceType is non-NULL, but invalid.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>INOUT_idDevice</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceModel</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_sDeviceName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_bIsGeneric</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_bIsRealizable</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_or_update_device.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Create_SlotType></a>
+<font size=+2>Create_SlotType()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Create_SlotType(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idSlotType</NOBR>, <NOBR><i>number</i> IN_iNumInputs</NOBR>, <NOBR><i>number</i> IN_iNumOutputs</NOBR>, <NOBR><i>varchar2</i> IN_sSlotTypeName</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_slottype.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>Invalid iNumInputs (must be > 0)</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>Invalid iNumOutputs (must be > 0)</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idSlotType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iNumInputs</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iNumOutputs</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_sSlotTypeName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_create_slottype.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Fix_Device_Bind></a>
+<font size=+2>Fix_Device_Bind()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Fix_Device_Bind(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> IN_idDupDeviceBind</NOBR>, <NOBR><i>number</i> IN_tOff</NOBR>, <NOBR><i>number</i> IN_tOn</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_fix_device_bind.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>this function should modify neccessary reords so that DeviceBind.idDupDeviceBind is not valid over the time range of tOn - tOff.  We expect that this means that we must split the record in half, with the first half occurring before tOn and the second half occurring after tOff</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>Error, an idChan and idCompT already exist for the given SCNL and time interval</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>IN_idDupDeviceBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOff</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOn</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_fix_device_bind.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Fix_Function_Bind></a>
+<font size=+2>Fix_Function_Bind()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Fix_Function_Bind(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> IN_idDupFunctionBind</NOBR>, <NOBR><i>number</i> IN_tOff</NOBR>, <NOBR><i>number</i> IN_tOn</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_fix_function_bind.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function should modify neccessary reords so that FunctionBind.idDupFunctionBind is not valid over the time range of tOn - tOff.  We expect that this means that we must split the record in half, with the first half occurring before tOn and the second half occurring after tOff.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>Error, an idChan and idCompT already exist for the given SCNL and time interval</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>IN_idDupFunctionBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOff</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOn</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_fix_function_bind.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_DeviceSlot_Info></a>
+<font size=+2>Get_DeviceSlot_Info()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_DeviceSlot_Info(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idSlotType</NOBR>, <NOBR><i>varchar2</i> OUT_sSlotName</NOBR>, <NOBR><i>number</i> IN_idDeviceSlot</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_deviceslot_info.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the contents of the DeviceSlot table for a given idDeviceSlot.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching DeviceSlot record found</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idSlotType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_sSlotName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_deviceslot_info.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_DeviceType_Info></a>
+<font size=+2>Get_DeviceType_Info()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_DeviceType_Info(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idModule</NOBR>, <NOBR><i>varchar2</i> OUT_sDeviceTypeName</NOBR>, <NOBR><i>number</i> IN_idDeviceType</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_devicetype_info.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the contents of the DeviceType table for a given idDeviceType.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching DeviceType record found</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_sDeviceTypeName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_devicetype_info.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_Device_Info></a>
+<font size=+2>Get_Device_Info()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_Device_Info(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idModule</NOBR>, <NOBR><i>varchar2</i> OUT_sDeviceName</NOBR>, <NOBR><i>number</i> OUT_idDeviceModel</NOBR>, <NOBR><i>number</i> OUT_idDeviceType</NOBR>, <NOBR><i>number</i> OUT_bIsRealizable</NOBR>, <NOBR><i>number</i> IN_idDevice</NOBR>, <NOBR><i>number</i> IN_bWantRealizable</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_device_info.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the contents of the Device table for the given IN_idDevice. If IN_bWantRealizable = 1, then the procedure will attempt to check the GenericDevice.bIsRealizable value, copying -1 into OUT_bIsRealizable if there is no corresponding GenericDevice record.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching Device record found</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_sDeviceName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_idDeviceModel</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_idDeviceType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_bIsRealizable</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDevice</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_bWantRealizable</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_device_info.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_ModuleEntry></a>
+<font size=+2>Get_ModuleEntry()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_ModuleEntry(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idSubDevSlot</NOBR>, <NOBR><i>number</i> OUT_iSubPlexor</NOBR>, <NOBR><i>number</i> IN_idModule</NOBR>, <NOBR><i>number</i> IN_iPlexor</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_moduleentry.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the contents of the ModuleEntry table for a given idModule and iPlexor.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching ModuleEntry record found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idSubDevSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_iSubPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_moduleentry.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_Module_Info></a>
+<font size=+2>Get_Module_Info()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_Module_Info(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idSlotType</NOBR>, <NOBR><i>varchar2</i> OUT_sModuleName</NOBR>, <NOBR><i>varchar2</i> OUT_sSlotTypeName</NOBR>, <NOBR><i>number</i> OUT_iNumInputs</NOBR>, <NOBR><i>number</i> OUT_iNumOutputs</NOBR>, <NOBR><i>number</i> IN_idModule</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_module_info.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the contents of the Module table and associated SlotType table for the given IN_idModule.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching Module record found</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Get_SlotType_Info>Get_SlotType_Info</a>() failed returning -X.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idSlotType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_sModuleName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_sSlotTypeName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_iNumInputs</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_iNumOutputs</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idModule</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_module_info.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_Next_Plexor></a>
+<font size=+2>Get_Next_Plexor()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_Next_Plexor(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idNextDevSlot</NOBR>, <NOBR><i>number</i> OUT_iNextPlexor</NOBR>, <NOBR><i>number</i> IN_idDeviceSlot</NOBR>, <NOBR><i>number</i> IN_iPlexor</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_next_plexor.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the idNextDeviceSlot and iNextPlexor from the ModuleTemplate table using the given IN_idDeviceSlot and IN_iPlexor</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching ModuleTemplate record found.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idNextDevSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_iNextPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_next_plexor.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_Plexor_For_ChanT></a>
+<font size=+2>Get_Plexor_For_ChanT()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_Plexor_For_ChanT(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_idDeviceSlot</NOBR>, <NOBR><i>number</i> OUT_iPlexor</NOBR>, <NOBR><i>number</i> IN_idChanT</NOBR>, <NOBR><i>number</i> IN_idChan</NOBR>, <NOBR><i>number</i> IN_tTime</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_plexor_for_chant.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This funcntion looks in the ChanT table for the idDeviceSlot and iPlexor fields for a given idChanT.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching ChanT record found</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>ChanT record has NULL DeviceSlot</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>GetidChanT_From_idChan_and_T() failed, X is the return code from it.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_idDeviceSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_iPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idChanT</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idChan</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tTime</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_plexor_for_chant.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Get_SlotType_Info></a>
+<font size=+2>Get_SlotType_Info()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Get_SlotType_Info(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> OUT_iNumInputs</NOBR>, <NOBR><i>number</i> OUT_iNumOutputs</NOBR>, <NOBR><i>varchar2</i> OUT_sSlotTypeName</NOBR>, <NOBR><i>number</i> IN_idSlotType</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_slottype_info.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function retrieves the contents of the SlotType table for a given idSlotType.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>No matching SlotType record found</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>OUT_iNumInputs</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_iNumOutputs</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>OUT_sSlotTypeName</td>
+  <td>varchar2</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idSlotType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_get_slottype_info.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Set_Device_Function></a>
+<font size=+2>Set_Device_Function()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Set_Device_Function(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> INOUT_idFunctionBind</NOBR>, <NOBR><i>number</i> IN_idDeviceToBind</NOBR>, <NOBR><i>number</i> IN_idFunctionToBind</NOBR>, <NOBR><i>number</i> IN_sFunctionType</NOBR>, <NOBR><i>number</i> IN_tOff</NOBR>, <NOBR><i>number</i> IN_tOn</NOBR>, <NOBR><i>number</i> IN_bOverwrite</NOBR>, <NOBR><i>number</i> IN_bOverridable</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_set_device_function.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>NULL IN_idDeviceToBind.  IN_idDeviceToBind must contain a valid idDevice value.</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>NULL IN_idFunctionToBind. IN_idFunctionToBind must contain a valid idFunction value.</td>
+ </tr>
+ <tr>
+  <td>-4</td>
+  <td>Invalid sFunctionType/idFunction</td>
+ </tr>
+ <tr>
+  <td>-5</td>
+  <td>Overlapping FunctionBind records exist, and IN_bOverwrite was not set to 1.</td>
+ </tr>
+ <tr>
+  <td>-6</td>
+  <td>Invalid foreign key.  IN_idDeviceToBind, did not contain a valid value.</td>
+ </tr>
+ <tr>
+  <td>-7</td>
+  <td>Invalid idFunctionBind key.  INOUT_idFunctionBind was non-null but did not contain a valid value. INOUT_idFunctionBind must correspond to an existing FunctionBind.idFunctionBind if it is not NULL.</td>
+ </tr>
+ <tr>
+  <td>-8</td>
+  <td>Invalid IN_sFunctionType.  GetTI() was not able to lookup a table identifier for IN_sFunctionType.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-2X</td>
+  <td>Error in <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Fix_Function_Bind>Fix_Function_Bind</a>(), where X indicates error returned by that proc.  <a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/SQL/function_comments.html#Fix_Function_Bind>Fix_Function_Bind</a>() is only executed when there is an existing FunctionBind record with matching keys and an overlapping time period (tOn - tOff).</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>INOUT_idFunctionBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceToBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idFunctionToBind</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_sFunctionType</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOff</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOn</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_bOverwrite</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_bOverridable</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_set_device_function.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Set_Plexor_For_Channel></a>
+<font size=+2>Set_Plexor_For_Channel()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>Set_Plexor_For_Channel(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>number</i> OUT_RetCode</NOBR>, <NOBR><i>number</i> INOUT_idChanT</NOBR>, <NOBR><i>number</i> IN_idChan</NOBR>, <NOBR><i>number</i> IN_idDeviceSlot</NOBR>, <NOBR><i>number</i> IN_iPlexor</NOBR>, <NOBR><i>number</i> IN_tOff</NOBR>, <NOBR><i>number</i> IN_tOn</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_set_plexor_for_channel.sql</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Optional Function Description ended by a blank line.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>NUMBER</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Arg:</b></td>
+  <td>1</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td>-1</td>
+  <td>Unknown error</td>
+ </tr>
+ <tr>
+  <td>-2</td>
+  <td>NULL IN_idDeviceSlot.  IN_idDeviceSlot must contain a valid idDeviceSlot value</td>
+ </tr>
+ <tr>
+  <td>-3</td>
+  <td>NULL IN_iPlexor.  IN_iPlexor must contain a valid iPlexor value.</td>
+ </tr>
+ <tr>
+  <td>-4</td>
+  <td>Unknown Duplicate Index Value error.</td>
+ </tr>
+ <tr>
+  <td>-5</td>
+  <td>Internal error while processing Create_ChanT.</td>
+ </tr>
+ <tr>
+  <td>-6</td>
+  <td>Unknown Foreign Key error.</td>
+ </tr>
+ <tr>
+  <td>-7</td>
+  <td>idDeviceSlot/iPlexor is not valid FK to ModuleTemplate table.</td>
+ </tr>
+ <tr>
+  <td>-1X</td>
+  <td>Error in Create_Core_idKey(), where X indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-2X</td>
+  <td>Error in Update_ChanT(), where X indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-1XX</td>
+  <td>Error in Create_ChanT(), where XX indicates error returned by that proc.</td>
+ </tr>
+ <tr>
+  <td>-2XX</td>
+  <td>Error in Update_ChanTs_For_TimeRange(), where XX indicates error returned by that proc.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>OUT_RetCode</td>
+  <td>number</td>
+  <td>This parameter holds the return value for the procedure.</td>
+ </tr>
+ <tr>
+  <td>INOUT_idChanT</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idChan</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_idDeviceSlot</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_iPlexor</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOff</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+ <tr>
+  <td>IN_tOn</td>
+  <td>number</td>
+  <td>Optional Parameter Description for Param2.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/RAW_INFRASTRUCTURE-INTERNAL/library_comments.html#RAW_INFRASTRUCTURE-INTERNAL>RAW_INFRASTRUCTURE-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>SQL</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/sql_scripts/ewdb_set_plexor_for_channel.sql</td>
+ </tr>
+</table>
+
+<br><br>
+
+

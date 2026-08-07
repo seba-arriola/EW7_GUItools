@@ -1,0 +1,44 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.2 2007/03/28 18:15:47 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/28 18:15:47  paulf
+#     made unix makefile in sync with will's last change
+#
+#     Revision 1.1  2005/07/27 16:08:37  friberg
+#     added in UNIX makefile
+#
+#     Revision 1.2  2000/08/08 18:02:10  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 17:00:08  lucky
+#     Initial revision
+#
+#
+#
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+OBJ = diskmgr.o $L/getavail.o $L/getutil.o $L/kom.o $L/logit.o \
+         $L/sleep_ew.o $L/time_ew.o $L/transport.o $L/dirops_ew.o
+
+diskmgr: $(OBJ)
+	cc -o $B/diskmgr $(OBJ) -lm -lpthread
+
+lint:
+	lint diskmgr.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/diskmgr*

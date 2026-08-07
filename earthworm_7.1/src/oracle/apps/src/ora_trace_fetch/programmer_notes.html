@@ -1,0 +1,166 @@
+<html>
+<h1>Programmer Notes</h1>
+
+<a href="#ora_trace_req"><font size=+1>ora_trace_req</font></a><br>
+<a href="#ora_trace_fetch"><font size=+1>ora_trace_fetch</font></a><br>
+<a href="#ora_trace_fetch_Program_Modes">Program Modes</a><br>
+<a href="#ora_trace_fetch_Scheduling_Strategies">Scheduling Strategies</a><br>
+
+<a name="ora_trace_req">
+<h2>ora_trace_req</h2>
+Not much to report here.  ora_trace_req just grabs TRIG_LIST2K messages from
+an Earthworm ring, runs 'em through parsetrig() and stuffs the resulting 
+request into the database.
+<p>
+One function within ora_trace_req that may be of interest to programmers looking
+to squeeze more functionality out of it is GetRequestGroupForSnippet().  
+Immediately before ora_trace_req stuffs the SnippetRequest into the database,
+it calls a function to determine the RequestGroup for the snippet.  The default
+function is very stupid and just copies the RequestGroup from the ora_trace_req
+config file into the request.  You could modify this function to be more 
+intelligent, possibly in an installation dependent way.
+<p>
+What follows is the source for the default function:<br>
+<pre>
+/*************************************************************************
+ * GetRequestGroupForSnippet() function used to calculate which          *
+ * request group a snippet-request should be placed in.                  *
+ *************************************************************************/
+int GetRequestGroupForSnippet(const SNIPPET * pSnippet)
+{
+  /* for now (at the very least) this function just returns the
+     request group specified in the config file. 
+     DK 04/16/2002
+  ****************************************************************/
+  return(iDefaultRequestGroup);
+}
+</pre>
+
+<p>
+
+<a name="ora_trace_fetch">
+
+<h2>ora_trace_fetch</h2>
+<a href="#ora_trace_fetch_Program_Modes">Program Modes</a><br>
+<a href="#ora_trace_fetch_Scheduling_Strategies">Scheduling Strategies</a><br>
+
+Below, two of the main programming components with ora_trace_fetch are described.<br>
+The first section is about Program Modes.  This is just a more detailed 
+(than what is in the user doc) description of what happens when the program 
+runs in the various Program Modes(retrieval modes).
+The second section talks briefly about Scheduling Strategies and how to go 
+about intefacing your own scheduling strategy with ora_trace_fetch.
+<br>
+<br>
+
+
+<a name="ora_trace_fetch_Program_Modes">
+<h3>PROGRAM MODES</h3>
+
+<h4>THE MAIN LOOP</h4>
+ora_trace_fetch is continually executing a main processing loop.  
+The behavior of the program during this loop is governed by
+the MODE that ora_trace_fetch is running in.  The three modes differ in how 
+the program behaves each time it passes through this main loop.  
+
+<h4>THE MODES</h4>
+As described in the main user document for ora_trace_fetch, ora_trace_fetch
+has three(3) main modes of operation: STANDARD_DATA_MODE, ALWAYS_CHECK_LIST,
+and ALWAYS_GET_SNIPPETS.  These modes affect the behavior of ora_trace_fetch
+as it runs through it's main processing loop.
+
+<ol>
+<li><b>STANDARD_DATA_MODE</b><br>
+In STANDARD_DATA_MODE the program keeps track of the time of the next
+scheduled request.  It obtains this time, by querying the database for
+the next scheduled attempt time.  Each time through the main loop in this mode,
+the program checks to see if the time of the next request has 
+passed (CURRENT_TIME >= TIME_OF_NEXT_REQUEST).<br>  
+If the time has not yet passed, then the program will sleep for a 
+couple of seconds, and then run through the main loop again.<br>
+If the time has passed, then the program will query the database for
+the list of snippet requests that is due for processing 
+(CURRENT_TIME >= TIME_OF_NEXT_ATTEMPT).  For each request that it
+finds due, the program will process the request.  After the program
+has processed all requests, it will query the the database again
+for the next scheduled attempt time, and record that time as the
+TIME_OF_NEXT_REQUEST.  Then it repeats the main loop.<br>
+</li>
+<li><b>ALWAYS_CHECK_LIST</b><br>
+Each time through the main loop in ALWAYS_CHECK_LIST mode,
+the program queries the database for the list of snippet requests 
+that is due for processing(CURRENT_TIME >= TIME_OF_NEXT_ATTEMPT).  
+For each request that it finds due, the program will process the request. 
+If the program finds no requests, then it will sleep for a couple
+of seconds before beginning the main loop again.
+This mode differs from STANDARD_DATA_MODE in that it will always check 
+the list of snippet requests in the database, 
+whether or not it expects to find any scheduled for retrieval.
+</li>
+<li><b>ALWAYS_GET_SNIPPETS</b><br>
+Each time through the main loop in this mode, the program queries the database
+for all snippet requests regardless of their TIME_OF_NEXT_ATTEMPT.
+For each request that it finds, the program will process the request.
+If the program finds no requests, then it will sleep for a couple
+of seconds before beginning the main loop again.
+This mode differs from ALWAYS_CHECK_LIST mode in that it will attempt to process
+all requests regardless of whether they are scheduled for processing or not.
+<br></li>
+</ol>
+<br>
+
+
+By setting the arrival time in the EWDB_SnippetRequestStruct.tAttemptInterval to
+the desired deltaT between now and the next interval
+and by setting 
+IN_iModifyAttemptParams = EWDB_WAVEFORM_REQUEST_UPDATE_NEXT_ATTEMPT
+ before calling ewdb_api_UpdateSnippetRequest() you can override the default 
+ schedule.  Note that when you override the default schedule, the
+ iNumRemainingAttempts counter that causes the request to eventually expire
+ is not adjusted.
+
+
+<a name="ora_trace_fetch_Scheduling_Strategies">
+<h3>SCHEDULING STRATEGIES</h3>
+
+This section describes how to write your own scheduling strategy, or atleast 
+how to make your strategy work with ora_trace_fetch.  For the most up to date
+documentation, please see ora_trace_fetch/schedule.c.  This is the file where
+you will perform most of your interfacing work.  
+<p>
+The following excerpt was copied from the top of the schedule.c file.
+<p>
+
+<pre>
+/*************************************************************************
+   HOW TO:  WRITING YOUR OWN SCHEDULING ALGORITHM
+
+   To add your own scheduling algorithm, add code to the places in the
+   following file labeled "FILL IN:".
+
+   *NOTE*  You will also have to add code to the "schedule.h" header file.
+
+   The steps for defining your own scheduling algorithm are:
+   1) Define a constant identifying your algorithm in "schedule.h".
+   2) Add prototypes for the scheduling and config functions for your
+      algorithm.
+   3) Add any neccessary global variables. (they should be static to this file)
+   4) Add a check for your strategy type in the "RetrievalSchedulingMethod"
+      section of CheckForSchedulingConfigVariables().
+   5) Add a call to your scheduling config method in 
+      CheckForSchedulingConfigVariables().
+   6) Add your scheduling config method CheckForSCHEDULE_XXXConfigVariables(),
+      that is called in Step 5.
+   7) Add a call to your main scheduling method in 
+      ScheduleNextAttemptForSnippetRequest().
+   8) Add your main scheduling method ScheduleNextAttemptUsingSCHEDULE_XXX(),
+      that is called in Step 7.
+   9) Add any supporting code in your own functions.
+  10) Add a description of your algorithm and the config string that 
+      identifies it to the config file under the "RetrievalSchedulingMethod"
+      section.
+ *************************************************************************/
+</pre>
+
+< eof >
+

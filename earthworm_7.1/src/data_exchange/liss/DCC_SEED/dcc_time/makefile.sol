@@ -1,0 +1,72 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.1 2000/03/13 23:48:35 lombard Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.1  2000/03/13 23:48:35  lombard
+#     Initial revision
+#
+#
+#
+
+DCC_INCLUDE = ../include
+DCC_LIB = ../lib
+
+RANLIB = ranlib
+
+WARN = 
+INCS = -I$(DCC_INCLUDE)
+
+CFLAGS += $(INCS) $(PROF) $(WARN)
+
+# DCC library definitions
+
+DCC_TIME = $(DCC_LIB)/libdcc_time.a
+
+# END TEMPLATE SECTION
+
+OBJS = 	st_addtodelta.o	\
+	st_addtotime.o	\
+	st_cleandate.o	\
+	st_deltacomp.o	\
+	st_deltaprint.o	\
+	st_deltatoms.o	\
+	st_difftimes.o	\
+	st_flttotime.o	\
+	st_formdelta.o	\
+	st_formatdate.o	\
+	st_getcurrent.o	\
+	st_getlocal.o	\
+	st_getjulian.o	\
+	st_julian.o	\
+	st_minusdelta.o	\
+	st_parsetime.o	\
+	st_printcal.o	\
+	st_printdate.o	\
+	st_printdec.o	\
+	st_setupdate.o	\
+	st_spanprint.o	\
+	st_timecomp.o	\
+	st_timeminusd.o	\
+	st_timenorm.o	\
+	st_timepar.o	\
+	st_timeplusd.o	\
+	st_timespan.o	\
+	st_timetoflt.o	\
+	st_limits.o	\
+	st_oracle.o	\
+	st_minmax.o	\
+	st_unixtimes.o
+
+all:	$(DCC_TIME)
+
+$(DCC_TIME): $(OBJS)
+	$(AR) rv $@ $(OBJS)
+	${RANLIB} $(DCC_TIME)
+
+clean:
+	rm -f *.o *.a core *~ \#*\#
+

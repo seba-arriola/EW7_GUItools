@@ -1,0 +1,49 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.1 2000/03/13 23:49:34 lombard Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.1  2000/03/13 23:49:34  lombard
+#     Initial revision
+#
+#
+#
+
+DCC_INCLUDE = ../include
+DCC_LIB = ../lib
+
+RANLIB = ranlib
+
+WARN = 
+INCS = -I$(DCC_INCLUDE)
+
+CFLAGS += $(INCS) $(PROF) $(WARN)
+
+# DCC library definitions
+
+STEIM = $(DCC_LIB)/libsteim123.a
+
+# END TEMPLATE SECTION
+
+
+OBJS=	steimlib.o	\
+	steim_decode.o
+
+all:	$(STEIM)
+
+$(STEIM): $(OBJS)
+	$(AR) rv $@ $(OBJS)
+	${RANLIB} $(STEIM)
+
+clean:
+	rm -f *.o *.a core *~ \#*\#
+
+steimlib.o:	$(DCC_INCLUDE)/steim/steim.h steimlib.c
+		$(CC) -c $(CFLAGS) -I$(DCC_INCLUDE) steimlib.c
+
+steim_decode.o:	$(DCC_INCLUDE)/steim/steim.h steim_decode.c
+		$(CC) -c $(CFLAGS) -I$(DCC_INCLUDE) steim_decode.c
+

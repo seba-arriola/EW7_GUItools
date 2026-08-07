@@ -1,0 +1,93 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ind,v 1.34 2005/06/21 16:24:07 davidk Exp $
+#
+#################################################################
+
+
+API_OBJECTS = \
+          ewdb_api_CreateEvent.$(OBJ) \
+          ewdb_api_GetEventList.$(OBJ) \
+          ewdb_api_GetEventID.$(OBJ) \
+          ewdb_api_CreateOrigin.$(OBJ) \
+          ewdb_api_CreateOriginPick.$(OBJ) \
+          ewdb_api_CreateUnassocPick.$(OBJ) \
+          ewdb_api_CreateMagnitude.$(OBJ) \
+          ewdb_api_CreateArrival.$(OBJ) \
+          ewdb_api_CreatePeakAmp.$(OBJ) \
+          ewdb_api_CreateStaMag.$(OBJ) \
+          ewdb_api_BindToEvent.$(OBJ) \
+          ewdb_api_SetPrefer.$(OBJ) \
+          ewdb_api_GetArrivals.$(OBJ) \
+          ewdb_api_GetArrivalsWChanInfo.$(OBJ) \
+          ewdb_api_UpdateComment.$(OBJ) \
+          ewdb_api_GetEventInfo.$(OBJ) \
+          ewdb_api_GetIDSource.$(OBJ) \
+          ewdb_api_GetPicksByTime.$(OBJ) \
+          ewdb_api_GetUnassocPicksByTime.$(OBJ) \
+          ewdb_api_GetUnassocPicksByTimeWChan.$(OBJ) \
+          ewdb_api_GetMagnitude.$(OBJ) \
+          ewdb_api_GetMagsForOrigin.$(OBJ) \
+          ewdb_api_GetOrigin.$(OBJ) \
+          ewdb_api_GetPreferredSummaryInfo.$(OBJ) \
+          ewdb_api_GetPickByExternalID.$(OBJ) \
+          ewdb_api_GetPickByID.$(OBJ) \
+          ewdb_api_InsertCodaWithMag.$(OBJ) \
+          ewdb_api_GetStaMags.$(OBJ) \
+          ewdb_api_GetOriginsForEvent.$(OBJ) \
+          ewdb_api_DeleteDataBeforeTime.$(OBJ) \
+          ewdb_api_DeleteAllDataBeforeTime.$(OBJ) \
+          ewdb_api_DeletePeakAmpsBeforeTime.$(OBJ) \
+          ewdb_api_DeletePicksBeforeTime.$(OBJ) \
+          ewdb_api_UpdateEvent.$(OBJ) \
+          ewdb_api_GetNumStationsForEvent.$(OBJ) \
+          ewdb_api_GetidOriginFromVersionNum.$(OBJ) \
+          ewdb_api_GetAmpsByOrigin.$(OBJ) \
+          ewdb_api_GetAmpsByPick.$(OBJ) \
+          ewdb_api_GetEventForOrigin.$(OBJ) \
+          ewdb_api_GetAmpsByEvent.$(OBJ) \
+          ewdb_api_GetAmpsByTime.$(OBJ) \
+          ewdb_api_GetEventSummaryInfo.$(OBJ) \
+          ewdb_api_GetExternalEventInfo.$(OBJ) \
+          ewdb_api_GetArrivalsWChanInfo.$(OBJ) \
+          ewdb_api_GetAmpsForOriginWChanInfo.$(OBJ) \
+          ewdb_api_GetAmpsForOriginByPick.$(OBJ) \
+          ewdb_api_GetSourceByID.$(OBJ) \
+          ewdb_api_GetMwFilterByID.$(OBJ) \
+          ewdb_api_GetMwFilterByProperties.$(OBJ) \
+          ewdb_api_CreateMw.$(OBJ) \
+          ewdb_api_AssocMwWithMag.$(OBJ) \
+          ewdb_api_CreateMwChanWithTS.$(OBJ) \
+          ewdb_api_GetMwTimeSeriesByPick.$(OBJ) \
+          ewdb_api_GetMwTimeSeriesByChan.$(OBJ) \
+          ewdb_api_GetMwSolutionsForOrigin.$(OBJ) \
+          ewdb_api_GetMwChans.$(OBJ) \
+          ewdb_api_DeleteEvent.$(OBJ) \
+          ewdb_api_GetCodaDurByPickID.$(OBJ) \
+		  ewdb_api_GetComment.$(OBJ) \
+		  ewdb_api_CreateComment.$(OBJ) \
+		  ewdb_api_DeleteComment.$(OBJ)
+
+
+INTERNAL_OBJECTS = 	\
+          ewdb_internal_CreateCodaDur.$(OBJ) \
+          ewdb_internal_CreateComment.$(OBJ) \
+          ewdb_internal_CreateTCoda.$(OBJ) \
+          ewdb_internal_DeleteComment.$(OBJ) \
+          ewdb_internal_GetAmpsByEvent.$(OBJ) \
+          ewdb_internal_GetAmpsByEvent_w_StaInfo.$(OBJ) \
+          ewdb_internal_GetAmpsByTime.$(OBJ) \
+          ewdb_internal_GetAmpsByTime_w_StaInfo.$(OBJ) \
+          ewdb_internal_GetStaMagsForCodaDur.$(OBJ) \
+          ewdb_internal_GetStaMagsForPeakAmp.$(OBJ) \
+          ewdb_internal_CreateMwChan.$(OBJ) \
+          ewdb_internal_CreateMwChanTS.$(OBJ) \
+          ewdb_internal_TS_Convert.$(OBJ) \
+          ewdb_internal_UpdateCommentNext.$(OBJ) 
+
+
+ALL:  $(API_OBJECTS) $(INTERNAL_OBJECTS)
+		-$(COPY) *.$(OBJ) $(EWDB_LIB)
+		$(EMAKE_FORCE) sql_scripts

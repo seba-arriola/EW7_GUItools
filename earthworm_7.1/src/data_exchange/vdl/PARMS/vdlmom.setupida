@@ -1,0 +1,2 @@
+vdlidatap if=localhost -v SCRIPTS/parms1.vdlida -n 18 -s 50 -host nsn4.cr.usgs.gov -port 2003 -f 20 -t 1 -i vpe1 -k 0
+vdlidatap if=localhost -v SCRIPTS/parms2.vdlida -n 18 -s 50 -host nsn3.cr.usgs.gov -port 2003 -f 20 -t 1 -i vpe2 -k 0

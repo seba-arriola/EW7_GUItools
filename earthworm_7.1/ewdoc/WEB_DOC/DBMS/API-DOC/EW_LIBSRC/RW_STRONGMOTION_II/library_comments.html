@@ -1,0 +1,46 @@
+<hr>
+<a name=RW_STRONGMOTION_II></a>
+<font size=+2>RW_STRONGMOTION_II</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Group:</b></td>
+  <td><a href=../.././EW_LIBSRC/library_comments.html#EW_LIBSRC>EW_LIBSRC</a></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Library for converting converting from an Earthworm TYPE_STRONGMOTION2 message to a structure and visa versa. <br><br> Each TYPE_STRONGMOTION2 message is intended to contain information for one channel only, with optional event association information. <br><br> Field units with multiple channels will produce multiple TYPE_STRONGMOTION2 messages. <br><br> Timestamps are in seconds since 1970/01/01 00:00:00.00 UTC. <br><br> Data are in units of cgs. (centimeters, grams, seconds) <br><br> <b>WARNING!</b> All measurements in the Earthworm TYPE_STRONGMOTION2 message are assumed to be positive.  <a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_NULL>SM_NULL</a> indicates that a measurement is missing, and any other negative value will result in unpredictable behavior from strong motion applications.  If you have sources that may produce signed values for PGA, PGV, PGD, or RSA values, you must be sure to change these to absolute values before they are passed to this library! <br> Written by Lynn Dietz,   January 2001 <br><br></td>
+ </tr>
+ <tr><td colspan=2>
+  <DIR>
+    <LI>C
+     <DIR>
+      <LI>constant_comments.html
+       <DIR>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#GRAVITY_CGS>GRAVITY_CGS</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_ALTCODE_AUTOMATED_REVIEWER>SM_ALTCODE_AUTOMATED_REVIEWER</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_ALTCODE_DATABASE>SM_ALTCODE_DATABASE</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_ALTCODE_NONE>SM_ALTCODE_NONE</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_ALTCODE_RECEIVING_MODULE>SM_ALTCODE_RECEIVING_MODULE</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_MAX_RSA>SM_MAX_RSA</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_NULL>SM_NULL</a>
+     </DIR>
+      <LI>typedef_comments.html
+       <DIR>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/typedef_comments.html#SM_INFO>SM_INFO</a>
+     </DIR>
+      <LI>function_comments.html
+       <DIR>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/function_comments.html#log_strongmotionII>log_strongmotionII</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/function_comments.html#rd_strongmotionII>rd_strongmotionII</a>
+        <LI><a href=../.././EW_LIBSRC/RW_STRONGMOTION_II/C/function_comments.html#wr_strongmotionII>wr_strongmotionII</a>
+       </DIR>
+     </DIR>
+   </DIR>
+  </td>
+ </tr>
+</table>
+
+<br><br>
+
+

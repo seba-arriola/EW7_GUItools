@@ -1,0 +1,25 @@
+<!-- details.html  mag2ora details page -->
+
+<html>
+<title>EWDB Applications: mag2ora: details</title>
+<b><font size=+2>mag2ora: </font><font size=+1>Details</font></b>
+<br><br>
+<b>Event Association</b><br>
+<b>mag2ora</b> picks up automatically calculated magnitudes from an
+Earthworm ring, and stuffs them into the DB. In general, an event 
+can have many origins, and each magnitude is derived from some origin. 
+So how do we know which origin this magnitude belongs to? 
+The cleanest way is to somehow be told what the origin id is. But we 
+don't have that yet. So:  The assumption here is that the event id 
+(which we find in the incoming magnitude message) was created by some 
+automatic source. We know the author id of that module. So, we find the 
+latest origin for this event by this author, and tack the magnitude to 
+that origin. 
+<br>
+<b>This is overkill:  eqproc produces only one origin per event. </b>
+<br>
+But even if there were several, attaching all magnitudes to the 
+'latest and greatest" origin seems like a safe bet. We assume that the 
+final magnitude for an event will be for the final origin.
+<br><br>
+</html>

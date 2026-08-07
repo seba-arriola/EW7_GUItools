@@ -1,0 +1,27 @@
+QLIB_DIR = ../../libsrc/qlib2/
+CFLAGS = $(GLOBALFLAGS)  -I$(QLIB_DIR)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+LIBS = $L/swap.o $L/time_ew.o $L/logit.o
+
+all: remux_tbuf sac2tb ms2tb
+	make -f makefile.ux remux_tbuf
+	make -f makefile.ux sac2tb
+	
+remux_tbuf: remux_tbuf.o $(LIBS)
+	cc -g -o $B/remux_tbuf remux_tbuf.o $(LIBS)
+	
+sac2tb: sac2tb.o $(LIBS)
+	cc -g -o $B/sac2tb sac2tb.o $(LIBS)
+
+ms2tb: ms2tb.o $(LIBS) read_mseed_data.o
+	cc -g -o $B/ms2tb ms2tb.o read_mseed_data.o -L$(L) -L$(QLIB_DIR) -lqlib2nl -lm
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/remux_tbuf* $B/sac2tb*  $B/ms2tb*

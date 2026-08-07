@@ -1,0 +1,60 @@
+<hr>
+<a name=EWDB_SMMotionStruct></a>
+<font size=+1>EWDB_SMMotionStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_SMMotionStruct</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This struct contains information for a single strong motion(SMMotion), in the database coding format.  It is used to retrieve SMMotion measurements from the DB.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>iMotionType</td>
+     <td>int</td>
+     <td>The type of motion.  Supported values include (<a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_MOTION_TYPE_ACCELERATION>EWDB_SM_MOTION_TYPE_ACCELERATION</a> | <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_MOTION_TYPE_VELOCITY>EWDB_SM_MOTION_TYPE_VELOCITY</a> | <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_MOTION_TYPE_DISPLACEMENT>EWDB_SM_MOTION_TYPE_DISPLACEMENT</a>)</td>
+    </tr>
+    <tr>
+     <td>dPeriod</td>
+     <td>double</td>
+     <td>The spectral response period of the motion, or a coded identifier such as <a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/C/constant_comments.html#EWDB_SM_PERIOD_PEAK_VALUE_CODE>EWDB_SM_PERIOD_PEAK_VALUE_CODE</a>.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/STRONG_MOTION-INTERNAL/library_comments.html#STRONG_MOTION-INTERNAL>STRONG_MOTION-INTERNAL</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/internal/ewdb_sm_internal.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

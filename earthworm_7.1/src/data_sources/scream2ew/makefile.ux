@@ -1,0 +1,90 @@
+#
+# makefile.ux:
+#
+# Copyright (c) 2003 Guralp Systems Limited
+# Author James McKenzie, contact <software@guralp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+PROG=scream2ew
+
+BINDIR = ${EW_HOME}/${EW_VERSION}/bin
+LIBDIR = ${EW_HOME}/${EW_VERSION}/lib
+
+HSRCS=config.h dispatch.h ewc.h gcf.h gputil.h mainloop.h \
+	map.h oscompat.h project.h scream.h util.h
+
+SRCS=config.c dispatch.c ewc.c gcf.c gputil.c \
+	main.c mainloop.c map.c scream.c util.c
+
+OBJS=config.o dispatch.o ewc.o gcf.o gputil.o \
+	main.o mainloop.o map.o scream.o util.o
+
+LIBS=-lpthread -lm
+
+LOBJS=${LIBDIR}/kom.o ${LIBDIR}/getutil.o ${LIBDIR}/socket_ew.o  \
+	${LIBDIR}/time_ew.o ${LIBDIR}/chron3.o ${LIBDIR}/logit.o \
+	${LIBDIR}/transport.o ${LIBDIR}/sleep_ew.o ${LIBDIR}/swap.o 
+
+default: install
+
+install: ${BINDIR}/${PROG}
+
+${BINDIR}/${PROG}:${PROG}
+	install -m 755 -c ${PROG} ${BINDIR}
+#sh ./install-sh -m 755 -c ${PROG} ${BINDIR}
+
+${PROG} : ${OBJS} ${LOBJS}
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ ${OBJS} ${LOBJS} ${LIBS} 
+
+lint:
+	lint ${SRCS} ${GLOBALFLAGS}
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~ ${PROG}  *.BAK core.*
+
+clean_bin:
+	rm -f ${BINDIR}/${PROG}
+
+checkin:
+	ci -l -m# ${SRCS} ${HSRCS} makefile.sol makefile.nt
+
+tidy: checkin
+	indent -i2 -ts0 ${CSRCS} ${HSRCS}
+
+# dependancies
+
+config.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+dispatch.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+ewc.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+gcf.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+gputil.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+main.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+mainloop.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+map.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+scream.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+util.o: project.h config.h dispatch.h ewc.h gcf.h gputil.h \
+	mainloop.h map.h oscompat.h scream.h util.h
+

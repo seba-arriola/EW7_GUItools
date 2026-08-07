@@ -1,0 +1,28 @@
+
+
+# configuration file for the station list loader -- Urban Hazards project
+
+
+#
+# Database connection parameters
+#
+#
+DBuser     ewdb_main
+DBpassword main
+DBservice  eqs.working
+
+#
+# LogDir: Where log file will be written
+#
+LogDir /home/earthworm/run_MRO/log/
+
+
+#
+# StaListFile -- full path to the station list file
+#
+StaListFile /tmp/SEAStations.txt
+
+#
+# PZ_Dir -- Directory where the Poles&Zeros files live
+#  NOTE: must be followed by either '\' or '/' depending on the OS
+PZ_Dir /home/earthworm/pz/

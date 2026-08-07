@@ -1,0 +1,14 @@
+/ewdb_api_CreateCoincidence.c/1.1/Fri Mar 22 20:01:23 2002//
+/ewdb_api_CreateMerge.c/1.1/Fri Mar 22 20:01:23 2002//
+/ewdb_api_CreatePhenomenon.c/1.1/Fri Mar 22 20:01:23 2002//
+/ewdb_api_CreateTrigger.c/1.2/Tue May 28 17:22:22 2002//
+/ewdb_api_DeleteMerge.c/1.1/Tue Jun 18 16:10:12 2002//
+/ewdb_api_DeletePhenomenon.c/1.1/Tue Jun 18 16:10:12 2002//
+/ewdb_api_GetCoincidence.c/1.3/Thu Oct  9 17:57:02 2003//
+/ewdb_api_GetMergeList.c/1.3/Tue Sep 16 16:56:55 2003//
+/ewdb_api_GetTriggerList.c/1.3/Thu Oct  9 17:57:03 2003//
+/ewdb_api_UpdateMergePreference.c/1.1/Fri Mar 22 20:01:23 2002//
+/makefile.ind/1.1/Thu Sep  9 06:04:28 2004//
+/makefile.nt/1.1/Thu Sep  9 06:04:28 2004//
+/makefile.sol/1.1/Thu Sep  9 06:04:28 2004//
+D

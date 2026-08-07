@@ -1,0 +1,51 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.4 2006/11/21 23:04:32 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.4  2006/11/21 23:04:32  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.3  2003/05/06 20:54:03  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2000/02/14 17:02:31  lucky
+#     Initial revision
+#
+#
+#
+
+#
+#                    Nmake File For eqproc and log_everything
+#                               Windows NT version
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+all:
+   emake $B\eqbuf.exe
+
+$B\eqbuf.exe: eqbuf.obj
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) eqbuf.obj \
+    $L\mem_circ_queue.obj $L\sema_ew.obj $L\threads_ew.obj $L\site.obj \
+    $L\tlay.obj $L\logit.obj $L\time_ew.obj $L\kom.obj $L\chron3.obj \
+    $L\mnbrak.obj $L\brent.obj $L\getutil.obj $L\pipe.obj $L\transport.obj \
+    $L\sleep_ew.obj -out:$B\eqbuf.exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\eqbuf*

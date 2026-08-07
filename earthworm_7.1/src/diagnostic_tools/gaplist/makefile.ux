@@ -1,0 +1,33 @@
+
+#    $Id: makefile.ux,v 1.1 2005/07/26 20:24:04 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/26 20:24:04  friberg
+#     added UNIX makefile
+#
+#
+LIBS = -lm -lpthread
+
+CFLAGS = ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+OBJ = gaplist.o config.o $L/chron3.o $L/getutil.o $L/kom.o $L/logit.o \
+	 $L/time_ew.o $L/transport.o $L/sleep_ew.o $L/swap.o $L/trheadconv.o
+
+
+gaplist: $(OBJ)
+	cc -o $B/gaplist $(OBJ) $(LIBS)
+
+lint:
+	lint gaplist.c config.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/gaplist*

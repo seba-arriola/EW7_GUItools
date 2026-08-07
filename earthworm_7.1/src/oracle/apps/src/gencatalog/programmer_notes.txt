@@ -1,0 +1,17 @@
+/* gencatalog programmer notes 
+   programmer_notes.txt */
+
+
+
+Programmer Notes:
+
+This is a simple command-line program used to query the database for an event catalog.
+
+Various required and optional parameters (most search criteria) are passed on the command
+line, and all matching events are emitted to stdout or to a specified file as a single
+formatted line.
+
+A few internal functions are used, but that is merely for ease of maintenance.  Most
+significantly, at first writing there is a single function used to format each event's
+output row.  This is intended to simplify the addition of other formats later.
+

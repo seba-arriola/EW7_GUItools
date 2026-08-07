@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>Earthworm Modules: WinSDR to Earthworm overview</TITLE>
+<BODY TEXT="#000000" BGCOLOR="#FADFAF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+<CENTER><H1>Earthworm Modules: <BR> WinSDR to Earthworm for EW Version 7.0 Overview</H1>
+<i>Created July 10 2006 by Larry Cochrane</i></CENTER>
+
+<P>WinSDR to Earthworm (ws2ew.exe) is a way of receiving digitized data in
+real-time using TCP/IP from the Webtronics <a href="http://www.seismicnet.com/winsdr/">WinSDR</a>
+datalogger to&nbsp; Earthworm. This module runs under Windows
+2000 or XP and produces demultiplexed data to one of the transport data
+rings. WinSDR must be setup to act as a TCP/IP data server. Ws2Ew acts as a
+client to receive, demultiplexe&nbsp; and send data to one of the Earthworm
+transport rings. This module is similar to the LISS2EW client that comes with
+the Earthworm release package. WinSDR is the Windows based datalogger for the
+16-Bit 8-Channel <a href="http://www.seismicnet.com/serialatod.html">PSN-ADC-SERIAL</a>
+Analog to Digital board.&nbsp;<P>This module was built using Microsoft Visual C++ 6.0. The program
+(ws2ew.exe)
+has been tested using Earthworm version 7.0.<p>To use this module you
+first need to enable the WinSDR server feature. See the WinSDR <a href="http://www.seismicnet.com/winsdr/">documentation</a>
+for more information. You will also need to set the TCP/IP port number
+(default=16064) and note the IP address of the server, the sample rate and the
+number of channels being recorded. All of this information is needed in the
+ws2ew.d configuration file. If the sample rate or number of channels are
+incorrect, the program will write an error message in the log file and exit.</p>
+<h3>
+Data Time Stamping:</h3>
+<P>All data is time stamped at the WinSDR server side. WinSDR can use various methods
+to time stamp the data including GPS, WWV or the computer's system time.&nbsp;<P>See the link below for a list of
+commands used to control the WinSDR to Earthworm module.
+<p><CENTER><a HREF="../cmd/ws2ew_cmd.html">Ws2Ew Commands</CENTER>
+</a>
+</BODY>
+</HTML>

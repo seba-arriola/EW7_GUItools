@@ -1,0 +1,75 @@
+/* ora_trace_req programmer notes
+   programmer_notes.txt */
+
+Programmer Notes:
+
+#################
+BACKGROUND
+#################
+
+The first incarnation of a XXX_trace_save module
+related to Oracle was db_trace_save written by 
+Lynn Dietz.
+
+Then came ora_trace_save, a mutated version of db_trace_save
+possibly written by Alex B.
+
+Then came ora_trace_save2, a mutated version of ora_trace_save
+modified by David K.  ora_trace_save2 was later renamed 
+ora_trace_save.
+
+Now, their is finally Concierge.  Concierge represents the
+ultimate evolution of XXX_trace_save, atleast until the next
+one comes along.
+
+
+The goal of all of the XXX_trace_save modules has been to
+select and archive(into some medium) waveform data that 
+appears to be of interest.
+
+The XXX_trace_save modules have worked primarily off of
+Earthworm Trigger messages.  The trigger message is a simple
+piece of data that indicates that some sort of eventish 
+thing occurred and someone wants to save data for certain
+channels for a certain period.  
+
+
+The db related XXX_trace_save modules have focused on 
+archiving the trace data from a wave_server into a
+database.
+
+The latest incarnation of XXX_trace_save for the db is
+called Concierge.  Concierge is not one program, but a
+combination of three things:  
+1)ora_trace_req - a program that turns trigger messages
+ into snippetrequests that are stored in the database.
+
+2)ora_trace_fetch - a program that reads snippet requests
+from the database and attempts to retrieve waveform data
+from wave_servers and archive it the database.
+
+3)EWDB_WaveformRequest API code.  This is a collection of
+library coed used by ora_trace_req, ora_trace_fetch, and
+potentialy other programs to read/write/update snippet
+requests in the database.
+
+Please see Concierge documentation for more info.
+
+
+#################
+PROGRAM FLOW
+#################
+
+ora_trace_req utilizes Earthworm library code to read 
+trigger messages off of an Earthworm Ring and parse them.
+It then converts the trigger message request lines to
+snippet requests and uses Concierge EWDB_API library code to 
+write the requests to the database.
+Note:  ora_trace_req also reads the Author and Author's
+EventID from the trigger message and creates or retrieves
+the DBEvent associated with that Author/EventID.  All
+inserted snippet_requests are flagged, so that when the
+actual snippet is retrieved, that snippet will be associated
+with the triggers DBEvent.
+
+

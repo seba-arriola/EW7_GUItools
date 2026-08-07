@@ -1,0 +1,35 @@
+# Set MS Make Variable NODEBUG based on EW_DEBUG setting
+!IF "$(EW_DEBUG)" == "1"
+LIBC = libcmtd.lib libcpmtd.lib oldnames.lib
+!ELSE
+NODEBUG=1
+LIBC = libcmt.lib libcpmt.lib oldnames.lib
+!ENDIF
+
+!include <ntwin32.mak>
+
+LIB330 = $(EW_HOME)/$(EW_VERSION)\src\libsrc\lib330
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+OBJ = heart.obj config.obj lib330Interface.obj logging.obj options.obj\
+      q3302ew.obj
+EWOBJ = $L\logit_mt.obj $L\kom.obj $L\threads_ew.obj $L\time_ew.obj\
+        $L\transport.obj $L\sleep_ew.obj $L\getutil.obj $L\sema_ew.obj
+
+DEFINES = /DWIN32 /DX86_WIN32 /D_CRT_SECURE_NO_DEPRECATE
+
+INCL = -I$(EW_HOME)\$(EW_VERSION)\include -I$(LIB330)
+
+all: q3302ew.exe
+
+.c.obj:
+  cl /c $(cvarsmt)  $(GLOBALFLAGS) $(INCL) $(DEFINES) $<
+ 
+q3302ew.exe: $(OBJ)
+   link $(conlflags) $(ldebug) $(conlibsmt) $(LIB330)\lib330.lib -OUT:$(B)\q3302ew.exe $(OBJ) $(EWOBJ)
+
+clean:
+	del *.obj
+	del q3302ew.exe

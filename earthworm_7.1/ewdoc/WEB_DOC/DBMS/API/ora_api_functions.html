@@ -1,0 +1,2784 @@
+<!-- Warning!!!: Do not edit this page it is
+automatically generated from comments in the ewdb_ora_api.h
+source file.  -->
+<html>
+<head>
+<title>EWDB Ora API Functions</title>
+<body><center><h1>Functions of the EW5 Oracle API</h1></center>
+
+<hr>
+<a name=EWDB_OraAPIInit></a>
+<font size=+1>EWDB_OraAPIInit</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int EWDB_OraAPIInit(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> DBuser</NOBR>, <NOBR><i>char *</i> DBpassword</NOBR>, <NOBR><i>char *</i> DBservice</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Initialization function for the API.  This function should be called prior to any other API calls.  It initializes the API environment and validates the database connection parameters (DBuser, DBpassword, DBservice).</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>The API environment was successfully initialized.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>The API environment failed to initialize.  Please see stderr or a logfile for details of the failure.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>The API environment was already initialized.  If the client needs to reinitialize the API environment with different parameters, they must first call <a href=ora_api_functions.html#EWDB_OraAPIShutdown>EWDB_OraAPIShutdown</a> to uninitialize the existing environment.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>DBuser</td>
+  <td>char *</td>
+  <td>The database user that the program should run as.</td>
+ </tr>
+ <tr>
+  <td>DBpassword</td>
+  <td>char *</td>
+  <td>The password for user DBuser.</td>
+ </tr>
+ <tr>
+  <td>DBservice</td>
+  <td>char *</td>
+  <td>The network serviceID of the database to connect to. In Oracle environments, the serviceID is usually defined in either a tnsnames.ora file or by an Oracle Names server.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_OraAPIShutdown></a>
+<font size=+1>EWDB_OraAPIShutdown</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int EWDB_OraAPIShutdown(</font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Shutdown the API environment and free any related memory and handles.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>The API environment was successfully de-initialized.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>The API environment failed to de-initialize.  Please see stderr or a logfile for details of the failure.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>The API environment had not been initialized using <a href=ora_api_functions.html#EWDB_OraAPIInit>EWDB_OraAPIInit</a>.</td>
+ </tr>
+</table>
+
+<br>
+
+<hr>
+<a name=ewdb_api_CreateArrival></a>
+<font size=+1>ewdb_api_CreateArrival</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateArrival(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</i> pArrival</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an arrival from the caller supplied information in pArrival.  The function assumes that the caller has supplied all information for an arrival including origin-phase information.  The pArrival->idOrigin must be a valid existing origin DB ID.  Upon successful completion, the function writes the DB ID of the newly created phase pick(Pick) and the newly created OriginPick to pArrival->idPick and pArrival->idOriginPick respectively.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pArrival</td>
+  <td><a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateBodyAmp></a>
+<font size=+1>ewdb_api_CreateBodyAmp</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateBodyAmp(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</i> pBodyAmp</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</i> pDurCoda</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a coda duration based station magnitude from the caller supplied information in pDurCoda.  The function assumes that the caller has supplied all station magnitude information including summary magnitude data in the <a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a>.  The caller need not fill in AmpBody related information as it is inappropriate.  The pDurCoda->idMagnitude and pDurCoda->idPick values must be valid existing Magnitude and Pick DB IDs respectively.  The pDurCoda->idChan value must also be filled in with the DB ID of a valid existing channel.  Upon successful completion, the function writes the DB IDs of the newly created coda duration, coda termination, and station magnitude to pDurCoda->idDurCoda, pDurCoda->idTCoda, and pDurCoda->idMagLink respectively.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBodyAmp</td>
+  <td><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</td>
+  <td>Pointer to the PhaseAmp structure filled with the information to be inserted into the DB.</td>
+ </tr>
+ <tr>
+  <td>pDurCoda</td>
+  <td><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateEvent></a>
+<font size=+1>ewdb_api_CreateEvent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateEvent(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> *</i> pEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an event in the DB using the information provided by the caller in pEvent.  Upon successful completion, the function writes the DB ID of the newly created event to pEvent->idEvent.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> *</td>
+  <td>Pointer to an <a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateMagnitude></a>
+<font size=+1>ewdb_api_CreateMagnitude</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateMagnitude(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> *</i> pMag</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a magnitude in the DB using the information provided by the caller in pMag.  If pMag->BindToEvent is set to <a href=ora_api_constants.html#TRUE>TRUE</a>, then the function will attempt to associate the new magnitude with an existing event(pMag->idEvent).  If both pMag->BindToEvent and pMag->SetPreferred are <a href=ora_api_constants.html#TRUE>TRUE</a>, then the function will attempt to set the magnitude as the preferred one for the Event. Upon successful completion, the function writes the DB ID of the newly created magnitude to pMag->idMag.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pMag</td>
+  <td><a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> *</td>
+  <td>Pointer to an <a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateOrigin></a>
+<font size=+1>ewdb_api_CreateOrigin</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateOrigin(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</i> pOrigin</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an origin in the DB using the information provided by the caller in pOrigin.  If pOrigin->BindToEvent is set to <a href=ora_api_constants.html#TRUE>TRUE</a>, then the function will attempt to associate the new origin with an existing event(pOrigin->idEvent).  If both pOrigin->BindToEvent and pOrigin->SetPreferred are <a href=ora_api_constants.html#TRUE>TRUE</a>, then the function will attempt to set the origin as the preferred one for the Event.  Upon successful completion, the function writes the DB ID of the newly created origin to pOrigin->idOrigin.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pOrigin</td>
+  <td><a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</td>
+  <td>Pointer to an <a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateStaMag></a>
+<font size=+1>ewdb_api_CreateStaMag</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateStaMag(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</i> pBodyAmp</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Inserts the information from the PhaseAmp structure into the database.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBodyAmp</td>
+  <td><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</td>
+  <td>PhaseAmp structure filled by the caller</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateTCoda></a>
+<font size=+1>ewdb_api_CreateTCoda</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateTCoda(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</i> pTCoda</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Inserts the information about the coda from the PhaseAmp structure into the database.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pTCoda</td>
+  <td><a href=ora_api_typedefs.html#EWDB_PhaseAmpStruct>EWDB_PhaseAmpStruct</a> *</td>
+  <td>PhaseAmp structure filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_DeleteEvent></a>
+<font size=+1>ewdb_api_DeleteEvent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_DeleteEvent(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>int</i> IN_idEvent</NOBR>, <NOBR><i>int</i> IN_bDeleteTraceOnly</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Deletes trace and/or parametric data for an event from the database. Note that this means that the deleted data is permanently gone.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td>int</td>
+  <td>DB id of the event to delete.</td>
+ </tr>
+ <tr>
+  <td>IN_bDeleteTraceOnly</td>
+  <td>int</td>
+  <td>If set to 1, delete only trace, otherwise delete both trace and parametric data for this event.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetArrivals></a>
+<font size=+1>ewdb_api_GetArrivals</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetArrivals(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idOrigin</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</i> pArrivals</NOBR>, <NOBR><i>int *</i> pNumArrivalsFound</NOBR>, <NOBR><i>int *</i> pNumArrivalsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of arrivals that are associated with a given origin.  See <a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> for a description of the information retrieved for each associated arrival.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of arrivals was retrieved, but the caller's buffer was not large enough to accomadate all of the arrivals found.  See pNumArrivalsFound for the number of arrivals found and pNumArrivalsRetrieved for the number of arrivals placed in the caller's buffer.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>This function retrieves a list of arrivals associated with an origin.  idOrigin is the database ID of the origin for which the caller wants a list of arrivals.</td>
+ </tr>
+ <tr>
+  <td>pArrivals</td>
+  <td><a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of arrivals.</td>
+ </tr>
+ <tr>
+  <td>pNumArrivalsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of found arrivals.</td>
+ </tr>
+ <tr>
+  <td>pNumArrivalsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of arrivals placed in the callers buffer(pArrivals).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pArrivals buffer as a multiple of <a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a>. (example: 15 structs)</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetEventInfo></a>
+<font size=+1>ewdb_api_GetEventInfo</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetEventInfo(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> *</i> pEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves information about the Event identified by idEvent.  See <a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> for a description of the information provided.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Event for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>pEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDB_EventStruct>EWDB_EventStruct</a> allocated by the caller, where the function will write the information about the Event.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_GetEventList></a>
+<font size=+1>EWDB_GetEventList</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int EWDB_GetEventList(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> len</NOBR>, <NOBR><i>int</i> StartTime</NOBR>, <NOBR><i>int</i> EndTime</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</i> pCriteria</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</i> pMaxEvent</NOBR>, <NOBR><i>int *</i> pNumEvents</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Returns the list of all events in the database, in a given time range, that meet the criteria specified in pCriteria.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>A list of events was successfully retrieved.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>The function experienced a fatal error while retrieving a list of events.</td>
+ </tr>
+ <tr>
+  <td>-x < -1</td>
+  <td>(-x) is returned where x > 1 when the size of the caller's buffer is insufficient to hold all of the events that matched the caller's criteria.  x is the size of the buffer required to retrieve all of the events that were found.  The function places as many events as possible into the caller's existing buffer.  This is not a failure condition, just a warning that the caller did not receive all of the requested data.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</td>
+  <td>Buffer allocated by the caller, in which the function will place the list of events matching the caller's criteria.</td>
+ </tr>
+ <tr>
+  <td>len</td>
+  <td>int</td>
+  <td>Length of pBuffer as a multiple of <a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a>.</td>
+ </tr>
+ <tr>
+  <td>StartTime</td>
+  <td>int</td>
+  <td>Minimum(oldest) time acceptable for an event. Expressed as seconds since 1970(time_t).</td>
+ </tr>
+ <tr>
+  <td>EndTime</td>
+  <td>int</td>
+  <td>Maximum(youngest) time acceptable for an event. Expressed as seconds since 1970(time_t).</td>
+ </tr>
+ <tr>
+  <td>pCriteria</td>
+  <td><a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</td>
+  <td>Pointer to the <a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> that contains part of the selection criteria for the list, including: minimum lattitude, minimum longitude, minimum depth, minimum magnitude, and source limitations.  Source criteria is:             <br>          "*"  events from all sources             <br>          "**" events from only human sources      <br>          ""   (blank string)all automatic sources <br> Any other string will be matched against the source identifier, such as the logo of the earthworm module that created a solution, or the dblogin of a human reviewer.</td>
+ </tr>
+ <tr>
+  <td>pMaxEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> *</td>
+  <td>Pointer to the <a href=ora_api_typedefs.html#EWDB_EventListStruct>EWDB_EventListStruct</a> that contains part of the selection criteria for the list, including: maximum lattitude, maximum longitude, maximum depth, and maximum magnitude.</td>
+ </tr>
+ <tr>
+  <td>pNumEvents</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function writes the number of events it put in pBuffer.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetMagnitude></a>
+<font size=+1>ewdb_api_GetMagnitude</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetMagnitude(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idMag</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> *</i> pMag</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves information about the Magnitude identified by idMag.  See <a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> for a description of the information provided.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idMag</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Magnitude for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>pMag</td>
+  <td><a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDB_MagStruct>EWDB_MagStruct</a> allocated by the caller, where the function will write the information about the Magnitude.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetOrigin></a>
+<font size=+1>ewdb_api_GetOrigin</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetOrigin(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idOrigin</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</i> pOrigin</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves information about the Origin identified by idOrigin.  See <a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> for a description of the information provided.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the Origin for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>pOrigin</td>
+  <td><a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDB_OriginStruct>EWDB_OriginStruct</a> allocated by the caller, where the function will write the information about the Origin.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetPreferredSummaryInfo></a>
+<font size=+1>ewdb_api_GetPreferredSummaryInfo</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetPreferredSummaryInfo(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidOrigin</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidMagnitude</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidMech</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the DB IDs for the preferred summary information(origin, magnitude, and mechanism) for the Event identified by idEvent.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier for the Event for which the caller wants summary info.</td>
+ </tr>
+ <tr>
+  <td>pidOrigin</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write the DB ID of the preferred origin for the Event.  0 will be written as the ID if there is no preferred origin for the given Event.</td>
+ </tr>
+ <tr>
+  <td>pidMagnitude</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write the DB ID of the preferred magnitude for the Event.  0 will be written as the ID if there is no preferred magnitude for the given event.</td>
+ </tr>
+ <tr>
+  <td>pidMech</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write the DB ID of the preferred mechanism for the Event.  0 will be written as the ID if there is no preferred mechanism for the given event.  (Note: Mechanism are currently only supported in a trivial manner)</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetStaMags></a>
+<font size=+1>ewdb_api_GetStaMags</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetStaMags(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idMagnitude</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_StationMagnitudeStruct>EWDB_StationMagnitudeStruct</a> *</i> pStaMags</NOBR>, <NOBR><i>int *</i> pNumStaMagsFound</NOBR>, <NOBR><i>int *</i> pNumStaMagsRetrieved</NOBR>, <NOBR><i>char *</i> szMagType</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function retrieves a list of station magnitudes that are associated with a given summary magnitude.  See <a href=ora_api_typedefs.html#EWDB_StationMagnitudeStruct>EWDB_StationMagnitudeStruct</a> for a description of the information retrieved for each associated station magnitude.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of station magnitudes was retrieved, but the caller's buffer was not large enough to accomadate all of the station magnitudes found.  See pNumStaMagsFound for the number of station magnitudes found and pNumStaMagsRetrieved for the number of station magnitudes placed in the caller's buffer.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idMagnitude</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>This function retrieves a list of station magnitudes associated with an summary magnitude.  idMagnitude is the database ID of the magnitude for which the caller wants a list of station magnitudes.</td>
+ </tr>
+ <tr>
+  <td>pStaMags</td>
+  <td><a href=ora_api_typedefs.html#EWDB_StationMagnitudeStruct>EWDB_StationMagnitudeStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of station magnitudes.</td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes found.</td>
+ </tr>
+ <tr>
+  <td>pNumStaMagsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of station magnitudes placed in the caller's buffer(pStaMags).</td>
+ </tr>
+ <tr>
+  <td>szMagType</td>
+  <td>char *</td>
+  <td>The type of magnitude for which to retrieve information.  This is a screwed up parameter, because this should be retrieved from the DB based on idMagnitude.  However, in their infinite wisdom, the writer(s) of this function decided to make it a parameter. Enter "DurCoda" if the magnitude is a duration magnitude.  Enter "AmpBody" if the magnitude is an amplitude magnitude(such as ML) even if it is a surface wave based magnitude. CLEANUP!</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pArrivals buffer as a multiple of <a href=ora_api_typedefs.html#EWDB_ArrivalStruct>EWDB_ArrivalStruct</a>. (example: 15 structs)</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_UpdateComment></a>
+<font size=+1>ewdb_api_UpdateComment</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_UpdateComment(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> szFieldTypeName</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idCore</NOBR>, <NOBR><i>char *</i> szUpdatedComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Updates a comment for any record in the DB.  Enter the tablename and the record ID for the table that the comment belongs to, and the function will update the comment for that record.  This requires that the caller know DB layout, which is a bad thing.  What we need is a lookup table for the comment types, and we can perform a conversion from the lookup table to the actual DB table type withing the DB.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>szFieldTypeName</td>
+  <td>char *</td>
+  <td>Name of the table to updated</td>
+ </tr>
+ <tr>
+  <td>idCore</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>id of the record to update</td>
+ </tr>
+ <tr>
+  <td>szUpdatedComment</td>
+  <td>char *</td>
+  <td>Text of the updated comment. </td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateOrAlterExternalStation></a>
+<font size=+1>ewdb_api_CreateOrAlterExternalStation</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateOrAlterExternalStation(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_External_StationStruct>EWDB_External_StationStruct</a> *</i> pStation</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates or updates a component and associated channel in the DB using an external station table and a a cheater table to go from external station to chan.  Upon successful completion it writes the DB ID of the new External Station to pStation->StationID. This function ignores the pStation->idComp parameter.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pStation</td>
+  <td><a href=ora_api_typedefs.html#EWDB_External_StationStruct>EWDB_External_StationStruct</a> *</td>
+  <td>Pointer to an <a href=ora_api_typedefs.html#EWDB_External_StationStruct>EWDB_External_StationStruct</a> filled by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetIdChanFromStationExternal></a>
+<font size=+1>ewdb_api_GetIdChanFromStationExternal</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetIdChanFromStationExternal(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidChan</NOBR>, <NOBR><i>int</i> StationID</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Given the DB id of the external station, find and return the idChan for it.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>Output idChan for this external station.</td>
+ </tr>
+ <tr>
+  <td>StationID</td>
+  <td>int</td>
+  <td>Database id of the external station.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateSnippet></a>
+<font size=+1>ewdb_api_CreateSnippet</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateSnippet(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> IN_idWaveform</NOBR>, <NOBR><i>char *</i> IN_pSnippet</NOBR>, <NOBR><i>int</i> IN_SnippetSize</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Insert the binary waveform snippet into the database.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idWaveform</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Waveform associated with this snippet.</td>
+ </tr>
+ <tr>
+  <td>IN_pSnippet</td>
+  <td>char *</td>
+  <td>Pointer to the binary waveform snippet to be inserted.</td>
+ </tr>
+ <tr>
+  <td>IN_SnippetSize</td>
+  <td>int</td>
+  <td>Length of the snippet.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateWaveformDesc></a>
+<font size=+1>ewdb_api_CreateWaveformDesc</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateWaveformDesc(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> *</i> pWaveform</NOBR>, <NOBR><i>int</i> bBindToEvent</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> </i> idEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Insert a waveform descriptor record into the database and associate it with an Event if bBindToEvent is set to 1.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pWaveform</td>
+  <td><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a> *</td>
+  <td>Input waveform structure filled by the caller.</td>
+ </tr>
+ <tr>
+  <td>bBindToEvent</td>
+  <td>int</td>
+  <td>Set to 1 if this waveform record should be  bound to the event specified by idEvent.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> </td>
+  <td>Database ID of the Event with which this  Waveform Descriptor is associated.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetWaveformDesc></a>
+<font size=+1>ewdb_api_GetWaveformDesc</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetWaveformDesc(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></i> pWaveformDesc</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieve information about the waveform descriptor pointed to by pWaveformDesc->idWaveform from the database.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pWaveformDesc</td>
+  <td><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></td>
+  <td>Structure holding output information about the waveform descriptor retrieved from the database.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetWaveformList></a>
+<font size=+1>ewdb_api_GetWaveformList</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetWaveformList(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> IN_idEvent</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></i> IN_pWaveformBuffer</NOBR>, <NOBR><i>int</i> IN_BufferRecLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Returns the array of waveform structs, one for each waveform entry in the database associated with the Event.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the Event whose waveform snippets we are interested in.</td>
+ </tr>
+ <tr>
+  <td>IN_pWaveformBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></td>
+  <td>Pointer to a pre-allocated array of waveform structs which will be filled by this function.</td>
+ </tr>
+ <tr>
+  <td>IN_BufferRecLen</td>
+  <td>int</td>
+  <td>Length of the IN_pWaveformBuffer array.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=<a href=ora_api_functions.html#ewdb_api_GetWaveformList>ewdb_api_GetWaveformList</a>WithCompT></a>
+<font size=+1><a href=ora_api_functions.html#ewdb_api_GetWaveformList>ewdb_api_GetWaveformList</a>WithCompT</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int <a href=ora_api_functions.html#ewdb_api_GetWaveformList>ewdb_api_GetWaveformList</a>WithCompT(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> IN_idEvent</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></i> IN_pWaveformBuffer</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a></i> IN_pStationBuffer</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idEvent</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>IN_pWaveformBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDB_WaveformStruct>EWDB_WaveformStruct</a></td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>IN_pStationBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+  <td>UNKNOWN</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetWaveformSnippet></a>
+<font size=+1>ewdb_api_GetWaveformSnippet</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetWaveformSnippet(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> IN_idWaveform</NOBR>, <NOBR><i>char *</i> IN_pWaveform</NOBR>, <NOBR><i>int</i> IN_WaveformLength</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Retrieves the snippet associated with IN_idWaveform and returns it in the IN_pWaveform buffer.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>UNKNOWN</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idWaveform</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>Database ID of the waveform descriptor whose snippet we are interested in.</td>
+ </tr>
+ <tr>
+  <td>IN_pWaveform</td>
+  <td>char *</td>
+  <td>Preallocated buffer to hold the output snippet.</td>
+ </tr>
+ <tr>
+  <td>IN_WaveformLength</td>
+  <td>int</td>
+  <td>Length of the IN_pWaveform buffer.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_AssociateChanWithComp></a>
+<font size=+1>ewdb_api_AssociateChanWithComp</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_AssociateChanWithComp(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idComp</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idChan</NOBR>, <NOBR><i>double</i> tStart</NOBR>, <NOBR><i>double</i> tEnd</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidCompT</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidChanT</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates an association between a channel and a component for a specified time interval.  The function can fail if a relationship exists between the specified component and an alternative channel, or between the specified channel and an alternative component, during an overlapping time period.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>The relationship between a component and a channel is complex to implement.  I believe the issues that cause the pidCompT and pidChanT variables to be written to, have been cleared up, and they are no longer applicable;  however, I am not sure of this, so please be sure to pass valid pointers until better documentation can be made available.  davidk 2000/05/04. <br> The following is believed to be out of date, but is the best information available at this time: <br> A channel can be associated with at most one component at a given time. If the channel that the caller is trying to bind a component to is already bound to another component during an overlapping time interval, then the call will fail, and the idComp of the first component found that has an overlapping association with that channel will be returned.  Currently, if there are any existing chan relationships during the time period described by tStart,tEnd, for the given idChan, then the idChanT of the first ChanT relationship record will be returned in pidChanT along with an error condition. <br> <br> Is this function even used anymore?????  How is it different than EWDB_SetChanParams?</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idComp</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the component(Comp) record the caller wants to associate with a channel.</td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the channel(Chan) record the caller wants to associate with a component.</td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>double</td>
+  <td>The start of the time interval for which the caller wants to associate the component and channel.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>double</td>
+  <td>The end of the time interval for which the caller wants to associate the component and channel.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>pidCompT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write information if the call fails.</td>
+ </tr>
+ <tr>
+  <td>pidChanT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write information if the call fails.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateChannel></a>
+<font size=+1>ewdb_api_CreateChannel</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateChannel(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidChan</NOBR>, <NOBR><i>char *</i> szComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a channel in the DB. A channel identifies the entire path of a seismic signal from ground motion to completed waveform.  The function writes the DB ID of the newly created channel to pidChan.  Because most of a channel's properties are variable over time, this function does not take much as input, as it only creates a channel with its fixed attribute(s).  This function should be used to generate a new idChan that can be used in conjunction with other functions for creating components and setting time based attributes of components and channels.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>A channel(Chan) represents a unique data path from ground motion to finished waveform.  It is associated with a Component sensor, and all of the signal altering devices that the sensor's signal passes through before becoming a finished set of waveforms.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write The DB identifier of the Channel it created.</td>
+ </tr>
+ <tr>
+  <td>szComment</td>
+  <td>char *</td>
+  <td>Optional comment regarding the component.  It may be blank, and should be a maximum of 4k characters.  It may not be NULL!</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateCompTForSCNLT></a>
+<font size=+1>ewdb_api_CreateCompTForSCNLT</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateCompTForSCNLT(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidChan</NOBR>, <NOBR><i>char *</i> szSta</NOBR>, <NOBR><i>char *</i> szComp</NOBR>, <NOBR><i>char *</i> szNet</NOBR>, <NOBR><i>char *</i> szLoc</NOBR>, <NOBR><i>double</i> tStart</NOBR>, <NOBR><i>double</i> tEnd</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szSta</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szComp</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szNet</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szLoc</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>double</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>double</td>
+  <td>UNKNOWN</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateComponent></a>
+<font size=+1>ewdb_api_CreateComponent</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateComponent(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidComp</NOBR>, <NOBR><i>char *</i> sSta</NOBR>, <NOBR><i>char *</i> sComp</NOBR>, <NOBR><i>char *</i> sNet</NOBR>, <NOBR><i>char *</i> sLoc</NOBR>, <NOBR><i>char *</i> szComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a component sensor in the DB with an SCN and optionally L.  It associates the component with a site identified by (Sta,Net).  It returns the DB ID of the newly created component.  If a component already exists with the specified SCNL, then a new component is not created and the idComp of the existing component is returned.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>A component(Comp) represents a seismic sensor in the field.  It is represented by SCN and optionaly L, and has location properties(Lat,Lon, and Elev) and orientation properties(Azimuth and Dip).</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidComp</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write The DB identifier of the Component it created.</td>
+ </tr>
+ <tr>
+  <td>sSta</td>
+  <td>char *</td>
+  <td>SEEDlike station code for the Component.  It may not be blank or NULL, and should be a maximum of 7 characters.</td>
+ </tr>
+ <tr>
+  <td>sComp</td>
+  <td>char *</td>
+  <td>SEEDlike component code for the Component.  The field may not be blank or NULL and should be a maximum of 9 characters.</td>
+ </tr>
+ <tr>
+  <td>sNet</td>
+  <td>char *</td>
+  <td>SEEDlike network code for the Component.  It may not be blank or NULL and should be a maximum of 9 characters.</td>
+ </tr>
+ <tr>
+  <td>sLoc</td>
+  <td>char *</td>
+  <td>Optional SEEDlike location code for the component. It may not be blank or NULL and should be a maximum of 9 characters.</td>
+ </tr>
+ <tr>
+  <td>szComment</td>
+  <td>char *</td>
+  <td>Optional comment regarding the component.  May be blank, and should be a maximum of 4k characters.  It may not be NULL!</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_CreateTransformFunction></a>
+<font size=+1>ewdb_api_CreateTransformFunction</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_CreateTransformFunction(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidCookedTF</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> *</i> pCookedTF</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function inserts a caller provided poles/zeroes based transform function into the DB.  The transform Function is used to transform recorded waveforms back into ground motion.  The function writes the DB id of the newly created transform function to pidCookedTF.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>The transform function can be associated with multipe channel time intervals using EWDB_SetTransformFuncForChanT().</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidCookedTF</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write the DB ID of the newly created poles and zeroes based cooked transform function(CookedTF).</td>
+ </tr>
+ <tr>
+  <td>pCookedTF</td>
+  <td><a href=ora_api_typedefs.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> *</td>
+  <td>Pointer to a caller filled <a href=ora_api_typedefs.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> that contains the transform function and associated information that the caller wants to insert into the DB.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetChanCTFForChannel></a>
+<font size=+1>ewdb_api_GetChanCTFForChannel</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetChanCTFForChannel(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_ChanTCTFStruct>EWDB_ChanTCTFStruct</a> *</i> pChanCTF</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the gain, sample rate, and ID of the poles and zeroes based transform function, for a give channel time interval identified by pChanCTF->idChanT.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function should not be exposed as part of the API, unless someone can think of a really good reason.  It is currently called by EWDB_GetTransformFunctionForChan(), which provides the actual transform function as well as the gain and sample rate.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pChanCTF</td>
+  <td><a href=ora_api_typedefs.html#EWDB_ChanTCTFStruct>EWDB_ChanTCTFStruct</a> *</td>
+  <td>Pointer to a caller allocated <a href=ora_api_typedefs.html#EWDB_ChanTCTFStruct>EWDB_ChanTCTFStruct</a>. The function will read the idChanT(channel time interval identifier) from the struct, and then write the gain(dGain), sample rate(dSampRate), and cooked transform function identifier(idCookedTF) associated with the given idChanT.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetComponentInfo></a>
+<font size=+1>ewdb_api_GetComponentInfo</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetComponentInfo(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idChan</NOBR>, <NOBR><i>int</i> tParamsTime</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pStation</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves a <a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> full of information about the component associated with a channel at a give time.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>The following serious errors are ignored by the function.  <br>  -2   ChanT record not found for given time/idchan <br>  -3   CompT record not found for ChanT record      <br>  -4   Unknown NO_DATA_FOUND error                  <br>  CLEANUP!!!!                                       <br> The function will return <a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a> even if these errors occur.  The only way the caller can check for these error conditions is to check the value of pStation->idComp after completion of the function.  If the value is 0, the function should be treated as if it experienced a fatal error and all data returned is invalid.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the channel for which the caller wants information.</td>
+ </tr>
+ <tr>
+  <td>tParamsTime</td>
+  <td>int</td>
+  <td>Point in time for which the caller wants component parameter information.  A time is required because some parameters are variable over time.</td>
+ </tr>
+ <tr>
+  <td>pStation</td>
+  <td><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> where the function will write the component parameter information for the given channel and time.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetStationList></a>
+<font size=+1>ewdb_api_GetStationList</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetStationList(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>double</i> MinLat</NOBR>, <NOBR><i>double</i> MaxLat</NOBR>, <NOBR><i>double</i> MinLon</NOBR>, <NOBR><i>double</i> MaxLon</NOBR>, <NOBR><i>double</i> ReqTime</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> len</NOBR>, <NOBR><i>int *</i> pNumStations</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function retrieves a list of component/channels given a lat/lon box and time of interest.  Component attributes for the given time are included.(Lat,Lon,etc.) (MinLat,MinLon) and (MaxLat,MaxLon) define two vertices(?) of a box.  The function retrieves the list of stations within the box.  (Be careful of the effects of negative Lat/Lon on Min/Max!!)</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Returned when the caller passes an invalid set of criteria.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>-x < -1</td>
+  <td>(-x) is returned where x > 1 when the size of the caller's buffer is insufficient to hold all of the stations that matched the caller's criteria.  x is the size of the buffer required to retrieve all of the stations that were found.  The function places as many stations as possible into the caller's existing buffer.  This is not a failure condition, just a warning that the caller did not receive all of the requested data.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>MinLat</td>
+  <td>double</td>
+  <td>Minimum lattitude coordinate of stations to be retrieved. Lattitude is expressed in degrees.</td>
+ </tr>
+ <tr>
+  <td>MaxLat</td>
+  <td>double</td>
+  <td>Maximum lattitude coordinate of stations to be retrieved.  Lattitude is expressed in degrees.</td>
+ </tr>
+ <tr>
+  <td>MinLon</td>
+  <td>double</td>
+  <td>Minimum longitude coordinate of stations to be retrieved.  Longitude is expressed in degrees.</td>
+ </tr>
+ <tr>
+  <td>MaxLon</td>
+  <td>double</td>
+  <td>Maximum longitude coordinate of stations to be retrieved.  Longitude is expressed in degrees.</td>
+ </tr>
+ <tr>
+  <td>ReqTime</td>
+  <td>double</td>
+  <td>Time of interest.  The list of active components changes over time.  Reqtime identifies the historical point it time for which the caller wants a station list.  Time is expressed in seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>Buffer allocated by the caller, in which the function will place the list of stations matching the caller's criteria.</td>
+ </tr>
+ <tr>
+  <td>len</td>
+  <td>int</td>
+  <td>Length of pBuffer as a multiple of <a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a>.</td>
+ </tr>
+ <tr>
+  <td>pNumStations</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of stations it wrote to pBuffer.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=<a href=ora_api_functions.html#ewdb_api_GetStationList>ewdb_api_GetStationList</a>WithoutLocation></a>
+<font size=+1><a href=ora_api_functions.html#ewdb_api_GetStationList>ewdb_api_GetStationList</a>WithoutLocation</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int <a href=ora_api_functions.html#ewdb_api_GetStationList>ewdb_api_GetStationList</a>WithoutLocation(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i>double</i> ReqTime</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> len</NOBR>, <NOBR><i>int *</i> pNumStations</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function retrieves a list of component/channels given a time of interest.  Component attributes for the given time are included.(Lat,Lon,etc.) This effectively pulls component information for every channel in the database (it only pulls for the channels that were valid at time ReqTime).  This query may return over 4000 rows!</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Returned when the caller passes an invalid set of criteria.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td>-x < -1</td>
+  <td>(-x) is returned where x > 1 when the size of the caller's buffer is insufficient to hold all of the stations that matched the caller's criteria.  x is the size of the buffer required to retrieve all of the stations that were found.  The function places as many stations as possible into the caller's existing buffer.  This is not a failure condition, just a warning that the caller did not receive all of the requested data.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>ReqTime</td>
+  <td>double</td>
+  <td>Time of interest.  The list of active components changes over time.  Reqtime identifies the historical point it time for which the caller wants a station list.  Time is expressed in seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>Buffer allocated by the caller, in which the function will place the list of stations matching the caller's criteria.</td>
+ </tr>
+ <tr>
+  <td>len</td>
+  <td>int</td>
+  <td>Length of pBuffer as a multiple of <a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a>.</td>
+ </tr>
+ <tr>
+  <td>pNumStations</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of stations it wrote to pBuffer.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetTransformFunction></a>
+<font size=+1>ewdb_api_GetTransformFunction</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetTransformFunction(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idCookedTF</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> *</i> pCookedTF</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the poles/zeroes based transform function identified by idCookedTF from the DB.  The transform Function is used to transform recorded waveforms back into ground motion.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>Call EWDB_GetTransformFunctionForChan() to retrieve the transform function for a given channel along with gain and sample rate.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idCookedTF</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the cooked transform function that the caller wants to retrieve.</td>
+ </tr>
+ <tr>
+  <td>pCookedTF</td>
+  <td><a href=ora_api_typedefs.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> *</td>
+  <td>Pointer to a caller allocated <a href=ora_api_typedefs.html#EWDB_TransformFunctionStruct>EWDB_TransformFunctionStruct</a> where the function will write the cooked transform function requested by the caller.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=<a href=ora_api_functions.html#ewdb_api_GetTransformFunction>ewdb_api_GetTransformFunction</a>Desc></a>
+<font size=+1><a href=ora_api_functions.html#ewdb_api_GetTransformFunction>ewdb_api_GetTransformFunction</a>Desc</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int <a href=ora_api_functions.html#ewdb_api_GetTransformFunction>ewdb_api_GetTransformFunction</a>Desc(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idCookedTF</NOBR>, <NOBR><i>char *</i> szCookedTFDesc</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idChan</NOBR>, <NOBR><i>double</i> tTime</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidChanT</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function retrieves the identifier of the channel time interval associated with the given channel and time.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idCookedTF</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>Database ID for the cooked infrastructure record.</td>
+ </tr>
+ <tr>
+  <td>szCookedTFDesc</td>
+  <td>char *</td>
+  <td>Output description for this record.</td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the channel for which the caller wants a channel time interval(ChanT) identifier.</td>
+ </tr>
+ <tr>
+  <td>tTime</td>
+  <td>double</td>
+  <td>Point in time for which the caller wants a time interval identifier for the channel.</td>
+ </tr>
+ <tr>
+  <td>pidChanT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write The DB identifier of the requested channel time interval(ChanT).</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetidChansFromSCNLT></a>
+<font size=+1>ewdb_api_GetidChansFromSCNLT</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_GetidChansFromSCNLT(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> BufferRecLen</NOBR>, <NOBR><i>char *</i> szSta</NOBR>, <NOBR><i>char *</i> szComp</NOBR>, <NOBR><i>char *</i> szNet</NOBR>, <NOBR><i>char *</i> szLoc</NOBR>, <NOBR><i>double *</i> tOff</NOBR>, <NOBR><i>double *</i> tOn</NOBR>, <NOBR><i>int *</i> pNumIDChans</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>BufferRecLen</td>
+  <td>int</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szSta</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szComp</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szNet</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>szLoc</td>
+  <td>char *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>tOff</td>
+  <td>double *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>tOn</td>
+  <td>double *</td>
+  <td>UNKNOWN</td>
+ </tr>
+ <tr>
+  <td>pNumIDChans</td>
+  <td>int *</td>
+  <td>UNKNOWN</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_SetChanParams></a>
+<font size=+1>ewdb_api_SetChanParams</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_SetChanParams(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idChan</NOBR>, <NOBR><i>double</i> tOn</NOBR>, <NOBR><i>double</i> tOff</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idCompT</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idDevice</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidChanT</NOBR>, <NOBR><i>char *</i> szComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function sets the variable parameters of a channel for a given time interval.  Variable parameters include the starting device in the channel in the waveforms to ground motion direction, and the component that the channel is associated with.  The function will write the DB ID of the newly created/updated channel time interval record to to pidChanT.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>idDevice is currently ignored due to a lack of infrastructure schema.  Please set the value to 0.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idChan</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the channel the caller wants to set parameters for.</td>
+ </tr>
+ <tr>
+  <td>tOn</td>
+  <td>double</td>
+  <td>The start of the time interval for which the caller wants the channel parameters to be valid.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>tOff</td>
+  <td>double</td>
+  <td>The end of the time interval for which the caller wants the channel parameters to be valid.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>idCompT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the component time interval(CompT) that the caller wants to associate with the channel.  CLEANUP!  Shouldn't the caller specify a component and the DB logic determin the CompT by Comp and Time???</td>
+ </tr>
+ <tr>
+  <td>idDevice</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB ID of the first device in the channel(in order of finished waveforms -> ground motion).</td>
+ </tr>
+ <tr>
+  <td>pidChanT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write the DB ID of the updated or newly created channel tme interval(ChanT).</td>
+ </tr>
+ <tr>
+  <td>szComment</td>
+  <td>char *</td>
+  <td>Optional comment regarding the channel time interval(ChanT).  It may be blank, and should be a maximum of 4k characters. It may not be NULL!</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_SetCompParams></a>
+<font size=+1>ewdb_api_SetCompParams</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_SetCompParams(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</i> pStation</NOBR>, <NOBR><i>double</i> tOn</NOBR>, <NOBR><i>double</i> tOff</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</i> pidCompT</NOBR>, <NOBR><i>char *</i> szComment</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function sets the variable parameters of a component for a given time interval.  Variable parameters include (lat,lon), elevation, and the orientation of the component.  It will write the DB ID of the newly created/updated Component Time Interval record to to pidCompT.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pStation</td>
+  <td><a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> *</td>
+  <td>Pointer to a <a href=ora_api_typedefs.html#EWDB_StationStruct>EWDB_StationStruct</a> that contains the parameters that the caller wishes to set for the component for the given time interval.</td>
+ </tr>
+ <tr>
+  <td>tOn</td>
+  <td>double</td>
+  <td>The start of the time interval for which the caller wants to the component parameters to be valid.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>tOff</td>
+  <td>double</td>
+  <td>The end of the time interval for which the caller wants to the component parameters to be valid.  Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>pidCompT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a> *</td>
+  <td>A pointer to a <a href=ora_api_typedefs.html#EWDBid>EWDBid</a> where the function will write the DB ID of the updated or newly created Component Time Interval.</td>
+ </tr>
+ <tr>
+  <td>szComment</td>
+  <td>char *</td>
+  <td>Optional comment regarding the Component Time Interval.  It may be blank, and should be a maximum of 4k characters. It may not be NULL!</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_SetTransformFuncForChanT></a>
+<font size=+1>ewdb_api_SetTransformFuncForChanT</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace>int ewdb_api_SetTransformFuncForChanT(</font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idChanT</NOBR>, <NOBR><i>double</i> dGain</NOBR>, <NOBR><i><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></i> idCookedTF</NOBR>, <NOBR><i>double</i> dSampRate</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function associates an existing transform function with a Channel for a given time period.  Records the gain and sample-rate that are specific to the channel.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>If you wish to create a transform function and associate it with a channel, you must first call EWDB_CreateTransformFunction() to create the channel.  Then call EWDB_SetTransformFuncForChanT() using the idCookedTF that you got back from the create call.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=ora_api_constants.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+</table>
+
+<br>
+
+<table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idChanT</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the channel time interval(ChanT) with which the caller wants to associate a Poles and Zeroes transform function(CookedTF).</td>
+ </tr>
+ <tr>
+  <td>dGain</td>
+  <td>double</td>
+  <td>The signal gain for the channel time interval. Expressed as a double floating point multiplicative scalar.</td>
+ </tr>
+ <tr>
+  <td>idCookedTF</td>
+  <td><a href=ora_api_typedefs.html#EWDBid>EWDBid</a></td>
+  <td>The DB identifier of the existing poles and zeroes based cooked transfer function, that the caller wants to associate with a given channel time interval(ChanT).</td>
+ </tr>
+ <tr>
+  <td>dSampRate</td>
+  <td>double</td>
+  <td>Digital sample rate of the data spouted out of the channel.  Expressed as samples per second.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=Raw_Infrastructure_Schema></a>
+<font size=+1>Raw_Infrastructure_Schema</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace> Raw_Infrastructure_Schema(</font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>WORK IN PROGRESS: prototypes not yet finalized</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td></td>
+ </tr>
+</table>
+
+<br>
+
+<hr>
+<a name=Concierge_Schema></a>
+<font size=+1>Concierge_Schema</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace> Concierge_Schema(</font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>WORK IN PROGRESS: prototypes not yet finalized</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td></td>
+ </tr>
+</table>
+
+<br>
+
+<hr>
+<a name=Strong_Motion_Schema></a>
+<font size=+1>Strong_Motion_Schema</font><br><br>
+<table cellpadding=2>
+ <tr>
+  <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><font size=-1 face=monospace> Strong_Motion_Schema(</font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>WORK IN PROGRESS: prototypes not yet finalized</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td></td>
+ </tr>
+</table>
+
+<br>
+
+

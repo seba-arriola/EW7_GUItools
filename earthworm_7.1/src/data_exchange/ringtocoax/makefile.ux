@@ -1,0 +1,46 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.2 2007/03/28 15:28:10 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.2  2007/03/28 15:28:10  paulf
+#     removed -lnsl link
+#
+#     Revision 1.1  2005/07/25 21:15:05  friberg
+#     added in makefile.ux
+#
+#     Revision 1.2  2000/08/08 17:38:18  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 19:11:50  lucky
+#     Initial revision
+#
+#
+#
+
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+RINGTOCOAX = ringtocoax.o sender.o $L/logit.o $L/kom.o $L/getutil.o \
+           $L/sleep_ew.o $L/socket_ew.o $L/time_ew.o $L/transport.o
+
+ringtocoax: $(RINGTOCOAX)
+	cc -o $B/ringtocoax $(RINGTOCOAX) -lm -lpthread
+#	cc -o $B/ringtocoax $(RINGTOCOAX) -lm -lsocket -lnsl -lposix4
+
+
+lint:
+	lint ringtocoax.c sender.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/ringtocoax*

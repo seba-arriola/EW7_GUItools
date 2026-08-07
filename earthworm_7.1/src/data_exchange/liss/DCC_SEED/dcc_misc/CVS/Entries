@@ -1,0 +1,22 @@
+/bombopen.c/1.1/Mon Mar 13 23:45:14 2000//
+/bombout.c/1.1/Mon Mar 13 23:45:14 2000//
+/calctime.c/1.1/Mon Mar 13 23:45:14 2000//
+/chansubs.c/1.2/Mon Jun 16 22:07:35 2003//
+/compat_strerror.c/1.1/Mon Mar 13 23:45:14 2000//
+/ctx_file.c/1.1/Mon Mar 13 23:45:14 2000//
+/dataswaps.c/1.2/Mon Jun 16 22:07:35 2003//
+/dcc_env.c/1.1/Mon Mar 13 23:45:14 2000//
+/envfile.c/1.1/Mon Mar 13 23:45:14 2000//
+/fixopen.c/1.2/Mon Jun 16 22:07:35 2003//
+/getmyname.c/1.2/Mon Jun 16 22:07:35 2003//
+/itemlist.c/1.1/Mon Mar 13 23:45:14 2000//
+/log.c/1.1/Mon Mar 13 23:45:14 2000//
+/makefile.lnx/1.1/Mon Mar 13 23:45:14 2000//
+/makefile.nt/1.3/Tue Nov 21 23:03:24 2006//
+/makefile.sol/1.1/Mon Mar 13 23:45:14 2000//
+/readline.c/1.1/Mon Mar 13 23:45:14 2000//
+/safemem.c/1.1/Mon Mar 13 23:45:14 2000//
+/strfuns.c/1.2/Mon Mar 13 23:47:00 2000//
+/watchdog.c/1.1/Mon Mar 13 23:45:14 2000//
+/wildmatch.c/1.1/Mon Mar 13 23:45:14 2000//
+D

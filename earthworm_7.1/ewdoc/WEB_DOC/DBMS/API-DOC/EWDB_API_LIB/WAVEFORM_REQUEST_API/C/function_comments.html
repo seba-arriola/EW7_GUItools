@@ -1,0 +1,556 @@
+<hr>
+<a name=ewdb_api_DeleteSnippetRequest></a>
+<font size=+2>ewdb_api_DeleteSnippetRequest()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_DeleteSnippetRequest(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> IN_idSnipReq</NOBR>, <NOBR><i>int</i> IN_iLockTime</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The Function deletes the snippet request and any supporting information from the database.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_idSnipReq</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>DB ID of an existing SnippetRequest which the caller wishes to delete.</td>
+ </tr>
+ <tr>
+  <td>IN_iLockTime</td>
+  <td>int</td>
+  <td>The lock value of the given request.  This should be the time the Request was locked.  This value can be obtained via the <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> that was used in the call to lock the request.  If the request is not locked, then this value is ignored.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetListOfOldSnipReqs></a>
+<font size=+2>ewdb_api_GetListOfOldSnipReqs()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetListOfOldSnipReqs(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>int</i> iLockTimeThreshold</NOBR>, <NOBR><i>int *</i> pNumItemsFound</NOBR>, <NOBR><i>int *</i> pNumItemsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>THIS FUNCTION IS NOT FOR GENERAL CONSUMPTION.  The function retrieves a list of snippet requests with OLD locks.  It is for use by programs auditing the operation of the concierge system and should not be used in the mainstream processing of data.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td> THIS FUNCTION IS NOT FOR GENERAL CONSUMPTION.  It is for auditing an problem detection. The function retrieves only the SCNL portion of the <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a>.ComponentInfo.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of snippet requests was retrieved, but the caller's buffer was not large enough to accomadate all of the requests found.  See pNumItemsFound for the number of arrivals found and pNumItemsRetrieved for the number of requests placed in the caller's buffer.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of snippet requests that are active as of tThreshold.</td>
+ </tr>
+ <tr>
+  <td>iLockTimeThreshold</td>
+  <td>int</td>
+  <td>Threshold time for determining whether snippet requests are old or not.  If the lock time of the request is earlier than iLockTimeThreshold, then the request is considered old. (Expressed as seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>pNumItemsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of snippet reuqests found.</td>
+ </tr>
+ <tr>
+  <td>pNumItemsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of snippet requests placed in the caller's buffer(pBuffer).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pBuffer buffer as a multiple of <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a>. (example: 15 structs)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetNextScheduledSnippetRetrievalAttempt></a>
+<font size=+2>ewdb_api_GetNextScheduledSnippetRetrievalAttempt()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetNextScheduledSnippetRetrievalAttempt(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>time_t *</i> ptNextAttempt</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function checks the snippet requests in the database to see when the next scheduled attempt is among all of the pending requests.  The requests are schedule by the DB to be attempted at intervals.  The function looks up the first scheduled attempt time.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>There were no pending snippet requests in the DB.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>ptNextAttempt</td>
+  <td>time_t *</td>
+  <td>Pointer to a time_t variable supplied by the caller where the function will write the next scheduled attempt time of all the pending snippet requests in the DB.  (assuming that the function executes successfully and returns <a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a>)</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_GetSnippetRequestList></a>
+<font size=+2>ewdb_api_GetSnippetRequestList()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_GetSnippetRequestList(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</i> pBuffer</NOBR>, <NOBR><i>time_t</i> tThreshold</NOBR>, <NOBR><i>int</i> iRequestGroup</NOBR>, <NOBR><i>int *</i> pNumItemsFound</NOBR>, <NOBR><i>int *</i> pNumItemsRetrieved</NOBR>, <NOBR><i>int</i> BufferLen</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</i> IN_pSnipReq</NOBR>, <NOBR><i>int</i> IN_bModifyAttemptParams</NOBR>, <NOBR><i>int</i> IN_bModifyResultParams</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function updates a snippet request.  This function acts as a recording mechanism for the request processor.  It allows the processor to record that it tried to retrieve a snippet, and it either got part or none of the desired snippet.  <br> The function always updates the tNextAttempt time in the database with the value of IN_pSnipReq->tNextAttempt.<br> If IN_bModifyAttemptParams is true, then the DB updates the counter that track the number of attempts so far. <br> If IN_bModifyResultParams is true, then the DB will update tStart, tEnd, and idExistingWaveform if appropriate.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td> Set IN_pSnipReq->idExistingWaveform to 0 if a partial snippet was not retrieved.  If a partial snippet was retrieved, first call <a href=../../.././EWDB_API_LIB/WAVEFORM_API/C/function_comments.html#ewdb_api_CreateWaveform>ewdb_api_CreateWaveform</a>() to store the snippet in the database, then call this function using the idWaveform that you got back from the create call.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_WARNING>EWDB_RETURN_WARNING</a></td>
+  <td>Partial success.  A list of snippet requests was retrieved, but the caller's buffer was not large enough to accomadate all of the requests found.  See pNumItemsFound for the number of arrivals found and pNumItemsRetrieved for the number of requests placed in the caller's buffer.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pBuffer</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</td>
+  <td>Buffer allocated by the caller, where the function will write the list of snippet requests that are active as of tThreshold. If you want to retrieve a list of request, then you MUST initialize pBuffer[0].idSnipReq to 0.  Otherwise, the function will only attempt to retrieve the one SnippetRequest identified by pBuffer[0].idSnipReq regardless of the other parameters.</td>
+ </tr>
+ <tr>
+  <td>tThreshold</td>
+  <td>time_t</td>
+  <td>Threshold time for determining whether snippet requests are active or not.  If the next scheduled attempt for retrieving a snippet requests is earlier than tThreshold, then the request is considered active.  Only active requests are returned, in increasing order of next scheduled attempt.  (Expressed as seconds since 1970)</td>
+ </tr>
+ <tr>
+  <td>iRequestGroup</td>
+  <td>int</td>
+  <td>Request group for which the caller is interested in snippet requests.  Set this to -1 to get all Snippet Requests regardless of Request Group.  See <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> for a description of RequestGroup.</td>
+ </tr>
+ <tr>
+  <td>pNumItemsFound</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of snippet reuqests found.</td>
+ </tr>
+ <tr>
+  <td>pNumItemsRetrieved</td>
+  <td>int *</td>
+  <td>Pointer to an integer where the function will write the number of snippet requests placed in the caller's buffer(pBuffer).</td>
+ </tr>
+ <tr>
+  <td>BufferLen</td>
+  <td>int</td>
+  <td>Size of the pBuffer buffer as a multiple of <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a>. (example: 15 structs)</td>
+ </tr>
+ <tr>
+  <td>IN_pSnipReq</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a>, where the caller puts the parameters of the SnippetRequest that they wish to update.</td>
+ </tr>
+ <tr>
+  <td>IN_bModifyAttemptParams</td>
+  <td>int</td>
+  <td>TRUE/FALSE  flag indicating whether the attempt should be recorded.  If true, the DB will increment the counter that tracks how many times the request has been attempted. (VERY SIMPLE)</td>
+ </tr>
+ <tr>
+  <td>IN_bModifyResultParams</td>
+  <td>int</td>
+  <td>TRUE/FALSE flag indicating whether or not any new snippet data was found, and thus whether the snippetrequest should be updated (new tStart or tEnd, idExistingWaveform).</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_ProcessSnippetReqs></a>
+<font size=+2>ewdb_api_ProcessSnippetReqs()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_ProcessSnippetReqs(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> szSta</NOBR>, <NOBR><i>char *</i> szComp</NOBR>, <NOBR><i>char *</i> szNet</NOBR>, <NOBR><i>char *</i> szLoc</NOBR>, <NOBR><i>double</i> tStart</NOBR>, <NOBR><i>double</i> tEnd</NOBR>, <NOBR><i><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></i> idEvent</NOBR>, <NOBR><i>int</i> iNumAttempts</NOBR>, <NOBR><i>int</i> iRequestGroup</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The Function creates a Snippet Request record in the DB, for the given time range, for each channel that matches the given SCNL codes. The record describes snippet data that the caller wants stored in the DB. (This call does not retrieve snippet data, it only records the request.) A snippet is essentially a piece of data from a given channel for a given time interval.  If idEvent is specified as non 0, then any snippets recovered as a result of the requests will be associated the given idEvent.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td> This function does not retrieve any waveform data! It only creates requests for waveform data.  The requests must be handled by another program(concierge).</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>szSta</td>
+  <td>char *</td>
+  <td>SEEDlike Station code of the channels for which the caller wishes to create snippet requests.  <br> This param CANNOT be NULL or blank. Use the wildcard string "*" to match all possible Station codes.</td>
+ </tr>
+ <tr>
+  <td>szComp</td>
+  <td>char *</td>
+  <td>SEEDlike Component code of the channels for which the caller wishes to create snippet requests.  <br> This param CANNOT be NULL or blank. Use the wildcard string "*" to match all possible Component codes.</td>
+ </tr>
+ <tr>
+  <td>szNet</td>
+  <td>char *</td>
+  <td>SEEDlike Network code of the channels for which the caller wishes to create snippet requests.  <br> This param CANNOT be NULL or blank. Use the wildcard string "*" to match all possible Network codes.</td>
+ </tr>
+ <tr>
+  <td>szLoc</td>
+  <td>char *</td>
+  <td>SEEDlike Location code of the channels for which the caller wishes to create snippet requests.  <br> This param CANNOT be NULL.  It may be blank(""). Use the wildcard string "*" to match all possible Location codes.</td>
+ </tr>
+ <tr>
+  <td>tStart</td>
+  <td>double</td>
+  <td>The start of the time interval for which the caller wants a snippet for the given SCNL. Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>tEnd</td>
+  <td>double</td>
+  <td>The end of the time interval for which the caller wants a snippet for the given SCNL. Expressed as seconds since 1970.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+  <td>The EWDB event identifer that the any resulting snippets should be associated with.</td>
+ </tr>
+ <tr>
+  <td>iNumAttempts</td>
+  <td>int</td>
+  <td>The number of times that the caller wishes to have the request attempted.  It is up to the data retriever to enforce/interpret this number.</td>
+ </tr>
+ <tr>
+  <td>iRequestGroup</td>
+  <td>int</td>
+  <td>The Request Group that the caller wishes the request associated with.  Requests may be divided into groups for more efficient retrieval.  This param may be later modified/ignored by the data retriever.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_api_UpdateSnippetRequestControlParams></a>
+<font size=+2>ewdb_api_UpdateSnippetRequestControlParams()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_api_UpdateSnippetRequestControlParams(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</i> IN_pSnipReq</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>The function updates the control parameters for a snippet request. At this time, the control params are:<br>  iNumAttempts(the number of times the request will attempt to be fulfilled), and<br>  iRequestGroup(the request group in which the request has been categorized).<br></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>IN_pSnipReq->iLockTime must match the LockTime for the request (and the request must be locked).  (You must lock the request before you can modify the control params and you must remember to unlock it afterwards.)</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_FAILURE>EWDB_RETURN_FAILURE</a></td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td><a href=../../.././EWDB_API_LIB/UTILITY/C/constant_comments.html#EWDB_RETURN_SUCCESS>EWDB_RETURN_SUCCESS</a></td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>IN_pSnipReq</td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a> *</td>
+  <td>Pointer to a <a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/C/typedef_comments.html#EWDB_SnippetRequestStruct>EWDB_SnippetRequestStruct</a>, where the caller puts the parameters of the SnippetRequest that they wish to update.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/WAVEFORM_REQUEST_API/library_comments.html#WAVEFORM_REQUEST_API>WAVEFORM_REQUEST_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

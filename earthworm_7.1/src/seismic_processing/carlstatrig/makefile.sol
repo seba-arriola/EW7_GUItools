@@ -1,0 +1,84 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.3 2001/01/31 21:22:05 dietz Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.3  2001/01/31 21:22:05  dietz
+#     Removed GLOBALFLAGS= definition which was overriding the user's settings,
+#     especially causing problems if compiling for Intel Solaris!
+#
+#     Revision 1.2  2000/02/14 22:04:48  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2000/02/14 16:12:07  lucky
+#     Initial revision
+#
+#
+#
+
+CFLAGS=${GLOBALFLAGS} -g
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+CTOBJS = addtrace.o \
+	 carlstatrig.o \
+         cmprscn.o \
+	 findsta.o \
+	 flushbuf.o \
+	 initpars.o \
+	 initsta.o \
+	 prodstatrg.o \
+	 protrace.o \
+	 readcnfg.o \
+	 readewh.o \
+	 readstas.o \
+	 resetsta.o \
+	 statrpt.o \
+	 updtsta.o \
+	 $L/getutil.o \
+	 $L/kom.o \
+	 $L/logit.o \
+	 $L/sleep_ew.o \
+	 $L/swap.o \
+	 $L/time_ew.o \
+	 $L/transport.o
+
+LINTS = addtrace.ln \
+	 carlstatrig.ln \
+         cmprscn.ln \
+	 findsta.ln \
+	 flushbuf.ln \
+	 initpars.ln \
+	 initsta.ln \
+	 prodstatrg.ln \
+	 protrace.ln \
+	 readcnfg.ln \
+	 readewh.ln \
+	 readstas.ln \
+	 resetsta.ln \
+	 statrpt.ln \
+	 updtsta.ln
+
+carlstatrig: $(CTOBJS)
+	cc -g -o $(B)/carlstatrig $(CTOBJS) -lm -lposix4
+
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c  $(OUTPUT_OPTION) $<
+
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/carlstatrig*
+
+
+.c.ln:
+	lint -Nlevel=4 -Ncheck=%all -errchk=%all $(CFLAGS) $(CPPFLAGS) -c $(OUTPUT_OPTION) $<
+
+lint: $(LINTS)
+	lint -Nlevel=4 -Ncheck=%all -errchk=%all *.ln

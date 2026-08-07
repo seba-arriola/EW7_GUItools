@@ -1,0 +1,274 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>EARTHWORM GETLIST</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<B><I><U><P ALIGN="CENTER">Getlist</I> - view list of Events</P>
+</B></U><P ALIGN="CENTER">User's Guide</P>
+<P ALIGN="CENTER">Lucky Vidmar</P>
+<P ALIGN="CENTER">March 12, 2002</P>
+<P>&nbsp;</P>
+<B><P>Getlist</B> is the CGI program that allows the users to retrieve and view events from the database. It operates in two modes:</P>
+
+<UL>
+<LI>Change Map - allows zooming and panning around the world </LI>
+<LI>View Data - allows more information about events to be retrieved</LI></UL>
+
+<P>In both modes, the map shows the list of events from the database located in the selected region, and matching the additional criteria specified in the form just below the map:</P>
+
+<UL>
+<LI>Origin Time </LI>
+<LI>Depth </LI>
+<LI>Magnitude</LI></UL>
+
+<P>The user can also navigate directly to one of the pre-defined rectangular regions shown on the right side of the map.</P>
+<P>&nbsp;</P>
+<B><U><P>Change Map Mode</P>
+</B></U><P>Here, the user can "walk" around the world by zooming in and out, re-centering the map, or selecting from the list of pre-defined rectangular regions. The idea is that the user would find the region of interest, then click on View Data to gain access to the desired information about events.</P>
+<P>&nbsp;</P>
+<B><U><P>View Data Mode</P>
+</B></U><P>Here, the user is shown a list of events within the region of interest that match the Origin Time, Depth, and Magnitude criteria from the selection form. The user is shown the origin time, location, depth, magnitude, and author fields for each event. Depending on the configuration (see below), the user may be given the option to enter Quick Review for an event, see a GIF snapshot of the waveforms, download trace data, either in counts or ground motion, as well as review the alarms that have been sent for this event.</P>
+<P>&nbsp;</P>
+<B><U><P>Configuration </P>
+</B></U><P>Getlist requires that <B>getlist.d</B> configuration file be present in web/params directory. The following types of configuration options are available:</P>
+
+<UL>
+<LI>Web connection parameters </LI>
+
+<UL>
+<LI>db_user; db_pwd; db_service</LI></UL>
+
+<LI>Page appearance parameters </LI>
+
+<UL>
+<LI>background color, header and footer logo, if desired</LI></UL>
+
+<LI>Map display options </LI>
+
+<UL>
+<LI>Maximum number of events or stations to display on the map</LI></UL>
+
+<LI>Event list options </LI>
+
+<UL>
+<LI>Maximum number events to retrieve from the database </LI>
+<LI>How many events to show per page - allows paging through a potentially very long list of events within a time/space region </LI>
+<LI>What attributes (columns) to show </LI>
+
+<UL>
+<LI>Picks </LI>
+<LI>Trace data </LI>
+<LI>Alarms </LI>
+<LI>Ground motion data</LI></UL>
+</UL>
+
+<LI>Pre-set maps - the user can specify a hierarchy of arbitrary lat/lon regions. For example, there could be a USA map which is the parent of several regional maps. On the same level as the USA map might be maps of other countries. Therefore, the use creates parent-child relationships, as well as sibling relationships among maps. Then, the map pages will allow navigation to parent maps, sibling maps, and children maps only. </LI></UL>
+
+<P>&nbsp;</P>
+<B><U><P>Map Creation</P>
+</B></U><P>Getlist maps are created dynamically based on the area of interest specified by the user. They are generated using <B>GMT</B>. Therefore, GMT must be properly installed on the system before getlist will work. </P>
+<P>Since GMT produces output in PostScript, it is necessary to convert it to GIF in order to be displayed through the web-server. Currently, we use <B>ImageMagick's convert</B> utility to do this conversion. Therefore, ImageMagick must also be correctly installed on the system.</P>
+<P>Besides setting up getlist.d, the user must ensure that there is the map creation script called <B>make_map</B> under web/bin. The user may need to configure the paths in the script to reflect the local installation points of GMT and ImageMagick.</P>
+<B><U><P>SAMPLE FILES</P>
+<P>Getlist.d configuration file</P>
+</B></U><FONT FACE="Courier New" SIZE=2><P>#</P>
+<P># Config file for getlist</P>
+<P>#</P>
+<P>DBuser &#9;&#9;&#9;db_user</P>
+<P>DBpassword &#9;&#9;db_passwd</P>
+<P>DBservice &#9;&#9;db_service</P>
+<P>&nbsp;</P>
+<P>Logfiledir ../log/</P>
+<P>#</P>
+<P># hostname of the machine holding up web pages</P>
+<P>#</P>
+<P>WebHost webhost.domain</P>
+<P>&nbsp;</P>
+<P>##############################################################################</P>
+<P>#</P>
+<P># OPTIONAL APPEARANCE CONFIGURATION:</P>
+<P># Set the following to customize the appearance of the page:</P>
+<P># - BackgroundColor: Set to any valid HTML color string</P>
+<P># - HeaderLogo: Full path to the file containing the picture to be</P>
+<P># displayed on the top of the page.</P>
+<P># - FooterLogo: Full path to the file containing the picture to be</P>
+<P># displayed on the bottom of the page.</P>
+<P>#</P>
+<P># Logo note: The logo file must be a valid HTML picture file (gif, jpeg..)</P>
+<P># sized to the desired size. It will be placed at the top or the</P>
+<P># bottom exactly as it appears in the file. The file name</P>
+<P># must be relative to the web-server's root directory.</P>
+<P>#</P>
+<P>##############################################################################</P>
+<P>BackgroundColor lemonchiffon</P>
+<P>HeaderLogo ../images/c_USGSid.jpg</P>
+<P>FooterLogo ../images/c_USGSid.jpg</P>
+<P>&nbsp;</P>
+<P>#</P>
+<P># Which columns to show</P>
+<P>#</P>
+<P>ShowPickCol</P>
+<P>ShowStasCol</P>
+<P>ShowTraceCol</P>
+<P>ShowAlarmsCol</P>
+<P>&nbsp;</P>
+<P>MapPixelWidth 400</P>
+<P>MapPixelHeight 400</P>
+<P>&nbsp;</P>
+<P>MaxNumOfStationsDisplayed 5000</P>
+<P>&nbsp;</P>
+<P># Maximum number of events that will be displayed on the map</P>
+<P>MaxNumOfEventsDisplayed 100 </P>
+<P># Maximum number of events that will be displayed in the list</P>
+<P>MaxNumOfEventsRetrieved 10000 </P>
+<P>#NumOfDaysToShow 7 # Number of days in the past from the current time</P>
+<P># that should be shown by default</P>
+<P>#MinNumStasToShow 3 # If present, only events with more than</P>
+<P># this many stations will be shown in</P>
+<P># the event list</P>
+<P>EventsPerPage 10 # If present, Show this many events</P>
+<P># on each page, and include links to </P>
+<P># navigate back and forth</P>
+<P>&nbsp;</P>
+<P>DefaultMapID 1.6.6</P>
+<P>#Map Num Name Lat1 Lon1 Lat2 Lon2 Riv Pol L/L Lines Border Proj Focal PtCtr LatCtr Lon</P>
+<P>Map 1 World(West) -100 0 90 360 1 8 0 0 a Y 10 270</P>
+<P>Map 2 World(East) -100 0 90 360 1 8 0 0 a Y 10 90</P>
+<P>Map 2.1 Africa -37 -20 40 62 3 8 0 0 m N</P>
+<P>Map 2.2 Asia 15 55 57 125 3 8 0 0 s Y 35 90</P>
+<P>Map 2.3 Aust/Indo/NZ -55 90 20 195 3 8 0 0 m N</P>
+<P>Map 1.3 Canada 41 -142 85 -50 3 8 0 0 s Y 63 -96</P>
+<P>Map 2.4 Europe 30 -30 72 50 3 8 0 0 m N</P>
+<P>Map 2.5 Japan 27 120 55 160 3 8 0 0 s Y 40 140</P>
+<P>Map 1.4 Middle_America 6 -118 33 -58 3 8 0 0 m N</P>
+<P>Map 2.6 Middle_East 5 30 50 75 3 8 0 0 m N</P>
+<P>Map 1.5 South_America -60 -95 15 -25 3 8 0 0 m N</P>
+<P>Map 1.6 USA 15 -128 60 -64 3 8 0 0 m N</P>
+<P>Map 1.7 Western_Pacific -25 120 35 210 3 8 0 0 m N</P>
+<P>Map 1.6.1 Montana 41 -117 50 -103 3 8 0 0 m Y 47.00 -110 </P>
+<P>Map 1.6.2 California 45.25 -110 29.75 -132 2051 8 0 0 m Y 37.50 -122 </P>
+<P>Map 1.6.3 Pac_NW&#9; 54.25 -110 38.75 -132 2051 8 0 0 m Y 46.50 -122 </P>
+<P>Map 1.6.4 New_Madrid 40.25 -93 32.75 -85 2051 8 0 0 m Y 36.50 -89 </P>
+<P>Map 1.6.5 Hawaii 24 -154.50 18 -160.50 2051 8 0 0 m N </P>
+<P>Map 1.6.6 Utah_Region 35.43 -119.52 46.68 -103.52 2051 8 0 0 m N </P>
+<P>Map 1.6.6.1 Utah 36.75 -114.25 42.50 -108.75 2051 8 0 0 m N </P>
+<P>Map 1.6.6.2 Yellowstone 44 -111.50 45.17 -109.75 2051 8 0 0 m N </P>
+<P>Map 1.6.7 Alaska 45 -109 72 -179 3 8 0 0 a Y 65 -150</P>
+<P>Map 2.7 Asia2 0 40 80 160 3 8 0 0 m Y 40 100</P>
+<P>Map 1.6.2.1 Mammoth 37.85 -119.10 37.35 -118.40 1027 8 0 0 m Y 37.60 -118.75</P>
+<P>Map 1.6.2.2 Geysers 38.55 -123.15 39.05 -122.45 1027 8 0 0 m Y 38.80 -122.80</P>
+<P># River Codes (use the sum of the desired rivers)</P>
+<P># 1 = Permanent major rivers</P>
+<P># 2 = Additional major rivers</P>
+<P># 4 = Additional rivers</P>
+<P># 8 = Minor rivers</P>
+<P># 16 = Double lined rivers</P>
+<P># 32 = Intermittent rivers - major</P>
+<P># 64 = Intermittent rivers - additional</P>
+<P># 128 = Intermittent rivers - minor</P>
+<P># 256 = Major canals</P>
+<P># 512 = Minor canals</P>
+<P># 1024 = All rivers and canals (1-10)</P>
+<P># 2048 = All permanent rivers (1-4)</P>
+<P># 4096 = All intermittent rivers (6-8)</P>
+<P># 8192 = All canals (9-10)</P>
+<P>&nbsp;</P>
+<P># Political Border Codes (use the sum of the desired boundaries)</P>
+<P># 1 = National boundaries</P>
+<P># 2 = State boundaries within the Americas</P>
+<P># 4 = Marine boundaries</P>
+<P># 8 = All boundaries (1-3)</P>
+</FONT><P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<B><U><P>Make_map script</P>
+</B></U><FONT FACE="Courier New" SIZE=2><P>#!/bin/csh -f</P>
+<P>#</P>
+<P># make_map : Lucky Vidmar Fri Jan 22 13:02:01 MST 1999</P>
+<P>#</P>
+<P># This csh script creates a map in GIF format according to the </P>
+<P># incomming arguments: </P>
+<P>#</P>
+<P># $1 - File name of the resulting GIF file</P>
+<P># $2 - File name of the file containing the error indication number</P>
+<P># $3 - List of arguments used for creating the map. These should be</P>
+<P># valid arguments to be passed on to GMT's pscoast utility</P>
+<P># $4 - Unique ID, to append to temp filenames to ensure that</P>
+<P># simultaneous calls to make_map do not corrupt each other</P>
+<P>#</P>
+<P># Since this script is intended to be called from a C function (as</P>
+<P># a part of a map server), it does not return any values directly.</P>
+<P># Instead, it writes a predefined error number (see list below) </P>
+<P># into the file given by the second argument $2.</P>
+<P># </P>
+<P># Valid error codes:</P>
+<P># 0 - No error. Map successfully generated. </P>
+<P># 1 - Error reported by GMT's pscoast - no map produced</P>
+<P># 2 - Error reported by pstogif - no map produced</P>
+<P># </P>
+<P>&nbsp;</P>
+<P># define error codes</P>
+<P>set ERR_NOERR = 0</P>
+<P>set ERR_GMT = 1</P>
+<P>set ERR_CONVERT = 2</P>
+<P>#</P>
+<P># Make sure we have the correct number of arguments</P>
+<P># If there is a problem here, we obviously can't write to the </P>
+<P># error file - simply report error and exit</P>
+<P>#</P>
+<P>if ($#argv != 4) then</P>
+<P>&#9;echo "Usage: make_map map_file error_file GMT_parameters UniqueID"</P>
+<P>&#9;exit -1</P>
+<P>endif</P>
+<P>#</P>
+<P># set the correct path</P>
+<P>#</P>
+<P>setenv PATH "$PATH":/usr/local/gnu/bin:/usr/local/pbmplus/bin:/usr/local/gmt/bin</P>
+<P>set tmpfile = /tmp/EWPS_tmpfile_$4</P>
+<P>set errfile = /tmp/EW_make_map_error_file_$4</P>
+<P>set CREATE_MAP = pscoast</P>
+<P>&nbsp;</P>
+<P>#</P>
+<P># Write the ERR_NOERR error code</P>
+<P>#</P>
+<P>echo $ERR_NOERR &gt; $2</P>
+<P>&nbsp;</P>
+<P>#</P>
+<P># set GMT defaults </P>
+<P>#</P>
+<P># 1. Degrees lat and long should be displayed using NS and EW method </P>
+<P>#</P>
+<P>gmtset DEGREE_FORMAT 3 &gt;&amp; /dev/null</P>
+<P>#</P>
+<P># Create the PostScript map using GMT's pscoast</P>
+<P>#</P>
+<P>($CREATE_MAP $3 &gt; $tmpfile) &gt;&amp; $errfile</P>
+<P># Check the errfile for any errors</P>
+<P>set foo = `cat $errfile | wc -l` </P>
+<P>if ($foo != 0) then</P>
+<P>&#9;</P>
+<P>&#9;echo "Call to $CREATE_MAP failed"</P>
+<P>&#9;echo $ERR_GMT &gt; $2</P>
+<P>&#9;exit -1</P>
+<P>endif</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>#</P>
+<P># Convert the PS file into gif</P>
+<P>#</P>
+<P>/usr/local/ImageMagick/bin/convert -crop 0x0 -colors 128 $tmpfile $1 &gt;&amp; $errfile </P>
+<P># Check the errfile for any errors</P>
+<P>set foo = `cat $errfile | wc -l` </P>
+<P>if ($foo != 0) then</P>
+<P>&#9;</P>
+<P>&#9;echo "Call to convert failed"</P>
+<P>&#9;echo $ERR_CONVERT &gt; $2</P>
+<P>&#9;exit -1</P>
+<P>endif</P>
+<P>rm -f $tmpfile</P>
+<P>rm -f $errfile</P></FONT></BODY>
+</HTML>

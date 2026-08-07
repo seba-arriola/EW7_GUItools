@@ -1,0 +1,52 @@
+<hr>
+<a name=EWDB_WAVEFORM_REQUEST_DO_NOT_MODIFY_ATTEMPT_PARAMS></a>
+<font size=+2>Attempt Param Flags</font><br>
+<br>
+<font size=+1>EWDB_WAVEFORM_REQUEST_DO_NOT_MODIFY_ATTEMPT_PARAMS</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Value:</b></td>
+  <td>0</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Do not modify attempt params at all</td>
+ </tr>
+</table>
+
+<br><br>
+
+<a name=EWDB_WAVEFORM_REQUEST_RECORD_ATTEMPT_AND_UPDATE_PARAMS></a>
+<font size=+1>EWDB_WAVEFORM_REQUEST_RECORD_ATTEMPT_AND_UPDATE_PARAMS</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Value:</b></td>
+  <td>1</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Record the current attempt (adjust the number of attempts remaining), and schedule the next attempt based upon the scheduling algorithm.</td>
+ </tr>
+</table>
+
+<br><br>
+
+<a name=EWDB_WAVEFORM_REQUEST_UPDATE_NEXT_ATTEMPT></a>
+<font size=+1>EWDB_WAVEFORM_REQUEST_UPDATE_NEXT_ATTEMPT</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Value:</b></td>
+  <td>2</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Do not record the current attempt.  Schedule the next attempt at the time given by tNow(calculated by the API call), plus tAttemptInterval seconds, as specified in the SnippetRequestStruct by the application.</td>
+ </tr>
+</table>
+
+<br><br>
+
+

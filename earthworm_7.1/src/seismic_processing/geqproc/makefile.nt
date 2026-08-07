@@ -1,0 +1,79 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.4 2007/03/02 04:17:39 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.4  2007/03/02 04:17:39  stefan
+#     not dependent on Oracle being made
+#
+#     Revision 1.3  2007/02/22 05:48:01  stefan
+#     object adds
+#
+#     Revision 1.2  2006/11/21 23:04:44  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.1  2006/01/19 19:21:59  friberg
+#     first check in of geqproc
+#
+#     Revision 1.2  2000/11/30 17:16:51  lombard
+#     Removed several unnecessary objects and system libraries from link
+#     command line, shrinking executeable by 25%. The unneeded objects
+#     were ws_clientII, socket stuff, and swap; rather silly since eqfilter
+#     doesn't talk to wave_servers.
+#
+#     Revision 1.1  2000/02/14 17:08:44  lucky
+#     Initial revision
+#
+#
+#
+
+#
+#                    Nmake File For eqfilterII  - Windows NT version
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = geqproc
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+#OL = $(EW_HOME)\$(EW_VERSION)\src\oracle\apps\lib\
+OL = 
+OLSRC = $(EW_HOME)\$(EW_VERSION)\src\oracle\apps\src\libsrc
+O = $(APP).obj $(L)\area.obj
+
+INC = $(EW_HOME)\$(EW_VERSION)\include
+#INC = $(INCLUDE)
+
+all: $O $(OL)\arc_2_ewevent.obj $(OL)\init_ewevent.obj $B\$(APP).exe
+
+$B\$(APP).exe: $O
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) $O $L\kom.obj $L\getutil.obj \
+   $L\time_ew.obj $L\chron3.obj $L\logit_mt.obj $L\transport.obj \
+   $L\sleep_ew.obj $L\mem_circ_queue.obj $L\threads_ew.obj \
+   $L\sema_ew.obj $L\read_arc.obj $L\pipe.obj \
+   $(OL)arc_2_ewevent.obj $(OL)init_ewevent.obj \
+   $L\glevt_2_ewevent.obj $L\global_msg.obj $L\global_loc_rw.obj \
+   -out:$B\$(APP).exe
+
+$(OL)\arc_2_ewevent.obj:
+	$(cc) $(GLOBALFLAGS)  /nologo /I$(INC) $(cflags) $(cdebug) $(cvarsmt) $(tflags) $(OLSRC)\arc_2_ewevent.c
+
+$(OL)\init_ewevent.obj: 
+	$(cc) $(GLOBALFLAGS)  /nologo /I$(INC) $(cflags) $(cdebug) $(cvarsmt) $(tflags) $(OLSRC)\init_ewevent.c
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo /I$(INC) $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\geqproc*

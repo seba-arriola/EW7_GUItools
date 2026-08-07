@@ -1,0 +1,65 @@
+<!-- details.html  arc2trigII details page -->
+
+<html>
+<title>EWDB Applications: arc2trigII: details</title>
+<b><font size=+2>ARC2TRIGII: </font><font size=+1>Details</font></b>
+<br><br>
+<b>arc2trigII</b> selects additional snippets of interest to save, by doing the following:
+<pre>
+I. Get the coordinates of mandatory stations. Either from the station list, or by a search of the DBMS.
+II. For each event:
+  1) Select the relevant stations:
+    a) All stations within the distance implied by the 
+       magnitude-distance table. This can be from a hypoinverse station 
+       list or the DBMS. If from a station list, this will have been read 
+       once at startup. If from the DBMS, the DBMS will be queried for 
+       stations within the appropriate rectangle for this event.
+    b) All mandatory stations.
+
+  2) For each selected station, compute the snippet to be saved:
+    a) Within a specified epicentral distance, ignore the travel time table, 
+       and save all data from origin time through S arrival time.
+    b) Outside this distance, use the travel-time table as in usnsn_loc2trig, 
+       and use that to compute snippet times.
+    c) All snippets will be padded with a specified safety margin of pre 
+       and post computed snippets times.
+----------------------------------------------
+</pre>
+<br><br>
+<b>Determining Amount of Data To Save(Snippet Length)</b><br>
+The program saves an interval of waveform data, called a snippet, from
+each of a list of channels.  For picked stations(from the arc message), 
+the program is setup to save a snippet of 
+waveform data, starting X seconds before the Pick time, and lasting 
+until Y seconds after the Pick time.  X is configurable via the config
+file, and Y is dependent upon the magnitude of the event(either overall,
+or based on a coda measurement for that channel.)  For unpicked stations,
+snippet length is computed as is described above in the outline.
+<br><br>
+<b>Authors</b><br>
+Story: The grand idea (behind authors) is that messages which 
+relate to an event shall include an author field. 
+In particular, the trigger message shall include, after
+the "EVENT ID:", an "AUTHOR:", which is followed by the author id. The author
+id is to be a series of logos, separated by :'s. Each logo is represented as
+three sets of three ascii digits. The first logo is the logo of the module
+which originated this event, followed by the logos of the modules which
+processed it.
+<br>
+So hypoinverse (eqproc) created the event by emitting an arc message. It
+should have stuck its logo in the author field. It doesn't, because we don't
+have the stomach to change eqproc. So we make up for it here: we know the logo
+of the message as it came to us, and we know our own module id, so we write
+eqproc's logo and our own into the trigger message which we produce.
+<br><br>
+<b>Logfile Name</b><br>
+The log file name is built from the name of the configuration file.
+<br><br>
+<b>Ring Flush Upon Startup</b><br>
+The incoming transport ring is flushed at start time to prevent confusion if the 
+module is restarted.  This has the effect of removing all messages that were
+already on the ring when the program was started, this has the net effect of
+preventing the program from acquiring any data that was generated prior to the
+program's starttime.
+<br><br>
+</html>

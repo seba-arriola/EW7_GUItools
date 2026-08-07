@@ -1,0 +1,40 @@
+
+#
+#    $Id: makefile.ux,v 1.1 2005/07/27 15:39:24 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/27 15:39:24  friberg
+#     added in UNIX makefile
+#
+#
+#
+#
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+SRCS = pick_recorder.c
+OBJS = pick_recorder.o
+
+LIBS = -lm -lpthread
+
+PICK_REC = $(OBJS) $L/logit.o $L/kom.o $L/getutil.o $L/sleep_ew.o \
+           $L/time_ew.o $L/transport.o $L/swap.o $L/mem_circ_queue.o \
+		   $L/threads_ew.o $L/sema_ew.o 
+
+pick_recorder: $(PICK_REC)
+	cc -o $B/pick_recorder $(PICK_REC) $(LIBS)
+
+
+lint:
+	lint pick_recorder.c $(GLOBALFLAGS)
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/pick_recorder*

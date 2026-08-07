@@ -1,0 +1,45 @@
+#
+#   THIS FILE IS UNDER CVS - 
+#   DO NOT MODIFY UNLESS YOU HAVE CHECKED IT OUT.
+#
+#    $Id: makefile.nt,v 1.2 2006/11/21 23:04:54 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.2  2006/11/21 23:04:54  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.1  2005/05/10 22:54:34  dietz
+#     New module to filter out time overlaps and bogus future timestamps
+#     in waveform data.
+#
+#
+
+#     Nmake File For wftimefilter - Windows NT version
+
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = wftimefilter    
+O = $(APP).obj 
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+$B\$(APP).exe: $O 
+   $(link) $(conlflags) $(ldebug) $(conlibsmt) $O $L\trheadconv.obj \
+    $L\logit.obj $L\getutil.obj $L\transport.obj $L\sleep_ew.obj \
+    $L\kom.obj $L\time_ew.obj $L\chron3.obj $L\swap.obj -out:$B\$(APP).exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	del a.out core *.o *.obj *% *~
+
+clean_bin:
+	del $B\wftimefilter*

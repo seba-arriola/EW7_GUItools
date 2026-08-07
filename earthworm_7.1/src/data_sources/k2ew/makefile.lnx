@@ -1,0 +1,85 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.lnx,v 1.4 2000/07/28 22:36:10 lombard Exp $
+#
+#    Revision history:
+#     $Log: makefile.lnx,v $
+#     Revision 1.4  2000/07/28 22:36:10  lombard
+#     Moved heartbeats to separate thread; added DontQuick command; removed
+#     redo_com() since it doesn't do any good; other minor bug fixes
+#
+#     Revision 1.3  2000/05/16 23:40:55  lombard
+#     bug fixes, removed OutputThread Keepalive, added OnBattery alarm
+#     made alarms report only once per occurence
+#
+#     Revision 1.2  2000/05/12 19:08:43  lombard
+#     Added restart mechanism
+#
+#     Revision 1.1  2000/05/04 23:48:32  lombard
+#     Initial revision
+#
+#
+#
+
+CFLAGS = -g ${GLOBALFLAGS} -DDEBUG
+
+B = ../../../bin
+L = ../../lib
+#B = ${EW_HOME}/${EW_VERSION}/bin
+#L = ${EW_HOME}/${EW_VERSION}/lib
+
+all: k2ew_tcp k2ew_tty
+
+LIBS = -lm -lpthread
+
+OBJS = k2ewmain-test.o \
+       outptthrd-test.o \
+       terminat-test.o \
+       getconfig.o \
+       k2ewerrs.o \
+       k2crctbl.o \
+       k2cirbuf.o \
+       k2pktman.o \
+       k2misc-test.o \
+       k2pktio.o \
+       k2ewrstrt.o \
+       heartbt.o \
+       error_ew_un.o
+
+TCP_OBJS = k2c_tcp.o
+
+TTY_OBJS = k2c_ser_un.o
+
+EWLIBS = $L/logit_mt.o \
+       $L/kom.o \
+       $L/getutil.o \
+       $L/sleep_ew.o \
+       $L/time_ew.o \
+       $L/sema_ew.o \
+       $L/threads_ew.o \
+#       $L/transport.o
+
+EW_SOCK_LIBS = $L/socket_ew_common.o \
+       $L/socket_ew.o
+
+
+k2ew_tcp: $(OBJS) $(TCP_OBJS)
+	cc $(CFLAGS) -o $B/k2ew_tcp $(OBJS) $(TCP_OBJS) $(EWLIBS) \
+   $(EW_SOCK_LIBS) $(LIBS)
+
+k2ew_tty: $(OBJS) $(TTY_OBJS)
+	cc $(CFLAGS) -o $B/k2ew_tty $(OBJS) $(TTY_OBJS) $(EWLIBS) $(LIBS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/k2ew*
+
+
+.c.o:
+	cc -c ${CFLAGS} $<
+

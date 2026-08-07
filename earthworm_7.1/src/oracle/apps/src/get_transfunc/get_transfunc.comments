@@ -1,0 +1,33 @@
+/************************************************
+************ SPECIAL FORMATTED COMMENT **********
+EW API FORMATTED COMMENT
+TYPE LIBRARY
+
+LIBRARY  EWDB_APPLICATIONS
+
+SUB_LIBRARY get_transfunc
+
+LOCATION THIS_FILE
+
+LINK_NAME Details
+LINK details.html
+
+#LINK_NAME Sample Config File
+#LINK get_transfunc.d.txt
+
+#LINK_NAME Programmer Notes
+#LINK programmer_notes.txt
+
+DESCRIPTION <b>get_transfunc</b> is a simple test program
+that can be used to retrieve the Poles and Zeroes based
+cooked transfer function for a channel (at a given time)
+from an EWDB.  It takes the id of the channel, connection
+parameters, and optionally time, as command line parameters, 
+and dumps the function to standard out.
+<br><br>
+Initial version  2000/02/15 lucky
+<br><br>
+
+*************************************************
+************************************************/
+

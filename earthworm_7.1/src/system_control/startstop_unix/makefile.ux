@@ -1,0 +1,36 @@
+
+B = ../../../bin
+L = ../../../lib
+I = ../../../include
+
+# Solaris flags
+CFLAGS.sun = -D_REENTRANT
+LIBS.sun = -lm -mt -lposix4 -lthread
+
+# IRIX flags
+CFLAGS.sgi = -D_USE_SCHED # -D_POSIX_C_SOURCE=199506L # interferes with LOGNAME_MAX def
+LIBS.sgi = -lpthread
+LIBS.linux= -lpthread
+
+CFLAGS = -I$(I) $(COPTS) $(CFLAGS.$(ARCH)) $(GLOBALFLAGS)
+LIBS = $(LIBS.$(ARCH))
+LIBS=-lpthread
+
+
+#
+# Note: startstop executable must be suid root to set scheduling priorities.
+#	If this isn't wanted, or we're not root, comment out the chmod below.
+
+OBJS = startstop.o $L/kom.o $L/logit_mt.o $L/getutil.o $L/startstop_unix_generic.o \
+	$L/time_ew.o $L/transport.o $L/sleep_ew.o $L/threads_ew.o $L/sema_ew.o \
+	 $L/lockfile.o $L/lockfile_ew.o $L/startstop_lib.o 
+startstop: $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $B/$@ $(OBJS) $(LIBS)
+	chmod u+s $B/$@
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/startstop*

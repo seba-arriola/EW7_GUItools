@@ -1,0 +1,53 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.3 2007/03/28 15:42:27 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.3  2007/03/28 15:42:27  paulf
+#     minor MACOSX directives
+#
+#     Revision 1.2  2005/07/27 18:46:02  friberg
+#     fix to makefile.ux from the sol version
+#
+#     Revision 1.1  2005/07/25 20:32:51  friberg
+#     added in UNIX makefile
+#
+#
+
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS)
+#LIBS =-lnsl -mt -lpthread
+# removed -lnsl for MACOSX
+LIBS = -mt -lpthread
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+EWBIN = $L/kom.o $L/getutil.o $L/logit_mt.o $L/sema_ew.o \
+        $L/transport.o $L/sleep_ew.o $L/socket_ew.o $L/time_ew.o \
+        $L/threads_ew.o $L/socket_ew_common.o
+          
+all:
+	make -f makefile.ux import_generic
+	make -f makefile.ux import_ack
+
+import_generic: import_generic.o $(EWBIN)
+	cc -o $B/import_generic import_generic.o $(EWBIN) $(LIBS)
+
+import_ack: import_ack.o $(EWBIN)
+	cc -o $B/import_ack import_ack.o $(EWBIN) $(LIBS)
+
+
+lint:
+	lint import_generic.c import_ack.c  $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/import_generic* $B/import_ack*

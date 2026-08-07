@@ -1,0 +1,40 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.1 2005/07/27 18:19:17 friberg Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.1  2005/07/27 18:19:17  friberg
+#     added UNIX makefile
+#
+#
+#
+#
+
+CFLAGS = -g -D_REENTRANT $(GLOBALFLAGS)
+
+APP = ew2file
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+BINARIES = ew2file.o $L/mem_circ_queue.o $L/kom.o \
+           $L/getsysname_ew.o $L/getutil.o $L/logit_mt.o $L/transport.o \
+	       $L/sleep_ew.o $L/time_ew.o $L/threads_ew.o $L/sema_ew.o  $L/dirops_ew.o
+
+all: $B/$(APP)
+
+$B/$(APP): $(BINARIES)
+	cc -o $B/ew2file $(CFLAGS) $(BINARIES) -lpthread
+
+
+lint:
+	lint ew2file.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o
+
+clean_bin:
+	rm -f $B/$(APP)

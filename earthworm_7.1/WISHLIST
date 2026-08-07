@@ -1,0 +1,38 @@
+This files contains a list of desired enhancements to Earthworm.
+
+1. Integrate heli_standalone and heli_ew so that the main body of 
+code is common to both. DONE
+
+2. In the heli programs, the number of channels should be set in the
+configuration file. DONE
+
+3. Integrate hypoellipse as an alternative locator to hypoinverse.
+
+4. Statmgr should include the module ID (name or number) in its messages
+about a module being dead. With lots of instances of a given module running
+on one machine (e.g. k2ew) this would help identify the problem module.
+   Done: PNL 6/30/00
+
+5. Statmgr should reset the number of emails, pages; not stop forever.
+
+6. libsrc/utils/site.c should use qsort() and bsearch() for lookups. This
+would save a bunch of CPU time in binder, eqproc, eqprelim.
+
+7. eqproc should set heartbeat rate with a HeartbeatInt command instead
+of the obscure way it does now (thru rpt_dwell).
+
+8. strong motion items:
+   a. change TYPE_STRONGMOTION message to be a single-component message
+   b. add eventid to TYPE_STRONGMOTION message to be used if the
+      module creating said messages was triggered by an arc message
+      and thus knows the eventid (this will be an external eventid).
+   c. if eventid is given, load data into dbms as associated with
+      the event.
+   d. new api call to pull out all SM data associated with an eventid,
+      where eventid is an external id?. Or have the ability to look
+      up the DBMS evenid given an external eventid. 
+
+9. When startstop on Windows NT can't find the executable copy of a program
+   startstop dies, and gives no clue as to why it died.  It would be better
+   if startstop logged an error message and kept running.
+

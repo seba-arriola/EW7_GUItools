@@ -1,0 +1,164 @@
+<hr>
+<a name=EWDB_External_StationStruct></a>
+<font size=+1>EWDB_External_StationStruct</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_External_StationStruct DESCRIPTION</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>Station</td>
+     <td><a href=../../.././EWDB_API_LIB/COOKED_INFRASTRUCTURE_API/C/typedef_comments.html#EWDB_StationStruct>EWDB_StationStruct</a></td>
+     <td>Station information.</td>
+    </tr>
+    <tr>
+     <td>StationID</td>
+     <td>int</td>
+     <td>The DB StationID of the current station.</td>
+    </tr>
+    <tr>
+     <td>Description</td>
+     <td>char[100]</td>
+     <td>A text description of the station, usually the long name of the station.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/EXTERNAL_API/library_comments.html#EXTERNAL_API>EXTERNAL_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=EWDB_External_UH_InfraInfo></a>
+<font size=+1>EWDB_External_UH_InfraInfo</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _EWDB_External_UH_InfraInfo</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure for inserting additional infrastructure information into a side table. This information is needed by the Urban Hazards team.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td></td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>idUHInfo</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB id of this record.</td>
+    </tr>
+    <tr>
+     <td>idChanT</td>
+     <td><a href=../../.././EWDB_API_LIB/UTILITY/C/typedef_comments.html#EWDBid>EWDBid</a></td>
+     <td>DB id of the channel to which this auxiliary data belongs.</td>
+    </tr>
+    <tr>
+     <td>dFullscale</td>
+     <td>double</td>
+     <td>fullscale.</td>
+    </tr>
+    <tr>
+     <td>dSensitivity</td>
+     <td>double</td>
+     <td>sensitivity.</td>
+    </tr>
+    <tr>
+     <td>dNaturalFrequency</td>
+     <td>double</td>
+     <td>natural frequency.</td>
+    </tr>
+    <tr>
+     <td>dDamping</td>
+     <td>double</td>
+     <td>damping.</td>
+    </tr>
+    <tr>
+     <td>dAzm</td>
+     <td>double</td>
+     <td>The horizontal orientation of the Component. Expressed in degrees clockwise of North.</td>
+    </tr>
+    <tr>
+     <td>dDip</td>
+     <td>double</td>
+     <td>The vertical orientation of the Component. Expressed in degrees below horizontal.</td>
+    </tr>
+    <tr>
+     <td>iGain</td>
+     <td>int</td>
+     <td>gain.</td>
+    </tr>
+    <tr>
+     <td>iSensorType</td>
+     <td>int</td>
+     <td>numeric sensor type.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/library_comments.html#EWDB_API_LIB>EWDB_API_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_API_LIB/EXTERNAL_API/library_comments.html#EXTERNAL_API>EXTERNAL_API</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/schema-working/src/include/ewdb_ora_api.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

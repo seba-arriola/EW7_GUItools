@@ -1,0 +1,28 @@
+- retrieve the arc file for the event to be reviewed:
+    db2file <config_file> <eventid>
+
+- Arc file is written to the file pointed to by the ArcFileName
+  option in the config_file.
+
+- Modify the Arcfile by deleting picks or modifying pick times 
+  and weights.
+
+- To relocate, run hypoinverse:
+    cd hypo
+    hyp2000
+      @ncal2000.hyp
+      phs
+      /tmp/ArcFile
+      loc
+      sto
+
+- The resulting arc file is written to file hypo.arc.
+
+- To re-insert the relocated event:
+    file2db <config_file> <arc file name>
+
+- To delete an event:
+    delete_event <config_file> <eventid>
+
+
+ 

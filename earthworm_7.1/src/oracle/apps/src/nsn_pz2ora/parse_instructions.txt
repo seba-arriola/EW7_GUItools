@@ -1,0 +1,39 @@
+CAL2 AAE   BHZ IU   CMG-3T   1.88E-01   1.000   20.00000 1995/05/17 00:00
+
+ft: CAL2  is startin keyword
+nt: Sta (AAE)
+nt: Comp (BHZ)
+nt: Net (IU)
+nt: Sensor Type (key off of this?) (CMG-3T)
+nt: sensitivity (huh?)(1.88E-01)
+nt: ref period?(1.000)
+nt: samp rate (20.00)
+nt: start date/time (1995/05/17 00:00)
+<LF>
+
+PAZ2  1 C  3.06125641E+16                 9   3 CMG-3T
+ft: PAZ2 is PZ keyword
+nt: 1 (ignore!)
+nt: C (ignore!)
+nt: gain (3.06125641E+16)
+nt: num poles(9)
+nt: num zeroes(3)
+nt: sensor type (CMG-3T)
+<LF>
+then "num poles" lines of poles and "num zeroes" lines of zeroes
+with the format for both being
+ft: real(-4.44221012E-02)
+nt: imag(1.23338997E-02)
+<LF>
+
+Properly Terminated by a blank line:
+ft:<LF>
+
+DATA_TYPE LOG  /* signifies end of data section, write to logfile*/
+ft: DATA_TYPE 
+nt: LOG
+
+DATA_TYPE ERROR_LOG /* signifies end of LOG section */
+
+STOP  /* EOF */
+ft: STOP

@@ -1,0 +1,66 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.sol,v 1.4 2002/02/28 17:03:36 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.sol,v $
+#     Revision 1.4  2002/02/28 17:03:36  lucky
+#     Moved gma.c and gma.h to libsrc and main include
+#
+#     Revision 1.3  2001/04/12 05:45:08  lombard
+#     Fixed to one can make gmew before localmag is made.
+#
+#     Revision 1.2  2001/04/11 21:12:20  lombard
+#     changed ../localmag/site.o to ../localmag/lm_site.o
+#     Added rules to make lm_site.o and lm_misc.o
+#
+#     Revision 1.1  2001/03/30 19:14:25  lombard
+#     Initial revision
+#
+#
+#
+# Makefile for gmew  -- Solaris version
+
+CFLAGS = ${GLOBALFLAGS}
+
+#B = ../../../bin
+#L = ../../../lib
+B = ${EW_HOME}/${EW_VERSION}/bin
+L = ${EW_HOME}/${EW_VERSION}/lib
+
+all: gmew
+
+LIBS = -lm -lnsl -lsocket -lposix4 -lthread
+
+OBJS = gmew.o gm_util.o gm_ws.o gm_config.o gm_sac.o gm_xml.o \
+     lm_misc.o lm_site.o
+
+EWLIBS = $L/swap.o $L/logit_mt.o $L/read_arc.o $L/time_ew.o $L/chron3.o \
+   $L/ws_clientII.o $L/socket_ew_common.o $L/socket_ew.o $L/kom.o \
+   $L/sleep_ew.o $L/tlay.o $L/mnbrak.o $L/brent.o $L/dirops_ew.o \
+   $L/transport.o $L/getutil.o $L/mem_circ_queue.o $L/sema_ew.o \
+   $L/threads_ew.o $L/fft99.o $L/fft_prep.o $L/transfer.o $L/gma.o \
+   $L/rw_strongmotionII.o 
+
+gmew: $(OBJS)
+	cc $(CFLAGS) -o $B/gmew $(OBJS) $(EWLIBS) $(LIBS)
+
+lm_site.o: ../localmag/lm_site.c
+	cc -c ${CFLAGS} ../localmag/lm_site.c
+
+lm_misc.o: ../localmag/lm_misc.c
+	cc -c ${CFLAGS} ../localmag/lm_misc.c
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/gmew
+
+.c.o:
+	cc -c ${CFLAGS} $<
+

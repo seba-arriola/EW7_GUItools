@@ -1,0 +1,99 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="Template" content="C:\Program Files\Microsoft Office\Office\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+   <title>schema-programmer</title>
+</head>
+<body link="#0000FF" vlink="#800080">
+
+<center><b>Earthworm Database Installation and Upgrade Procedure</b>
+<p>Lucky Vidmar
+<p>May 5, 2003</center>
+
+<p><b><u>Programmer Notes</u></b>
+<p>We promised that all versions after v6.0 would be backward compatible.
+To help us keep this promise, there is now a new procedure for dealing
+with the schema directories.
+<p>Basically, all the table definitions that were present in v6.0 have
+been pulled into a single file (ewdb_create_base_tables.sql). In each schema
+subdirectory (e.g., alarms) there are two scripts which will be used to
+keep us backward compatible:
+<ul>
+<li>
+ewdb_update_tables_alarms_working.sql - this is where any changes to the
+base tables, or additional table definitions go. Note that this file would
+only contain changes since the last release. This will make upgrading easier
+(see below for more info on upgrading).</li>
+
+<li>
+ewdb_load_alarms_utils.sql - this is where all the views and stored procedures
+go. Since these can safely be reloaded, we can just keep adding to this
+file without worrying about incompatibilities during upgrades.</li>
+</ul>
+When the time comes for a release, all those ewdb_update_*_working.sql
+scripts will be renamed to ewdb_update_*_vx.x, and the working versions
+will be emptied, ready to start adding new stuff. We will then create a
+top-level upgrade script which will call all the underlying schema upgrade
+scripts. This will make it easier for the user to configure the installation/upgrade
+(see below).
+<p><b>The key thing to remember is NEVER to change anything in the base
+v6.0 table definitions in ewdb_create_base_tables.sql.</b>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><b><u>User Notes</u></b>
+<br>&nbsp;
+<p>As before, ewdb_create_database.sql is the main script used for installing
+or upgrading an earthworm database. The user first has to decide whether
+to install a brand new DB, or to upgrade from a previous v6.x version.
+<ul>
+<li>
+If installing a brand new v6.2 database:</li>
+
+<ul>
+<li>
+Uncomment ewdb_create_base_tablespaces.sql - creates all the tablespaces
+and files which will house the schema; creates ewdb_main user. This file
+may need to be configured to reflect local realities if the default earthworm
+DB setup is not used.</li>
+
+<li>
+Uncomment ewdb_create_base_tables.sql - loads the base v6.0 table definitions</li>
+
+<li>
+Uncomment ewdb_update_schema_v6_1.sql and ewdb_update_schema_v6_2.sql scripts
+- load incremental additions to the base schema to bring it up from the
+v6.0 base to v6.2</li>
+
+<li>
+ewdb_load_utils.sql - loads views and stored procedures for the latest
+version</li>
+</ul>
+
+<li>
+If upgrading from v6.1 database:</li>
+
+<ul>
+<li>
+Make sure that ewdb_create_base_tablespaces.sql and ewdb_create_base_tables.sql
+are commented out</li>
+
+<li>
+Uncomment ewdb_update_schema_v6_2.sql script - load incremental additions
+to the base schema to bring it up from the previously installed release
+to v6.2</li>
+
+<li>
+Uncomment ewdb_load_utils.sql - loads views and stored procedures for the
+latest version</li>
+</ul>
+</ul>
+<hr><address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</body>
+</html>

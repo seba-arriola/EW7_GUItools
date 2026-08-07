@@ -1,0 +1,145 @@
+<hr>
+<a name=SM_INFO></a>
+<font size=+1>SM_INFO</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Type:</b></td>
+  <td>struct _SM_INFO</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Structure that contains data for a single strong motion message.  This structure is equivalent to the binary form of a strong motion message(without a MSG_LOGO).</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>NTS when used above refers to (NULL Terminated String).</td>
+ </tr>
+ <tr>
+ <td colspan=2>
+   <table border=1 cellpadding=5>
+    <tr>
+     <td><b>Field</b></td>
+     <td><b>Type</b></td>
+     <td><b>Description</b></td>
+ </tr>
+    <tr>
+     <td>sta</td>
+     <td>char[TRACE_STA_LEN]</td>
+     <td>NTS, Site code as per IRIS SEED.</td>
+    </tr>
+    <tr>
+     <td>comp</td>
+     <td>char[TRACE_CHAN_LEN]</td>
+     <td>NTS, Component code as per IRIS SEED.</td>
+    </tr>
+    <tr>
+     <td>net</td>
+     <td>char[TRACE_NET_LEN]</td>
+     <td>NTS, Network code as per IRIS SEED.</td>
+    </tr>
+    <tr>
+     <td>loc</td>
+     <td>char[TRACE_LOC_LEN]</td>
+     <td>NTS, Location code as per IRIS SEED.</td>
+    </tr>
+    <tr>
+     <td>qid</td>
+     <td>char[EVENTID_SIZE]</td>
+     <td>EventId that the message is associated with.  This EventID is the one specified by qAuthor.</td>
+    </tr>
+    <tr>
+     <td>qauthor</td>
+     <td>char[AUTHOR_FIELD_SIZE]</td>
+     <td>Author of an event with which this message is associated.  The author assigns the qid.</td>
+    </tr>
+    <tr>
+     <td>t</td>
+     <td>double</td>
+     <td>The main timestamp for the message.  If the message came from an SM box in the field, then this is the trigger time reported by the box.  If the message came from a module processing continuous telemetry, then this is the pick time or earlies of PGA, PGV, or PGD time.   (seconds since 1970/01/01 00:00:00.00)</td>
+    </tr>
+    <tr>
+     <td>talt</td>
+     <td>double</td>
+     <td>(Optional) Alternate timestamp for the message. This param is provided as a sanity check or correction of the main timestamp(t).  This timestamp could be assigned by an acquisition module, database loader, human, or other.  The author type of this timestamp is determined by altcode(see below). (seconds since 1970/01/01 00:00:00.00)</td>
+    </tr>
+    <tr>
+     <td>altcode</td>
+     <td>int</td>
+     <td>(Required if talt is specified.) Code specifying the source of the alternate time field(talt). See <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_ALTCODE_NONE>SM_ALTCODE_NONE</a> for a list of recognized source codes.</td>
+    </tr>
+    <tr>
+     <td>pga</td>
+     <td>double</td>
+     <td>The Peak Ground Acceleration(PGA) for this message.  (cm/s/s)</td>
+    </tr>
+    <tr>
+     <td>tpga</td>
+     <td>double</td>
+     <td>Time of the pga.  (seconds since 1970)</td>
+    </tr>
+    <tr>
+     <td>pgv</td>
+     <td>double</td>
+     <td>The Peak Ground Velocity(PGV) for this message. (cm/s)</td>
+    </tr>
+    <tr>
+     <td>tpgv</td>
+     <td>double</td>
+     <td>Time of the pgv.  (seconds since 1970)</td>
+    </tr>
+    <tr>
+     <td>pgd</td>
+     <td>double</td>
+     <td>The Peak Ground Displacement(PGD) for this message.  (cm)</td>
+    </tr>
+    <tr>
+     <td>tpgd</td>
+     <td>double</td>
+     <td>Time of the pgd.  (seconds since 1970)</td>
+    </tr>
+    <tr>
+     <td>nrsa</td>
+     <td>int</td>
+     <td>Number of response spectrum accel(RSA) pairs. Valid value range is (0 - <a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_MAX_RSA>SM_MAX_RSA</a>).</td>
+    </tr>
+    <tr>
+     <td>pdrsa</td>
+     <td>double[<a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_MAX_RSA>SM_MAX_RSA</a>]</td>
+     <td>Period(s) at which RSA values are given.</td>
+    </tr>
+    <tr>
+     <td>rsa</td>
+     <td>double[<a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/C/constant_comments.html#SM_MAX_RSA>SM_MAX_RSA</a>]</td>
+     <td>RSA value for each given period. (cm/s/s)</td>
+    </tr>
+    <tr>
+     <td>tload</td>
+     <td>double</td>
+     <td>Time the message was first loaded into an Earthworm DB.  (seconds since 1970)  NOTE:  This field is not part of ascii TYPE_STRONGMOTIONII msg, but may be filled when pulling data from DBMS.</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/library_comments.html#EW_LIBSRC>EW_LIBSRC</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EW_LIBSRC/RW_STRONGMOTION_II/library_comments.html#RW_STRONGMOTION_II>RW_STRONGMOTION_II</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./include/rw_strongmotionII.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

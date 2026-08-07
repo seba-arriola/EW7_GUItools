@@ -1,0 +1,94 @@
+1.  Logic layout:
+
+ a. Traverse tree and get data.
+
+    Get_Plexor_For_ChanT(OUT_RetCode, OUT_idDeviceSlot, OUT_iPlexor, IN_idChanT, IN_idChan, IN_tTime)
+
+    Get_idDevice_From_DeviceBind(OUT_RetCode, OUT_idDevice, IN_idDeviceSlot, IN_idDeviceContext, IN_tTime)
+    Get_Device_Info(OUT_RetCode, OUT_idModule, OUT_sDeviceName, OUT_idDeviceModel, OUT_idDeviceType,
+                    OUT_bIsRealizable, IN_idDevice. IN_bWantRealizable)
+
+    Get_Next_Plexor(OUT_RetCode, OUT_idNextDevSlot, OUT_iNextPlexor, IN_idDeviceSlot, IN_iPlexor)
+
+    optional:
+
+    Get_Device_Slot_Info(OUT_RetCode, OUT_idSlotType, OUT_sSlotName, IN_idDeviceSlot)
+
+    Get_Device_Type_Info(OUT_RetCode, OUT_idModule, OUT_sDeviceTypeName, IN_idDeviceType)
+
+    Get_Slot_Type_Info(OUT_RetCode, OUT_iNumInputs, OUT_iNumOutputs, OUT_sSlotTypeName, IN_idSlotType)
+
+    Get_Module_Info(OUT_RetCode, OUT_idSlotType, OUT_sModuleName, OUT_sSlotTypeName,
+                    OUT_iNumInputs, OUT_iNumOutputs, IN_idModule)
+
+    Get_Module_Entry( OUT_RetCode, OUT_idSubDevSlot, OUT_iSubPlexor, IN_idModule, IN_iPlexor)
+
+    VIEW:  ALL_FUNCTIONBIND_INFO
+
+    Not Yet IMPLEMENTED!!
+    GetRealDeviceInfo(IN: idActualDevice  OUT: (real device information)
+
+
+
+
+ b. Force update based on mod.  (example mod of the chanT table)
+      (This is where a state schema is very helpful)
+
+ c. Create a data logger and neccessary components
+    Create_ModuleTemplate(OUT_RetCode, OUT_idModuleTemplate, IN_idDeviceSlot, IN_iPlexor,
+                          IN_idNextDevSlot, IN_iNextPlexor)
+
+    Create_DeviceSlot(OUT_RetCode OUT, OUT_idDeviceSlot, IN_idSlotType, IN_sSlotName)
+
+    Create_SlotType(OUT_RetCode, OUT_idSlotType, IN_iNumInputs, IN_iNumOutputs, IN_sSlotTypeName)
+
+
+
+    Create_Or_Update_Device(OUT_RetCode, INOUT_idDevice, IN_idDeviceModel, IN_sDeviceName,
+                            IN_idDeviceType, IN_bIsGeneric, IN_bIsRealizable)
+
+    Create_ModuleEntry(OUT_RetCode, OUT_idModuleEntry, IN_idModule, IN_iPlexor, 
+                       IN_idSubDevSlot, IN_iSubPlexor)
+
+    Create_Module(OUT_RetCode, OUT_idModule, IN_idSlotType, IN_sModuleName)
+
+    Create_DeviceType(OUT_RetCode, OUT_idDeviceType, IN_idModule, IN_sDeviceTypeName)
+
+
+    Fix_Device_Bind(OUT_RetCode, IN_idDupDeviceBind, IN_tOff, IN_tOn)
+    /* Fix_Device_Bind is NOT YET COMPLETED */
+
+    Bind_Device_To_Slot(OUT_RetCode OUT, OUT_idDeviceBind, IN_idDeviceToBind,
+                        IN_idSlotToBind, IN_idContextDevice, 
+                        IN_tOff, IN_tOn, IN_bOverwrite)
+
+    Fix_Function_Bind(OUT_RetCode, IN_idDupFunctionBind, IN_tOff, IN_tOn)
+    /* Fix_Function_Bind is NOT YET COMPLETED */
+
+
+    Set_Device_Function(OUT_RetCode, INOUT_idFunctionBind, IN_idDeviceToBind,
+                        IN_idFunctionToBind, IN_sFunctionType, IN_tOff, IN_tOn,
+                        IN_bOverwrite, IN_bOverridable)
+
+    Set_Plexor_For_Channel(OUT_RetCode, INOUT_idChanT, IN_idChan, IN_idDeviceSlot,
+                           IN_iPlexor, IN_tOff, IN_tOn)
+    
+    CreateRealDevice(IN: idActualDevice, sSerialNum, idManufacturer
+                     OUT: idActualDevice)
+                     note: if idActualDevice is a 
+
+/* atomic function stuff */
+    CreateorUpdateFunction(IN: sFunctionType, sFunction, bUpdateIfMultipleDevicesFunctionBind
+                           OUT: idFunction)
+    
+ d. delete???  (delete what a datalogger, a model, a what?)
+     DeleteDeviceSlot(IN idDeviceSlot)
+     DeleteDevice(IN idDeviceSlot)
+     
+ 2.  Build actual SQL functions needed above.
+     done with functions for 1a.
+
+ 3.  Build actual C functions to access the SQL functions listed above.
+
+
+

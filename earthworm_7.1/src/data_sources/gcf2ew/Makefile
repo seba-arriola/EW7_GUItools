@@ -1,0 +1,48 @@
+#
+# gcf2ew - Guralp to earthworm interface for Solaris ONLY (serial, or internet)
+#
+
+
+CC=cc
+
+CFLAGS = -DSTDC -D_REENTRANT ${GLOBALFLAGS}
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+# withers changed these
+#GCF_INC = ../../include
+#GCF_LIB = ../lib
+GCF_INC = gcf/include
+GCF_LIB = gcf/lib
+
+CFLAGS +=  -I$(GCF_INC) -g
+
+all: gcf2ew
+
+
+SRCS = convert.c getconfig.c main.c scn_map.c \
+	heart.c die.c logo.c options.c
+
+OBJS = convert.o getconfig.o main.o scn_map.o \
+	heart.o  die.o logo.o options.o
+ 
+EW_LIBS = \
+	$L/getutil.o \
+	$L/kom.o \
+	$L/logit_mt.o \
+	$L/sema_ew.o \
+	$L/threads_ew.o \
+	$L/time_ew.o \
+	$L/sleep_ew.o \
+	$L/transport.o
+
+gcf2ew: $(OBJS); \
+        $(CC) -o gcf2ew $(OBJS) $(EW_LIBS) -L$(GCF_LIB) -lgcf -lsocket -lnsl -lposix4 -lthread -lm
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/gcf2ew*

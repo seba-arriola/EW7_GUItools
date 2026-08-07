@@ -1,0 +1,84 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: make_defs.nt,v 1.10 2004/04/10 16:59:18 davidk Exp $
+#
+#    Revision history:
+#     $Log: make_defs.nt,v $
+#     Revision 1.10  2004/04/10 16:59:18  davidk
+#     Adding support for $(APPS_LIBCPP), a separate library directory for cpp objects.
+#
+#     Revision 1.9  2004/04/09 22:20:28  davidk
+#     Added a cppflags definition (for compiling c++ source) which includes cflags.
+#
+#     Revision 1.8  2004/04/09 02:38:26  davidk
+#     Separately defined the earthworm platform cheater flags (_WINNT, _INTEL).
+#     Removed spurious compiler flags
+#
+#     Revision 1.7  2003/11/11 20:31:14  mark
+#     added libcpmt.lib for ML module linking
+#
+#     Revision 1.6  2003/10/21 01:08:10  davidk
+#     Added support for EW_DEBUG
+#
+#     Revision 1.5  2002/09/10 19:06:31  dhanych
+#     CFLAGS must be cflags
+#
+#     Revision 1.4  2001/08/02 23:06:23  davidk
+#     removed superfluous \\, that caused filenames to look funny.
+#
+#     Revision 1.3  2001/07/20 17:00:00  davidk
+#     *** empty log message ***
+#
+#     Revision 1.2  2001/07/02 22:51:10  lucky
+#     added CFLAGS definition -- wihtout it, nothing compiles under NT
+#
+#     Revision 1.1  2001/05/23 22:50:56  davidk
+#     Initial revision
+#
+#
+##################################################################
+
+# Set MS Make Variable NODEBUG based on EW_DEBUG setting
+!IF "$(EW_DEBUG)" == "1"
+LIBC = libcmtd.lib libcpmtd.lib oldnames.lib
+!ELSE
+NODEBUG=1
+LIBC = libcmt.lib libcpmt.lib oldnames.lib
+!ENDIF
+
+###############################
+#NT System Makefile
+###############################
+!include <ntwin32.mak>
+
+###############################
+# EWDB and Earthworm LIB 
+# and BIN dirs
+###############################
+WEB_BIN = $(WEB_DIR)\bin\ 
+EW_LIB  = $(EW_HOME)\$(EW_VERSION)\lib\ 
+EWDB_LIB= $(SCHEMA_DIR)\lib\ 
+APPS_LIB  = $(APPS_DIR)\lib\ 
+APPS_LIBCPP  = $(APPS_DIR)\lib\ 
+ALARMS_LIB= $(APPS_DIR)\src\alarms\lib\ 
+REVIEW_LIB= $(APPS_DIR)\src\review\web\lib\ 
+EW_BIN  = $(EW_HOME)\$(EW_VERSION)\bin\ 
+APP_SUB_DIR = $(APP)
+BASE_DIR = $(APPS_DIR)
+
+###############################
+#OBJECT FILES EXTENSION
+###############################
+OBJ 	= obj
+EXE     = .exe
+
+
+# DEFINE EWDB ORA_API libraries
+ALL_ORA_API_LIBS = $(EWDB_LIB)ewdb.lib
+
+CHEATER_EARTHWORM_PLATFORM_FLAGS = -D_WINNT -D_INTEL 
+cflags  = /nologo $(cdebug) $(cvarsmt) -c $(CHEATER_EARTHWORM_PLATFORM_FLAGS) -I$(APPS_DIR)\src\include -I$(SCHEMA_DIR)\src\include 
+
+cppflags = $(cflags)

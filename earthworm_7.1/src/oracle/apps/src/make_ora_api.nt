@@ -1,0 +1,37 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: make_ora_api.nt,v 1.4 2004/03/17 20:32:27 davidk Exp $
+#
+#    Revision history:
+#     $Log: make_ora_api.nt,v $
+#     Revision 1.4  2004/03/17 20:32:27  davidk
+#     removed ALL_ORA_API_LIBS definition and modified link statement.
+#
+#     Revision 1.2  2001/05/23 22:50:57  davidk
+#     Modified makefiles so that the latest (post Magnitude addition)
+#     version of the EWDB_API and apps now build on NT.
+#
+#
+##################################################################
+
+
+###############################
+#Include the platform independent makefile
+###############################
+!include $(APPS_DIR)/src/make_ora_api.ind
+
+###############################
+#More ORACLE stuff
+###############################
+# libraries for linking oci programs
+OCILDLIBS= ociw32.lib oci.lib
+
+LDFLAGS=  /LIBPATH:$(ORACLE_HOME)\oci$(ORACLE_OCI_VER)\lib\msvc $(OCILDLIBS)
+# Switch \lib\msvc to \lib\borland for borland compiler
+ 
+
+$(APP): $(ALL_APP_OBJECTS)
+   $(link) $(conlflags) $(ldebug) $(LIBC) $(baselibs) $(LDFLAGS) $(ALL_APP_OBJECTS) $(ALL_LIB_OBJECTS) -out:$(FULL_APP_NAME)
+

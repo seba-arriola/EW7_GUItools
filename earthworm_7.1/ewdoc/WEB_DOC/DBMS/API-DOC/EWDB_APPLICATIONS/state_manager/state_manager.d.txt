@@ -1,0 +1,50 @@
+#
+#         Configuration File for GIOC state_manager
+#
+#
+MyModuleId    MOD_STATE_MANAGER # module id
+RingName      WAVE_RING         # name of transport ring to attach to 
+LogFile       1                 # 1=write log file to disk; 0=don't
+                                # 2=write to module log but not stderr/stdout
+HeartBeatInt  30                # seconds between heartbeats to statmgr
+
+#
+# MaxTasks -- OPTIONAL 
+#  Maximum number of tasks to run simultaneously
+#    Default  = 10
+MaxTasks	10
+
+#
+# Database connection parameters
+#
+DBuser      db_user
+DBpassword  db_pwd
+DBservice   db_service
+
+
+
+# Debug - optional value of the debug flag. Higher debug 
+#    levels include all debug messages from the lower levels,
+#    plus more. WARNING: Debug files can get VERY VERY LARGE.
+#
+#   While the scope of each Debug level may vary, following
+#    values are accepted:
+#
+# Debug 1 ==>  Basic user level: will periodically log 
+#    message queue watermarks and print the server thread status 
+#    table. 
+#
+# Debug 2 ==> Advanced user level: Everything from lower debug  
+#    levels plus additional information which could be used
+#    to troubleshoot installation problems.
+#
+# Debug 3 ==> Advanced programmer level: Everything from lower debug  
+#    levels plus additional information about the execution flow,
+#    and other low-level debugging information.
+#
+#
+#  NOTE: This command is optional. The absence of Debug means that 
+#        only error conditions will be logged and reported.
+#
+#Debug 1
+

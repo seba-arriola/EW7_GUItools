@@ -1,0 +1,66 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6 [en] (X11; I; SunOS 5.7 sun4u) [Netscape]">
+   <title>Earthworm Program: sniffwave overview</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<center>
+<h1>
+Earthworm Modules:<br>
+Sniffwave Overview</h1></center>
+
+<center>
+  <i>(last revised 28 December, 2006)</i> 
+</center>
+
+<p>Program to read waveform messages from Earthworm transport ring and, for each 
+  message, prints the logo and header information to the screen.</p>
+<p><code>
+Usage:   sniffwave2 &lt;ring name&gt; &lt;station&gt; &lt;component&gt; &lt;network&gt; &lt;loc&gt; &lt;data flag y/n&gt;</code></p>
+This will sniff for TYPE_TRACEBUF2 and TYPE_TRACE2_COM_UA packets having the desired station, component, network and location codes.
+<p><code>
+   Or:   sniffwave2 &lt;ring name&gt; &lt;station&gt; &lt;component&gt; &lt;network&gt; &lt;data flag y/n&gt;</code></p>
+which will search for TYPE_TRACEBUF and TYPE_TRACE_COM_UA packets containing the desired station, component and network codes.
+<p>Note that it is not possible to sniff for TYPE_TRACEBUF and TYPE_TRACEBUF2 packets at the same tie with a single instance of sniffwave; use two!
+<p>Appending the optional "verbose" argument causes module, installation
+       and type names to be printed in addition to usual ID numbers</p>
+<p>Example: <code>sniffwave WAVE_RING PHOB wild NC wild n</code> </p>
+<p>or: <code>sniffwave WAVE_RING NP1 HHZ ZZ 01 n</code> </p>
+<p>This would result in the output:
+<p><PRE>
+Sniffing WAVE_RING for NP1.HHZ.ZZ.01
+20060601_UTC_12:35:01 sniffwave: inRing flushed.
+NP1.HHZ.ZZ.01 1 i4 500 100.0 2006/06/01 17:34:55.00 (1149183295.0000) 2006/06/01
+ 17:34:59.99 (1149183299.9900) i4 m100 t19 len2064
+NP1.HHZ.ZZ.01 1 i4 500 100.0 2006/06/01 17:35:00.00 (1149183300.0000) 2006/06/01
+ 17:35:04.99 (1149183304.9900) i4 m100 t19 len2064
+NP1.HHZ.ZZ.01 1 i4 500 100.0 2006/06/01 17:35:05.00 (1149183305.0000) 2006/06/01
+ 17:35:09.99 (1149183309.9900) i4 m100 t19 len2064
+NP1.HHZ.ZZ.01 1 i4 500 100.0 2006/06/01 17:35:10.00 (1149183310.0000) 2006/06/01
+ 17:35:14.99 (1149183314.9900) i4 m100 t19 len2064
+NP1.HHZ.ZZ.01 1 i4 500 100.0 2006/06/01 17:35:15.00 (1149183315.0000) 2006/06/01
+ 17:35:19.99 (1149183319.9900) i4 m100 t19 len2064
+NP1.HHZ.ZZ.01 1 i4 500 100.0 2006/06/01 17:35:20.00 (1149183320.0000) 2006/06/01
+ 17:35:24.99 (1149183324.9900) i4 m100 t19 len2064
+</PRE>
+<p>where
+<br>
+  "1" is the pin number (obsolete) <br>
+  &quot;i4" means that the data is four-byte integers in Intel byte order. "s2", 
+  for example, would indicate two-byte, Sparc order <br>
+  "500" means there are 500 samples in this packet. <br>
+  "100.0" is the nominal sampling rate, as advertised by the producer of this 
+  packet. <br>
+  The remaining fields are the actual times of the first and last samples
+in this packet, in human readable form, and (seconds since 1970).
+<center>
+<p><a href="../modules.html">Module Index</a></center>
+<hr>
+<address> Questions? Issues? <a href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw" target="_blank">Subscribe 
+to the Earthworm List (earthw). </a></address>
+
+</body>
+</html>

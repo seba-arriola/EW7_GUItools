@@ -1,0 +1,5 @@
+ShowPickCol		#FFFF00    	yellow
+ShowTraceCol	#00FF00		lime
+ShowAlarmsCol	#00FFFF		cyan
+ShowStasCol		#CC6666		indianred
+ShowMergesCol	#FF99FF		violet		

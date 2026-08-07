@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Debug-test-table-maintenance</TITLE>
+<META NAME="Template" CONTENT="C:\Program Files\Microsoft Office\Office\html.dot">
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080">
+
+<B><FONT FACE="Courier New" SIZE=4><P>Maintaining the SQL Error Log Tables:</P>
+</FONT><FONT FACE="Courier New"><P>&nbsp;</P>
+<P>Overview:</P>
+</font></B><FONT FACE="Courier New"><P>There are SQL procedures that run within the Oracle DBMS system that are called by EWDB API functions. </P>
+<P>Some of these SQL procedures will log error information to a 'test' table within the DBMS The information is logged in a cryptic manner, but can be very helpful to developers, in conjunction with program log files, in determining what went wrong and how to fix it. </P>
+<P>&nbsp;</P>
+<B><P>Maintaning the Test Table:</P>
+</B><P>There are two maintenance duties required of the DBMS operator with respect to this test table: monitoring it, and cleaning it. </P>
+<OL>
+
+<LI>Monitoring the Test table </LI></OL>
+<DIR>
+
+<P>Occasionally (once a week), the operator should check the error log table: </P></DIR>
+
+
+<UL><DIR>
+<DIR>
+
+
+<UL>
+<LI>connect to the DBMS using "sqlplus" as the main EWDB user, and run the following command: </LI></UL>
+</DIR>
+</DIR>
+</UL>
+
+
+<UL><DIR>
+<DIR>
+
+
+<UL>
+<LI>select * from test; </LI></UL>
+</DIR>
+</DIR>
+</UL>
+
+
+<UL><DIR>
+<DIR>
+
+
+<UL>
+<LI>Save the output from the command. </LI>
+<LI>Analyze the output: </LI></UL>
+</DIR>
+</DIR>
+</UL>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>a) If there are no rows in the table, then everything is good and the operator's task is finished. </P>
+<P>b) If the table is not empty, the operator may wish to alert the EWDB development team of potential problems, and send them the output from the SQL Query. </P></DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<OL>
+
+<LI>Cleaning the Test table </LI></OL>
+<DIR>
+<DIR>
+
+<P>After saving the contents of the "Monitoring" SQL Query, the operator should clean the "test" table by deleting its contents, so as to prevent the table from accumulating size over time. To clean the table, connect to the DBMS using "sqlplus" as the main EWDB user, and run the following commands: </P></DIR>
+</DIR>
+
+
+<UL><DIR>
+<DIR>
+
+
+<UL>
+<LI>delete test; </LI>
+<LI>commit; </LI></UL>
+</DIR>
+</DIR>
+</UL>
+
+<P><B>Remember</b> that the contents of the test table are most useful to developers when combined the the logfiles from applications. Please try to save application logfiles for at least a short time after providing "test" table contents to the EWDB development team. </P></FONT><hr><address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address></BODY>
+</HTML>

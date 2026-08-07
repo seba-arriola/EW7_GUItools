@@ -1,0 +1,794 @@
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Microsoft Developer Studio">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>Part1: Real-Time DBMS Schema</TITLE>
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>Part1: Toward a Seismic, Real-Time DBMS Schema</H1>
+<H3>by</H3>
+<H2>Carl E. Johnson</H2>
+<H3>Department of Geology<BR>
+	University of Hawaii at Hilo</H3>
+</CENTER>
+
+<HR>
+
+<CENTER><H2>Introduction</H2></CENTER>
+
+<P>
+Rapid development on several fronts in rapid response seismic
+systems hold forth the promise that a truly integrated and
+internetworked real-time seismic data collection and distribution
+system lies just over the horizon.
+This has been the ever elusive "holy grail" of regional network
+operators, the tortured few who by blood, sweat, and tears carry
+the local network world on their backs.
+The purpuse of this report is to develop a foundation for developing
+a very general schema which is also appropriate for real-time and
+rapid response applications.
+It is anticipated that the distillation and merging of the best
+ideas from each approach will be the subject of a subsequent report.
+</P>
+
+<P>
+We begin by analyzing three current schemata spanning
+a range of application objectives that
+are either in use or actively under development.
+These are the NCEDC Schema that is a group effort involving the
+Berkeley Seismological Laboratory, U.S. Geological Survey's Calnet,
+and the Seismological Laboratory at Caltech.
+The structure of this document consists of three sections analyzing
+each of these schemata followed by a section focussed on more
+general issues that should be resolved during the development 
+of s more general schema.
+Some of these conclude with specific recommendations, although
+most simply develop a specific issue.
+There are also several other approaches that perhaps should have been
+investigated.
+Amoung these are the IRIS/DMC schema which was in flux between a
+network and a relational DBMS structure based on Oracle.
+</P>
+
+<P>
+Since much of the discussion is based on a discussion of details
+of entity relationship diagrams (ERDs), a brief
+<A HREF=erd.htm>tutorial</A>
+has been provided.
+The level of the
+<A HREF=erd.htm>tutorial</A>
+is meant to help management level personel with a general
+knowledge of databases and their application to understand
+how various approaches might better support general program goals.
+<IMG ALIGN=RIGHT SRC=images/raptor_sm.jpg>
+It is understandable if you find this document about as exciting
+as the post mortem of a bridge tournament.
+Furthermore, the whole process would seem a bit suspect.
+Speculating on processing strategies based on schema architecture
+seems a bit like trying to understand the survival strategy
+of a velociraptor based on a study of its fossilized bones.
+In any case, this is the beginning, not the end, and for want of
+a better strategy, at this time it seems like the logical thing
+to do.
+</P>
+
+<CENTER><H2>Current Directions</H2></CENTER>
+
+<P>
+All three schemata examined are structurally very similar,
+although this isn't immediately obvious since the names assigned
+to similar tables are different and diagrams are drafted in radically
+different styles..
+To facilitate a direct comparison, all three have been 
+redrawn using a single diagramatic convention, "crow's foot",
+and layout.
+The layout divides each diagram into four columns labelled <B>DATA</B>,
+<B>LINK</B>, <B>SUMMARY</B>, and <B>CATALOG</B>, going from left
+to right.
+Intentially this follows the sequence of processing in a real-time
+seismic response system with increasing refinement progressing from
+left to right.
+The following table compares the relational entities by function for the three
+schemata.
+Tables in the same row are functionally very similar, although in
+almost all cases differences exist at the level of relationships
+and information content.
+</P>
+
+<A NAME=table_1></A>
+<TABLE BORDER=1>
+
+<THEAD>
+
+<TR>
+	<TH><A HREF=idc.htm>CSS 3.0/3.1</A></TH>
+	<TH><A HREF=ncedc.htm>NCEDC 1.4.3</A></TH>
+	<TH><A HREF=ew.htm>USGS Phase II</A></TH>
+</TR>
+
+<TBODY>
+
+<TR ALIGN=CENTER>
+	<TD>ORIGIN</TD>
+	<TD>Origin</TD>
+	<TD>Origin</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>ORIGERR</TD>
+	<TD>Origin_Error</TD>
+	<TD><I>Origin</I></TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>EVENT</TD>
+	<TD>Event</TD>
+	<TD>Event</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>&nbsp</TD>
+	<TD>Significant_Event</TD>
+	<TD>&nbsp</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>ASSOC</TD>
+	<TD>AssocArO</TD>
+	<TD>Link</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>ARRIVAL</TD>
+	<TD>Arrival</TD>
+	<TD>Pick</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>STASSOC</TD>
+	<TD>&nbsp</TD>
+	<TD>&nbsp</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>NETMAG</TD>
+	<TD>Netmag</TD>
+	<TD>Magnitude</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>STAMAG</TD>
+	<TD>AssocAmM</TD>
+	<TD>&nbsp</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>AMPLITUDE</TD>
+	<TD>Amp</TD>
+	<TD><I>Pick</I></TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>&nbsp</TD>
+	<TD>AssocAmO</TD>
+	<TD>&nbsp</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>&nbsp</TD>
+	<TD>Mec</TD>
+	<TD>Mechanism</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>&nbsp</TD>
+	<TD>Coda</TD>
+	<TD><I>Pick</I></TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>&nbsp</TD>
+	<TD>AssocCoM</TD>
+	<TD></TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>WFTAG</TD>
+	<TD>&nbsp</TD>
+	<TD>SCN</TD>
+</TR>
+
+<TR ALIGN=CENTER>
+	<TD>WFDISC</TD>
+	<TD>&nbsp</TD>
+	<TD>Snippet</TD>
+</TR>
+
+<TR>
+	<TD COLSPAN=3><B>Table 1:</B> Comparison of tables names for homologous
+		entites in the IDC, NCDEC, and PG&E/USGS schemata.
+		Table names in the same row perform similar rows for each
+		schema for which a table name is listed.
+		Table names shown in italics indicates a secondary use for the
+		table, such as coda data stored in a <B>Pick</B> table.</TD>
+</TR>
+
+</TABLE>
+
+<P>
+The following three sections should be read in the order presented.
+Discussions build on arguments
+and issues introduced in preceding sections.
+This is particularly true for the IDC schema, which is used as a basis
+for both of the other two.
+</P>
+
+<CENTER><H3><A HREF=idc.htm>IDC: CSS 3.0/3.1 Core</A></H3></CENTER>
+
+<P>
+The first schema to be examined was developed by the
+IDC (International Data Centre) to fascilitate recognition and 
+verification of treaty compliance in support of a nuclear test ban
+treaty.
+This approach is used as a standard of comparison when analyzing the
+other two.
+As perhaps the
+most mature relational design in the seismological community,
+it finds its roots in the venerable CSS 3.0/3.1 (Center for Seismic
+Studies).
+Being the oldest does not make it the most efficacious although
+subsequent approaches can undoubtedly benefit by learning
+from previous experiences.
+In some areas one finds vestigal structures, such as apparently unused
+foreign keys, that suggest major restructuring of the architecture.
+Despite such short comings, however, the IDC schema is tight, elegant, and
+funtionally well designed and
+much can be learned by studying its structures and relationships.
+</P>
+
+<CENTER><H3><A HREF=ncedc.htm>NCEDC: Parametric Information</A></H3></CENTER>
+
+<P>
+The second schema investigated was that developed by the NCEDC
+(Northern California Earthquake Data Center) at the Univerity of
+California at Berkeley.
+It represents the efforts of a consortium of scientists and
+technicians from the NCEDC, SCEC (Southern California Earthquake
+Consortium), and the U.S. Geological Survey in Menlo Park.
+The schema is documented in three parts, the first structuring
+parametric data and derived information such as magnitudes and
+hypocenters which follows the IDC approach generally with some
+rather interesting and insightful twists.
+The second part of the schema is used to store chronological
+infrastructure information such as station parameters, signal
+processing paths, and active component settings.
+This part of the schema is essentially a relational form of the
+SEED format.
+The final part of the schema documented by the NCEDC provides for
+the storage of digital waveform data.
+Because it appeared late in the analysis, it is not discussed
+further here.
+The NCEDC schema offers some very solid insight in the accommodation
+of the diverse needs of the regional seismic networks primarily 
+from an archival or data warehousing point of view.
+</P>
+
+<CENTER><H3><A HREF=ew.htm>USGS/PGE: Phase II</A></H3></CENTER>
+
+<P>
+The USGS/PGE scema is a bit of a "new kid on the block".
+It is also an experimental schema, intended more for
+evaluating the possiblities of integrating real-time
+seismic data processing with modern relational databases.
+The discussion is included here because it does address
+issues, such as real-time response.
+Initial versions were proposed by Bruce Jullian and subseqently
+refined to accomodate the needs of a rapid resonse system.
+At present most of the processing is external and the DBMS
+is used as an interface between real-time applications and
+graphical analysis of selected events.
+Despite its rather spartan character, it provides quite
+a large number of interesting design features.
+</P>
+
+<CENTER><H2>Issues and Recommendations</H2></CENTER>
+
+<P>
+So far the focus has been on individual efforts and the problems
+and solutions found in each.
+While analyzing these schemata certain more general issues began
+to emerge.
+Still other issues arose during discussions, and because of
+their rather general nature they will be addressed
+here as well.
+For the most part these issues represent concerns that should
+be addressed during the design of any response oriented seismic
+schema.
+While some of the discussions may be followed by a specific recommendations,
+most represent no more than the beginning of discussions.
+</P>
+
+<H3>Strong Ground Motion</H3>
+
+<P>
+Consider that there are two somewhat diverse user communities
+for seismic networks.
+The target community for this report represents one of these
+communities, regional network operators and scientists.
+The three approaches summarized above should seem familiar, at
+least in application, since they were drawn from this community
+as well.
+The main focus is the event, the hypocenter, that unique spot
+in the earth where seismic slip initiates.
+Granted that many of us consider the entire source region in
+waveform studies, but still, in some way, the identity of the
+thing we study is linked back to the point of initiation.
+</P>
+
+<P>
+The other users of seismic networks are vested in the strong
+ground motion community.
+In this community the rupture initiation point is not nearly as
+important as an identifying role and in the final analysis not
+very important.
+Of greater importance is the aggragate effect on a building
+or facility during some period of time with the individual
+sources being of considerably lesser importance.
+These issues are directly reflected in schema design.
+In the schemata analyzed here, there is little support for an arrival
+or amplitude measurement that cannot be associated with a
+discrete origin.
+Indeed, it is almost impossible to store or subsequently retrieve
+such information, since identity is so strongly coupled
+with rupture onset.
+In the strong motion community such an arrival, especially if it is
+some kind of dynamical extremum, is in itself a critical piece of
+data, and must be accessible regardless of its association with
+specific origins.
+How then or even can these difference be bridged.
+</P>
+
+<P>
+There is another issue that came up frequently enough in conversations
+that it is fair to judge that it is of some importance.
+This is the issue of attribution both of data and of derived
+products such as processed records.
+Apparently current funding policies strongly encourage this attitude,
+and the information necessary to ascertain attribution should be
+strongly represented in the database.
+Visual products, such as shake maps, should carry clear attribution
+of important contributors.
+Of course, this issue is hardly unique to the strong motion community,
+and as products become increasingly separate from data providers
+the importance of this issue can only increase.
+</P>
+
+<H3>Data Exchange Restrictions</H3>
+
+<P>
+The issue of restriction on data exchange is in a sense a more severe
+form of attribution requirements.
+This can be a fairly nasty issue, and I would prefer not to discuss it.
+To understand it completely it is necessary to realize that in a very
+real sense seismology is being jerked out of what was essentially a
+barter economy, where agreements for mutual exchange of data followed
+perceptions of self interest, most importantly, survival in the face
+of diminishing resources.
+With the predominance of digital waveform data and the centralization of
+exchange such turf is become increasingly hard to defend.
+Although the importance of this issue is expected to diminish
+rapidly, it may be necessary to support exchange restrictions for
+the interim and such capability should be considered in the development
+of real time schemata.
+</P>
+
+<H3>Core Schema</H3>
+
+<P>
+The bane of regional network seismology has always been the diversity
+of approach, and the plethora of innovative but radically different
+solutions to common problems.
+Many of these solutions have been nothing less than brilliant although
+sometimes a bit unusual.
+The same applies to processing routines and data structures which may
+also reflect local requirements.
+For example, some networks in Alaska and Hawaii must deal with a seismic
+depth range which is unnecessary elsewhere.
+While these local accomodations must be retained, the development of
+a sufficiently general "one-size-fits-all" seems elusive to the point
+of being impossible.
+</P>
+
+<P>
+I would like to suggest that this problem be dealt with by designing
+a small core schema that will form the nucleus to a rather flexible,
+extensible architecture.
+This core would subtend those features that are common across the
+application area.
+For example, all event origin tables have columns for time, latitude,
+longitude, and depth.
+Additional columns vary depending upon whether the event was located as
+a teleseism or as a local earthquake.
+It would certainly be unwise to simply append teleseismic and local
+columns to the same table and allow applications to choose the
+appropriate set.
+I would strongly advise that a better approach is to keep the core
+tables simple and keyed on a unique, content-free event identifier.
+Locator specific parameters could then be kept in a separate table
+keyed on the same identifier.
+The core table would need a column to identify locator type, and
+multiple rows for a given event could reflect attempts by different
+locators.
+This mechanism provides for the inclusion of specific local methods
+for doing business while permitting sharing of common processing
+applications.
+It also avoids the necessity of forming a standards committee and
+forging agreements across the entire seismic network community that only
+solve the plethora of very local problems and opiinions.
+</P>
+
+<H3>Multiple Catalogs</H3>
+
+<P>
+One problem common to regional seismic networks is the need to maintain
+multiple catalogs for a variety of orthogonal purposes.
+For example, networks generally maintain a public catalog which is the
+authorized information about significant earthquakes.
+This catalog is often far less complete than the complete catalog,
+which might be a list of all origins calculated, event those for
+very small earthquakes, special studies, and events with too
+few arrivals to provide adequately constrained locations.
+Such events serve as part of the waveform index, and considering
+that ones persons noise is another persons data, should not
+be discarded lightly.
+On the other hand, they are not exactly fit for consumption by the
+general public, or even for some parts of the research community.
+A catalog of quarry blasts might be retained separately from the
+official catalog, and so on.
+</P>
+
+<P>
+How such functionality should be provided is of concern.
+One possibility would be to simply create multiple tables
+with different names but with the same column structure.
+Another possibility is to add a separate column for catalog
+type, but this hardly seems a sane approach, and creates
+difficulties for events associated with multiple catalogs.
+User partitioning, meaning that different users have accesses
+to different tables with the same name in their own particular
+views of the database fails, because some of us would like to
+access multiple catalogs in the same session.
+The first suggestion seems the most sound, but this is another issue
+that bears further broad discussion.
+</P>
+
+<H3>Unique Event and Data Identifiers (CUSP Id)</H3>
+
+<P>
+This issue quickly one related to the "centricity" of processing.
+Generating a unique ID at an isolated location is not particularly
+difficult.
+The design of the CUSP system made heavy use of this concept.
+However, integration of the nations regional seismic networks would seem
+to scream for a multicentric approach.
+This multicentricity must be a fundamental consideration of schema
+design, and the focus is the manner by which data and summary
+results are assigned serial numbers their creators.
+The problem is more difficult that it would appear on the surface.
+Approaches where blocks of numbers are assigned to various contributors
+are more likely to be honored in the breach.
+A better approach might be to allow identifiers be drawn from a pool and
+to make the pool identification part of the identifier.
+One way of doing this would be to make all primary keys of this sort
+composite with both the assigning authority (pool) and the indentifier
+present.
+The NCEDC schema addressed this problem to some extent by including a
+column for the identifier assigned by the originator and then reassigning
+a new, locally generated identifier for the local database.
+</P>
+
+<H3>Association Process</H3>
+
+<P>
+Three approaches come to mind when considering the implementation
+of association logic within the context of a modern relational database.
+The issues here deal with where association occurs, with respect to
+data entry, and to what extent the database engine itself is a player
+in this process.
+The issues focus on the manner by which association information, <B>assoc</B>
+and <B>stamag</B> tables in CSS 3.0, is entered into the database.
+Some approaches result in a simple insertion of information after the
+assocation process has been completed.
+Others require communication amoungst cooperating applications
+with a concommitant increase in insertions, updates, and deletions
+with respect to tables on the <B>LINK</B> layer with the database
+serving as a kind of communication channel.
+</P>
+
+<P>
+The most modern approach suggests modeling assocation after current
+OTP (online trasaction processing) systems.
+These are familiar to credit card users; impressing a card is something
+like recording a phase arrival, and linking the purchase with an
+account is something like assocatiating a phase with an origin.
+It is truely unfortunate that earthquakes don't have account numbers
+to facilitate this process.
+Typically the transaction is entered into the database and subsequent
+processing, such as checking a purchasers credit limit might be
+initiated by means of a database "trigger" implemented with respect
+to insertions in a transaction table.
+This minimizes the "touch" of the transaction processing application to
+insertion operations.
+Otherwise such applications would be far more complex
+requiring knowledge of the "business rules" and aspects of the
+database architecture that would subsequently inhibit subsequent
+evolution of the schema.
+On the down side is increased overhead in that some other application
+would be instantiated for every transaction, and depending upon
+system load parameters might introduce excessive processing overhead.
+Association would occur outside of the database and prior to insertion.
+This would mean that all data entry paths would pass through this
+application outside of the database, and that there could be only
+one application dealing with the association process.
+</P>
+
+<P>
+At the other extreme would be to atomize processing over a plexus
+of internal procedures, each implementing elemental stages of anlalysis.
+One might envisage an applet that is triggered by the insertion of
+a phase arrival, searches the <B>origin</B> table for possible
+associations, and then inserts unassociated picks into a table of
+unassociated picks.
+Perhaps this would trigger a second applet that tries to create new
+<B>origin</B> table entries by associating this new arrival with
+other unassociated arrivals.
+Such an approach would rely much more heavily on 4GL capabilities
+of the underlying database engine and would take much greater
+advantage of embedded processing capabilities which are becoming
+quite powerful.
+This approach would certainly be considered the more modern of the
+two.
+</P>
+
+<P>
+For real-time seismic applications there are two criteria which should
+be considered.
+There is a need for extreme responsiveness, especially if effective
+early warning systems are to be supported.
+On the other hand such an approach would, on the surface, seem to
+embed the association processing into the data entry applications.
+Running multiple assocators, for example local and teleseismic,
+for a single network would become rather complex to implement
+and maintain.
+Addition of new sources of data, especially from networks
+incorporating independant "smart stations",
+would present ongoing reconfiguration problems possibly requiring
+application reprogramming.
+Also, for regional and local seismic networks, phase arrival data general
+appears infrequently and in short bursts.
+I prefer a hybrid approach wherein all arrivals are entered into
+the system before association which is "triggered" by the insertion
+event.
+Rather than restart competing assocation processes for every
+arrival, the "triggered" process should communicate with a an
+associator running as a daemon in background.
+This approach would seem to preserve a reasonable responsiveness
+without sacrificing too much structural flexibility.
+The issue is a complex one and deserves considerable scrutiny and
+further discussion.
+</P>
+
+<H3>Subordinate Entities in the <B>SUMMARY</B> Layer</H3>
+
+<P>
+The generality required to merge processing methodologies and data
+storage requirements across regional network suggests a more
+flexible mechanism might be required to associate subordinate
+tables of magnitudes, mechanism, and moment tensors with more
+primary tables such as lists of origins.
+This surfaced during the examination of the interlinkage complexity
+at this level in the NCEDC schema.
+One such possibility follows the approach represented by the
+<B>wftag</B> table in the IDC schema.
+If you recall, this was like a general purpose connector linking
+waveform identifiers with a variety of dependant tables.
+A similar mechanism could be implemented with respect to origins,
+which would add a certain symmetry to the overall data architecture.
+That is, the primary key of this table would be the origin
+identifier together with the name of a subordinate table and its
+identifier.
+This would permit multiple instances of a particular kind of magnitude
+for a given origin using efficacy values to resolve a preference.
+Admittedly queries become somewhat more difficult with this kind
+of architecture, but the increased flexibility of design might
+be worth this price.
+</P>
+
+<P>
+I tend to think of this approach as similar to subclassing in
+object oriented programming, or at least I use it in this
+manner when designing data structures.
+The central table, in this case the origin parameters, represents a
+kind of base class, which when take together with various side
+tables through the proposed coupling relation results in a set
+of parallel derived classes.
+Obviously this concept requires considerable further analysis
+and discussion, but it would appear that some very fruitful
+possibilities lie in this direction.
+</P>
+
+<H3>Waveforms</H3>
+
+<P>
+Waveform data has always been a major problem, whether it is
+represented by warehouses full of deteriorating paper records,
+or local chip stores gagging on terrabytes of continous,
+real-time data.
+The earliest systems for digital data were flat files embedded
+within a hierarchal directory structure.
+Disk is still finite, so such files were then backed up on
+archival tapes often in an esoteric, nonconforming format.
+At the other extreme lie approaches that store segments of digital
+waveform data directly in the database itself.
+This has an advantage that the entire database management and
+distributed exchange capabilities of modern database systems
+becomes available.
+The down side is that real-time waveform streams swamp the trickle
+of derived parameters, limitting throughput and hogging bandwidth.
+A better approach might be to store external indices to a waveform
+server that is directly accessible over the Internet.
+Such a solution was embodied in the waveserver technology developed
+by the U.S.G.S. in Menlo Park.
+Remote processing centers could then access data on demand without
+requiring transporting all anticipated waveform data as might be
+attempted using intrinsic database utilities.
+New opportunities for data management centers emerge for storing and
+forwarding digital data in near real-time in addition to traditional
+archival roles.
+This is another area where a great deal of discussion and possibly
+a considerable amount of experimentation might be required.
+</P>
+
+<H3>API: Application Programming Interface</H3>
+
+<P>
+I'm not sure if there is an issue here or not.
+I've noted a tendancy to included standardization of access
+together with standardization of at least a core schema.
+The advantage, of course, is that it provides greater
+flexibility in the application of more junior programmers in
+developping and adapting the many applications that will be
+required.
+On the other hand, excess standardization inhibits innovation,
+especially during times when rapid evolution of thinking is
+required.
+Perhaps more importantly, the standardization of an API would also
+seem to imply a preferred programming language, the one used to
+develop the API.
+At this point in time I prefer a bit of anarchy, allowing a variety
+of APIs to develop and tolerating a certain amount of code
+level incompatibility.
+Compatibility would of course still be rigidly enforced at the
+level of the database core tables, regardless of what implementation
+language is chosen.
+</P>
+
+<CENTER><H2>Conclusion</H2></CENTER>
+
+<P>
+During the course of the analysis it became
+extremely difficult to "draw the line" limitting the scope to a
+manageable level.
+At the outset the task seemed rather straight forward, analyzing
+current directions with the aim towards distilling common features
+into "community widsom" in support of the development of an
+effective real-time schema.
+I certainly didn't expect to get so drawn into the intracacies of
+schema design as was the case.
+Almost like a good mystery, the more I learned and analyzed other's
+work, the more my interest was drawn into what developed into an
+extremely fascinating design problem.
+At this point all I know for sure is that the butler is innocent!
+Unfortunately, the line has to be drawn somewhere, and there are
+very important examples I have not addressed.
+For example, the IRIS's schema design for the DMC was not analyzed
+because it was in an extreme state of flux with the project was
+undertaken.
+There are many others, and important aspects of those discussed that
+are not presented here.
+</P>
+
+<P>
+Another pleasant surprise that developed during analysis was a true
+respect for the imagination and creativity of those that have
+worked in this area over the years.
+Perhaps most significant shortcoming of this investigation was a
+lack of discourse with some of the principal contibutors to current efforts.
+Again, some lines need to be drawn or completion might have
+been indefinitely postponed.
+It is my profound hope that this document might afford some kind of
+common basis for discussions, and I very much wish to be a part
+of future debates.
+Regardless, my respect for the efforts and crativity of these workers
+increased monotonically during the course of this analysis.
+It is difficult to write a critical review without stepping on some toes.
+If there are those who are offended by some of the points
+of this document, please accept my most profound apology.
+The effort was meant to ferret out the most conspicuous "seismic gems",
+and undoubtedly there is much that I have missed.
+Undoubtedly my own experience is limited, and the development of
+a robust and generally useful seismic schema design will require the
+unification of ideas from many diverse points of view.
+There is a great deal of talent in out rather small community, and
+I am convinced that working together we can do incredible things.
+I would like to be considered a valued member of the team.
+</P>
+
+<CENTER><H2>References</H2></CENTER>
+
+<UL>
+
+	<DL>
+
+	<DT><B>
+		IDC DOCUMENTATION: Database Schema Part 1, IDC5.1.1</B>
+	<DD>The report discussed here was obtained over
+		the Internet from <A HREF=http://www.cmr.gov/>http://www.cmr.gov/</A>.
+		The document was issued by the Geophysical Systems 
+		Operation of Science Applications International Corporation (SAIC)
+		as part of the International Data Centre (IDC) Documentation.
+		The ordering number for this document is SAIC-98/3009 (PSR #TN1127)
+		(Part 1 and Part 2), published May 1998.
+		Copies of this document may be ordered by FAX: (619 458-4993).
+	<P>
+
+	<DT><B>CNSS Composite Catalog Format, Ver 1.0.1</B>
+	<DT><B>CNSS Composite Catalog Format, Ver 1.0.2</B>
+	<DD>Both of these reports were obtained from 
+		<A HREF=http://quake.geo.berkeley.edu/cnss/cnss-detail.html>
+		http://quake.geo.berkeley.edu/cnss/cnss-detail.html
+		</A>.
+		To some extent the NCEDC parametric schema follows the structure
+		of this document set, providing additional information for
+		the interpretation.
+	<P>
+
+	<DT><B>NCEDC Parametric Information Schema, Ver 1.4.3</B>
+	<DT><B>NCEDC Instrument Responses Schema, Ver 1.2</B>
+	<DT><B>NCEDC Hardware Tracking Schema, Ver 1.2</B>
+	<DD>NCEDC maintains an extensive library of the rapidly
+		developing schema at
+		<A HREF=http://quake.geo.berkeley.edu/db/>
+		http://quake.geo.berkeley.edu/db/
+		</A>.
+		Both Microsoft Word documents as well as postscript files
+		are provided in a variety of compressed formats.
+	<P>
+
+	<DT><B>Earlybird Man Pages</B>
+	<DT><B>Earthworm Phase II Schema</B>
+	<DT><B>Earthworm Modules List, April 26, 1998.</B>
+	<DD>The documents detailing the components of the Earthworm system
+		can be obtained at
+		<A HREF=http://www.cnss.org/EWAB/modules.html>
+		http://www.cnss.org/EWAB/modules.html
+		</A>. The module documentation was useful to some extent
+		in understanding the PG&E/USGS schema. The first two reports
+		are apparently not publicly available.
+	<P>
+
+	<DT><B>SEED</B>
+	<DD>The documentation of the Standard for the Exchange of Earthquake
+		Data (SEED) is provided in PDF format at
+		<A HREF=http://www.iris.washington.edu/>
+		http://www.iris.washington.edu/
+		</A> along with a host of other useful documentation
+		of interest to the seismological community.
+	</DL>
+
+</UL>
+
+</BODY>
+</HTML>

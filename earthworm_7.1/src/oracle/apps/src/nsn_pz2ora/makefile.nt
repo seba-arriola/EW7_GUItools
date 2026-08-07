@@ -1,0 +1,22 @@
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.1 2003/05/06 20:46:05 lucky Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.1  2003/05/06 20:46:05  lucky
+#     Initial revision
+#
+#     Revision 1.5  2001/05/23 22:50:57  davidk
+#     Modified makefiles so that the latest (post Magnitude addition)
+#     version of the EWDB_API and apps now build on NT.
+#
+#
+##################################################################
+
+!include $(APPS_DIR)/src/make_defs.nt
+!include makefile.ind
+!include $(APPS_DIR)/src/make_apps_base.nt
+

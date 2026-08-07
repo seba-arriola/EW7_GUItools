@@ -1,0 +1,78 @@
+README.tablelist_info
+
+This is a list of Tablenames and numbers that is currently in P3_Tablelist.
+This is setup to handle the various internal and external tablenames.
+It is a bit of a hack, but it made things easiest for developing.
+For now, there are two functions that are found throughout many
+of the schema2 stored procedures that are used for validating data,
+both inside and outside of schema2 Core.  The two functions are
+Check_External_Record_Validity() which checks the validity of external records,
+like those from the Origin_EW table
+and Check_Record_Validity() which checks the validity of Core records.
+
+The purpose of these two functions is to provide referential integrity
+between tables where Oracle could not insure it.  Many of the relationships
+in Schema2 are generic, meaning that they are not between two specific
+tables, but instead between 1 specific table and 1 class of tables.  Oracle
+can only provide referential integrity between 2 tables, not between 1
+table and 1 group of tables.
+
+Unfortunately these references require that core functions know about 
+non-core tables, a definite NoNo I believe in the book of the schema
+designer.  Eventually I believe that some compromise will be worked out
+between absolute referential integrity and Core focused logic.  For now
+we are going with absolute referential integrity, because it helps
+find bugs in an unstable system, which is what we definitely have now.
+
+DavidK 19990824
+
+/* List of tables as exists in the table P3_Tablelist */
+/* anytime this list is changed, Check_External_Record_Validity() 
+   or Check_Record_Validity() must also be changed.
+***************************************************************/
+
+(1 , 'AmpCoda');
+(2 , 'Pick');
+(3 , 'TCoda');
+(4 , 'Origin');
+(5 , 'Magnitude');
+(6 , 'MechFM');
+(7 , 'AmpBody');
+(8 , 'DurCoda');
+(9 , 'Chan');
+(10, 'Source');
+(12, 'Ray');
+(13, 'Event');
+(14, 'Prefer');
+(15, 'Bind');
+(16, 'Comments');
+(17, 'OriginPick');
+(18, 'MechFMPick');
+(19, 'MagLink');
+(20, 'Origin_EW');
+(21, 'Link_EW');
+(22, 'Pick_EW');
+(23, 'Snippet_EW');
+(24, 'Magnitude_EW');
+(25, 'ExternalEvent');
+(26, 'Waveform');
+(27, 'WaveformDesc');
+(28, 'Site');
+(29, 'Comp');
+(30, 'SiteT');
+(31, 'CompT');
+(32, 'ChanT');
+(33, 'ChanCTF');
+(34, 'CookedTF');
+(35, 'PolesOrZeroes');
+(40, 'SMBox');
+(41, 'SMMessage');
+(42, 'SMMotion');
+(43, 'SMVendor');
+
+/**********************
+If you put something in quotes oracle treats it as case sensitive,
+even if it is a table name.
+Stupid product!
+So "MAIN"."PICK" is a table but "MAIN"."Pick" is not!
+*/

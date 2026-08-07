@@ -1,0 +1,807 @@
+<hr>
+<a name=ewdb_apps_ArcFile2DB></a>
+<font size=+2>ewdb_apps_ArcFile2DB()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_ArcFile2DB(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>char *</i> ArcFileName</NOBR>, <NOBR><i>char *</i> author</NOBR>, <NOBR><i>char *</i> szEventID</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_ArcFile2DB.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Reads the hypoinverse arc file, converts it into DB event format and inserts it into he database.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EW_SUCCESS</td>
+  <td>Successful operation</td>
+ </tr>
+ <tr>
+  <td>EW_FAILURE</td>
+  <td> Failure -- see logfile for details.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>ArcFileName</td>
+  <td>char *</td>
+  <td>Name of Hypoinverse arc file to insert.</td>
+ </tr>
+ <tr>
+  <td>author</td>
+  <td>char *</td>
+  <td>Author to be assigned to the event.</td>
+ </tr>
+ <tr>
+  <td>szEventID</td>
+  <td>char *</td>
+  <td>External author ID.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_DB2ArcFile></a>
+<font size=+2>ewdb_apps_DB2ArcFile()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_DB2ArcFile(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>char *</i> ArcFileName</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_DB2ArcFile.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td> Writes all information about the event in Hypoinverse archive format to the file.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EW_SUCCESS</td>
+  <td>Successful operation</td>
+ </tr>
+ <tr>
+  <td>EW_FAILURE</td>
+  <td> Failure -- see logfile for details.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>Database ID of the event to retrieve.</td>
+ </tr>
+ <tr>
+  <td>ArcFileName</td>
+  <td>char *</td>
+  <td>Name of Hypoinverse arc file to write.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_GetDBEventInfo></a>
+<font size=+2>ewdb_apps_GetDBEventInfo()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_GetDBEventInfo(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWEventInfoStruct *</i> pEventInfo</NOBR>, <NOBR><i>EWDBid</i> idEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_GetDBEventInfo.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This is a convenient function for retrieving an Event from the DB.  Most data for an event is retrieved from the DB and stuffed into an EWEventInfoStruct. There are other low level functions that may be used to rerieve data from the DB, this one just provides a very convenient interface for retrieving DB Event data.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function is the official way to get an Event out of the DB and into an EWEventInfoStruct.  This is important because many review tools utilize this struct. <br> Please also see <a href=../../.././EWDB_APPS_LIB/DB_LIB/C/function_comments.html#ewdb_apps_GetDBEventInfoII>ewdb_apps_GetDBEventInfoII</a>().</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pEventInfo</td>
+  <td>EWEventInfoStruct *</td>
+  <td>Pointer to an event info struct.  This struct must be alloced by the caller, but the function will alloc any neccessary dynamic storage that is pointed to by the struct.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>The EWDB ID of the Event for which the caller wishes to retrieve data.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_GetDBEventInfoII></a>
+<font size=+2>ewdb_apps_GetDBEventInfoII()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_GetDBEventInfoII(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWEventInfoStruct *</i> pEventInfo</NOBR>, <NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>EWDBid</i> idOrigin</NOBR>, <NOBR><i>int</i> Flags</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_GetDBEventInfo.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>This function is similar to <a href=../../.././EWDB_APPS_LIB/DB_LIB/C/function_comments.html#ewdb_apps_GetDBEventInfo>ewdb_apps_GetDBEventInfo</a>(), however it provides control over what types of data are retrieved for an Event, thus making it much more flexible. This is a convenient function for retrieving an Event from the DB.  Most data for an event is retrieved from the DB and stuffed into an EWEventInfoStruct. There are other low level functions that may be used to rerieve data from the DB, this one just provides a very convenient interface for retrieving DB Event data.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>This function is the official way to get an Event out of the DB and into an EWEventInfoStruct.  This is important because many review tools utilize this struct. <br> Please also see ewdb_apps_GetDBEventInfoII().</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pEventInfo</td>
+  <td>EWEventInfoStruct *</td>
+  <td>Pointer to an event info struct.  This struct must be alloced by the caller, but the function will alloc any neccessary dynamic storage that is pointed to by the struct.</td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>The EWDB ID of the Event for which the caller wishes to retrieve data.</td>
+ </tr>
+ <tr>
+  <td>idOrigin</td>
+  <td>EWDBid</td>
+  <td>If >0, this is the EWDB ID of the Origin which will be saved as the prefered origin. Otherwise, the origin from the Prefer table will be returned. If the origin matching idOrigin is not bound with idEvent, an error is returned.</td>
+ </tr>
+ <tr>
+  <td>Flags</td>
+  <td>int</td>
+  <td>Flags describing what types of data to retrieve for the given event.  The following flags are supported, and should be OR'd together into Flags. (GETDBEVENTINFO_PICKS, GETDBEVENTINFO_STAMAGS, GETDBEVENTINFO_COMPINFO,  GETDBEVENTINFO_COOKEDTF, GETDBEVENTINFO_WAVEFORM_DESCS,  GETDBEVENTINFO_WAVEFORMS) Summary info is always retrieved!!!!!</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_PutDBEventInfo></a>
+<font size=+2>ewdb_apps_PutDBEventInfo()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_PutDBEventInfo(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWEventInfoStruct</i> *pEventInfo</NOBR>, <NOBR><i>char</i> *author</NOBR>, <NOBR><i>char</i> *szEventID</NOBR>, <NOBR><i>int</i> NewEvent</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_PutDBEventInfo.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function inserts the Event data from pEventInfo into the DB and associates it with either a new event or with an existing event, depending on the value of the NewEvent flag.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>When NewEvent is set to TRUE, the function creates an event, otherwise the function associates the event information with the DB Event identified by pEventInfo->Event.idEvent.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>Default_Return_Value</td>
+  <td>Description of the default return value</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>*pEventInfo</td>
+  <td>EWEventInfoStruct</td>
+  <td>Pointer to an event info struct, that the caller has allocated and filled with information for the event that they wish to insert into the DB.</td>
+ </tr>
+ <tr>
+  <td>*author</td>
+  <td>char</td>
+  <td>The author of the Event.  This should be the caller, or the login of a human operating the calling program.</td>
+ </tr>
+ <tr>
+  <td>*szEventID</td>
+  <td>char</td>
+  <td>The EventID given to the event by the author.</td>
+ </tr>
+ <tr>
+  <td>NewEvent</td>
+  <td>int</td>
+  <td>Flag indicating whether the function should create a new Event or associate the information with an existing one.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_RetrieveIdChanExternal></a>
+<font size=+2>ewdb_apps_RetrieveIdChanExternal()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_RetrieveIdChanExternal(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDB_External_StationStruct *</i> pStation</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_RetrieveIdChanExternal.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates or updates a component and associated channel in the DB using an external station table and a a cheater table to go from external station to chan.  Upon successful completion it writes the DB ID of the new/update channel to pStation->idChan.  This function ignores the pStation->idComp parameter. This function provides a convenient way to retrieve an idChan from an Earthworm SCN.  There is nothing official or exclusive about it.  It is merely a convenience function that calls two others.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pStation</td>
+  <td>EWDB_External_StationStruct *</td>
+  <td>Pointer to an EWDB_External_StationStruct filled by the caller.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_Set_GetDBEventInfo_Debug></a>
+<font size=+2>ewdb_apps_Set_GetDBEventInfo_Debug()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_Set_GetDBEventInfo_Debug(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>int</i> bDebug</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_GetDBEventInfo.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Turns debugging info on and off for <a href=../../.././EWDB_APPS_LIB/DB_LIB/C/function_comments.html#ewdb_apps_GetDBEventInfoII>ewdb_apps_GetDBEventInfoII</a>() and <a href=../../.././EWDB_APPS_LIB/DB_LIB/C/function_comments.html#ewdb_apps_GetDBEventInfoII>ewdb_apps_GetDBEventInfoII</a>().</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td> Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>bDebug</td>
+  <td>int</td>
+  <td>Flag indicating the level of debugging information that the <a href=../../.././EWDB_APPS_LIB/DB_LIB/C/function_comments.html#ewdb_apps_GetDBEventInfoII>ewdb_apps_GetDBEventInfoII</a>() function should provide.  Currently only TRUE and FALSE are supported.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_putaway_CloseSnippetEvent></a>
+<font size=+2>ewdb_apps_putaway_CloseSnippetEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_putaway_CloseSnippetEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace>void); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_putaway.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function is a do nothing placeholder routine that exists so the API waveform insertion routines(see note under EWDB_ewdb_apps_putaway_StartSnippetEvent) can resemble the Earthworm XXX_trace_save putaway routines.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_putaway_NextSnippetForAnEvent></a>
+<font size=+2>ewdb_apps_putaway_NextSnippetForAnEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_putaway_NextSnippetForAnEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid</i> idEvent</NOBR>, <NOBR><i>EWDB_EW_SnippetStruct *</i> pSnippet</NOBR>, <NOBR><i>EWDBid *</i> OUT_pidWaveform</NOBR>, <NOBR><i>EWDBid *</i> INOUT_pidChan</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_putaway.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function inserts a waveform snippet along with descriptor information, into the DB.  It associates the snippet with the Event identified by idEvent.  It returns the DB identifier of the new Waveform along with the DB identifier of the Waveform's associated channel.</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>idEvent</td>
+  <td>EWDBid</td>
+  <td>The database ID of an existing Event with which the caller wishes to associate a new waveform snippet.</td>
+ </tr>
+ <tr>
+  <td>pSnippet</td>
+  <td>EWDB_EW_SnippetStruct *</td>
+  <td>A pointer to waveform snippet structure, that includes parametric data describing a waveform snippet along with the actual waveform snippet.</td>
+ </tr>
+ <tr>
+  <td>OUT_pidWaveform</td>
+  <td>EWDBid *</td>
+  <td>A pointer to a EWDBid where the function will write The DB identifier of the waveform snippet it created.</td>
+ </tr>
+ <tr>
+  <td>INOUT_pidChan</td>
+  <td>EWDBid *</td>
+  <td>A pointer to a EWDBid where the function will write The DB channel identifier of the channel of the waveform snippet it created. If you already know the idChan for the channel of the snippet, you can set (*INOUT_pidChan) to the proper idchan, otherwise WARNING!!!! (*INOUT_pidChan) should be set to 0, or the function will attempt to treat it as a valid idchan.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+<hr>
+<a name=ewdb_apps_putaway_StartSnippetEvent></a>
+<font size=+2>ewdb_apps_putaway_StartSnippetEvent()</font><br>
+<br>
+<table>
+ <tr>
+ <td valign=top><b>Prototype:</b></td>
+  <td><table><tr><td valign=top><NOBR><font size=-1 face=monospace>int ewdb_apps_putaway_StartSnippetEvent(</NOBR></font></td>
+     <td><font size=-1 face=monospace><NOBR><i>EWDBid *</i> pidEvent</NOBR>, <NOBR><i>char *</i> sSourceEventID</NOBR>, <NOBR><i>char *</i> sAuthor</NOBR>, <NOBR><i>int</i> Debug</NOBR>); </font></td></tr></table></td>
+ </tr>
+ <tr>
+ <td valign=top><b>Source File:</b></td>
+  <td>oracle/apps/src/libsrc/ewdb_apps_putaway.c</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Description:</b></td>
+  <td>Function creates a new event in the DB, and returns the idEvent DB identifier for the new Event.</td>
+ </tr>
+ <tr>
+ <td valign=top><b>Note:</b></td>
+  <td>EWDB_ewdb_apps_putaway_StartSnippetEvent(), EWDB_ewdb_apps_putaway_NextSnippetForAnEvent() and EWDB_ewdb_apps_putaway_CloseSnippetEvent() are modeled after the Earthworm trace disposal routines for use with XXX_trace_save Earthworm programs like ora_trace_save, trig2disk, and waveman2disk.  The logic behind the routines, is to call a StartEvent() function to open the processing of an event.  Next, NextSnippetForAnEvent() is called repeatedly for each of the snippets associated with the event. Finally CloseEvent() is called to end processing for an Event. Although the 3 aforementioned API functions support this processing model, they are not limited to it.  The caller can thus call EWDB_ewdb_apps_putaway_NextSnippetForAnEvent() to add a snippet to a previous event.  The caller does not have to call EWDB_ewdb_apps_putaway_StartSnippetEvent() before calling EWDB_ewdb_apps_putaway_NextSnippetForAnEvent().  As long as the caller provides a valid existing idEvent to EWDB_ewdb_apps_putaway_NextSnippetForAnEvent()</td>
+ </tr>
+ <tr>
+  <td colspan=2><br><b>RETURN CODE INFO</b></td></tr>
+ <tr>
+ <td valign=top><b>Return Type:</b></td>
+  <td>int</td>
+ </tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Return Value</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_FAILURE</td>
+  <td>Fatal error.  See logfile for details.</td>
+ </tr>
+ <tr>
+  <td>EWDB_RETURN_SUCCESS</td>
+  <td>Success.</td>
+ </tr>
+  </table></td></tr>
+ <tr>
+  <td colspan=2><br><b>PARAMETER INFO</b></td></tr>
+ <tr><td colspan=2><table border=1 cellpadding=5>
+ <tr>
+  <td><b>Parameter</b></td>
+  <td><b>Type</b></td>
+  <td><b>Description</b></td>
+ </tr>
+ <tr>
+  <td>pidEvent</td>
+  <td>EWDBid *</td>
+  <td>A pointer to an EWDBid where the function will write The DB identifier of the Event it created.</td>
+ </tr>
+ <tr>
+  <td>sSourceEventID</td>
+  <td>char *</td>
+  <td>The identifier given to the Event by the author, in string format.  This is an identifier external to the DB, not to be confused with idEvent which is the identifier given by the DB.</td>
+ </tr>
+ <tr>
+  <td>sAuthor</td>
+  <td>char *</td>
+  <td>The name of the author(source) of the new Event.</td>
+ </tr>
+ <tr>
+  <td>Debug</td>
+  <td>int</td>
+  <td>Flag indicating whether or not debug messages should be written to the log file. Set Debug to TRUE for debug log messages.</td>
+ </tr>
+  </table></td></tr>
+ <tr><td><br></td></tr>
+ <tr>
+ <td><b>Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/library_comments.html#EWDB_APPS_LIB>EWDB_APPS_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Sub Group:</b></td>
+  <td><a href=../../.././EWDB_APPS_LIB/DB_LIB/library_comments.html#DB_LIB>DB_LIB</a></td>
+ </tr>
+ <tr>
+ <td><b>Language:</b></td>
+  <td>C</td>
+ </tr>
+ <tr>
+ <td><b>Location:</b></td>
+  <td>./src/oracle/apps/src/include/ewdb_apps_utils.h</td>
+ </tr>
+</table>
+
+<br><br>
+
+

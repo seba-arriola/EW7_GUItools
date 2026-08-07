@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>User Guide: Earthworm Windows Startstop Service</TITLE>
+</HEAD>
+<BODY  bgcolor="#ffffff">
+<CENTER>
+  <H1>Earthworm Windows Service</H1>
+  <I>(last revised 26 May, 2006)</I> 
+</CENTER>
+<P> Readme for startstop_service<br>
+  ----------------------------
+<p>Service functionality added by:<br>
+  Mark Morrison<br>
+  USGS - Golden, CO</p>
+<p>(Some additional edits or comments in these docs by Stefan Lisowski)</p>
+<p>Setup of startstop_service (Follow these instructions carefully.)<br>
+  --------------------------</p>
+<p>startstop_service is identical to the old startstop_nt, except that it runs 
+  as a Windows service. This means that the parameters are all the same - read 
+  from startstop_nt.d - but that startstop isn't just executed from a command 
+  window or via the scheduler. Note that this version is taken from startstop_nt, 
+  so I haven't compiled or tested any of this under Solaris or other systems. 
+  I believe it's generally felt, however, that these modifications don't apply 
+  to Solaris.</p>
+<p>To install startstop_service as a service, do the following:</p>
+<p> - Open a command window. Switch to the directory containing the startstop 
+  executable (if it's not already in the Windows path).</p>
+<p> - Type: startstop_service -install<br>
+  This will install the service. You should get a message saying that installation 
+  was successful.</p>
+<p> - Open the Services Control Panel. (It's under Control Panel-&gt;Administrative 
+  Tools-&gt;Services.) You should see something listed as &quot;Earthworm start-stop&quot;. 
+  Verify that this service is set to run in Automatic mode (meaning it automatically 
+  starts after a reboot, without waiting for user intervention.)</p>
+<p> - By default, startstop is set to run as the &quot;Local Service&quot; account. 
+  We need to change this to run as the Administrator, or else any Earthworm rings 
+  won't be accessible to other users, and typing &quot;status&quot; won't work. 
+  To change the user the service runs under, Select the Properties of the startstop 
+  service (double-clicking or selecting Properties from the toolbar). Select the 
+  Log On tab, select This account, and select Browse. For Win2000 machines, select 
+  the Administrator account from the list, then click OK. Type in the password 
+  twice, and click OK again. For WinXP machines, select Advanced, then click Find 
+  Now. The listbox at the bottom should show all the users locally set up on that 
+  computer. Select the Administrator, then click OK twice. Now type in the Administrator 
+  password twice, then click OK again.</p>
+<p>NOTE: This whole rigamarole means that whenever the Administrator password 
+  is changed on a machine running startstop, the password must be changed again 
+  from the Services control panel.</p>
+<p> - There's no way I've been able to find that allows environment variables 
+  to be loaded via ew_nt.cmd (or a similar file) before startstop runs. So, any 
+  environment variables required for Earthworm functionality have to be loaded 
+  systemwide before starting the startstop service. To set environment variables, 
+  select the System control panel, select the Advanced tab, and select Environment 
+  Variables. Under the &quot;System variables&quot; window (<b>NOT the &quot;user 
+  variables for XXX User&quot; window</b>), make sure that any environment variables 
+  you'll need are defined here. A typical subset may include:<br>
+  - EW_HOME<br>
+  - EW_INSTALLATION<br>
+  - EW_LOG<br>
+  - EW_PARAMS<br>
+  - SYS_NAME<br>
+  - TZ<br>
+  In addition, make sure \earthworm\bin directory (or whichever directory contains 
+  your earthworm binaries) is included somewhere in the &quot;Path&quot; variable. 
+  Once these are set, click OK, and reboot the machine.</p>
+<p>(Note that setting the Timezone Here to UTC may affect how other non-earthworm 
+  applications on your machine keep track of and display time.)</p>
+<p> - If you didn't have to change any environment variables and reboot, you can 
+  now start the startstop service by clicking Start from the Services Control 
+  Panel (the triangle &quot;Play&quot; button). If you reboot, the service will 
+  start automatically.</p>
+<p>Notes on running startstop_service<br>
+  ----------------------------------</p>
+<p>Apart from running as a Windows service, startstop_service behaves just as 
+  startstop_nt. One interesting note is that if you select startstop_service in 
+  the Services control panel and click Stop or Restart, then startstop will attempt 
+  to shut down all applications attached to its ring via an Earthworm TERMINATE 
+  message.</p>
+<p>If you want to look at the Status of Earthworm, or if you want to Restart an 
+  Earthworm module or Reconfigure Earthworm's modules and rings, and you aren't 
+  logged in as Administrator, you can either use <a href="../ovr/startstopconsole_ovr.html">StartstopConsole</a>, 
+  or you can do the following if you know the Administrator password: (Instructions 
+  for Windows XP, but may work on other versions of Windows):<br>
+  - Go to the Windows Start menu, and choose &quot;Run&quot;<br>
+  - Type the following:</p>
+<blockquote> 
+  <p>runas /user:YOUR_MACHINE_NAME_HERE\administrator cmd </p>
+</blockquote>
+<p>- This will open up a command window which should be able to connect to the 
+  running Earthworm, and thus allow you to type &quot;restart&quot;, &quot;reconfigure&quot;, 
+  &quot;status&quot;, &quot;pidpau&quot; or &quot;pau&quot; here.</p>
+<p>Removing startstop_service<br>
+  ----------------------------------</p>
+<p>If you ever need to remove startstop_service from your machine, first stop 
+  the service (as above), then open a command window and type: startstop_service 
+  -uninstall<br>
+  You should also perform this step if you ever need to move the startstop binary 
+  to another directory on your hard drive; otherwise, Windows will not know where 
+  to find the executable.<br>
+</p>
+<HR>
+<address>Questions? Issues? <a
+ href="http://lyris.nmt.edu/read/all_forums/subscribe?name=earthw"
+ target="_blank">Subscribe to the Earthworm List (earthw). </a></address>
+</BODY>
+</HTML>
+
+
+
