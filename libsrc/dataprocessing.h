@@ -18,4 +18,9 @@ void FillInternalGaps(STATION *pSta);
 /* Remueve el offset DC (línea base) de la traza para centrarla en cero */
 void DemeanTrace(STATION *pSta);
 
+/* Convierte a INT_MAX los dropouts (runs de ceros exactos >= ~0.5 s) para que
+ * los huecos grabados en disco se dibujen como espacio vacío y no como línea
+ * plana en cero. */
+void MarkZeroDropouts(STATION *pSta);
+
 #endif /* DATAPROCESSING_H */

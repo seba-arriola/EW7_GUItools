@@ -5,7 +5,10 @@
 #include <stdint.h>
 #include <time.h>
 #include <limits.h>
-#include <locale.h> 
+#include <locale.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <swap.h>
 
 #ifndef M_PI
@@ -22,7 +25,8 @@
 #include "earlybirdlib.h"
 #include "dataprocessing.h" /* Librería externa de DSP */
 
-#define REFRESH_MS 50            
+#define REFRESH_MS 150           /* A1: 150ms ~ 6.7fps (antes 50ms = 20fps) */
+#define ENV_PROCESS_MS 500       /* A2: cadencia del procesado/envelope (2Hz) */
 #define PANEL_WIDTH 90
 #define BOTTOM_AXIS_H 30 
 #define MAX_TRACE_BYTES 4096
@@ -32,8 +36,12 @@
 #define MAX_SAMP_RATE 100               
 #define MAX_PICKS_PER_STA 50           
 
-#define MWP_SECONDS 60.0 
 #define MAX_STR 256      
+
+#define MIN_ZOOM 0.05
+#define MAX_ZOOM 100.0
+#define MAX_REALTIME_SKEW 86400.0
+#define DATA_STALE_SECS 10.0
 
 #define CIRC_IDX(abs_val, size) (int)(((abs_val) % (size) + (size)) % (size))
 
@@ -74,10 +82,35 @@ double    g_zoom_factor = 1.0;
 unsigned char TypePickTWC = 0;
 unsigned char MyModId = 0;
 unsigned char MyInstId = 0;
+unsigned char TypeHeartBeat = 0;
+unsigned char TypeError = 0;
+pid_t         MyPid;
+time_t        timeLastBeat = 0;
+long          g_lPickIndexCounter = 10000;
+double        g_last_data_realtime = 0.0;
+gboolean      g_data_stale = FALSE;
+static int    g_warned_datatype = 0;
+double        g_pick_replace_secs = 15.0;
+
+/* A1/A2/A3: estado del cache de envelope. El envelope se recalcula a lo
+   sumo cada ENV_PROCESS_MS o cuando algo lo fuerza (filtro, ventana, hold,
+   ancho); el draw solo lo lee y lo escala (zoom no invalida). */
+static int64_t g_last_env_process_ms = 0;
+static double  g_last_env_t_right = 0.0;
+static int     g_last_env_width = 0;
+static gboolean g_last_env_ok = FALSE;
+static gboolean g_bForceEnv = FALSE;
+static gboolean g_envelope_updated = FALSE;
+
+/* A2/A3: prototipos (se definen antes de on_draw_waves) */
+static void compute_station_envelope(int i, int width);
+static void update_wave_envelopes(void);
 
 typedef struct {
-    double dTime;       
-    char szPhase[8];    
+    double dTime;
+    char szPhase[8];
+    long lPickIndex;
+    int iUseMe;
 } PICK;
 
 typedef struct {
@@ -88,13 +121,39 @@ typedef struct {
     double dSampRate; 
     int32_t *plRawCircBuff;
     long lRawCircSize;
-    double dScreenScale;
     
     int64_t lLastAbsIdx; 
     double dLastPacketSysTime;
     
     PICK picks[MAX_PICKS_PER_STA];
     int iNumPicks;
+    long lPickRingNext;
+    
+    /* Cache de la traza procesada (extract+interp+DC+filtro) para no
+       recalcular todo cada frame. Se invalida si cambia la ventana, el
+       filtro o llegan datos dentro de la ventana cacheada. */
+    long *plProcBuf;
+    long lProcCap;
+    long lProcAbsStart;
+    long lProcAbsEnd;
+    int iProcValid;
+    int iProcFoundFirst;
+    int iProcFilterType;
+    double dProcF1;
+    double dProcF2;
+    int iProcOrder;
+    
+    /* A3: envelope decimado por columna de pixel, en unidades crudas (sin
+       auto_scale/zoom). Se calcula en la pasada de procesado (A2) y el draw
+       solo lo escala; asi el zoom no lo invalida. */
+    double  *dEnvMin;
+    double  *dEnvMax;
+    int     *iEnvHas;
+    int      iEnvCap;
+    int      iEnvWidth;
+    gboolean bEnvValid;
+    double   dEnvMaxAbs;
+    int      iEnvFoundFirst;
     
     int pick_status;    
     PPICK pick;         
@@ -116,6 +175,41 @@ int iTimeWindowMinutes = 6;
 /* --------------------------------------------------------------------
  * FUNCIONES BASE (ReadConfig, UI, etc)
  * -------------------------------------------------------------------- */
+/* Convierte una cadena "#RRGGBB" o "RRGGBB" a doubles 0..1. Devuelve 0 si
+   ok, -1 si el formato no es valido. */
+static int ParseHexColor(const char *s, double rgb[3]) {
+    unsigned int r, g, b;
+    if (!s || s[0] == '\0') return -1;
+    while (*s == '#') s++;
+    if (sscanf(s, "%2x%2x%2x", &r, &g, &b) != 3) return -1;
+    rgb[0] = (double)r / 255.0;
+    rgb[1] = (double)g / 255.0;
+    rgb[2] = (double)b / 255.0;
+    return 0;
+}
+
+/* Formatea un color double[3] (0..1) a cadena "RRGGBB" (sin '#', para que
+   el valor se pueda pegar tal cual en el archivo .d). */
+static void ColorToHex(const double rgb[3], char out[8]) {
+    snprintf(out, 8, "%02X%02X%02X",
+             (int)(rgb[0] * 255.0 + 0.5), (int)(rgb[1] * 255.0 + 0.5), (int)(rgb[2] * 255.0 + 0.5));
+}
+
+/* Escribe al log las 4 variables de color en formato config (.d) para
+   poder rescatar los valores y reutilizarlos. */
+static void LogColorConfig(void) {
+    char c_wave[8], c_bg[8], c_font[8], c_sep[8];
+    ColorToHex(g_color_wave, c_wave);
+    ColorToHex(g_color_bg, c_bg);
+    ColorToHex(g_color_font, c_font);
+    ColorToHex(g_color_sep, c_sep);
+    logit("et", "new_develo: Color config (copiar a .d):\n");
+    logit("et", "  waveformsColor   %s\n", c_wave);
+    logit("et", "  backgroundColor  %s\n", c_bg);
+    logit("et", "  fontColor        %s\n", c_font);
+    logit("et", "  separatorColor   %s\n", c_sep);
+}
+
 int ReadConfig(char *configfile) {
     int ncommand = 8, nmiss = 0, i;
     char init[10] = {0};
@@ -138,6 +232,13 @@ int ReadConfig(char *configfile) {
         else if (k_its("StaFile")) { str = k_str(); if (str) strcpy(StaFile, str); init[5] = 1; }
         else if (k_its("StaDataFile")) { str = k_str(); if (str) strcpy(StaDataFile, str); init[6] = 1; }
         else if (k_its("CalibsFile")) { str = k_str(); if (str) strcpy(CalibsFile, str); init[7] = 1; }
+        else if (k_its("waveformsColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_wave)) logit("et", "new_develo: waveformsColor <%s> no valido, usando default\n", str); }
+        else if (k_its("backgroundColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_bg)) logit("et", "new_develo: backgroundColor <%s> no valido, usando default\n", str); }
+        else if (k_its("fontColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_font)) logit("et", "new_develo: fontColor <%s> no valido, usando default\n", str); }
+        else if (k_its("separatorColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_sep)) logit("et", "new_develo: separatorColor <%s> no valido, usando default\n", str); }
+        else if (k_its("StationsPerScreen")) { str = k_str(); if (str) { int v = atoi(str); if (v >= 1 && v <= MAX_STATIONS) iVisStas = v; else logit("et", "new_develo: StationsPerScreen <%s> invalido, usando default %d\n", str, iVisStas); } }
+        else if (k_its("TimeWindow")) { str = k_str(); if (str) { int v = atoi(str); if (v >= 1 && v <= MAX_MINUTES) iTimeWindowMinutes = v; else logit("et", "new_develo: TimeWindow <%s> invalido, usando default %d\n", str, iTimeWindowMinutes); } }
+        else if (k_its("PickReplaceWindow")) { str = k_str(); if (str) { double v = atof(str); if (v >= 0.0) g_pick_replace_secs = v; else logit("et", "new_develo: PickReplaceWindow <%s> invalido, usando default %.1f\n", str, g_pick_replace_secs); } }
         else continue;
 
         if (k_err()) {
@@ -158,6 +259,10 @@ void FreeAllStations() {
     if (StaArray) {
         for (int i = 0; i < iNumStas; i++) {
             if (StaArray[i].plRawCircBuff) { free(StaArray[i].plRawCircBuff); StaArray[i].plRawCircBuff = NULL; }
+            if (StaArray[i].plProcBuf) { free(StaArray[i].plProcBuf); StaArray[i].plProcBuf = NULL; }
+            if (StaArray[i].dEnvMin) { free(StaArray[i].dEnvMin); StaArray[i].dEnvMin = NULL; }
+            if (StaArray[i].dEnvMax) { free(StaArray[i].dEnvMax); StaArray[i].dEnvMax = NULL; }
+            if (StaArray[i].iEnvHas) { free(StaArray[i].iEnvHas); StaArray[i].iEnvHas = NULL; }
         }
         free(StaArray);
         StaArray = NULL;
@@ -171,22 +276,27 @@ void FreeAllStations() {
 
 void on_btn_hold_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
     g_is_hold = gtk_toggle_button_get_active(togglebutton);
+    g_bForceEnv = TRUE; /* El envelope se recalcula para la ventana (in)activa */
     if (g_is_hold) {
         if (g_smooth_time > 0.0) g_t_hold_time = g_smooth_time;
         else { time_t t; time(&t); g_t_hold_time = (double)t; }
     } else {
         g_zoom_factor = 1.0;
     }
+    if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
+    if (drawing_axis) gtk_widget_queue_draw(drawing_axis);
 }
 
 static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     if (!g_is_hold) return FALSE; 
     if (event->keyval == GDK_KEY_Up) {
         g_zoom_factor *= 1.5; 
+        if (g_zoom_factor > MAX_ZOOM) g_zoom_factor = MAX_ZOOM;
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
         return TRUE;
     } else if (event->keyval == GDK_KEY_Down) {
         g_zoom_factor /= 1.5; 
+        if (g_zoom_factor < MIN_ZOOM) g_zoom_factor = MIN_ZOOM;
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
         return TRUE;
     }
@@ -214,10 +324,25 @@ void on_colour_select(GtkWidget *widget, gpointer data) {
         else if (type == 2) { g_color_bg[0] = new_color.red; g_color_bg[1] = new_color.green; g_color_bg[2] = new_color.blue; }
         else if (type == 3) { g_color_font[0] = new_color.red; g_color_font[1] = new_color.green; g_color_font[2] = new_color.blue; }
         else if (type == 4) { g_color_sep[0] = new_color.red; g_color_sep[1] = new_color.green; g_color_sep[2] = new_color.blue; }
-        
+
+        LogColorConfig();
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
     }
     gtk_widget_destroy(dialog);
+}
+
+/* Recalcula el alto de pista segun el alto visible y las estaciones por
+   pantalla, y redibuja el canvas. */
+void RecalcTrackHeight() {
+    GtkAllocation alloc;
+    if (!g_scrolled_window) return;
+    gtk_widget_get_allocation(g_scrolled_window, &alloc);
+    if (alloc.height > 0 && iVisStas > 0) {
+        dTrackHeight = (double)alloc.height / iVisStas;
+        if (dTrackHeight < 2.0) dTrackHeight = 2.0;
+        gtk_widget_set_size_request(g_drawing_waves, -1, iNumStas * dTrackHeight);
+    }
+    if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
 }
 
 void on_stas_per_screen_activate(GtkWidget *widget, gpointer data) {
@@ -239,14 +364,7 @@ void on_stas_per_screen_activate(GtkWidget *widget, gpointer data) {
 
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
         iVisStas = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spin));
-        GtkAllocation alloc;
-        gtk_widget_get_allocation(g_scrolled_window, &alloc);
-        if (alloc.height > 0) {
-            dTrackHeight = (double)alloc.height / iVisStas;
-            if (dTrackHeight < 2.0) dTrackHeight = 2.0; 
-            gtk_widget_set_size_request(g_drawing_waves, -1, iNumStas * dTrackHeight);
-            if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
-        }
+        RecalcTrackHeight();
     }
     gtk_widget_destroy(dialog);
 }
@@ -269,6 +387,7 @@ void on_time_window_activate(GtkWidget *widget, gpointer data) {
 
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
         iTimeWindowMinutes = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spin));
+        g_bForceEnv = TRUE; /* Ventana nueva: recalcular envelope */
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
         if (drawing_axis) gtk_widget_queue_draw(drawing_axis);
     }
@@ -320,10 +439,28 @@ void LoadStationsFromFile() {
             StaArray[i].plRawCircBuff[k] = INT_MAX;
         }
         
-        StaArray[i].dScreenScale = 0.05; 
-        StaArray[i].iNumPicks = 0; 
+        StaArray[i].iNumPicks = 0;
+        StaArray[i].lPickRingNext = 0;
         StaArray[i].lLastAbsIdx = 0; 
         StaArray[i].dLastPacketSysTime = 0.0; 
+        StaArray[i].plProcBuf = NULL;
+        StaArray[i].lProcCap = 0;
+        StaArray[i].lProcAbsStart = 0;
+        StaArray[i].lProcAbsEnd = 0;
+        StaArray[i].iProcValid = 0;
+        StaArray[i].iProcFoundFirst = 0;
+        StaArray[i].iProcFilterType = 0;
+        StaArray[i].dProcF1 = 0.0;
+        StaArray[i].dProcF2 = 0.0;
+        StaArray[i].iProcOrder = 0;
+        StaArray[i].dEnvMin = NULL;
+        StaArray[i].dEnvMax = NULL;
+        StaArray[i].iEnvHas = NULL;
+        StaArray[i].iEnvCap = 0;
+        StaArray[i].iEnvWidth = 0;
+        StaArray[i].bEnvValid = FALSE;
+        StaArray[i].dEnvMaxAbs = 1.0;
+        StaArray[i].iEnvFoundFirst = 0;
         StaArray[i].pick_status = 0;
         InitP(&StaArray[i].pick);
     }
@@ -357,6 +494,8 @@ void on_clean_view_activate(GtkWidget *widget, gpointer data) {
                 if (i != active_count) {
                     StaArray[active_count] = StaArray[i]; 
                     AtwcStaArray[active_count] = AtwcStaArray[i]; 
+                    StaArray[i].plRawCircBuff = NULL;
+                    StaArray[i].plProcBuf = NULL;
                 }
                 active_count++;
             } else {
@@ -364,18 +503,19 @@ void on_clean_view_activate(GtkWidget *widget, gpointer data) {
                     free(StaArray[i].plRawCircBuff);
                     StaArray[i].plRawCircBuff = NULL;
                 }
+                if (StaArray[i].plProcBuf) {
+                    free(StaArray[i].plProcBuf);
+                    StaArray[i].plProcBuf = NULL;
+                }
+                if (StaArray[i].dEnvMin) { free(StaArray[i].dEnvMin); StaArray[i].dEnvMin = NULL; }
+                if (StaArray[i].dEnvMax) { free(StaArray[i].dEnvMax); StaArray[i].dEnvMax = NULL; }
+                if (StaArray[i].iEnvHas) { free(StaArray[i].iEnvHas); StaArray[i].iEnvHas = NULL; }
+                StaArray[i].iEnvCap = 0;
+                StaArray[i].bEnvValid = FALSE;
             }
         }
         iNumStas = active_count; 
-
-        GtkAllocation alloc;
-        gtk_widget_get_allocation(g_scrolled_window, &alloc);
-        if (alloc.height > 0 && iVisStas > 0) {
-            dTrackHeight = (double)alloc.height / iVisStas;
-            if (dTrackHeight < 2.0) dTrackHeight = 2.0; 
-            gtk_widget_set_size_request(g_drawing_waves, -1, iNumStas * dTrackHeight);
-        }
-        if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
+        RecalcTrackHeight();
     }
     gtk_widget_destroy(dialog);
 }
@@ -383,14 +523,7 @@ void on_clean_view_activate(GtkWidget *widget, gpointer data) {
 void on_reload_default_activate(GtkWidget *widget, gpointer data) {
     FreeAllStations();
     LoadStationsFromFile();
-    GtkAllocation alloc;
-    gtk_widget_get_allocation(g_scrolled_window, &alloc);
-    if (alloc.height > 0 && iVisStas > 0) {
-        dTrackHeight = (double)alloc.height / iVisStas;
-        if (dTrackHeight < 2.0) dTrackHeight = 2.0; 
-        gtk_widget_set_size_request(g_drawing_waves, -1, iNumStas * dTrackHeight);
-    }
-    if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
+    RecalcTrackHeight();
 }
 
 void ConnectToEarthworm() {
@@ -412,10 +545,45 @@ void ConnectToEarthworm() {
     tport_attach( &PickRegion, PickRingKey );
 
     if (GetType("TYPE_PICKTWC", &TypePickTWC) != 0) TypePickTWC = 0;
+    if (GetType("TYPE_HEARTBEAT", &TypeHeartBeat) != 0) TypeHeartBeat = 0;
+    if (GetType("TYPE_ERROR", &TypeError) != 0) TypeError = 0;
     if (GetLocalInst(&MyInstId) != 0) MyInstId = 0;
     if (GetModId(MyModName, &MyModId) != 0) {
         if (GetModId("MOD_WILDCARD", &MyModId) != 0) MyModId = 0;
     }
+}
+
+/* Envia heartbeat y mensajes de estado al anillo de entrada (convencion
+   de los modulos de esta herramienta). El manager de Earthworm (startstop)
+   puede declarar muerto a un modulo que no envie latidos. */
+void Status(unsigned char type, short ierr, char *note) {
+    MSG_LOGO logo; char msg[256]; time_t t;
+    logo.instid = MyInstId; logo.mod = MyModId; logo.type = type;
+    time(&t);
+    if (type == TypeHeartBeat) sprintf(msg, "%ld %d\n", (long) t, (int) MyPid);
+    else if (type == TypeError) {
+        sprintf(msg, "%ld %hd %s\n", (long) t, ierr, note);
+        logit("et", "new_develo: Error: %s\n", note);
+    }
+    tport_putmsg(&WaveRegion, &logo, (long) strlen(msg), msg);
+}
+
+/* Decodifica una muestra de TRACE_BUF segun su datatype.
+   Soporta i2/s2 (int16), i4/s4 (int32) y f4/t4 (float32).
+   Devuelve 0 si pudo decodificar, -1 si el tipo no es soportado. */
+static int ReadSampleAt(const char *szType, const char *pData, int idx, int32_t *out) {
+    if (strcmp(szType, "i2") == 0 || strcmp(szType, "s2") == 0) {
+        int16_t v; memcpy(&v, pData + idx * 2, 2); *out = v; return 0;
+    }
+    if (strcmp(szType, "i4") == 0 || strcmp(szType, "s4") == 0) {
+        int32_t v; memcpy(&v, pData + idx * 4, 4); *out = v; return 0;
+    }
+    if (strcmp(szType, "f4") == 0 || strcmp(szType, "t4") == 0) {
+        float v; memcpy(&v, pData + idx * 4, 4);
+        *out = (int32_t)(v + (v >= 0.0f ? 0.5f : -0.5f)); return 0;
+    }
+    *out = 0;
+    return -1;
 }
 
 static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
@@ -436,6 +604,38 @@ static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event,
     double fraction = (event->x - PANEL_WIDTH) / draw_area_width;
     double clicked_time = t_left + fraction * window_secs;
 
+    DEV_STATION *dev = &StaArray[sta_idx];
+
+    /* Reemplazo por ventana (PickReplaceWindow): si ya existe un pick de la
+       misma estacion dentro de +/-g_pick_replace_secs, se envia un KO
+       (iUseMe=0) del viejo para que el asociador lo descarte, y se marca
+       eliminado localmente. El nuevo pick entra con un lPickIndex fresco. */
+    if (g_pick_replace_secs > 0.0) {
+        for (int pi = 0; pi < MAX_PICKS_PER_STA; pi++) {
+            if (dev->picks[pi].iUseMe > 0 &&
+                fabs(dev->picks[pi].dTime - clicked_time) <= g_pick_replace_secs) {
+                PPICK old;
+                InitP(&old);
+                strcpy(old.szStation, dev->szStation);
+                strcpy(old.szChannel, dev->szChannel);
+                strcpy(old.szNetID, dev->szNetID);
+                old.dLat = AtwcStaArray[sta_idx].dLat;
+                old.dLon = AtwcStaArray[sta_idx].dLon;
+                GeoCent((LATLON *) &old);
+                GetLatLonTrig((LATLON *) &old);
+                old.dPTime = dev->picks[pi].dTime;
+                strncpy(old.szPhase, dev->picks[pi].szPhase, 7);
+                old.szPhase[7] = '\0';
+                old.lPickIndex = dev->picks[pi].lPickIndex;
+                old.iUseMe = 0;
+                ReportPick(&old, &AtwcStaArray[sta_idx], MyModId, PickRegion, TypePickTWC, MyInstId, 2);
+                logit("et", "new_develo: reemplazando pick %ld de %s (%.3f -> %.3f)\n",
+                      old.lPickIndex, dev->szStation, old.dPTime, clicked_time);
+                dev->picks[pi].iUseMe = 0;
+            }
+        }
+    }
+
     InitP(&StaArray[sta_idx].pick);
     strcpy(StaArray[sta_idx].pick.szStation, StaArray[sta_idx].szStation);
     strcpy(StaArray[sta_idx].pick.szChannel, StaArray[sta_idx].szChannel);
@@ -450,9 +650,25 @@ static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event,
     strcpy(StaArray[sta_idx].pick.szPhase, "P");
     StaArray[sta_idx].pick.cFirstMotion = '?';
     StaArray[sta_idx].pick.iUseMe = 1;
+    StaArray[sta_idx].pick.lPickIndex = g_lPickIndexCounter;
+    g_lPickIndexCounter = (g_lPickIndexCounter < 19999) ? g_lPickIndexCounter + 1 : 10000;
     StaArray[sta_idx].pick_status = 1;
 
-    ReportPick(&StaArray[sta_idx].pick, &AtwcStaArray[sta_idx], MyModId, PickRegion, TypePickTWC, MyInstId, 1);
+    /* Mostrar el pick manual de inmediato en la estacion, sin esperar a que
+       circule de vuelta por PICK_RING (D20). */
+    {
+        int slot = (int)(dev->lPickRingNext % MAX_PICKS_PER_STA);
+        dev->picks[slot].dTime = clicked_time;
+        strncpy(dev->picks[slot].szPhase, "P", 7);
+        dev->picks[slot].szPhase[7] = '\0';
+        dev->picks[slot].lPickIndex = dev->pick.lPickIndex;
+        dev->picks[slot].iUseMe = 1;
+        dev->lPickRingNext++;
+        if (dev->iNumPicks < MAX_PICKS_PER_STA) dev->iNumPicks++;
+    }
+
+    /* iType=2: "Data from develo" segun report.c (A1) */
+    ReportPick(&StaArray[sta_idx].pick, &AtwcStaArray[sta_idx], MyModId, PickRegion, TypePickTWC, MyInstId, 2);
     gtk_widget_queue_draw(widget);
     return TRUE;
 }
@@ -464,13 +680,21 @@ gboolean fetch_realtime_data(gpointer user_data) {
 
     char msg[MAX_TRACE_BYTES]; MSG_LOGO reclogo; long recsize; int res;
     TRACE_HEADER *WaveHead; 
-    long WaveLongF[MAX_TRACE_BYTES / sizeof(short)]; 
 
     int64_t current_realtime = g_get_real_time();
     if (g_last_frame_realtime == 0) g_last_frame_realtime = current_realtime;
     double dt = (current_realtime - g_last_frame_realtime) / 1000000.0;
     g_last_frame_realtime = current_realtime;
     double sys_time = (double)current_realtime / 1000000.0;
+
+    /* Heartbeat de Earthworm (A3) */
+    {
+        time_t timeNow; time(&timeNow);
+        if (timeNow - timeLastBeat >= HeartBeatInt) {
+            timeLastBeat = timeNow;
+            Status(TypeHeartBeat, 0, "");
+        }
+    }
 
     do {
         res = tport_getmsg( &WaveRegion, WaveLogo, 1, &reclogo, &recsize, msg, sizeof(msg) );
@@ -483,7 +707,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
             double rate = WaveHead->samprate;
             if (rate <= 0) rate = 20.0; 
             
-            if (fabs(sys_time - t_end) > 86400.0) {
+            if (fabs(sys_time - t_end) > MAX_REALTIME_SKEW) {
                  if (t_end > g_latest_time) g_latest_time = t_end;
             }
 
@@ -494,6 +718,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
                      
                     StaArray[i].dLastPacketSysTime = sys_time;
                     StaArray[i].dSampRate = rate; 
+                    g_last_data_realtime = sys_time;
                     
                     int64_t abs_start = (int64_t)(t_start * rate);
                     int64_t abs_end = (int64_t)(t_end * rate);
@@ -507,16 +732,23 @@ gboolean fetch_realtime_data(gpointer user_data) {
                             int idx = CIRC_IDX(clr_abs, StaArray[i].lRawCircSize);
                             StaArray[i].plRawCircBuff[idx] = INT_MAX;
                         }
+                        /* El gap modifica datos dentro de la ventana cacheada */
+                        if (StaArray[i].iProcValid && (abs_start - 1) >= StaArray[i].lProcAbsStart)
+                            StaArray[i].iProcValid = 0;
                     }
 
                     char szType[3]; strncpy(szType, WaveHead->datatype, 2); szType[2] = '\0';
-                    short *WaveShort = (short *) (msg + sizeof(TRACE_HEADER));
-                    int32_t *Wave32 = (int32_t *) (msg + sizeof(TRACE_HEADER));
+                    char *pRaw = msg + sizeof(TRACE_HEADER);
                     
                     for (int s = 0; s < WaveHead->nsamp; s++) {
                         int32_t x;
-                        if ( (strcmp(szType, "i2") == 0) || (strcmp(szType, "s2") == 0) ) x = (int32_t)WaveShort[s];
-                        else x = Wave32[s];
+                        if (ReadSampleAt(szType, pRaw, s, &x) != 0) {
+                            if (!g_warned_datatype) {
+                                g_warned_datatype = 1;
+                                logit("et", "new_develo: datatype <%s> no soportado, leyendo como int32\n", szType);
+                            }
+                            memcpy(&x, pRaw + s * sizeof(int32_t), sizeof(int32_t));
+                        }
                         
                         double t_samp = t_start + ((double)s / rate);
                         int64_t abs_idx = (int64_t)(t_samp * rate);
@@ -526,6 +758,9 @@ gboolean fetch_realtime_data(gpointer user_data) {
                     }
 
                     if (abs_end > StaArray[i].lLastAbsIdx) StaArray[i].lLastAbsIdx = abs_end;
+                    /* Si la nueva data toca la ventana procesada en cache, invalidarla */
+                    if (StaArray[i].iProcValid && abs_start <= StaArray[i].lProcAbsEnd)
+                        StaArray[i].iProcValid = 0;
                     break; 
                 }
             }
@@ -533,22 +768,30 @@ gboolean fetch_realtime_data(gpointer user_data) {
     } while ( res != GET_NONE ); 
 
     if (!g_is_hold) {
-        gboolean is_realtime = TRUE;
-        if (g_latest_time > 0.0 && fabs(sys_time - g_latest_time) > 86400.0) is_realtime = FALSE;
-
-        if (is_realtime) {
-            g_latest_time = sys_time - 2.0;
-            g_smooth_time = g_latest_time; 
+        if (g_last_data_realtime > 0.0 && (sys_time - g_last_data_realtime) > DATA_STALE_SECS) {
+            /* Feed muerto: no avanzar el reloj de pantalla hacia el vacio (D16) */
+            g_data_stale = TRUE;
         } else {
-            if (g_smooth_time == 0.0) g_smooth_time = g_latest_time;
-            else {
-                g_smooth_time += dt;
-                if (fabs(g_latest_time - g_smooth_time) > 2.0) g_smooth_time = g_latest_time;
-                else if (g_latest_time > g_smooth_time) g_smooth_time += dt * 0.1;
-                else if (g_latest_time < g_smooth_time) g_smooth_time -= dt * 0.1;
+            g_data_stale = FALSE;
+            gboolean is_realtime = TRUE;
+            if (g_latest_time > 0.0 && fabs(sys_time - g_latest_time) > MAX_REALTIME_SKEW) is_realtime = FALSE;
+
+            if (is_realtime) {
+                g_latest_time = sys_time - 2.0;
+                g_smooth_time = g_latest_time; 
+            } else {
+                if (g_smooth_time == 0.0) g_smooth_time = g_latest_time;
+                else {
+                    g_smooth_time += dt;
+                    if (fabs(g_latest_time - g_smooth_time) > 2.0) g_smooth_time = g_latest_time;
+                    else if (g_latest_time > g_smooth_time) g_smooth_time += dt * 0.1;
+                    else if (g_latest_time < g_smooth_time) g_smooth_time -= dt * 0.1;
+                }
             }
         }
     }
+
+    gboolean picks_changed = FALSE;
 
     do {
         res = tport_getmsg( &PickRegion, PickLogo, 1, &reclogo, &recsize, msg, sizeof(msg) - 1 );
@@ -558,30 +801,53 @@ gboolean fetch_realtime_data(gpointer user_data) {
             GetType("TYPE_TRACEBUF", &t1); GetType("TYPE_TRACEBUF2", &t2);
             if (reclogo.type == t1 || reclogo.type == t2) continue;
             
-            if (reclogo.type == TypePickTWC) {
-                char s[15][30];
-                int n = sscanf(msg, "%29s %29s %29s %29s %29s %29s %29s %29s %29s %29s %29s %29s %29s", 
-                               s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], s[12]);
-                if (n >= 10) {
-                    char *sta = s[3]; 
-                    double pTime = 0.0;
-                    char phase[20] = "P"; 
-
-                    for (int k = 6; k < n; k++) {
-                        if (strchr(s[k], '.') != NULL && strlen(s[k]) > 8) {
-                            pTime = atof(s[k]);
-                            if (k + 2 < n && strchr(s[k+2], '.') == NULL) strncpy(phase, s[k+2], 7);
-                            else if (k + 1 < n && strchr(s[k+1], '.') == NULL) strncpy(phase, s[k+1], 7);
-                            phase[7] = '\0';
-                            
-                            for ( int i = 0; i < iNumStas; i++ ) {
-                                if ( !strcmp(AtwcStaArray[i].szStation, sta) ) {
-                                    int pIdx = StaArray[i].iNumPicks % MAX_PICKS_PER_STA;
-                                    StaArray[i].picks[pIdx].dTime = pTime;
-                                    strncpy(StaArray[i].picks[pIdx].szPhase, phase, 7);
-                                    StaArray[i].iNumPicks++;
-                                    break;
+            if (TypePickTWC != 0 && reclogo.type == TypePickTWC) {
+                PPICK pPick;
+                memset(&pPick, 0, sizeof(pPick));
+                /* B7: parseo robusto con PPickStruct (mismo formato de report.c) */
+                if (PPickStruct(msg, &pPick, TypePickTWC) == 0) {
+                    for ( int i = 0; i < iNumStas; i++ ) {
+                        if ( !strcmp(AtwcStaArray[i].szStation, pPick.szStation) &&
+                             !strncmp(AtwcStaArray[i].szChannel, pPick.szChannel, 3) &&
+                             !strcmp(AtwcStaArray[i].szNetID, pPick.szNetID) ) {
+                            DEV_STATION *dev = &StaArray[i];
+                            if ( pPick.iUseMe <= 0 ) {
+                                /* KO: eliminar localmente el pick con ese lPickIndex */
+                                for ( int k = 0; k < MAX_PICKS_PER_STA; k++ ) {
+                                    if ( dev->picks[k].lPickIndex == pPick.lPickIndex &&
+                                         dev->picks[k].iUseMe > 0 ) {
+                                        dev->picks[k].iUseMe = 0;
+                                    }
                                 }
+                                picks_changed = TRUE;
+                            } else {
+                                /* Upsert por lPickIndex: actualizar si ya existe
+                                   (evita el doble conteo del pick manual cuando el
+                                   mensaje vuelve por el anillo), si no insertar. */
+                                int found = -1;
+                                for ( int k = 0; k < MAX_PICKS_PER_STA; k++ ) {
+                                    if ( dev->picks[k].lPickIndex == pPick.lPickIndex &&
+                                         dev->picks[k].iUseMe > 0 ) {
+                                        found = k;
+                                        break;
+                                    }
+                                }
+                                if ( found >= 0 ) {
+                                    dev->picks[found].dTime = pPick.dPTime;
+                                    memcpy(dev->picks[found].szPhase, pPick.szPhase, 7);
+                                    dev->picks[found].szPhase[7] = '\0';
+                                    dev->picks[found].iUseMe = pPick.iUseMe;
+                                } else {
+                                    int slot = (int)(dev->lPickRingNext % MAX_PICKS_PER_STA);
+                                    dev->picks[slot].dTime = pPick.dPTime;
+                                    memcpy(dev->picks[slot].szPhase, pPick.szPhase, 7);
+                                    dev->picks[slot].szPhase[7] = '\0';
+                                    dev->picks[slot].lPickIndex = pPick.lPickIndex;
+                                    dev->picks[slot].iUseMe = pPick.iUseMe;
+                                    dev->lPickRingNext++;
+                                    if (dev->iNumPicks < MAX_PICKS_PER_STA) dev->iNumPicks++;
+                                }
+                                picks_changed = TRUE;
                             }
                             break;
                         }
@@ -591,10 +857,261 @@ gboolean fetch_realtime_data(gpointer user_data) {
         }
     } while ( res != GET_NONE );
 
-    if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
-    if (drawing_axis) gtk_widget_queue_draw(drawing_axis);
+    /* A1/A2/A3: refrescar el cache de envelope a su ritmo (2Hz) y redibujar
+       solo si algo cambio (envelope nuevo, picks, o cambio forzado). */
+    g_envelope_updated = FALSE;
+    update_wave_envelopes();
+
+    if (g_envelope_updated || picks_changed) {
+        if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
+        if (drawing_axis) gtk_widget_queue_draw(drawing_axis);
+    }
 
     return G_SOURCE_CONTINUE; 
+}
+
+/* ====================================================================
+ * A2/A3: PROCESADO EN CACHE Y ENVELOPE DECIMADO POR COLUMNA
+ * --------------------------------------------------------------------
+ * El procesado (extract+interp+DC+filtro) y el scan min/max por columna
+ * se hacen SOLO en la pasada de envelope (ritmo ENV_PROCESS_MS). El draw
+ * lee el envelope crudo (sin auto_scale) y lo escala al vuelo, de modo que
+ * el zoom vertical no invalida el cache.
+ * ==================================================================== */
+static void compute_station_envelope(int i, int width) {
+    DEV_STATION *sta = &StaArray[i];
+    double rate = sta->dSampRate > 0 ? sta->dSampRate : 20.0;
+    double window_secs = iTimeWindowMinutes * 60.0;
+    double t_right = g_is_hold ? g_t_hold_time : g_smooth_time;
+    double t_left = t_right - window_secs;
+
+    /* PADDING MAGICO: 30s hacia atras para que el ringing del filtro muera */
+    double pad_secs = 30.0;
+    double extract_start = t_left - pad_secs;
+
+    int64_t abs_start = (int64_t)(extract_start * rate);
+    int64_t abs_end = (int64_t)(t_right * rate);
+    long num_samps = abs_end - abs_start;
+
+    if (num_samps <= 0 || num_samps > sta->lRawCircSize) return;
+
+    /* 1. CACHE DE LA TRACE PROCESADA: si la ventana, el filtro y los datos
+       dentro de la ventana no cambiaron, reutilizar plProcBuf. */
+    int cache_hit =
+        sta->iProcValid &&
+        sta->lProcAbsStart == abs_start &&
+        sta->lProcAbsEnd == abs_end &&
+        sta->iProcFilterType == g_filter_type &&
+        sta->iProcOrder == g_order &&
+        sta->dProcF1 == g_f1 &&
+        sta->dProcF2 == g_f2;
+
+    long *trace_buf;
+    int found_first;
+
+    if (!cache_hit) {
+        if (sta->lProcCap < num_samps) {
+            long *nb = (long *) realloc(sta->plProcBuf, num_samps * sizeof(long));
+            if (!nb) return;
+            sta->plProcBuf = nb;
+            sta->lProcCap = num_samps;
+        }
+        trace_buf = sta->plProcBuf;
+
+        /* 2. EXTRACCION A ARREGLO LINEAL */
+        for (long k = 0; k < num_samps; k++) {
+            int64_t abs_k = abs_start + k;
+            if (abs_k > sta->lLastAbsIdx || abs_k < 0) {
+                trace_buf[k] = INT_MAX;
+            } else {
+                trace_buf[k] = sta->plRawCircBuff[CIRC_IDX(abs_k, sta->lRawCircSize)];
+            }
+        }
+
+        /* 3. INTERPOLACION DE GAPS PARA EVITAR SPIKES DE FILTRADO */
+        long last_valid = 0;
+        long gap_start = -1;
+        found_first = 0;
+        for (long k = 0; k < num_samps; k++) {
+            if (trace_buf[k] != INT_MAX) { last_valid = trace_buf[k]; found_first = 1; break; }
+        }
+
+        if (found_first) {
+            for (long k = 0; k < num_samps; k++) { if (trace_buf[k] != INT_MAX) break; trace_buf[k] = last_valid; }
+            for (long k = 0; k < num_samps; k++) {
+                if (trace_buf[k] == INT_MAX) {
+                    if (gap_start == -1) gap_start = k;
+                } else {
+                    if (gap_start != -1) {
+                        long gap_len = k - gap_start;
+                        long next_valid = trace_buf[k];
+                        for (long g = gap_start; g < k; g++) {
+                            double frac = (double)(g - gap_start + 1) / (double)(gap_len + 1);
+                            trace_buf[g] = last_valid + (long)(frac * (next_valid - last_valid));
+                        }
+                        gap_start = -1;
+                    }
+                    last_valid = trace_buf[k];
+                }
+            }
+            if (gap_start != -1) { for (long g = gap_start; g < num_samps; g++) trace_buf[g] = last_valid; }
+        } else {
+            for (long k = 0; k < num_samps; k++) trace_buf[k] = 0;
+        }
+
+        /* 4. ELIMINAR LINEA BASE (DC) */
+        double sum = 0;
+        for (long k = 0; k < num_samps; k++) sum += (double)trace_buf[k];
+        long mean = (long)(sum / num_samps);
+        for (long k = 0; k < num_samps; k++) trace_buf[k] -= mean;
+
+        /* 5. APLICAR FILTROS USANDO LA LIBRERIA DSP */
+        if (g_filter_type != 0 && found_first) {
+            double nyquist = rate / 2.0;
+            double safe_f1 = g_f1, safe_f2 = g_f2;
+
+            if (safe_f1 >= nyquist) safe_f1 = nyquist * 0.95;
+            if (g_filter_type == 3) {
+                if (safe_f2 >= nyquist) safe_f2 = nyquist * 0.95;
+                if (safe_f1 >= safe_f2) safe_f1 = safe_f2 * 0.5;
+            }
+
+            if (g_filter_type == 1) aplicar_filtro_iir(trace_buf, num_samps, rate, 1, safe_f1, g_order);
+            else if (g_filter_type == 2) aplicar_filtro_iir(trace_buf, num_samps, rate, 2, safe_f1, g_order);
+            else if (g_filter_type == 3) {
+                aplicar_filtro_iir(trace_buf, num_samps, rate, 1, safe_f1, g_order);
+                aplicar_filtro_iir(trace_buf, num_samps, rate, 2, safe_f2, g_order);
+            }
+        }
+
+        sta->iProcValid = 1;
+        sta->iProcFoundFirst = found_first;
+        sta->lProcAbsStart = abs_start;
+        sta->lProcAbsEnd = abs_end;
+        sta->iProcFilterType = g_filter_type;
+        sta->iProcOrder = g_order;
+        sta->dProcF1 = g_f1;
+        sta->dProcF2 = g_f2;
+    } else {
+        trace_buf = sta->plProcBuf;
+        found_first = sta->iProcFoundFirst;
+    }
+
+    /* 6. max_abs sobre el rango dibujado (para auto_scale en el draw) */
+    long draw_start_idx = (long)(pad_secs * rate);
+    if (draw_start_idx > num_samps) draw_start_idx = 0;
+
+    long real_samps_end = (long)(sta->lLastAbsIdx - abs_start + 1);
+    if (real_samps_end > num_samps) real_samps_end = num_samps;
+    if (real_samps_end < 0) real_samps_end = 0;
+
+    double max_abs = 0.0;
+    gboolean has_data = FALSE;
+    for (long k = draw_start_idx; k < real_samps_end; k++) {
+        double abs_val = fabs((double)trace_buf[k]);
+        if (abs_val > max_abs) max_abs = abs_val;
+        has_data = TRUE;
+    }
+    if (max_abs < 1.0 || !has_data || !found_first) max_abs = 1.0;
+    sta->dEnvMaxAbs = max_abs;
+    sta->iEnvFoundFirst = found_first;
+
+    /* 7. Envelope (min/max) por columna de pixel, en unidades crudas */
+    if (sta->iEnvCap < width) {
+        int new_cap = width + 256;
+        double *nmin = (double *) realloc(sta->dEnvMin, new_cap * sizeof(double));
+        double *nmax = (double *) realloc(sta->dEnvMax, new_cap * sizeof(double));
+        int *nhas = (int *) realloc(sta->iEnvHas, new_cap * sizeof(int));
+        if (!nmin || !nmax || !nhas) {
+            if (nmin) free(nmin);
+            if (nmax) free(nmax);
+            if (nhas) free(nhas);
+            sta->bEnvValid = FALSE;
+            return;
+        }
+        sta->dEnvMin = nmin; sta->dEnvMax = nmax; sta->iEnvHas = nhas;
+        sta->iEnvCap = new_cap;
+    }
+    sta->iEnvWidth = width;
+
+    if (found_first) {
+        for (int px = 0; px < width; px++) {
+            double px_t_start = t_left + ((double)px / width) * window_secs;
+            double px_t_end = t_left + ((double)(px + 1) / width) * window_secs;
+
+            long p_local_start = (long)((px_t_start - extract_start) * rate);
+            long p_local_end = (long)((px_t_end - extract_start) * rate);
+            if (p_local_end == p_local_start) p_local_end++;
+
+            if (p_local_start < 0) p_local_start = 0;
+            if (p_local_end > num_samps) p_local_end = num_samps;
+
+            double p_min = 1e12, p_max = -1e12;
+            gboolean px_has_data = FALSE;
+
+            for (long local_k = p_local_start; local_k < p_local_end; local_k++) {
+                if (local_k >= real_samps_end) continue;
+                double val = (double)trace_buf[local_k];
+                if (val < p_min) p_min = val;
+                if (val > p_max) p_max = val;
+                px_has_data = TRUE;
+            }
+
+            if (px_has_data) {
+                sta->dEnvMin[px] = p_min;
+                sta->dEnvMax[px] = p_max;
+                sta->iEnvHas[px] = 1;
+            } else {
+                sta->iEnvHas[px] = 0;
+            }
+        }
+    }
+
+    sta->bEnvValid = TRUE;
+}
+
+static void update_wave_envelopes(void) {
+    if (iNumStas == 0 || !g_drawing_waves) return;
+
+    int width = gtk_widget_get_allocated_width(g_drawing_waves) - PANEL_WIDTH;
+    if (width <= 0) return;
+
+    double t_right = g_is_hold ? g_t_hold_time : g_smooth_time;
+    int64_t now_ms = g_get_monotonic_time() / 1000;
+    gboolean force = g_bForceEnv;
+    g_bForceEnv = FALSE;
+
+    gboolean should = FALSE;
+    if (force) {
+        should = TRUE;
+    } else if (g_is_hold) {
+        /* Ventana congelada: solo si aun no se calculo o cambio el ancho */
+        if (g_last_env_width != width || !g_last_env_ok) should = TRUE;
+    } else {
+        /* Sin movimiento ni datos: nada que refrescar */
+        if (!(fabs(t_right - g_last_env_t_right) < 0.5 && g_data_stale)) {
+            /* Cadencia adaptativa: reprocesar cuando el scroll avanza ~1px
+               (1px de datos), con tope minimo de ENV_PROCESS_MS y maximo 1.5s
+               para ventanas muy largas. Con TimeWindow=20min/934px da ~0.8Hz
+               en lugar de 2Hz, lo que reduce el reprocesado a la mitad. */
+            double window_secs = iTimeWindowMinutes * 60.0;
+            double interval_ms = (window_secs / width) * 1000.0;
+            if (interval_ms < ENV_PROCESS_MS) interval_ms = ENV_PROCESS_MS;
+            if (interval_ms > 1500.0) interval_ms = 1500.0;
+
+            if ((now_ms - g_last_env_process_ms) >= (int64_t)interval_ms || g_last_env_width != width)
+                should = TRUE;
+        }
+    }
+    if (!should) return;
+
+    g_envelope_updated = TRUE;
+    g_last_env_process_ms = now_ms;
+    g_last_env_t_right = t_right;
+    g_last_env_width = width;
+    g_last_env_ok = TRUE;
+
+    for (int i = 0; i < iNumStas; i++) compute_station_envelope(i, width);
 }
 
 /* ====================================================================
@@ -623,17 +1140,7 @@ gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     double t_right = g_is_hold ? g_t_hold_time : g_smooth_time;
     double t_left = t_right - window_secs;
 
-    /* PADDING MAGICO: Extraemos 30s hacia atras para que el ringing del filtro muera antes de entrar a pantalla */
-    double pad_secs = 30.0;
-    double extract_start = t_left - pad_secs;
-
     for (int i = 0; i < iNumStas; i++) {
-        double rate = StaArray[i].dSampRate > 0 ? StaArray[i].dSampRate : 20.0;
-        
-        int64_t abs_start = (int64_t)(extract_start * rate);
-        int64_t abs_end = (int64_t)(t_right * rate);
-        long num_samps = abs_end - abs_start;
-
         double y_top = i * dTrackHeight;
         double y_center = y_top + (dTrackHeight / 2.0);
 
@@ -646,157 +1153,52 @@ gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         cairo_set_source_rgb(cr, g_color_sep[0], g_color_sep[1], g_color_sep[2]); /* Color dinamico del separador */
         cairo_move_to(cr, PANEL_WIDTH, y_top); cairo_line_to(cr, width, y_top); cairo_stroke(cr);
 
-        if (num_samps <= 0 || num_samps >= StaArray[i].lRawCircSize) continue;
+        /* A2/A3: el dibujo usa el envelope cacheado (valores crudos). Si aun
+           no esta listo (arranque o resize antes de la pasada), se salta la
+           traza pero se siguen dibujando los picks. */
+        DEV_STATION *sta = &StaArray[i];
+        if (sta->bEnvValid && sta->iEnvCap >= (int)draw_area_width && sta->iEnvFoundFirst) {
+            double max_abs = sta->dEnvMaxAbs;
+            if (max_abs < 1.0) max_abs = 1.0;
+            double auto_scale = (dTrackHeight * 0.425) / max_abs;
+            auto_scale *= g_zoom_factor;
 
-        /* 1. EXTRAMOS EL PEDAZO A UN ARREGLO LINEAL */
-        long *trace_buf = (long*)malloc(num_samps * sizeof(long));
-        if (!trace_buf) continue;
+            cairo_save(cr);
+            cairo_rectangle(cr, PANEL_WIDTH, y_top, draw_area_width, dTrackHeight);
+            cairo_clip(cr);
+            cairo_set_source_rgb(cr, g_color_wave[0], g_color_wave[1], g_color_wave[2]);
+            /* Sin antialias + coordenadas enteras: cairo usa su fast-path de
+               boxes (un solo fill, sin teselado por subpath). El trazo queda
+               pixel-crisp, igual como se veian las barritas stroke. */
+            cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 
-        for (long k = 0; k < num_samps; k++) {
-            int64_t abs_k = abs_start + k;
-            if (abs_k > StaArray[i].lLastAbsIdx || abs_k < 0) {
-                trace_buf[k] = INT_MAX;
-            } else {
-                trace_buf[k] = StaArray[i].plRawCircBuff[CIRC_IDX(abs_k, StaArray[i].lRawCircSize)];
-            }
-        }
-
-        /* 2. INTERPOLACION DE GAPS PARA EVITAR SPIKES DE FILTRADO */
-        long last_valid = 0;
-        long gap_start = -1;
-        int found_first = 0;
-        for (long k = 0; k < num_samps; k++) {
-            if (trace_buf[k] != INT_MAX) { last_valid = trace_buf[k]; found_first = 1; break; }
-        }
-        
-        if (found_first) {
-            for (long k = 0; k < num_samps; k++) { if (trace_buf[k] != INT_MAX) break; trace_buf[k] = last_valid; }
-            for (long k = 0; k < num_samps; k++) {
-                if (trace_buf[k] == INT_MAX) {
-                    if (gap_start == -1) gap_start = k;
-                } else {
-                    if (gap_start != -1) {
-                        long gap_len = k - gap_start;
-                        long next_valid = trace_buf[k];
-                        for (long g = gap_start; g < k; g++) {
-                            double frac = (double)(g - gap_start + 1) / (double)(gap_len + 1);
-                            trace_buf[g] = last_valid + (long)(frac * (next_valid - last_valid));
-                        }
-                        gap_start = -1;
-                    }
-                    last_valid = trace_buf[k];
+            /* A4(a): una barra de 1px por columna a partir del envelope min/max
+               crudo, escalado aqui (asi el zoom no invalida el cache). */
+            int ncol = (int)draw_area_width;
+            for (int px = 0; px < ncol; px++) {
+                if (!sta->iEnvHas[px]) continue;
+                double s_max = sta->dEnvMax[px] * auto_scale;
+                double s_min = sta->dEnvMin[px] * auto_scale;
+                if (s_max - s_min < 2.0) {
+                    double avg = (s_max + s_min) / 2.0;
+                    s_max = avg + 1.0;
+                    s_min = avg - 1.0;
                 }
+                double x = PANEL_WIDTH + px;
+                cairo_rectangle(cr, x, y_center - s_max, 1.0, s_max - s_min);
             }
-            if (gap_start != -1) { for (long g = gap_start; g < num_samps; g++) trace_buf[g] = last_valid; }
-        } else {
-            for (long k = 0; k < num_samps; k++) trace_buf[k] = 0;
+            cairo_fill(cr);
+            cairo_restore(cr);
         }
-
-        /* 3. ELIMINAR LINEA BASE (DC) */
-        double sum = 0;
-        for (long k = 0; k < num_samps; k++) sum += (double)trace_buf[k];
-        long mean = (long)(sum / num_samps);
-        for (long k = 0; k < num_samps; k++) trace_buf[k] -= mean;
-
-        /* 4. APLICAR FILTROS USANDO LA LIBRERIA DSP */
-        if (g_filter_type != 0 && found_first) {
-            double nyquist = rate / 2.0;
-            double safe_f1 = g_f1, safe_f2 = g_f2;
-
-            if (safe_f1 >= nyquist) safe_f1 = nyquist * 0.95;
-            if (g_filter_type == 3) {
-                if (safe_f2 >= nyquist) safe_f2 = nyquist * 0.95;
-                if (safe_f1 >= safe_f2) safe_f1 = safe_f2 * 0.5;
-            }
-
-            if (g_filter_type == 1) aplicar_filtro_iir(trace_buf, num_samps, rate, 1, safe_f1, g_order);
-            else if (g_filter_type == 2) aplicar_filtro_iir(trace_buf, num_samps, rate, 2, safe_f1, g_order);
-            else if (g_filter_type == 3) {
-                aplicar_filtro_iir(trace_buf, num_samps, rate, 1, safe_f1, g_order);
-                aplicar_filtro_iir(trace_buf, num_samps, rate, 2, safe_f2, g_order);
-            }
-        }
-
-        /* 5. CÁLCULO DE ESCALA Y DIBUJO */
-        long draw_start_idx = (long)(pad_secs * rate);
-        if (draw_start_idx > num_samps) draw_start_idx = 0;
-
-        /* FIX: Identificamos hasta donde hay datos reales. Todo el padding que le agregamos 
-           del "futuro" para estabilizar el filtro matemático, NO LO DIBUJAMOS NI ESCALAMOS. */
-        long real_samps_end = (long)(StaArray[i].lLastAbsIdx - abs_start + 1);
-        if (real_samps_end > num_samps) real_samps_end = num_samps;
-        if (real_samps_end < 0) real_samps_end = 0;
-
-        double max_abs = 0.0;
-        gboolean has_data = FALSE;
-        
-        for (long k = draw_start_idx; k < real_samps_end; k++) {
-            double abs_val = fabs((double)trace_buf[k]);
-            if (abs_val > max_abs) max_abs = abs_val;
-            has_data = TRUE;
-        }
-
-        if (max_abs < 1.0 || !has_data || !found_first) max_abs = 1.0; 
-        
-        /* Escalado simétrico respecto a cero */
-        double auto_scale = (dTrackHeight * 0.425) / max_abs; 
-        auto_scale *= g_zoom_factor; 
-
-        cairo_save(cr);
-        cairo_rectangle(cr, PANEL_WIDTH, y_top, draw_area_width, dTrackHeight);
-        cairo_clip(cr);
-
-        cairo_set_source_rgb(cr, g_color_wave[0], g_color_wave[1], g_color_wave[2]); 
-        cairo_set_line_width(cr, 1.0); 
-
-        if (found_first) {
-            for (int px = 0; px < (int)draw_area_width; px++) {
-                double px_t_start = t_left + ((double)px / draw_area_width) * window_secs;
-                double px_t_end = t_left + ((double)(px + 1) / draw_area_width) * window_secs;
-                
-                long p_local_start = (long)((px_t_start - extract_start) * rate);
-                long p_local_end = (long)((px_t_end - extract_start) * rate);
-                if (p_local_end == p_local_start) p_local_end++;
-                
-                if (p_local_start < 0) p_local_start = 0;
-                if (p_local_end > num_samps) p_local_end = num_samps;
-
-                double p_min = 1e12, p_max = -1e12;
-                gboolean px_has_data = FALSE;
-                
-                for (long local_k = p_local_start; local_k < p_local_end; local_k++) {
-                    /* FIX: Si entramos en territorio pardeado del futuro, no extraer min/max, 
-                       cortando la línea limpiamente en vez de dejar la línea horizontal. */
-                    if (local_k >= real_samps_end) continue; 
-                    
-                    double val = trace_buf[local_k] * auto_scale;
-                    if (val < p_min) p_min = val;
-                    if (val > p_max) p_max = val;
-                    px_has_data = TRUE;
-                }
-
-                if (px_has_data) {
-                    /* FIX: Engrosamiento anti-desaparición ampliado a 2.0 px para
-                       ruido pre-sismo cuando auto_scale se comprime con eventos masivos. */
-                    if (p_max - p_min < 2.0) {
-                        double avg = (p_max + p_min) / 2.0;
-                        p_max = avg + 1.0;
-                        p_min = avg - 1.0;
-                    }
-                    
-                    double x = PANEL_WIDTH + px;
-                    cairo_move_to(cr, x, y_center - p_min); 
-                    cairo_line_to(cr, x, y_center - p_max);
-                }
-            }
-        }
-        cairo_stroke(cr); cairo_restore(cr);
-        free(trace_buf);
 
         cairo_set_source_rgb(cr, 1.0, 0.0, 0.0); cairo_set_line_width(cr, 2.0);
 
-        int max_iter = (StaArray[i].iNumPicks < MAX_PICKS_PER_STA) ? StaArray[i].iNumPicks : MAX_PICKS_PER_STA;
-        for (int p = 0; p < max_iter; p++) {
+        /* Picks: recorrer los ultimos iNumPicks del anillo circular (D19) */
+        int n_draw = (StaArray[i].iNumPicks < MAX_PICKS_PER_STA) ? StaArray[i].iNumPicks : MAX_PICKS_PER_STA;
+        int start_slot = (int)((StaArray[i].lPickRingNext - n_draw + MAX_PICKS_PER_STA) % MAX_PICKS_PER_STA);
+        for (int pi = 0; pi < n_draw; pi++) {
+            int p = (start_slot + pi) % MAX_PICKS_PER_STA;
+            if (StaArray[i].picks[p].iUseMe <= 0 || StaArray[i].picks[p].dTime <= 0.0) continue;
             double pTime = StaArray[i].picks[p].dTime;
             if (pTime >= t_left && pTime <= t_right + 15.0) {
                 double fraction = (pTime - t_left) / window_secs;
@@ -841,6 +1243,12 @@ gboolean on_draw_axis(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         cairo_move_to(cr, PANEL_WIDTH + 10, height - 10); cairo_show_text(cr, str_l);
         cairo_move_to(cr, PANEL_WIDTH + (width - PANEL_WIDTH)/2 - 30, height - 10); cairo_show_text(cr, str_c);
         cairo_move_to(cr, width - 100, height - 10); cairo_show_text(cr, str_r);
+
+        if (g_data_stale) {
+            cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+            cairo_move_to(cr, 10, 14);
+            cairo_show_text(cr, "STALE DATA");
+        }
     }
     return FALSE;
 }
@@ -899,6 +1307,7 @@ void on_filter_menu_activate(GtkWidget *widget, gpointer data) {
         g_f2 = atof(gtk_entry_get_text(GTK_ENTRY(e_f2)));
         g_order = (gtk_combo_box_get_active(GTK_COMBO_BOX(cb_order)) == 0) ? 2 : 4;
         
+        g_bForceEnv = TRUE; /* Nuevo filtro: recalcular envelope */
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
     }
     gtk_widget_destroy(dialog);
@@ -917,17 +1326,10 @@ int main(int argc, char *argv[]) {
 
     setenv("TZ", "GMT", 1); tzset(); 
     logit_init(argv[1], 0, 1024, LogFile);
+    MyPid = getpid();
 
     gtk_init(&argc, &argv);
     setlocale(LC_NUMERIC, "C");
-
-    GtkCssProvider *provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(provider,
-        "#btn_filter { background-image: none; background-color: #28a745; color: #ffffff; font-weight: bold; padding: 2px 10px; border-radius: 4px; }\n"
-        "#btn_filter:hover { background-color: #218838; }\n"
-        "#btn_reload { background-image: none; background-color: #6c757d; color: #ffffff; font-weight: bold; padding: 2px 10px; border-radius: 4px; }\n"
-        "#btn_reload:hover { background-color: #5a6268; }", -1, NULL);
-    gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     GtkWidget *window, *vbox;
     GtkWidget *menu_bar, *ctrl_panel_item, *ctrl_panel_menu;
@@ -944,6 +1346,8 @@ int main(int argc, char *argv[]) {
     char title[128]; snprintf(title, sizeof(title), "Trace view and picking");
     gtk_window_set_title(GTK_WINDOW(window), title);
     gtk_window_set_default_size(GTK_WINDOW(window), 1024, 768);
+    gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+    gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_NORMAL);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
     gtk_widget_add_events(window, GDK_KEY_PRESS_MASK);
@@ -1011,6 +1415,7 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(toolbar), btn_hold, FALSE, FALSE, 0);
 
     GtkWidget *info_label = gtk_label_new(" | (En HOLD) Clic Izq: Picar onda | Flechas Arriba/Abajo: Zoom Vertical"); gtk_box_pack_start(GTK_BOX(toolbar), info_label, FALSE, FALSE, 10);
+
     gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 
     g_scrolled_window = gtk_scrolled_window_new(NULL, NULL); gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(g_scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -1026,6 +1431,7 @@ int main(int argc, char *argv[]) {
     g_timeout_add(REFRESH_MS, fetch_realtime_data, window);
 
     gtk_widget_show_all(window);
+    RecalcTrackHeight();
     gtk_main();
 
     tport_detach( &WaveRegion ); tport_detach( &PickRegion ); FreeAllStations();

@@ -51,7 +51,6 @@ double  selected_depth = 0;
 char    selected_id[32] = "None";
 
 /* TRACKER & DEBOUNCE */
-gboolean pick_modificado[MAX_ESTA] = {FALSE};
 gboolean pending_waveform_reload = FALSE;
 
 /* --- TIMEOUT & ALERT CONTROL --- */
@@ -89,6 +88,11 @@ double g_dScreenTime = 120.0;
 int    g_margin_left = 160; 
 int    g_spacing = 100;
 
+/* Alineacion por la onda P: la marca P de la estacion mas cercana define la
+   linea de referencia vertical; todas las demas marcas P caen sobre ella. */
+#define ALIGN_LEAD 20.0   /* segundos de ventana previa al P (equivale al "earliest_pick - 20") */
+double g_align_lead = ALIGN_LEAD;
+
 typedef struct { 
     int idx; 
     double dist; 
@@ -113,6 +117,7 @@ gboolean g_block_waveform_fetch = FALSE;
 
 /* Forward declaration for GTK callback used in RepopulateTable */
 static void on_row_selected(GtkTreeSelection *selection, gpointer data);
+static void detectar_solucion_force(GtkWidget *tree);
 
 void ConnectToEarthworm() {
     long InRingKey = GetKey(InRingName); long OutRingKey = GetKey(OutRingName);
@@ -151,6 +156,7 @@ int ReadConfig(char *configfile) {
         else if (k_its("LocFilePath")) { str = k_str(); if (str) strcpy(LocFilePath, str); init[9] = 1; } 
         else if (k_its("WaveFilePath")) { str = k_str(); if (str) strcpy(WaveFilePath, str); } 
         else if (k_its("FileLength")) { iFileLength = k_int(); } 
+        else if (k_its("AlignLead")) { str = k_str(); if (str && atof(str) > 0.0) g_align_lead = atof(str); }
         else { continue; }
         
         if (k_err()) {
@@ -283,10 +289,13 @@ void ReloadWaveforms() {
     ReadDiskDataForHypo( iFileLength, safe_req_mins, WaveFilePath, ".S", 60.0, NumEstaciones, PBufG, StaArray );
     logit("t", ">> TRACER: ReadDiskDataForHypo finished.\n");
     
+    for(int i=0; i<NumEstaciones; i++) {
+        MarkZeroDropouts(&StaArray[i]);
+    }
+    
     if (canvas_global) {
         for(int i=0; i<NumEstaciones; i++) {
             FindDataEndHypoLocal(&StaArray[i]); 
-            FillInternalGaps(&StaArray[i]);     
             if (StaArray[i].lRawCircCtr > 0) { bHasData[i] = 1; }
         }
         
@@ -443,7 +452,7 @@ void cargar_estaciones_dinamicas() {
         if (StaArray[i].dSampRate <= 0.1) StaArray[i].dSampRate = 40.0;
         
         double safe_sps = (StaArray[i].dSampRate > 100.0) ? StaArray[i].dSampRate : 100.0;
-        StaArray[i].lRawCircSize = (long)(safe_sps * 20.0 * 60.0); 
+        StaArray[i].lRawCircSize = (long)(safe_sps * 30.0 * 60.0); 
         
         StaArray[i].plRawCircBuff = (long *)calloc(1, sizeof(long) * StaArray[i].lRawCircSize);
         StaArray[i].plFiltCircBuff = (long *)calloc(1, sizeof(long) * StaArray[i].lRawCircSize);
@@ -600,9 +609,38 @@ static gboolean check_history_file_loop(gpointer user_data) {
             } else {
                 RestoreSelectionByOTime(tree, prev_selected_otime);
             }
+            
+            detectar_solucion_force(tree);
         }
     }
     return TRUE; 
+}
+
+static void detectar_solucion_force(GtkWidget *tree) {
+    if (!waiting_for_ew) return;
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(tree));
+    GtkTreeIter iter;
+    gboolean found = FALSE;
+    int row_qver = -1;
+    gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
+    while (valid) {
+        int row_qid;
+        gtk_tree_model_get(model, &iter, 15, &row_qver, 16, &row_qid, -1);
+        if (row_qid == expected_qid) { found = TRUE; break; }
+        valid = gtk_tree_model_iter_next(model, &iter);
+    }
+
+    if (!found) {
+        waiting_for_ew = FALSE;
+        if (ew_timeout_id != 0) { g_source_remove(ew_timeout_id); ew_timeout_id = 0; }
+        if (btn_force) gtk_button_set_label(GTK_BUTTON(btn_force), "Force Relocation");
+        mostrar_alerta("El sismo ya no esta activo en el localizador.\nNo fue posible forzar la relocalizacion.", GTK_MESSAGE_WARNING);
+    } else if (row_qver > expected_min_qver) {
+        waiting_for_ew = FALSE;
+        if (ew_timeout_id != 0) { g_source_remove(ew_timeout_id); ew_timeout_id = 0; }
+        if (btn_force) gtk_button_set_label(GTK_BUTTON(btn_force), "Force Relocation");
+        logit("t", "Force relocation: nueva solucion recibida (qid=%d, qver %d -> %d).\n", expected_qid, expected_min_qver, row_qver);
+    }
 }
 
 static void on_row_selected(GtkTreeSelection *selection, gpointer data) {
@@ -629,7 +667,6 @@ static void on_row_selected(GtkTreeSelection *selection, gpointer data) {
 
         gtk_widget_set_sensitive(btn_repick, TRUE);
         gtk_widget_set_sensitive(btn_force, TRUE);
-        for(int i=0; i<MAX_ESTA; i++) pick_modificado[i] = FALSE;
 
         if (g_block_waveform_fetch) return;
 
@@ -650,7 +687,6 @@ static void on_btn_repick_clicked(GtkWidget *widget, gpointer data) {
         gtk_widget_queue_draw(canvas_global);
     } else {
         edit_mode = FALSE; g_zoom_factor = 1.0; 
-        for(int i=0; i<MAX_ESTA; i++) pick_modificado[i] = FALSE;
         gtk_widget_set_sensitive(tree_global, TRUE); 
         gtk_widget_show(btn_force); 
         gtk_button_set_label(GTK_BUTTON(btn_repick), "Repick mode"); gtk_widget_set_name(btn_repick, "btn_repick");
@@ -686,6 +722,25 @@ static void on_btn_force_clicked(GtkWidget *widget, gpointer data) {
     ew_timeout_id = g_timeout_add_seconds(15, on_ew_timeout, NULL);
 }
 
+/* Marca P mostrada de la estacion i (pick real si existe y se usa, si no la P teorica). */
+static double marca_p_estacion(int i, int *is_real)
+{
+   double pt = PBufG[i].dPTime;
+   if (is_real) *is_real = 1;
+   if (pt < 1.0 || PBufG[i].iUseMe <= 0) {
+      pt = PBufG[i].dExpectedPTime;
+      if (is_real) *is_real = 0;
+   }
+   return pt;
+}
+
+/* Inicio de ventana (tiempo absoluto) de la estacion i en el modo alineado:
+   la marca P de la estacion queda en la linea de referencia. */
+static double win_start_de_estacion(int i)
+{
+   return marca_p_estacion(i, NULL) - g_align_lead;
+}
+
 static gboolean on_canvas_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     if (!edit_mode) return TRUE;
     int target_idx = -1;
@@ -694,11 +749,12 @@ static gboolean on_canvas_clicked(GtkWidget *widget, GdkEventButton *event, gpoi
     }
     if (target_idx != -1) {
         gboolean pick_valido = FALSE;
+        gboolean es_borrado = FALSE;
         if (event->type == GDK_BUTTON_PRESS && event->button == 1) { 
             int draw_width = gtk_widget_get_allocated_width(widget) - g_margin_left - 10;
             if (event->x >= g_margin_left) {
                 double relative_x = (event->x - g_margin_left) / (double)draw_width;
-                double clicked_utc = g_dWindowStart + (relative_x * g_dScreenTime);
+                double clicked_utc = win_start_de_estacion(target_idx) + (relative_x * g_dScreenTime);
                 PBufG[target_idx].dPTime = clicked_utc;
                 strcpy(PBufG[target_idx].szPhase, "eP"); 
                 PBufG[target_idx].iUseMe = 2; pick_valido = TRUE;
@@ -706,7 +762,7 @@ static gboolean on_canvas_clicked(GtkWidget *widget, GdkEventButton *event, gpoi
         } else if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
             if (PBufG[target_idx].dPTime > 1.0 || PBufG[target_idx].iUseMe > 0) {
                 PBufG[target_idx].dPTime = 0.0; PBufG[target_idx].iUseMe = 0;   
-                strcpy(PBufG[target_idx].szPhase, ""); pick_valido = TRUE;
+                strcpy(PBufG[target_idx].szPhase, ""); pick_valido = TRUE; es_borrado = TRUE;
             }
         }
         if (pick_valido) {
@@ -719,9 +775,18 @@ static gboolean on_canvas_clicked(GtkWidget *widget, GdkEventButton *event, gpoi
             WritePTimeFile(num_to_write, PBufTemp, szPFile);
             for (int k=0; k<NumEstaciones; k++) {
                 if (!strcmp(PBufG[target_idx].szStation, StaArray[k].szStation) && !strcmp(PBufG[target_idx].szNetID, StaArray[k].szNetID)) {
-                    PBufG[target_idx].iHypoID = selected_qid;
-                    ReportPick(&PBufG[target_idx], &StaArray[k], MyModId, PRegion, TypePickTWC, MyInstId, 2);
-                    g_usleep(100000); break;
+                    if (es_borrado) {
+                        PPICK DelPick; memset(&DelPick, 0, sizeof(PPICK));
+                        strcpy(DelPick.szStation, PBufG[target_idx].szStation);
+                        strcpy(DelPick.szChannel, PBufG[target_idx].szChannel);
+                        strcpy(DelPick.szNetID, PBufG[target_idx].szNetID);
+                        DelPick.iHypoID = selected_qid; DelPick.iUseMe = 0;
+                        ReportPick(&DelPick, &StaArray[k], MyModId, PRegion, TypePickTWC, MyInstId, 3);
+                    } else {
+                        PBufG[target_idx].iHypoID = selected_qid;
+                        ReportPick(&PBufG[target_idx], &StaArray[k], MyModId, PRegion, TypePickTWC, MyInstId, 3);
+                    }
+                    break;
                 }
             }
         }
@@ -757,16 +822,34 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
     if (earliest_pick == 1e15) earliest_pick = selected_otime + 15.0; 
     g_dWindowStart = earliest_pick - 20.0;
 
+    /* Linea de referencia vertical: la marca P de la estacion mas cercana define
+       una linea imaginaria; cada estacion desplaza su ventana (winStart) para que
+       su marca P caiga sobre x_ref. */
+    int height = gtk_widget_get_allocated_height(widget);
+    int x_ref = g_margin_left + (int)((g_align_lead / g_dScreenTime) * draw_width);
+    cairo_set_source_rgb(cr, 0.55, 0.55, 0.75);
+    cairo_set_line_width(cr, 1.0);
+    const double dash2[] = { 4.0, 3.0 };
+    cairo_set_dash(cr, dash2, 2, 0.0);
+    cairo_move_to(cr, x_ref, 5);
+    cairo_line_to(cr, x_ref, height - 5);
+    cairo_stroke(cr);
+    cairo_set_dash(cr, NULL, 0, 0.0);
+
     for (int n = 0; n < g_NumSortedNodes; n++) {
         int i = g_SortedNodes[n].idx; 
         /* Ajuste de margen y_center para aprovechar espacio despues de quitar texto con cairo */
         int y_center = (n * g_spacing) + (g_spacing / 2) + 10;
         g_SortedNodes[n].y_top = y_center - (g_spacing / 2);
         g_SortedNodes[n].y_bottom = y_center + (g_spacing / 2);
-        double dOldestTime = StaArray[i].dEndTime - ((double)StaArray[i].lRawCircCtr / StaArray[i].dSampRate) + (1.0 / StaArray[i].dSampRate);
+        double dOldestTime = (StaArray[i].dStartTime > 0.0) ? StaArray[i].dStartTime
+                           : (StaArray[i].dEndTime - ((double)StaArray[i].lRawCircCtr / StaArray[i].dSampRate) + (1.0 / StaArray[i].dSampRate));
         double pick_t = PBufG[i].dPTime;
         int is_real = 1;
         if (pick_t < 1.0 || PBufG[i].iUseMe <= 0) { pick_t = PBufG[i].dExpectedPTime; is_real = 0; }
+
+        /* Ventana alineada: la marca P de la estacion cae en x_ref */
+        double winStart = pick_t - g_align_lead;
 
         cairo_new_path(cr); cairo_set_line_width(cr, 1.0);
         if (is_real) cairo_set_source_rgb(cr, 0.2, 0.8, 0.2); else cairo_set_source_rgb(cr, 0.8, 0.2, 0.2);
@@ -782,8 +865,8 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_move_to(cr, g_margin_left, y_center); cairo_line_to(cr, width - margin_right, y_center); cairo_stroke(cr);
 
         if (StaArray[i].dSampRate > 0.0 && StaArray[i].lRawCircCtr > 0) {
-            long start_k = (long)((g_dWindowStart - dOldestTime) * StaArray[i].dSampRate);
-            long end_k = (long)(((g_dWindowStart + g_dScreenTime) - dOldestTime) * StaArray[i].dSampRate);
+            long start_k = (long)((winStart - dOldestTime) * StaArray[i].dSampRate);
+            long end_k = (long)(((winStart + g_dScreenTime) - dOldestTime) * StaArray[i].dSampRate);
 
             if (start_k < 0) start_k = 0;
             if (end_k > StaArray[i].lRawCircSize) end_k = StaArray[i].lRawCircSize; 
@@ -804,9 +887,9 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
                 int first = 1;
                 for (long k = start_k; k < end_k; k++) {
-                    if (StaArray[i].plFiltCircBuff[k] == INT_MAX) continue;
+                    if (StaArray[i].plFiltCircBuff[k] == INT_MAX) { first = 1; continue; }
                     double t = dOldestTime + (double)k / StaArray[i].dSampRate;
-                    double px = g_margin_left + ((t - g_dWindowStart) / g_dScreenTime) * draw_width;
+                    double px = g_margin_left + ((t - winStart) / g_dScreenTime) * draw_width;
                     double y = y_center - ((double)StaArray[i].plFiltCircBuff[k] * scale);
                     if (first) { cairo_move_to(cr, px, y); first = 0; } else { cairo_line_to(cr, px, y); }
                 }
@@ -814,13 +897,30 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
             }
         }
 
-        if (pick_t > 1.0 && pick_t >= g_dWindowStart && pick_t <= (g_dWindowStart + g_dScreenTime)) {
-            int px = g_margin_left + (int)(((pick_t - g_dWindowStart) / g_dScreenTime) * draw_width);
+        /* Marca P sobre la linea de referencia (todas las estaciones alineadas) */
+        if (pick_t > 1.0 && pick_t >= winStart && pick_t <= (winStart + g_dScreenTime)) {
+            int px = x_ref;
             if (is_real) cairo_set_source_rgb(cr, 1.0, 0.0, 0.0); else cairo_set_source_rgb(cr, 1.0, 0.5, 0.0); 
             cairo_set_line_width(cr, 2);
             cairo_move_to(cr, px, y_center - (g_spacing / 2.5)); cairo_line_to(cr, px, y_center + (g_spacing / 2.5)); cairo_stroke(cr);
             cairo_set_font_size(cr, 11); cairo_move_to(cr, px + 4, y_center - (g_spacing / 3)); 
             if (is_real && strlen(PBufG[i].szPhase) > 0) { cairo_show_text(cr, PBufG[i].szPhase); } else { cairo_show_text(cr, is_real ? "P" : "P(teo)"); }
+        }
+
+        /* Marcador de la P teorica (desviacion del pick automatico): si el pick
+           real es correcto coincide con la linea de referencia; si no, se desplaza. */
+        if (is_real && PBufG[i].dExpectedPTime > 1.0) {
+            double pexp = PBufG[i].dExpectedPTime;
+            if (pexp >= winStart && pexp <= (winStart + g_dScreenTime)) {
+                int pxp = g_margin_left + (int)(((pexp - winStart) / g_dScreenTime) * draw_width);
+                cairo_set_source_rgb(cr, 1.0, 0.5, 0.0);
+                cairo_set_line_width(cr, 1.5);
+                double ty = y_center - (g_spacing / 2.0) + 6;
+                cairo_move_to(cr, pxp - 5, ty);
+                cairo_line_to(cr, pxp, ty + 6);
+                cairo_line_to(cr, pxp + 5, ty);
+                cairo_stroke(cr);
+            }
         }
     }
     return FALSE;

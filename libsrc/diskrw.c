@@ -371,7 +371,7 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
    int     iInt;                       /* # samps since start of second*/
    static  int     iMaxToRead;         /* Number of files for each station */
    static  int     iMin;               /* Index of Min of expected Ps */
-   static  int     iRead[MAX_STATIONS];
+   int     iRead[iNumStas];            /* Files read per station (VLA: evita OOB con >MAX_STATIONS) */
    time_t  iTime;                      
    
    /* PARCHE DE 64 BITS: EL BUFFER TIENE QUE SER DEL TAMANO DEL TIPO QUE SE ESCRIBIO (32BITS) */
@@ -387,6 +387,7 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
       StaArray[i].lRawCircCtr = 0;
       StaArray[i].lSampIndexF = 0;
       StaArray[i].dEndTime = 0.;
+      StaArray[i].dStartTime = 0.;
    }
    iMaxToRead = iTotalTime / iFileSize;
    
@@ -430,17 +431,17 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
     
       for ( i=0; i<dh.iNumChans; i++ )
       {
-         if ( (int) fread( &ch[i], dh.iChnHdrSize, 1, hFile ) < 1 ) 
-         {
-            fclose( hFile );
-            logit( "t", "CHNLHEADER read failed, file %s\n", pszFile );
-            return( -1 );
-         }
          if ( i == MAX_STATIONS )
          {
             fclose( hFile );
             logit( "t", "Too many stations in file %s, %ld\n", pszFile,
                    dh.iNumChans );
+            return( -1 );
+         }
+         if ( (int) fread( &ch[i], dh.iChnHdrSize, 1, hFile ) < 1 ) 
+         {
+            fclose( hFile );
+            logit( "t", "CHNLHEADER read failed, file %s\n", pszFile );
             return( -1 );
          }
       }
@@ -481,23 +482,48 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
                   StaArray[j].iSignalToNoise = ch[i].iSignalToNoise;
                   StaArray[j].dScaleFactor = ch[i].dScaleFactor;
 		  
-                  if ( ch[i].lNumSamps+StaArray[j].lRawCircCtr <=
-                       StaArray[j].lRawCircSize )
-                  {
-                     StaArray[j].dEndTime=DateToModJulianSec (ch[i].stStartTime)
-                      + (((double)ch[i].lNumSamps-1.)/ch[i].dSampRate) -
-                      3506630400.;         
-                     for ( k=0; k<ch[i].lNumSamps; k++ )
-                        /* EXPANSION SEGURA A 64 BITS */
-                        StaArray[j].plRawCircBuff[k+StaArray[j].lRawCircCtr] = (long)lTemp32[k];
-                     StaArray[j].lRawCircCtr += ch[i].lNumSamps;
-                     StaArray[j].lSampIndexF += ch[i].lNumSamps;
-                  }
-                  else
-                     logit( "", "%s-data buffer overwrite prevented %ld %ld %ld\n",
-                            StaArray[j].szStation, ch[i].lNumSamps, StaArray[j].lRawCircCtr,
-                            StaArray[j].lRawCircSize );
-                  iRead[j]++;
+/* COLOCACION POR TIEMPO ABSOLUTO: cada slot de archivo se escribe en
+		     el indice que le corresponde segun stStartTime del archivo (inicio
+		     del slot). Los slots faltantes (archivo inexistente) quedan como
+		     INT_MAX en el buffer (ya pre-rellenado por el llamador), de modo
+		     que el hueco temporal se conserva y no se colapsa la traza. */
+		  if ( StaArray[j].lRawCircCtr == 0 && StaArray[j].dStartTime <= 0.0 )
+		     StaArray[j].dStartTime =
+		        DateToModJulianSec (ch[i].stStartTime) - 3506630400.;
+		  {
+		     double slotStart = DateToModJulianSec (ch[i].stStartTime) -
+		                        3506630400.;
+		     long k0 = (long) ((slotStart - StaArray[j].dStartTime) *
+		                       ch[i].dSampRate);
+		     if ( k0 < 0 ) k0 = 0;
+		     if ( k0 < StaArray[j].lRawCircCtr )
+		     {
+		        logit( "", "%s-slot overlap, skipping slot at %.0f\n",
+		               StaArray[j].szStation, slotStart );
+		     }
+		     else
+		     {
+		        long n = ch[i].lNumSamps;
+		        if ( k0 + n > StaArray[j].lRawCircSize )
+		        {
+		           n = StaArray[j].lRawCircSize - k0;
+		           logit( "", "%s-data buffer overwrite prevented %ld %ld %ld\n",
+		                  StaArray[j].szStation, ch[i].lNumSamps,
+		                  StaArray[j].lRawCircCtr, StaArray[j].lRawCircSize );
+		        }
+		        if ( n > 0 )
+		        {
+		           for ( k=0; k<n; k++ )
+		              /* EXPANSION SEGURA A 64 BITS */
+		              StaArray[j].plRawCircBuff[k0+k] = (long)lTemp32[k];
+		           StaArray[j].lRawCircCtr = k0 + n;
+		           StaArray[j].lSampIndexF += n;
+		           StaArray[j].dEndTime = slotStart +
+		              (((double)n-1.)/ch[i].dSampRate);
+		        }
+		     }
+		  }
+		  iRead[j]++;
                }
                break;
             }

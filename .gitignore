@@ -1,7 +1,15 @@
 *.o
+src/disk_wcatwc/disk_wcatwc
+src/loc_wcatwc/loc_wcatwc
+src/pick_wcatwc/pick_wcatwc
 run_working/
 for_compile.sh
 new_develo/new_develo
+new_develo/develo.d
+new_develo/develo.sta
+new_develo/station.dat
+new_develo/pick_wcatwc.sta
+new_develo/calibs
 new_hypo_display/new_hypo_display
 new_staevdisp/new_staevdisp
 new_summary/new_summary

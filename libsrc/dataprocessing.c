@@ -61,6 +61,12 @@ void aplicar_filtro_iir(long *data, long size, double fs, int type, double fc, i
         else { y1 = (double)data[0]; y2 = (double)data[0]; } /* Para LPF, la DC cruza intacta */
         
         for (long i = 0; i < size; i++) {
+            /* Hueco (INT_MAX): reiniciar estado del filtro para que cada segmento
+               continuo se procese por separado y el hueco quede intacto en la salida. */
+            if (data[i] == INT_MAX) {
+                x1 = x2 = 0.0; y1 = y2 = 0.0;
+                continue;
+            }
             double x0 = (double)data[i];
             double y0 = b0_f*x0 + b1_f*x1 + b2_f*x2 - a1_f*y1 - a2_f*y2;
             x2 = x1; x1 = x0;
@@ -145,18 +151,93 @@ void FillInternalGaps(STATION *pSta) {
 }
 
 /* --------------------------------------------------------------------
+ * MarkZeroDropouts: Limpia los dropouts de ceros grabados en disco (el
+ * escritor rellena con 0 los huecos).
+ *  - Runs de ceros >= 0.5 s (huecos reales) -> INT_MAX (se dibujan como
+ *    espacio vacio; el filtro reinicia su estado).
+ *  - Runs cortos de ceros (< 0.5 s, incl. ceros aislados): corresponden a
+ *    muestras individuales perdidas del feed. Si estan inmersos en datos
+ *    validos se interpolan linealmente entre los vecinos (evita el spike
+ *    que un 0 real provocaria en el render y en el filtrado IIR). Si tocan
+ *    el inicio/fin del buffer o estan pegados a un hueco (INT_MAX), se
+ *    absorben como INT_MAX para no fabricar datos en los bordes de las
+ *    ventanas vacias.
+ * -------------------------------------------------------------------- */
+void MarkZeroDropouts(STATION *pSta) {
+    long n = pSta->lRawCircCtr;
+    if (n <= 0 || pSta->dSampRate <= 0.0) return;
+
+    long thr = (long)(0.5 * pSta->dSampRate);
+    if (thr < 10) thr = 10;
+
+    /* 1a pasada: runs largos de ceros -> INT_MAX (hueco) */
+    long run = 0;
+    for (long i = 0; i < n; i++) {
+        if (pSta->plRawCircBuff[i] == 0) {
+            run++;
+        } else {
+            if (run >= thr) {
+                for (long j = i - run; j < i; j++)
+                    pSta->plRawCircBuff[j] = INT_MAX;
+            }
+            run = 0;
+        }
+    }
+    if (run >= thr) {
+        for (long j = n - run; j < n; j++)
+            pSta->plRawCircBuff[j] = INT_MAX;
+    }
+
+    /* 2a pasada: runs cortos de ceros. Interpolar si estan flanqueados por
+       datos validos; si no (borde del buffer o contiguos a INT_MAX), hueco. */
+    long i = 0;
+    while (i < n) {
+        if (pSta->plRawCircBuff[i] != 0) { i++; continue; }
+        long s = i;
+        while (i < n && pSta->plRawCircBuff[i] == 0) i++;
+        long e = i;
+        long len = e - s;
+        if (len >= thr) continue;      /* ya convertido a INT_MAX arriba */
+
+        /* Vecinos validos: los datos son bipolares, asi que se marcan con
+           banderas (un centinela -1 chocaria con muestras negativas reales). */
+        int has_left  = (s > 0 && pSta->plRawCircBuff[s-1] != INT_MAX);
+        int has_right = (e < n && pSta->plRawCircBuff[e]   != INT_MAX);
+        long left  = has_left  ? pSta->plRawCircBuff[s-1] : 0;
+        long right = has_right ? pSta->plRawCircBuff[e]   : 0;
+
+        if (!has_left || !has_right) {
+            for (long j = s; j < e; j++)
+                pSta->plRawCircBuff[j] = INT_MAX;
+        } else {
+            for (long k = s; k < e; k++) {
+                double frac = (double)(k - s + 1) / (double)(len + 1);
+                pSta->plRawCircBuff[k] = (long)((double)left + frac * (double)(right - left));
+            }
+        }
+    }
+}
+
+/* --------------------------------------------------------------------
  * DemeanTrace: Calcula y remueve el offset DC de la señal
  * -------------------------------------------------------------------- */
 void DemeanTrace(STATION *pSta) {
     if (pSta->lRawCircCtr <= 0) return;
     
     double mean = 0.0;
+    long nvalid = 0;
     for (long k = 0; k < pSta->lRawCircCtr; k++) {
+        if (pSta->plRawCircBuff[k] == INT_MAX) continue;
         mean += (double)pSta->plRawCircBuff[k];
+        nvalid++;
     }
-    mean /= (double)pSta->lRawCircCtr;
+    if (nvalid > 0) mean /= (double)nvalid;
     
     for (long k = 0; k < pSta->lRawCircCtr; k++) {
-        pSta->plFiltCircBuff[k] = (long)(pSta->plRawCircBuff[k] - mean);
+        if (pSta->plRawCircBuff[k] == INT_MAX) {
+            pSta->plFiltCircBuff[k] = INT_MAX;
+        } else {
+            pSta->plFiltCircBuff[k] = (long)(pSta->plRawCircBuff[k] - mean);
+        }
     }
 }
