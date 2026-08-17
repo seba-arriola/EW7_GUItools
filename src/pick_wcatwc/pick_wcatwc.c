@@ -1,8 +1,8 @@
 /*****************************************************************
- * pick_wcatwc.c (REMASTERIZADO Y BLINDADO 64-BITS)              *
- * *
- * Modernizado para soportar estricta validacion TRACEBUF/2 y    *
- * proteccion absoluta contra desbordamientos de memoria en Mwp. *
+* pick_wcatwc.c (REMASTERED AND 64-BIT ARMORED)                 *
+ * *                                                             *
+ * Modernized to support strict TRACEBUF/2 validation and        *
+ * absolute protection against memory overflows in Mwp.          *
  *****************************************************************/
 	   
 #include <stdio.h>
@@ -20,10 +20,10 @@
 #include <kom.h>
 #include "pick_wcatwc.h"
 
-/* Prototipo ajustado para aceptar cabecera generica */
+/* Prototype adjusted to accept a generic header */
 void Interpolate64( STATION *Sta, long *WaveLong, TRACE_HEADER *WaveHead, int GapSize );
 
-/* Variables Globales EW exclusivas de este modulo */
+/* EW global variables exclusive to this module */
 unsigned char TypeTraceBuf1 = 0;
 unsigned char TypeTraceBuf2 = 0;
 
@@ -51,14 +51,14 @@ int main( int argc, char **argv )
    time_t        then;             
    char          *WaveBuf;         
    
-   /* Forzamos el uso de TRACE_HEADER base para mapear tiempos/samprate genericamente */
+   /* Force the use of the base TRACE_HEADER to map times/samprate generically */
    TRACE_HEADER  *WaveHead;        
    short         *WaveShort;       
    
    long          WaveLongArr[MAX_TRACEBUF_SIZ]; 
    long          WaveRaw[MAX_TRACEBUF_SIZ];
    
-   /* Arreglo paralelo para mapear Location Codes sin alterar la estructura STATION antigua */
+   /* Parallel array to map Location Codes without altering the old STATION structure */
    char          AssignedLoc[MAX_STATIONS][4];
    for (i=0; i<MAX_STATIONS; i++) AssignedLoc[i][0] = '\0';
    
@@ -138,7 +138,7 @@ int main( int argc, char **argv )
       Gparm.OutRegion = Gparm.InRegion;
    }
 
-   /* BLINDAJE: Suscripcion simultanea a TRACEBUF y TRACEBUF2 para no perder ningun dato */
+   /* SHIELD: Simultaneous subscription to TRACEBUF and TRACEBUF2 so no data is lost */
    MSG_LOGO getlogo[2];
    int nlogos = 0;
    
@@ -156,7 +156,7 @@ int main( int argc, char **argv )
    }
    
    if (nlogos == 0) {
-       logit("e", "FATAL: No se encontro definicion de TYPE_TRACEBUF ni TYPE_TRACEBUF2.\n");
+       logit("e", "FATAL: Neither TYPE_TRACEBUF nor TYPE_TRACEBUF2 definition was found.\n");
        exit(-1);
    }
 
@@ -202,7 +202,7 @@ int main( int argc, char **argv )
             iNoDataAlarmIssued++;
          }
 
-      /* Escuchar de forma dual TRACEBUF y TRACEBUF2 */
+      /* Listen on both TRACEBUF and TRACEBUF2 */
       rc = tport_getmsg( &Gparm.InRegion, getlogo, nlogos, &logo, &MsgLen, WaveBuf, MAX_TRACEBUF_SIZ);
 
       if ( rc == GET_NONE ) { sleep_ew( 50 ); continue; } 
@@ -216,14 +216,14 @@ int main( int argc, char **argv )
          continue;
       }
 
-      /* Procesar los bytes dependiendo si llego como TRACEBUF2 o TRACEBUF antiguo */
+      /* Process the bytes depending on whether it arrived as TRACEBUF2 or legacy TRACEBUF */
       if (logo.type == TypeTraceBuf2) {
           if ( WaveMsg2MakeLocal( (TRACE2_HEADER *)WaveHead ) < 0 ) continue;
       } else {
           if ( WaveMsgMakeLocal( WaveHead ) < 0 ) continue;
       }
       
-      /* BLINDAJE DE PAQUETE: Previene crashes por paquetes corruptos */
+      /* PACKET SHIELD: Prevents crashes from corrupt packets */
       if ( WaveHead->nsamp <= 0 || WaveHead->nsamp > MAX_TRACEBUF_SIZ || WaveHead->samprate <= 0.0 ) {
           continue; 
       }
@@ -242,7 +242,7 @@ int main( int argc, char **argv )
             for (i=0; i<MAX_STATIONS; i++) AssignedLoc[i][0] = '\0';
          } 	
 
-      /* Recuperar Location Code asumiendo -- si es el formato antiguo */
+      /* Recover Location Code assuming -- if it is the legacy format */
       char loc_code[3] = "--";
       if (logo.type == TypeTraceBuf2) {
           strncpy(loc_code, ((TRACE2_HEADER*)WaveBuf)->loc, 2); 
@@ -256,7 +256,7 @@ int main( int argc, char **argv )
               !strcmp( WaveHead->chan, StaArray[i].szChannel ) &&
               !strcmp( WaveHead->net,  StaArray[i].szNetID ) ) 
          {
-            /* Mapeo seguro y tolerante al location code */
+            /* Safe and tolerant location code mapping */
             if ( AssignedLoc[i][0] == '\0' ) {
                 strcpy(AssignedLoc[i], loc_code);
             }
@@ -282,7 +282,7 @@ int main( int argc, char **argv )
          Sta->iFirst = 0;
          ResetFilter( Sta );
 		
-         /* Asignar MEMORIA MAXIMA ABSOLUTA en vez de memoria dinamica. */
+         /* Allocate ABSOLUTE MAXIMUM memory instead of dynamic memory. */
          RawBufl = MAXMWPARRAY * sizeof (long);
          Sta->plRawData = (long *) malloc( (size_t) RawBufl );
          if ( Sta->plRawData == NULL ) {
@@ -323,13 +323,13 @@ int main( int argc, char **argv )
 	  
       if ( Sta->dEndTime > WaveHead->starttime+0.001 ) continue;
       
-      lLastData = now; /* Confirmado! Fluido de datos actualiza el timeout */        
+      lLastData = now; /* Confirmed! Data flow refreshes the timeout */        
       iNoDataAlarmIssued = 0;
 
-      /* Parseo de 64 bits de onda */
+      /* 64-bit waveform parsing */
       strcpy( type, WaveHead->datatype );
       
-      /* El header mide 64 bytes tanto para TRACEBUF como para TRACEBUF2 */
+      /* The header is 64 bytes for both TRACEBUF and TRACEBUF2 */
       WaveShort = (short *) (WaveBuf + sizeof(TRACE_HEADER));
       int32_t *Wave32 = (int32_t *) (WaveBuf + sizeof(TRACE_HEADER));
 
@@ -345,16 +345,16 @@ int main( int argc, char **argv )
       if ( GapSizeD < 0. ) GapSize = 0;
       else GapSize  = (long) (GapSizeD + 0.5);
 
-      /* BLINDAJE: Evitar que Interpolate64 escriba fuera de WaveLongArr */
+      /* SHIELD: Prevent Interpolate64 from writing outside WaveLongArr */
       if ( (GapSize > 1) && (GapSize <= Gparm.MaxGap) ) {
          if (WaveHead->nsamp + GapSize <= MAX_TRACEBUF_SIZ) {
              Interpolate64( Sta, WaveLongArr, WaveHead, GapSize );
          } else {
-             GapSize = Gparm.MaxGap + 1; /* Forzar reinicio si el gap sobrepasa la memoria array */
+             GapSize = Gparm.MaxGap + 1; /* Force a restart if the gap exceeds the array memory */
          }
       }
 
-      /* Guardar la onda RAW DESPUES de la interpolacion */
+      /* Save the RAW waveform AFTER interpolation */
       for ( i = WaveHead->nsamp - 1; i >= 0; i-- ) {
          WaveRaw[i] = WaveLongArr[i];      
       }
@@ -409,7 +409,7 @@ int GetEwh( EWH *Ewh )
    if ( GetType( "TYPE_PICKTWC", &Ewh->TypePickTWC ) != 0 ) return -7;
    if ( GetType( "TYPE_PICK_GLOBAL", &Ewh->TypePickGlobal ) != 0 ) return -9;
    
-   /* Registrar los tipos disponibles para lectura dual en el anillo */
+   /* Register the available types for dual ring read */
    GetType( "TYPE_TRACEBUF", &TypeTraceBuf1 );
    GetType( "TYPE_TRACEBUF2", &TypeTraceBuf2 );
    

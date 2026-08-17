@@ -206,12 +206,12 @@ int getnum( double dLat, double dLon, char *pszIndexFile, char *pszLatFile )
    }
 
 /* GET ONSET OF QUADRANT INFO IN llindx.fer */
-/* FIX: usar el signo de dLon original para el cuadrante. El mapeo
-   dLng==-180 -> 180 (arriba) ocurria ANTES de esta seleccion, de modo
-   que (-lat,-180) caia en el cuadrante SE/NE en vez de SW/NW y se leia
-   el indice de otra latitud. Con el signo original, -180 se mantiene en
-   el hemisferio W (consistente con -179.999) mientras que iLon=180 hace
-   el lookup de tier por el inicio de la lista de longitudes W. */
+/* FIX: use the original dLon sign for the quadrant. The mapping
+   dLng==-180 -> 180 (wrap) happened BEFORE this selection, so
+   (-lat,-180) fell into the SE/NE quadrant instead of SW/NW and the
+   index of another latitude was read. With the original sign, -180 stays in
+   the W hemisphere (consistent with -179.999) while iLon=180 does
+   the tier lookup at the start of the W longitudes list. */
    if ( dLat < 0. )
    {    /* NOTE: Both +0.0 & -0.0 will belong to the No. Hemisphere */
       if ( dLon < 0. ) iQuadOn = 273;    /* quadrant onset */

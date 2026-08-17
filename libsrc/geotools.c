@@ -149,8 +149,8 @@ void GeoCent( LATLON *pll )
 {
    double  dTemp;
 
-   /* FIX: normalizacion de latitud fuera de rango con espejo al polo opuesto
-         (antes el wrap de +/-90 daba resultados incorrectos, p.ej. 100->10) */
+   /* FIX: normalize out-of-range latitude by mirroring to the opposite pole
+         (before, the +/-90 wrap gave incorrect results, e.g. 100->10) */
    while ( pll->dLat > 90.0 )  { pll->dLat -= 180.0; pll->dLon += 180.0; }
    while ( pll->dLat < -90.0 ) { pll->dLat += 180.0; pll->dLon += 180.0; }
    if ( pll->dLat < 0. )
@@ -226,7 +226,7 @@ AZIDELT GetDistanceAz( LATLON *pll1, LATLON *pll2 )
       logit ("t", "Bad Latlon in GetDistanceAz\nlat1=%lf, lon1=%lf, "
                   "lat2=%lf, lon2=%lf\n", pll1->dLat, pll1->dLon,
                                           pll2->dLat, pll2->dLon);
-      /* FIX: de verdad devolver ceros como documenta el comentario */
+      /* FIX: actually return zeros as the comment documents */
       azidelt.dAzimuth = 0.0;
       azidelt.dDelta = 0.0;
       return( azidelt );
@@ -1110,7 +1110,7 @@ void PadBlanksL( int iNumDigits, char *pszString )
    int     i, iStringLen;
    char    szTemp1[80], szTemp2[80];
 
-   /* FIX: guardas de tamaño (antes desbordaba con entradas largas) */
+   /* FIX: size guards (before it overflowed with long inputs) */
    if ( strlen( pszString ) >= sizeof( szTemp1 ) ) return;
    if ( iNumDigits > (int) sizeof( szTemp1 )-1 ) iNumDigits = (int) sizeof( szTemp1 )-1;
    strcpy( szTemp1, pszString );
@@ -1143,7 +1143,7 @@ void PadZeroes( int iNumDigits, char *pszString )
    int     i, iStringLen;
    char    szTemp1[10], szTemp2[10];
 
-   /* FIX: guardas de tamaño (documentado "10 chars max" pero sin chequeo) */
+   /* FIX: size guards (documented "10 chars max" but without checking) */
    if ( strlen( pszString ) >= sizeof( szTemp1 ) ) return;
    if ( iNumDigits > (int) sizeof( szTemp1 )-1 ) iNumDigits = (int) sizeof( szTemp1 )-1;
    strcpy( szTemp1, pszString );
@@ -1175,7 +1175,7 @@ void PadZeroesR( int iNumDigits, char *pszString )
    int     i, iStringLen;
    char    szTemp1[10];
 
-   /* FIX: guardas de tamaño (documentado "10 chars max" pero sin chequeo) */
+   /* FIX: size guards (documented "10 chars max" but without checking) */
    if ( strlen( pszString ) >= sizeof( szTemp1 ) ) return;
    if ( iNumDigits > (int) sizeof( szTemp1 )-1 ) iNumDigits = (int) sizeof( szTemp1 )-1;
    strcpy( szTemp1, pszString );

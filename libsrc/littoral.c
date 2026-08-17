@@ -119,7 +119,7 @@ int LoadCities( CITY *pCity, int iFile, char *pszFile1, char *pszFile2 )
                pc->szLoc[j] = '\0';
                break;
             }
-            if ( j == 28 ) pc->szLoc[j] = '\0';   /* FIX: nombre sin '\n' en 29 chars */
+            if ( j == 28 ) pc->szLoc[j] = '\0';   /* FIX: name without '\n' in 29 chars */
          }
          ll.dLat = dLat;
          ll.dLon = dLon;
@@ -199,7 +199,7 @@ int LoadCitiesEC( CITY *pCity, int iFile, char *pszFile1, char *pszFile2 )
                pc->szLoc[j] = '\0';
                break;
             }
-            if ( j == 28 ) pc->szLoc[j] = '\0';   /* FIX: nombre sin '\n' en 29 chars */
+            if ( j == 28 ) pc->szLoc[j] = '\0';   /* FIX: name without '\n' in 29 chars */
          }
          ll.dLat = dLat;
          ll.dLon = dLon;

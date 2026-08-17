@@ -30,7 +30,7 @@ void ReportAlarm( STATION *Sta, unsigned char ucMyModID, SHM_INFO siAlarmRegion,
    char         line[256]; /* TYPE_PICKALARM format message */
 
 /* Create TYPE_ALARM message (1->activate Respond Thread)
-   (SIN CERO INCORPORADO PARA EVITAR WARNING, REPARADO FORMATO %d)
+   (NO INCORPORATED ZERO TO AVOID WARNING, %d FORMAT FIXED)
    ******************************************************/
    if ( iType == 1 )        /* Strong motion SP alarm */
       snprintf( line, sizeof(line),    "%5d %5d %5d %5d %5d     0 %s %s DIGITAL SP ALARM",
@@ -124,7 +124,7 @@ void ReportPick( PPICK *P, STATION *Sta, unsigned char ucMyModID,
    char         line[512]; /* TYPE_PICKTWC format message */
    long         lTemp;
 
-/* Create TYPE_PICKTWC message (SIN CERO INCORPORADO, VARIABLES EN %d PARA 64 BITS)
+/* Create TYPE_PICKTWC message (NO INCORPORATED ZERO, VARIABLES IN %d FOR 64 BITS)
    ***************************/
    if ( iType == 1 )        /* Data from lpproc */
       snprintf( line, sizeof(line), "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "

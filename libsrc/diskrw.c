@@ -155,7 +155,7 @@ int ReadDiskData( char *pszFile, STATION Sta[], int *piNumStas,
    long    lIndexToStartWrite[MAX_STATIONS]; 
    LATLON  ll, llOut;
    long    lTemp;
-   /* PARCHE 64 BITS: INT32_T EN LUGAR DE LONG PARA LEER 4 BYTES DIRECTO DEL DISCO */
+   /* 64-BIT PATCH: INT32_T INSTEAD OF LONG TO READ 4 BYTES DIRECTLY FROM DISK */
    static  int32_t lBuff[CIRC_BUFFER_SIZE];     
 
    if ( (hFile = fopen( pszFile, "rb" )) == NULL ) 
@@ -321,7 +321,7 @@ int ReadDiskData( char *pszFile, STATION Sta[], int *piNumStas,
             fclose( hFile );
             return 0;
          }
-         /* PARCHE DE 64 BITS: EXPANSION SEGURA */
+         /* 64-BIT PATCH: SAFE EXPANSION */
          for(int m=0; m < read1; m++) 
             Sta[i].plRawCircBuff[lIndexToStartWrite[i] + m] = (long)lBuff[m];
 
@@ -374,7 +374,7 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
    int     iRead[iNumStas];            /* Files read per station (VLA: evita OOB con >MAX_STATIONS) */
    time_t  iTime;                      
    
-   /* PARCHE DE 64 BITS: EL BUFFER TIENE QUE SER DEL TAMANO DEL TIPO QUE SE ESCRIBIO (32BITS) */
+   /* 64-BIT PATCH: THE BUFFER MUST BE THE SIZE OF THE TYPE THAT WAS WRITTEN (32BITS) */
    int32_t lTemp32[MAX_TEMP];             
 
    static  char    *pszFile;           /* Data file names */
@@ -455,7 +455,7 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
             fclose( hFile );
     	    return( -1 );
          }
-         /* USANDO EL BÚFER DE 32 BITS */
+         /* USING THE 32-BIT BUFFER */
          if ( (int) fread( lTemp32, ch[i].iBytePerSamp, ch[i].lNumSamps, hFile ) < ch[i].lNumSamps )
          {
             logit( "t", "File %s fread3 fail, i=%ld\n", pszFile, i );
@@ -482,11 +482,11 @@ int ReadDiskDataForHypo( int iFileSize, int iTotalTime, char *szPath,
                   StaArray[j].iSignalToNoise = ch[i].iSignalToNoise;
                   StaArray[j].dScaleFactor = ch[i].dScaleFactor;
 		  
-/* COLOCACION POR TIEMPO ABSOLUTO: cada slot de archivo se escribe en
-		     el indice que le corresponde segun stStartTime del archivo (inicio
-		     del slot). Los slots faltantes (archivo inexistente) quedan como
-		     INT_MAX en el buffer (ya pre-rellenado por el llamador), de modo
-		     que el hueco temporal se conserva y no se colapsa la traza. */
+/* PLACEMENT BY ABSOLUTE TIME: each file slot is written at the
+		     index that corresponds to the stStartTime of the file (slot
+		     start). Missing slots (nonexistent file) remain as
+		     INT_MAX in the buffer (already pre-filled by the caller), so
+		     that the time gap is preserved and the trace is not collapsed. */
 		  if ( StaArray[j].lRawCircCtr == 0 && StaArray[j].dStartTime <= 0.0 )
 		     StaArray[j].dStartTime =
 		        DateToModJulianSec (ch[i].stStartTime) - 3506630400.;
@@ -553,7 +553,7 @@ int ReadDiskDataForMTSolo( int iFileSize, int iTotalTime, char *szPath,
    time_t  iTime;                      /* time (1/1/70) at min P time */   
    long    lStart;                     /* Starting data index of buffer */
    
-   /* PARCHE DE 64 BITS: INT32_T EN LUGAR DE LONG */
+   /* 64-BIT PATCH: INT32_T INSTEAD OF LONG */
    int32_t lTemp32[MAX_TEMP];             
 
    static  char    *pszFile;           /* Data file names */

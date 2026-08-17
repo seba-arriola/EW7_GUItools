@@ -212,10 +212,10 @@ int main( int argc, char **argv )
             logit( "", "reset StaArray Nsta = %d\n", Nsta );	 
 	        free( StaArray );                                  
 	        StaArray = (STATION *) calloc( MAX_STATIONS, sizeof(STATION) );
-            /* FIX: si calloc falla no seguir con puntero NULL */
+            /* FIX: if calloc fails, do not continue with NULL pointer */
             if ( StaArray == NULL )
             {
-               logit( "et", "Out of memory al recargar StaArray\n" );
+               logit( "et", "Out of memory reloading StaArray\n" );
                continue;
             }
             Nsta = ReadLineupFile( Gparm.ATPLineupFileBB, StaArray );
@@ -275,15 +275,15 @@ int main( int argc, char **argv )
                break;
             }
          if ( i >= Gparm.NumPBuffs )
-            logit( "et", "Force location ignored: quake ID %ld no esta activo en los buffers.\n", PStruct.iHypoID );
+            logit( "et", "Force location ignored: quake ID %ld is not active in the buffers.\n", PStruct.iHypoID );
          ReleaseSpecificMutex( &mutsem1 );   
          continue;
       }
 
       if ( PStruct.iHypoID > 0 && PStruct.iUseMe == 0 )
       {
-         /* PARCHE BORRADO: hypo_display elimino un pick manual (iUseMe==0).
-            Se remueve del buffer del sismo y se fuerza relocalizacion. */
+         /* DELETE PATCH: hypo_display removed a manual pick (iUseMe==0).
+            It is removed from the quake buffer and a relocation is forced. */
          RequestSpecificMutex( &mutsem1 );
          for ( i=0; i<Gparm.NumPBuffs; i++ )
             if ( Hypo[i].iQuakeID == PStruct.iHypoID )
@@ -292,7 +292,7 @@ int main( int argc, char **argv )
                   if ( !strcmp( PBuf[i][j].szStation, PStruct.szStation ) &&
                        !strcmp( PBuf[i][j].szChannel, PStruct.szChannel ) )
                   {
-                     logit( "et", "Pick eliminado de %s %s en quake ID %ld (buffer %d).\n",
+                     logit( "et", "Pick removed from %s %s in quake ID %ld (buffer %d).\n",
                             PStruct.szStation, PStruct.szChannel, PStruct.iHypoID, i );
                      RemoveP( PBuf[i], &iPBufCnt[i], j );
                      iLastBuffCnt[i] = -1;
@@ -301,7 +301,7 @@ int main( int argc, char **argv )
                break;
             }
          if ( i >= Gparm.NumPBuffs )
-            logit( "et", "Delete pick ignored: quake ID %ld no esta activo en los buffers.\n", PStruct.iHypoID );
+            logit( "et", "Delete pick ignored: quake ID %ld is not active in the buffers.\n", PStruct.iHypoID );
          ReleaseSpecificMutex( &mutsem1 );
          continue;
       }
@@ -401,7 +401,7 @@ int CreateNearbyStationLookupTable( STATION *Sta,
       
       j = 0;
       jj = 0;
-      /* PARCHE SALVAVIDAS: El bucle ahora se detiene si se acaban las estaciones (j < iNsta) */
+      /* LIFESAVER PATCH: The loop now stops when the stations run out (j < iNsta) */
       while ( jj < iNumNearStn && j < iNSta ) 
       {
          if ( (jj == 0) ||
@@ -412,7 +412,7 @@ int CreateNearbyStationLookupTable( STATION *Sta,
          }
          j++;
       }
-      /* Llenar el resto con nulos para evitar lecturas de basura que causan el SegFault */
+      /* Fill the rest with nulls to avoid reading garbage that causes the SegFault */
       while ( jj < iNumNearStn ) {
          pszPStnArray[i][jj][0] = '\0';
          jj++;

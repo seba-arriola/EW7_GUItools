@@ -14,7 +14,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-/* --- INICIO PARCHE LINUX --- */
+/* --- START LINUX PATCH --- */
 typedef unsigned short WORD;
 typedef int BOOL;
 typedef void* HANDLE;
@@ -60,7 +60,7 @@ typedef struct _SYSTEMTIME {
     WORD wSecond;
     WORD wMilliseconds;
 } SYSTEMTIME;
-/* --- FIN PARCHE LINUX --- */
+/* --- END LINUX PATCH --- */
 #endif
 
 #include <math.h>
@@ -663,9 +663,9 @@ typedef struct {              /* STATION - station parameters and variables */
 long    lRawNoise;         /* Max peak/trough signal difference */
    long    lRawNoiseOrig;     /* Max peak/trough signal difference when Phase1
                                   passed */
-   long    lNoiseHigh;        /* FIX: peak signal por estacion (antes static global
-                                  compartido entre estaciones -> ruido cruzado) */
-   long    lNoiseLow;         /* FIX: trough signal por estacion */
+   long    lNoiseHigh;        /* FIX: peak signal per station (formerly a static global
+                                  shared between stations -> cross-talk noise) */
+   long    lNoiseLow;         /* FIX: trough signal per station */
    long    lSampIndexF;       /* Next index to write in filt data circ. buff */
    long    lSampIndexR;       /* Next index to write in raw data circular buff */
    long    lSampNew;          /* Present sample */

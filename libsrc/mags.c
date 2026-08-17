@@ -203,7 +203,7 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
 
    for ( i=0; i<iPNum; i++ )
    {   
-      if ( i >= MAX_STATIONS ) break;   /* FIX: acotar iMwpCounted[] */
+      if ( i >= MAX_STATIONS ) break;   /* FIX: bound iMwpCounted[] */
       azidelt = GetDistanceAz( (LATLON *) pHypo, (LATLON *) &P[i] );
       P[i].dDelta = azidelt.dDelta;
       P[i].dAz = azidelt.dAzimuth;
@@ -242,10 +242,10 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
                else { pHypo->iNumMS++; pHypo->dMSAvg += P[i].dMSMag; }
             }
                         
-         /* FIX FORENSE: dMwpTime en los mensajes ARC llega corrupto (como Epoch Time).
-            Se ha removido su evaluacion. AutoMwp ya asegura que el pico ocurra 
-            dentro de la ventana S-P. 
-            Mantenemos la proteccion por clipping de near-field (Delta >= 3.0). */
+         /* FORENSIC FIX: dMwpTime in ARC messages arrives corrupt (as Epoch Time).
+            Its evaluation has been removed. AutoMwp already ensures the peak occurs
+            within the S-P window.
+            We keep the near-field clipping protection (Delta >= 3.0). */
          if ( P[i].dMwpIntDisp > 0. ) {
             
             if ( P[i].dDelta <= 90. && P[i].dDelta >= 3.0 )         
@@ -585,7 +585,7 @@ double ComputeMwMag( double dGain, double dMwAmp, double dMwPer, double dDelta )
       dMagMm = (((double) i - 1.0)*0.1) + 5.0;
 	
       iMoment = (int) ((dMagMm - 4.9) * 10. + 0.1);
-      if ( iMoment < 1 )  iMoment = 1;    /* FIX: clamp indice dBruneFactor[] */
+      if ( iMoment < 1 )  iMoment = 1;    /* FIX: clamp dBruneFactor[] index */
       if ( iMoment > 51 ) iMoment = 51;
       dBruneMoment = pow( 10., dBruneFactor[iMoment-1] );
       dMwMag = 0.66667 * log10( dBruneMoment ) - 10.7;	
@@ -750,18 +750,18 @@ int LoadBVals( char *pszBValFile )
    return 0;
 }                
 
-/* Las funciones MbMlCtsFromGM()/MbMlGroundMotion() y MsCtsFromGM()/
-   MsGroundMotion() usan dos convenciones de ganancia, seleccionadas por el
-   valor de dSens (o dGain):
-     - dSens >= 1E7 : ganancia digital broadband (counts/(m/s)). La amplitud
-       es proporcional a la velocidad del suelo y requiere la division por
-       omega (2*PI*periodo) para obtener el desplazamiento en nm.
-     - dSens < 1E7  : ganancia analogica/heli (cuentas analogicas). La
-       conversion a desplazamiento (nm) es directa, sin normalizar por omega.
-   Ambas ramas devuelven desplazamiento de suelo en nm y cada par
-   CtsFromGM/GroundMotion es inverso exacto dentro de su rama. No son
-   equivalentes entre si: se conservan ambas por completitud para soportar
-   instrumentos de ambas convenciones. (Ver nota original en todo.dat.) */
+/* The MbMlCtsFromGM()/MbMlGroundMotion() and MsCtsFromGM()/
+   MsGroundMotion() functions use two gain conventions, selected by
+   the value of dSens (or dGain):
+     - dSens >= 1E7 : digital broadband gain (counts/(m/s)). The amplitude
+       is proportional to ground velocity and requires division by
+       omega (2*PI*period) to obtain the displacement in nm.
+     - dSens < 1E7  : analog/heli gain (analog counts). The
+       conversion to displacement (nm) is direct, without normalizing by omega.
+   Both branches return ground displacement in nm and each
+   CtsFromGM/GroundMotion pair is an exact inverse within its branch. They are
+   not equivalent to each other: both are kept for completeness to support
+   instruments of both conventions. (See original note in todo.dat.) */
 long MbMlCtsFromGM( char *pszChannel, double dSens, long lPer, double dAmp )
 {
    double dResponse;             

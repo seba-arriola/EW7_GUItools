@@ -63,7 +63,7 @@ void ComputeTimeWindows( double dOTime, int iDepthDum, STATION StaArray[],
       dOver = StaArray[i].dDelta*(1./IASP_DIST_INC) - 
               floor( StaArray[i].dDelta * (1./IASP_DIST_INC) );
       iTab = (int) (StaArray[i].dDelta * (1./IASP_DIST_INC));
-      if ( iTab > IASP_NUM_PER_DEP-2 )   /* FIX: no leer fPP[itab+1] fuera de nivel */
+      if ( iTab > IASP_NUM_PER_DEP-2 )   /* FIX: do not read fPP[itab+1] out of level */
          iTab = IASP_NUM_PER_DEP-2;
 
       pfIAT = fPP + iDep*IASP_NUM_PER_DEP + iTab;
@@ -77,7 +77,7 @@ void ComputeTimeWindows( double dOTime, int iDepthDum, STATION StaArray[],
    {
       dDist2 = StaArray[i].dDelta;
       dOver = dDist2 - floor( dDist2 );
-      if ( dDist2 > 179.0 ) dDist2 = 179.0;   /* FIX: evitar iRTravTime[181] */
+      if ( dDist2 > 179.0 ) dDist2 = 179.0;   /* FIX: avoid iRTravTime[181] */
       pPW[i].dRTravTime = (double) iRTravTime[(int) dDist2] +
        ((double) (iRTravTime[(int) dDist2+1] - iRTravTime[(int) dDist2]) * dOver);
    }
@@ -343,14 +343,14 @@ void GetEpiAzDelta( int iPNum, PPICK *P, HYPO *pHypo )
       dDeltaCosine = pHypo->dCoslat*P[i].dCoslat + pHypo->dSinlat*
                      P[i].dSinlat*(pHypo->dCoslon*P[i].dCoslon +
                      pHypo->dSinlon*P[i].dSinlon);
-      /* FIX: clamp para evitar NaN en sqrt(1-cos^2) por redondeo FP */
+      /* FIX: clamp to avoid NaN in sqrt(1-cos^2) due to FP rounding */
       if ( dDeltaCosine > 1.0 ) dDeltaCosine = 1.0;
       else if ( dDeltaCosine < -1.0 ) dDeltaCosine = -1.0;
       dDeltaSine = sqrt( 1. - dDeltaCosine*dDeltaCosine );
       if ( dDeltaSine < 0.01 ) dDeltaSine = 0.01;
       if ( dDeltaCosine == 0.0 ) dDeltaCosine = 0.01;
       dTempDelta =  atan( dDeltaSine / dDeltaCosine );
-      /* FIX: si el resultado es NaN (por guardas anteriores) marca delta 0 */
+      /* FIX: if the result is NaN (from the guards above) mark delta as 0 */
       if ( !(dTempDelta == dTempDelta) ) dTempDelta = 0.0;
       P[i].dCooze = (P[i].dCoslat - pHypo->dCoslat * dDeltaCosine) /
                     (pHypo->dSinlat * dDeltaSine);
@@ -404,7 +404,7 @@ AZIDELT azidelt;
 dCorr = azidelt.dDelta*(1./IASP_DIST_INC) - 
                floor( azidelt.dDelta*(1./IASP_DIST_INC) );
       iTab = (int) (azidelt.dDelta*(1./IASP_DIST_INC));
-      if ( iTab > IASP_NUM_PER_DEP-2 ) iTab = IASP_NUM_PER_DEP-2;  /* FIX: antípoda */
+      if ( iTab > IASP_NUM_PER_DEP-2 ) iTab = IASP_NUM_PER_DEP-2;  /* FIX: antipode */
       P[i].dExpectedPTime = fPP[iTab+
               iDLev] + dCorr*(fPP[iTab+1+iDLev] - fPP[iTab+iDLev]) + pHypo->dOriginTime;
    }
@@ -505,7 +505,7 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
                     P[j].iUseMe > 0 && P[j].dPTime > 0. ) iCnt++;
             if ( iCnt >= (pHypo->iNumPs-4) )
             {
-               /* FIX 64 BITS: Impedir desbordamiento del indice estricto de array */
+               /* 64-BIT FIX: prevent overflow of the strict array index */
                if (k < 4) {
                   iIndices[k] = i;
                   k++;
@@ -550,7 +550,7 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
          azidelt12 = GetDistanceAz( &llK, &llL );
 
          dTemp1 = 0.5*(azidelt01.dDelta + azidelt02.dDelta + azidelt12.dDelta);
-         /* FIX: triangulo degenerado (estaciones duplicadas/colineales) -> 0/0 o NaN */
+         /* FIX: degenerate triangle (duplicated/collinear stations) -> 0/0 or NaN */
          double dSinS = sin (dTemp1*RAD);
          if ( fabs( dSinS ) < 1.E-9 ) dSinS = (dSinS < 0.0 ? -1.E-9 : 1.E-9);
          double dRadic = (sin ((dTemp1 - azidelt01.dDelta)*RAD) *
@@ -734,8 +734,8 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
       }
       while ( pHypo->dLon >= TWOPI ) pHypo->dLon -= TWOPI; 
       while ( pHypo->dLon < 0.0 )    pHypo->dLon += TWOPI;
-      /* FIX: espejo correcto de colatitud al cruzar el polo (antes dLat-=PI
-             sin voltear longitud, y dLon+=PI inalcanzable) */
+      /* FIX: correct colatitude mirror when crossing the pole (before dLat-=PI
+             without flipping longitude, and dLon+=PI was unreachable) */
       while ( pHypo->dLat > TWOPI ) pHypo->dLat -= TWOPI;
       while ( pHypo->dLat < 0.0 )   pHypo->dLat += TWOPI;
       if ( pHypo->dLat > PI && pHypo->dLat <= TWOPI )
@@ -837,7 +837,7 @@ int LoadEQData( char *pszFile, int iNumDep, EQDEPTHDATA *pEqDepth )
    }
    while ( !feof( hFile ) )   
    {
-      if ( i >= iNumDep )    /* FIX: comprobar ANTES de escribir */
+      if ( i >= iNumDep )    /* FIX: check BEFORE writing */
       {
          logit( "", "Too many values in %s, %ld values\n", pszFile, i );
          break;
@@ -867,7 +867,7 @@ int QuakeAzimuthSort( int iPNum, PPICK *P )
       }
    iGoodPicks = ii;
 
-   /* FIX: sin picks utilizables no hay gap que calcular (evita dAz[-1]) */
+   /* FIX: without usable picks there is no gap to compute (avoids dAz[-1]) */
    if ( iGoodPicks == 0 ) return 0;
 
    for ( i=0; i<iGoodPicks-1; i++ )
@@ -903,8 +903,8 @@ double QuakeDeta( int iDNum, double dAdet[][4] )
    dProd = 1.0;
    for ( k=0; k<(iDNum-1); k++ )
    {
-      /* FIX: pivoteo real con tolerancia (antes solo igualdad exacta y sin
-             recuperar el pivote; matrices casi singulares daban NaN/Inf) */
+      /* FIX: real pivoting with tolerance (before only exact equality and
+             no pivot recovery; nearly singular matrices gave NaN/Inf) */
       if ( fabs( dAdet[k][k] ) < 1.E-12 )
       {
          int  iPiv = -1;
@@ -912,13 +912,13 @@ double QuakeDeta( int iDNum, double dAdet[][4] )
          for ( i1=k+1; i1<iDNum; i1++ )
             if ( fabs( dAdet[i1][k] ) > dMax ) { dMax = fabs( dAdet[i1][k] ); iPiv = i1; }
          if ( iPiv == -1 ) return 0.0;   /* singular */
-         for ( i2=0; i2<iDNum; i2++ )     /* swap filas k <-> iPiv */
+         for ( i2=0; i2<iDNum; i2++ )     /* swap rows k <-> iPiv */
          {
             double dT = dAdet[k][i2];
             dAdet[k][i2] = dAdet[iPiv][i2];
             dAdet[iPiv][i2] = dT;
          }
-         dProd *= -1.0;                   /* signo por permutacion de filas */
+         dProd *= -1.0;                   /* sign from row permutation */
       }
       kk = k+1;
       for ( i=kk; i<iDNum; i++ )
@@ -966,7 +966,7 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
    double  fih, fh, dadd, dadh, ptt1, ptt2, ptt; 
    int     i, j, k, l, mm, ih, itab, iIndex;     
    int     iIterCnt;                             
-   int	   iMaxDepthLevel = DEPTH_LEVELS_IASP;   /* FIX: rejilla completa por defecto */      
+   int	   iMaxDepthLevel = DEPTH_LEVELS_IASP;   /* FIX: full grid by default */      
    int     iPCnt;               
    int     iDim;               
    LATLON  LLIn, LLOut;	        
@@ -1083,10 +1083,10 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
                dCoef[4*COEFFSIZE+iPCnt] = P[j].dRes;
                dCoef[iPCnt] = 1.0;
                pHypo->dAvgRes += fabs( P[j].dRes );
-               /* FIX: profundidad fija (iDepthControl 1 o 3, iDim=3) ->
-                  la columna 3 se sustituye por el residual para que dBdet
-                  (mm=iDim=3) use el residual y no el derivado de profundidad.
-                  Sin esto, iDepthControl=1 planteaba un LSQ incorrecto. */
+               /* FIX: fixed depth (iDepthControl 1 or 3, iDim=3) ->
+                  column 3 is replaced by the residual so that dBdet
+                  (mm=iDim=3) uses the residual and not the depth derivative.
+                  Without this, iDepthControl=1 posed an incorrect LSQ. */
                if ( pHypo->iDepthControl == 3 || pHypo->iDepthControl == 1 )
                   dCoef[3*COEFFSIZE+iPCnt] = dCoef[4*COEFFSIZE+iPCnt];
                iPCnt++;
@@ -1096,15 +1096,15 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
             P[j].dRes = 0.;
       }
 	
-      if ( iPCnt <= 0 ) goto FunctionEnd;   /* FIX: no hay picks usados */
+      if ( iPCnt <= 0 ) goto FunctionEnd;   /* FIX: no picks used */
       if ( iIterCnt >= QUAKE_ITER-1 || pHypo->dAvgRes/(double) iPCnt < 0.2 )
          goto FunctionEnd;
 
-      /* FIX: dimension de la matriz acotada a dAdet[4][4].
-         iDepthControl codifica binariamente si la profundidad se resuelve:
-         (1,3) -> profundidad fija (3 variables: tiempo, lat, lon)
-         (2,4) -> profundidad libre (4 variables). El mapeo directo
-         iDim=iDepthControl dejaba 1 y 2 con matrices degeneradas. */
+      /* FIX: matrix dimension bounded to dAdet[4][4].
+         iDepthControl encodes binarily whether depth is resolved:
+         (1,3) -> fixed depth (3 variables: time, lat, lon)
+         (2,4) -> free depth (4 variables). The direct mapping
+         iDim=iDepthControl left 1 and 2 with degenerate matrices. */
       iDim = ( pHypo->iDepthControl == 1 || pHypo->iDepthControl == 3 ) ? 3 : 4;
       if ( iDim < 1 ) iDim = 1;
       if ( iDim > 4 ) iDim = 4;
@@ -1126,11 +1126,11 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
       dXdet[0] = dXdet[1] = dXdet[2] = dXdet[3] = 0.0;
       QuakeDets( iDim, dAdet, dBdet, dXdet );
       if ( dXdet[0] == 111. ) goto FunctionEnd;
-      /* FIX: NaN/Inf contamina la solucion -> tratar como no convergida */
+      /* FIX: NaN/Inf pollutes the solution -> treat as not converged */
       if ( !isfinite( dXdet[0] ) || !isfinite( dXdet[1] ) ||
            !isfinite( dXdet[2] ) || !isfinite( dXdet[3] ) )
          goto FunctionEnd;
-      /* FIX: amortiguacion de paso para evitar saltos gigantes por iteracion */
+      /* FIX: step damping to avoid giant jumps per iteration */
       if ( fabs( dXdet[1] ) > 5.0 ) dXdet[1] = (dXdet[1] < 0.0 ? -5.0 : 5.0);
       if ( fabs( dXdet[2] ) > 5.0 ) dXdet[2] = (dXdet[2] < 0.0 ? -5.0 : 5.0);
       if ( fabs( dXdet[0] ) > 30.0 ) dXdet[0] = (dXdet[0] < 0.0 ? -30.0 : 30.0);
@@ -1144,7 +1144,7 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
    }
 FunctionEnd:
 
-   /* FIX: promedio sobre picks realmente usados (antes se dividia por iPNum total) */
+   /* FIX: average over the picks actually used (before it divided by total iPNum) */
    iPCnt = 0;
    for ( j=0; j<iPNum; j++ )
       if ( P[j].dPTime > 0. && P[j].iUseMe > 0 ) iPCnt++;
@@ -1212,9 +1212,9 @@ double EstimatePTravelTime( double dDelta )
    dFar  = 61.1089 + 11.4192*dDelta - 0.0410401*dDelta*dDelta +
            0.0000301625*dDelta*dDelta*dDelta;
 
-   /* FIX: los polinomios near (<=20) y far (>=24) no son continuos en
-      dDelta=20 (~0.37 s de salto). Mezcla lineal en la banda [20,24]
-      para suavizar la transicion sin alterar los polinomios. */
+   /* FIX: the near (<=20) and far (>=24) polynomials are not continuous at
+      dDelta=20 (~0.37 s jump). Linear blend in the [20,24] band
+      to smooth the transition without altering the polynomials. */
    if ( dDelta <= 20.0 ) return dNear;
    if ( dDelta >= 24.0 ) return dFar;
    dW = (dDelta - 20.0) / 4.0;

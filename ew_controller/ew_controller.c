@@ -1,3 +1,16 @@
+/***********************************************************************
+ *                            ew_controller                            *
+ *                                                                     *
+ *  Graphical control panel for startstop, the Earthworm system        *
+ *  manager. It connects to a dedicated CONTROL_RING and exchanges     *
+ *  TYPE_REQSTATUS / TYPE_STATUS / TYPE_STOP / TYPE_RESTART /          *
+ *  TYPE_RECONFIG / TYPE_HEARTBEAT messages to display the status of   *
+ *  every module, stop/restart/start modules, show their logs and      *
+ *  edit their .d configuration files.                                 *
+ *                                                                     *
+ *  Usage: ew_controller <configfile.d>                                *
+ ***********************************************************************/
+
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,106 +33,120 @@
 #define STATUS_MAX 16384
 #define LOG_TAIL 32768
 
-/* --- CONFIGURACION --- */
-char MyModName[MAX_STR] = "MOD_CONTROL";
-char RingName[MAX_STR] = "CONTROL_RING";
-char LogDir[MAX_STR] = "";
-int  HeartBeatInt = 30;
-int  LogFile = 1;
-int  PollInt = 5;
+/* Configuration parameters read from the .d file
+ *************************************************/
+char MyModName[MAX_STR] = "MOD_CONTROL";   /* Earthworm module name */
+char RingName[MAX_STR] = "CONTROL_RING";   /* name of the dedicated control ring */
+char LogDir[MAX_STR] = "";                 /* directory of the module logs (EW_LOG wins) */
+int  HeartBeatInt = 30;                    /* heartbeat interval (seconds) */
+int  LogFile = 1;                          /* 1 = write log to disk, 0 = console only */
+int  PollInt = 5;                          /* status request interval to startstop (seconds) */
 
-pid_t MyPid;
-time_t timeLastBeat = 0;
+pid_t MyPid;                               /* this process id */
+time_t timeLastBeat = 0;                   /* time of the last heartbeat sent */
 
-unsigned char TypeHeartBeat = 0;
-unsigned char TypeReqStatus = 0;
-unsigned char TypeStatus = 0;
-unsigned char TypeStop = 0;
-unsigned char TypeRestart = 0;
-unsigned char TypeReconfig = 0;
+/* Message types looked up in the earthworm.h tables
+ ****************************************************/
+unsigned char TypeHeartBeat = 0;   /* TYPE_HEARTBEAT */
+unsigned char TypeReqStatus = 0;   /* TYPE_REQSTATUS (status request) */
+unsigned char TypeStatus = 0;      /* TYPE_STATUS (startstop reply) */
+unsigned char TypeStop = 0;        /* TYPE_STOP (stop a module) */
+unsigned char TypeRestart = 0;     /* TYPE_RESTART (restart a module) */
+unsigned char TypeReconfig = 0;    /* TYPE_RECONFIG (reconfigure) */
 
-unsigned char MyInstId = 0;
-unsigned char MyModId = 0;
-SHM_INFO Region;
-long g_ring_key = -1;
-int  g_attached = 0;
+/* Ring connection globals
+ *************************/
+unsigned char MyInstId = 0;        /* Earthworm installation id */
+unsigned char MyModId = 0;         /* Earthworm module id */
+SHM_INFO Region;                   /* transport region of the control ring */
+long g_ring_key = -1;              /* shared memory key of the control ring */
+int  g_attached = 0;               /* 1 once attached to the ring */
 
-/* --- MODELO DE DATOS --- */
+/* --- DATA MODEL --- */
 typedef struct {
-   char  name[32];
-   int   pid;
-   char  status[16];
-   char  detalle[192];
-   char  config[64];
-   char  cfgfile[64];
+   char  name[32];      /* module name */
+   int   pid;           /* process id */
+   char  status[16];    /* status word (Alive/Stop/Dead/...) */
+   char  detalle[192];  /* rest of the status line (arguments) */
+   char  config[64];    /* config file base name (for the log file) */
+   char  cfgfile[64];   /* config file name (.d) */
 } MODROW;
 
 typedef struct {
-   char  name[64];
-   int   key;
-   int   size;
+   char  name[64];      /* ring name */
+   int   key;           /* shared memory key */
+   int   size;          /* size in KB */
 } RINGROW;
 
-/* --- EDITOR DE CONFIGURACION --- */
+/* --- CONFIGURATION EDITOR --- */
 typedef struct {
-   int   kind;      /* 0=nombre/valor, 1=comentario, 2=en blanco */
-   char *prefix;    /* espacios iniciales */
-   char *name;      /* nombre de la variable */
-   char *gap1;      /* espacios entre nombre y valor */
-   char *value;     /* valor (conserva comillas originales) */
-   char *gap2;      /* espacios entre valor y comentario */
-   char *comment;   /* comentario desde '#' al final */
-   char *raw;       /* linea original (para kind 1/2) */
+   int   kind;      /* 0=name/value, 1=comment, 2=blank */
+   char *prefix;    /* leading spaces */
+   char *name;      /* variable name */
+   char *gap1;      /* spaces between name and value */
+   char *value;     /* value (keeps the original quotes) */
+   char *gap2;      /* spaces between value and comment */
+   char *comment;   /* comment from '#' to the end */
+   char *raw;       /* original line (for kind 1/2) */
 } CFGLINE;
 
 typedef struct {
    char     path[512];
    int      nlines;
-   int      last_newline;  /* 1 si el archivo termina en '\n' */
+   int      last_newline;  /* 1 if the file ends with '\n' */
    CFGLINE *lines;
 } CFGFILE;
 
-MODROW g_mods[MAX_ROWS];
-int    g_nmods = 0;
-RINGROW g_rings[MAX_ROWS];
-int    g_nrings = 0;
+MODROW g_mods[MAX_ROWS];    /* parsed module rows */
+int    g_nmods = 0;         /* number of modules parsed */
+RINGROW g_rings[MAX_ROWS];  /* parsed ring rows */
+int    g_nrings = 0;        /* number of rings parsed */
 
-char g_hostname[128] = "-";
-char g_starttime[64] = "-";
-char g_curtime[64] = "-";
-char g_disk[64] = "-";
-char g_version[64] = "-";
+/* Header fields extracted from the status message
+ **************************************************/
+char g_hostname[128] = "-";  /* Hostname-OS field */
+char g_starttime[64] = "-";  /* Start time (UTC) */
+char g_curtime[64] = "-";    /* Current time (UTC) */
+char g_disk[64] = "-";       /* Disk space available */
+char g_version[64] = "-";    /* Startstop Version */
 
-time_t g_last_status = 0;
+time_t g_last_status = 0;    /* time of the last status message received */
 
 /* --- GTK --- */
-GtkWidget *g_tree, *g_rings_tree;
-GtkListStore *g_store, *g_rings_store;
-GtkWidget *g_btn_start, *g_btn_restart, *g_btn_stop, *g_btn_reconfig, *g_btn_refresh;
-GtkWidget *g_lbl_header, *g_lbl_statusbar;
-GtkWidget *g_combo, *g_logview;
-GtkTextBuffer *g_logbuf;
+GtkWidget *g_tree, *g_rings_tree;            /* tree views for modules and rings */
+GtkListStore *g_store, *g_rings_store;       /* tree models */
+GtkWidget *g_btn_start, *g_btn_restart, *g_btn_stop, *g_btn_reconfig, *g_btn_refresh;  /* action buttons */
+GtkWidget *g_lbl_header, *g_lbl_statusbar;   /* header and status bar labels */
+GtkWidget *g_combo, *g_logview;              /* module combo and log text view */
+GtkTextBuffer *g_logbuf;                     /* log text buffer */
 
-/* pestaña Configuración */
-GtkWidget *g_cfg_combo, *g_cfg_grid, *g_lbl_cfgpath, *g_lbl_cfg_status;
-GtkWidget *g_btn_cfg_save, *g_btn_cfg_reconfig, *g_btn_cfg_reload;
-CFGFILE g_cfg;
-GtkWidget **g_cfg_entries;
-int g_cfg_loaded = 0;
-int g_cfg_modidx = -1;
-int g_cfg_dirty = 0;
-int g_cfg_suppress = 0;
+/* Configuration tab */
+GtkWidget *g_cfg_combo, *g_cfg_grid, *g_lbl_cfgpath, *g_lbl_cfg_status;   /* config tab widgets */
+GtkWidget *g_btn_cfg_save, *g_btn_cfg_reconfig, *g_btn_cfg_reload;        /* config buttons */
+CFGFILE g_cfg;                 /* configuration file being edited */
+GtkWidget **g_cfg_entries;     /* entry widgets, one per editable line */
+int g_cfg_loaded = 0;          /* 1 once a config file has been loaded */
+int g_cfg_modidx = -1;         /* index of the module whose config is loaded */
+int g_cfg_dirty = 0;           /* 1 if there are unsaved changes */
+int g_cfg_suppress = 0;        /* 1 to suppress the combo "changed" handler */
 
-int g_sel_idx = -1;
-int g_sel_pid = -1;
-time_t g_last_user_click = 0;
-GtkWidget *g_window;
+int g_sel_idx = -1;            /* index of the selected module row */
+int g_sel_pid = -1;            /* pid of the selected module (kept across refreshes) */
+time_t g_last_user_click = 0;  /* time of the last user click on the tree */
+GtkWidget *g_window;           /* main window */
 
 static void aplicar_botones(void);
 
 /* ***********************************************************
  *  Ring I/O helpers                                          *
  * ***********************************************************/
+ /***********************************************************************
+  *                              enviar()                               *
+  *             Sends a message of the given type to the control        *
+  *             ring, with the payload followed by a trailing newline.  *
+  *               Nothing; logs an error if the write fails.            *
+  ***********************************************************************/
+
 static void enviar(unsigned char type, const char *payload)
 {
    MSG_LOGO logo;
@@ -131,13 +158,27 @@ static void enviar(unsigned char type, const char *payload)
    msg[sizeof(msg) - 2] = '\0';
    strcat(msg, "\n");
    if (tport_putmsg(&Region, &logo, strlen(msg), msg) != PUT_OK)
-      logit("t", "ew_controller: Error enviando mensaje tipo %d al anillo.\n", (int) type);
+      logit("t", "ew_controller: Error sending message type %d to the ring.\n", (int) type);
 }
+
+ /***********************************************************************
+  *                           pedir_estado()                            *
+  *             Asks startstop for a status message by sending '?'      *
+  *             with the TYPE_REQSTATUS message type.                   *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void pedir_estado(void)
 {
    enviar(TypeReqStatus, "?");
 }
+
+ /***********************************************************************
+  *                            detener_mod()                            *
+  *             Asks startstop to stop the module with the given pid    *
+  *             by sending a TYPE_STOP message containing the pid.      *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void detener_mod(int pid)
 {
@@ -146,12 +187,26 @@ void detener_mod(int pid)
    enviar(TypeStop, buf);
 }
 
+ /***********************************************************************
+  *                           reiniciar_mod()                           *
+  *             Asks startstop to restart the module with the given     *
+  *             pid by sending a TYPE_RESTART message with that pid.    *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void reiniciar_mod(int pid)
 {
    char buf[32];
    snprintf(buf, sizeof(buf), "%d", pid);
    enviar(TypeRestart, buf);
 }
+
+ /***********************************************************************
+  *                           reconfigurar()                            *
+  *             Requests startstop to re-read its configuration and     *
+  *             apply the changes, sending a TYPE_RECONFIG message.     *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void reconfigurar(void)
 {
@@ -161,6 +216,13 @@ void reconfigurar(void)
 /* ***********************************************************
  *  Config                                                    *
  * ***********************************************************/
+ /***********************************************************************
+  *                            ReadConfig()                             *
+  *             Processes the command file with kom.c, filling the      *
+  *             module configuration globals (MyModName, RingName, ...).*
+  *               0 on success, -1 if any errors are encountered.       *
+  ***********************************************************************/
+
 int ReadConfig(char *configfile)
 {
    int ncommand = 5, nmiss = 0, i;
@@ -168,7 +230,7 @@ int ReadConfig(char *configfile)
    char *com, *str;
 
    if (!k_open(configfile)) {
-      fprintf(stderr, "ew_controller: Error abriendo config <%s>\n", configfile);
+      fprintf(stderr, "ew_controller: Error opening config <%s>\n", configfile);
       return -1;
    }
 
@@ -185,24 +247,31 @@ int ReadConfig(char *configfile)
       else continue;
 
       if (k_err()) {
-         fprintf(stderr, "ew_controller: Error parseando <%s> en <%s>\n", com, configfile);
+         fprintf(stderr, "ew_controller: Error parsing <%s> in <%s>\n", com, configfile);
          return -1;
       }
    }
    for (i = 0; i < ncommand; i++) if (!init[i]) nmiss++;
    k_close();
    if (nmiss > 0) {
-      fprintf(stderr, "ew_controller: ERROR, faltan parametros en <%s>\n", configfile);
+      fprintf(stderr, "ew_controller: ERROR, missing parameters in <%s>\n", configfile);
       return -1;
    }
    return 0;
 }
 
+ /***********************************************************************
+  *                        ConnectToEarthworm()                         *
+  *             Resolves the ring key, the message types and the        *
+  *             installation and module ids from the tables.            *
+  *               Nothing; exits if the ring is not registered.         *
+  ***********************************************************************/
+
 void ConnectToEarthworm(void)
 {
    long RingKey = GetKey(RingName);
    if (RingKey == -1) {
-      fprintf(stderr, "ew_controller: Anillo <%s> no registrado en earthworm.d\n", RingName);
+      fprintf(stderr, "ew_controller: Ring <%s> not registered in earthworm.d\n", RingName);
       exit(-1);
    }
    if (GetType("TYPE_HEARTBEAT", &TypeHeartBeat) != 0) TypeHeartBeat = 0;
@@ -218,26 +287,40 @@ void ConnectToEarthworm(void)
    g_ring_key = RingKey;
 }
 
-/* Se invoca repetidamente hasta que startstop haya creado el anillo.
-   Evita que el modulo crashee si se ejecuta antes que startstop. */
+ /***********************************************************************
+  *                           on_try_attach()                           *
+  *             GTK timeout callback that attaches to the control ring  *
+  *             once startstop has created it, then requests the first  *
+  *             status.                                                 *
+  *               G_SOURCE_REMOVE on attach, else G_SOURCE_CONTINUE.    *
+  ***********************************************************************/
+
 static gboolean on_try_attach(gpointer data)
 {
    if (g_attached) return G_SOURCE_REMOVE;
    if (g_ring_key < 0 || shmget(g_ring_key, 0, 0) < 0) {
       gtk_label_set_text(GTK_LABEL(g_lbl_statusbar),
-         "Esperando el anillo CONTROL_RING (arranca startstop)...");
+         "Waiting for the CONTROL_RING ring (start startstop)...");
       return G_SOURCE_CONTINUE;
    }
    tport_attach(&Region, g_ring_key);
    g_attached = 1;
    pedir_estado();
-   gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Conectado al anillo de control.");
+   gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Connected to the control ring.");
    return G_SOURCE_REMOVE;
 }
 
 /* ***********************************************************
- *  Parseo del STATUS de startstop                            *
+ *  Parsing the startstop STATUS                              *
  * ***********************************************************/
+ /***********************************************************************
+  *                           campo_despues()                           *
+  *             Extracts the value of a labeled field from a status     *
+  *             line: the text after '<label>:' trimmed of blanks and   *
+  *             CR/LF.                                                  *
+  *               Nothing; out is left empty if the label is not found. *
+  ***********************************************************************/
+
 static void campo_despues(char *line, const char *label, char *out, size_t n)
 {
    char *c = strstr(line, label);
@@ -254,6 +337,13 @@ static void campo_despues(char *line, const char *label, char *out, size_t n)
    while (e >= out && (*e == ' ' || *e == '\r')) { *e = '\0'; e--; }
 }
 
+ /***********************************************************************
+  *                      extraer_config_de_args()                       *
+  *             Scans the detail string for a '.d' argument and returns *
+  *             its base name without directory or extension.           *
+  *               Nothing; config is filled (empty if not found).       *
+  ***********************************************************************/
+
 static void extraer_config_de_args(char *detalle, char *config, size_t n)
 {
    char tmp[192], *tok;
@@ -264,7 +354,7 @@ static void extraer_config_de_args(char *detalle, char *config, size_t n)
    while (tok) {
       int len = strlen(tok);
       if (len > 3 && !strcmp(&tok[len - 2], ".d")) {
-         /* base del log = config sin extension (igual que get_prog_name2) */
+         /* log base = config without extension (same as get_prog_name2) */
          char *slash = strrchr(tok, '/');
          if (slash) tok = slash + 1;
          char *dot = strchr(tok, '.');
@@ -275,6 +365,13 @@ static void extraer_config_de_args(char *detalle, char *config, size_t n)
    }
    config[n - 1] = '\0';
 }
+
+ /***********************************************************************
+  *                      extraer_cfgfile_de_args()                      *
+  *             Scans the detail string for a '.d' argument and returns *
+  *             the file name without the directory part.               *
+  *               Nothing; cfgfile is filled (empty if not found).      *
+  ***********************************************************************/
 
 static void extraer_cfgfile_de_args(char *detalle, char *cfgfile, size_t n)
 {
@@ -294,6 +391,13 @@ static void extraer_cfgfile_de_args(char *detalle, char *cfgfile, size_t n)
    }
    cfgfile[n - 1] = '\0';
 }
+
+ /***********************************************************************
+  *                           parse_status()                            *
+  *             Parses a startstop status message, filling the module   *
+  *             ring arrays plus the header fields (host, times, disk). *
+  *               Nothing; g_mods/g_rings are repopulated.              *
+  ***********************************************************************/
 
 void parse_status(char *buf)
 {
@@ -333,7 +437,7 @@ void parse_status(char *buf)
          strncpy(g_mods[g_nmods].status, status, 15);
          g_mods[g_nmods].status[15] = '\0';
 
-         /* resto de la linea = detalle */
+         /* rest of the line = detail */
          char *reststart = strstr(line, status) + strlen(status);
          while (*reststart == ' ') reststart++;
          strncpy(rest, reststart, sizeof(rest) - 1);
@@ -343,13 +447,13 @@ void parse_status(char *buf)
 
          extraer_config_de_args(rest, g_mods[g_nmods].config, sizeof(g_mods[g_nmods].config));
          if (g_mods[g_nmods].config[0] == '\0') {
-            /* si no encontro archivo .d, usar el nombre del proceso */
+            /* if no .d file found, use the process name */
             strncpy(g_mods[g_nmods].config, g_mods[g_nmods].name, sizeof(g_mods[g_nmods].config) - 1);
          }
 
          extraer_cfgfile_de_args(rest, g_mods[g_nmods].cfgfile, sizeof(g_mods[g_nmods].cfgfile));
          if (g_mods[g_nmods].cfgfile[0] == '\0') {
-            /* fallback: derivar del nombre del proceso */
+            /* fallback: derive from the process name */
             strncpy(g_mods[g_nmods].cfgfile, g_mods[g_nmods].name, sizeof(g_mods[g_nmods].cfgfile) - 1);
             strncat(g_mods[g_nmods].cfgfile, ".d", sizeof(g_mods[g_nmods].cfgfile) - 1);
             g_mods[g_nmods].cfgfile[sizeof(g_mods[g_nmods].cfgfile) - 1] = '\0';
@@ -362,8 +466,15 @@ void parse_status(char *buf)
 }
 
 /* ***********************************************************
- *  Editor de configuracion: parser/escritor de archivos .d   *
+ *  Configuration editor: parser/writer of .d files          *
  * ***********************************************************/
+ /***********************************************************************
+  *                             cfg_libre()                             *
+  *             Frees all the allocated fields of a CFGFILE (lines and  *
+  *             their strings) and resets the line count.               *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void cfg_libre(CFGFILE *cf)
 {
    int i;
@@ -378,7 +489,13 @@ static void cfg_libre(CFGFILE *cf)
    cf->nlines = 0;
 }
 
-/* divide una linea "nombre valor # comentario" en campos */
+ /***********************************************************************
+  *                          cfg_parse_linea()                          *
+  *             Splits a config line into its fields (prefix, name, gap,*
+  *             value, comment) honoring quotes around the value.       *
+  *               Nothing; the CFGLINE is filled in.                    *
+  ***********************************************************************/
+
 static void cfg_parse_linea(char *line, CFGLINE *l)
 {
    char *p = line, *q;
@@ -396,11 +513,11 @@ static void cfg_parse_linea(char *line, CFGLINE *l)
    strncpy(l->prefix, line, p - line);
    l->prefix[p - line] = '\0';
 
-   /* linea en blanco o comentario */
+   /* blank line or comment */
    if (*p == '\0') { l->kind = 2; l->raw = strdup(line); return; }
    if (*p == '#')  { l->kind = 1; l->raw = strdup(line); return; }
 
-   /* nombre = primer token */
+   /* name = first token */
    name = p;
    while (*p && *p != ' ' && *p != '\t') p++;
    l->name = malloc(p - name + 1);
@@ -414,7 +531,7 @@ static void cfg_parse_linea(char *line, CFGLINE *l)
    memcpy(l->gap1, p, q - p);
    l->gap1[q - p] = '\0';
 
-   /* valor = hasta el primer '#' fuera de comillas */
+   /* value = up to the first '#' outside quotes */
    vstart = q;
    vaux = q;
    while (*vaux) {
@@ -423,7 +540,7 @@ static void cfg_parse_linea(char *line, CFGLINE *l)
       vaux++;
    }
    if (hash) {
-      /* gap2 = espacios entre valor y '#', comment = desde '#' */
+      /* gap2 = spaces between value and '#', comment = from '#' */
       q = hash;
       while (q > vstart && (q[-1] == ' ' || q[-1] == '\t')) q--;
       l->value = malloc(q - vstart + 1);
@@ -432,7 +549,7 @@ static void cfg_parse_linea(char *line, CFGLINE *l)
       l->gap2 = malloc(hash - q + 1);
       memcpy(l->gap2, q, hash - q);
       l->gap2[hash - q] = '\0';
-      /* comentario completo (incluye espacios/tabs finales) */
+      /* full comment (includes trailing spaces/tabs) */
       l->comment = strdup(hash);
    } else {
       char *vend = vstart + strlen(vstart);
@@ -441,7 +558,7 @@ static void cfg_parse_linea(char *line, CFGLINE *l)
       l->value = malloc(ve - vstart + 1);
       memcpy(l->value, vstart, ve - vstart);
       l->value[ve - vstart] = '\0';
-      /* espacios finales de la linea se conservan en gap2 */
+      /* trailing spaces of the line are kept in gap2 */
       l->gap2 = malloc(vend - ve + 1);
       memcpy(l->gap2, ve, vend - ve);
       l->gap2[vend - ve] = '\0';
@@ -450,7 +567,13 @@ static void cfg_parse_linea(char *line, CFGLINE *l)
    l->kind = 0;
 }
 
-/* lee un archivo .d y construye el CFGFILE */
+ /***********************************************************************
+  *                             cfg_leer()                              *
+  *             Reads a .d file into a CFGFILE, one CFGLINE per line,   *
+  *             and records whether the file ends with a newline.       *
+  *               0 on success, -1 if the file cannot be opened.        *
+  ***********************************************************************/
+
 static int cfg_leer(const char *path, CFGFILE *cf)
 {
    FILE *f = fopen(path, "r");
@@ -480,6 +603,12 @@ static int cfg_leer(const char *path, CFGFILE *cf)
    return 0;
 }
 
+ /***********************************************************************
+  *                          copiar_archivo()                           *
+  *             Copies a file byte by byte (makes the .bak backup).     *
+  *               0 on success, -1 on failure.                          *
+  ***********************************************************************/
+
 static int copiar_archivo(const char *src, const char *dst)
 {
    FILE *in = fopen(src, "rb"), *out;
@@ -495,7 +624,13 @@ static int copiar_archivo(const char *src, const char *dst)
    return 0;
 }
 
-/* guarda con backup .bak y escritura atomica (tmp + rename) */
+ /***********************************************************************
+  *                            cfg_guardar()                            *
+  *             Writes the CFGFILE to disk with a .bak backup and an    *
+  *             atomic rename, preserving formatting and comments.      *
+  *               0 on success, -1 on failure.                          *
+  ***********************************************************************/
+
 static int cfg_guardar(CFGFILE *cf)
 {
    char bak[600], tmp[600];
@@ -528,6 +663,13 @@ static int cfg_guardar(CFGFILE *cf)
    return 0;
 }
 
+ /***********************************************************************
+  *                            ruta_config()                            *
+  *             Builds the full path of a config file, prefixing it with*
+  *             EW_PARAMS unless it is already absolute.                *
+  *               Nothing; out is filled.                               *
+  ***********************************************************************/
+
 static void ruta_config(const char *cfgfile, char *out, size_t n)
 {
    const char *ep = getenv("EW_PARAMS");
@@ -537,14 +679,22 @@ static void ruta_config(const char *cfgfile, char *out, size_t n)
 }
 
 /* ***********************************************************
- *  GTK: poblar listas                                        *
+ *  GTK: populate lists                                        *
  * ***********************************************************/
+ /***********************************************************************
+  *                           poblar_listas()                           *
+  *             Refreshes module and ring trees from the parsed arrays, *
+  *             restores the previous selection by pid, and updates the *
+  *             header label and the button state.                      *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void poblar_listas(void)
 {
    GtkTreeIter iter;
    int i;
 
-   /* conservar el modulo objetivo (por PID) a traves del refresh */
+   /* keep the target module (by PID) across the refresh */
    if (g_sel_idx >= 0 && g_sel_idx < g_nmods) g_sel_pid = g_mods[g_sel_idx].pid;
    int intent_pid = g_sel_pid;
 
@@ -565,13 +715,13 @@ void poblar_listas(void)
       gtk_list_store_set(g_rings_store, &iter, 0, g_rings[i].name, 1, g_rings[i].key, 2, g_rings[i].size, -1);
    }
 
-   /* re-ubicar el modulo objetivo en la nueva lista */
+   /* relocate the target module in the new list */
    g_sel_idx = -1;
    for (i = 0; i < g_nmods; i++)
       if (g_mods[i].pid == intent_pid) { g_sel_idx = i; break; }
 
-   /* restaurar la seleccion visual solo si el usuario no acaba de interactuar,
-      para no "pelearle" el clic cada vez que llega un refresco */
+   /* restore the visual selection only if the user has just not interacted,
+      so as not to "fight" his click every time a refresh arrives */
    if (g_sel_idx >= 0 && time(NULL) - g_last_user_click > 3) {
       gboolean ok = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(g_store), &iter);
       while (ok) {
@@ -589,7 +739,7 @@ void poblar_listas(void)
 
    char hdr[512];
    snprintf(hdr, sizeof(hdr),
-            "EARTHWORM SYSTEM STATUS\n%s   Inicio: %s   Actual: %s   Disco: %s   Version: %s",
+            "EARTHWORM SYSTEM STATUS\n%s   Start: %s   Current: %s   Disk: %s   Version: %s",
             g_hostname, g_starttime, g_curtime, g_disk, g_version);
    gtk_label_set_text(GTK_LABEL(g_lbl_header), hdr);
 }
@@ -597,7 +747,13 @@ void poblar_listas(void)
 /* ***********************************************************
  *  Acciones GTK                                              *
  * ***********************************************************/
-/* Habilita/deshabilita los botones segun el modulo objetivo (g_sel_idx). */
+ /***********************************************************************
+  *                          aplicar_botones()                          *
+  *             Enables/disables the Stop/Restart/Start buttons based on*
+  *             the selected module and status (startstop is protected).*
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void aplicar_botones(void)
 {
    gboolean sel_ok = (g_sel_idx >= 0 && g_sel_idx < g_nmods);
@@ -609,6 +765,13 @@ static void aplicar_botones(void)
    gtk_widget_set_sensitive(g_btn_start, sel_ok && !es_startstop &&
                             (!strcmp(st, "Stop") || !strcmp(st, "Dead")));
 }
+
+ /***********************************************************************
+  *                          on_row_selected()                          *
+  *             GTK handler for a change of the module tree selection;  *
+  *             updates the selected index and syncs the config combo.  *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_row_selected(GtkTreeSelection *sel, gpointer data)
 {
@@ -627,7 +790,7 @@ static void on_row_selected(GtkTreeSelection *sel, gpointer data)
    }
    aplicar_botones();
 
-   /* sincronizar la seleccion con el combo de la pestaña Configuración */
+   /* sync the selection with the combo of the Configuration tab */
    if (g_cfg_combo && g_sel_idx >= 0 && g_sel_idx < g_nmods) {
       gint cur = gtk_combo_box_get_active(GTK_COMBO_BOX(g_cfg_combo));
       if (cur != g_sel_idx)
@@ -635,11 +798,24 @@ static void on_row_selected(GtkTreeSelection *sel, gpointer data)
    }
 }
 
+ /***********************************************************************
+  *                       on_tree_button_press()                        *
+  *             GTK handler that timestamps a user click on the tree so *
+  *             the next refresh does not fight the selection.          *
+  *               FALSE (event not handled).                            *
+  ***********************************************************************/
+
 static gboolean on_tree_button_press(GtkWidget *w, GdkEventButton *ev, gpointer data)
 {
    time(&g_last_user_click);
    return FALSE;
 }
+
+ /***********************************************************************
+  *                             confirmar()                             *
+  *             Shows a modal Yes/No warning dialog with a message.     *
+  *               TRUE if the user answered Yes.                        *
+  ***********************************************************************/
 
 static gboolean confirmar(const char *msg)
 {
@@ -650,61 +826,101 @@ static gboolean confirmar(const char *msg)
    return r == GTK_RESPONSE_YES;
 }
 
+ /***********************************************************************
+  *                            on_btn_stop()                            *
+  *             Asks for confirmation and sends a Stop request for the  *
+  *             selected module, then requests a status refresh.        *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_btn_stop(GtkWidget *w, gpointer data)
 {
    if (g_sel_idx >= 0) {
       char msg[256];
-      snprintf(msg, sizeof(msg), "Detener el modulo '%s' (pid %d)?",
+      snprintf(msg, sizeof(msg), "Stop the module '%s' (pid %d)?",
                g_mods[g_sel_idx].name, g_mods[g_sel_idx].pid);
       if (!confirmar(msg)) return;
       detener_mod(g_mods[g_sel_idx].pid);
-      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Stop enviado...");
+      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Stop sent...");
       pedir_estado();
    }
 }
+
+ /***********************************************************************
+  *                          on_btn_restart()                           *
+  *             Asks confirmation and sends a Restart request for the   *
+  *             selected module, then requests a status refresh.        *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_btn_restart(GtkWidget *w, gpointer data)
 {
    if (g_sel_idx >= 0) {
       char msg[256];
-      snprintf(msg, sizeof(msg), "Reiniciar el modulo '%s' (pid %d)?",
+      snprintf(msg, sizeof(msg), "Restart the module '%s' (pid %d)?",
                g_mods[g_sel_idx].name, g_mods[g_sel_idx].pid);
       if (!confirmar(msg)) return;
       reiniciar_mod(g_mods[g_sel_idx].pid);
-      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Restart enviado...");
+      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Restart sent...");
       pedir_estado();
    }
 }
+
+ /***********************************************************************
+  *                           on_btn_start()                            *
+  *             Asks confirmation and sends a Restart request (used to  *
+  *             start) for the selected module, then requests a status. *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_btn_start(GtkWidget *w, gpointer data)
 {
    if (g_sel_idx >= 0) {
       char msg[256];
-      snprintf(msg, sizeof(msg), "Arrancar el modulo '%s'?",
+      snprintf(msg, sizeof(msg), "Start the module '%s'?",
                g_mods[g_sel_idx].name);
       if (!confirmar(msg)) return;
       reiniciar_mod(g_mods[g_sel_idx].pid);
-      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Start enviado...");
+      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Start sent...");
       pedir_estado();
    }
 }
 
+ /***********************************************************************
+  *                          on_btn_reconfig()                          *
+  *             Sends a Reconfig request to startstop, then a status.   *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_btn_reconfig(GtkWidget *w, gpointer data)
 {
    reconfigurar();
-   gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Reconfig enviado...");
+   gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Reconfig sent...");
    pedir_estado();
 }
+
+ /***********************************************************************
+  *                          on_btn_refresh()                           *
+  *             Requests a new status and shows 'Updating...'.          *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_btn_refresh(GtkWidget *w, gpointer data)
 {
    pedir_estado();
-   gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Actualizando...");
+   gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Updating...");
 }
 
 /* ***********************************************************
- *  Visor de logs                                             *
+ *  Log viewer                                               *
  * ***********************************************************/
+ /***********************************************************************
+  *                          populate_combo()                           *
+  *             Repopulates the module and config combos from the module*
+  *             array, preserving the previous selection when possible. *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void populate_combo(void)
 {
    gchar *sel = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(g_combo));
@@ -722,8 +938,8 @@ static void populate_combo(void)
    }
 
    if (!g_cfg_combo) return;
-   /* combo de configuracion: misma poblacion; el handler evita recargar
-      si el modulo seleccionado no cambio */
+   /* configuration combo: same population; the handler avoids reloading
+      if the selected module has not changed */
    gchar *csel = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(g_cfg_combo));
    gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_cfg_combo));
    for (int i = 0; i < g_nmods; i++)
@@ -739,6 +955,13 @@ static void populate_combo(void)
    }
 }
 
+ /***********************************************************************
+  *                             tail_file()                             *
+  *             Reads the last maxbytes of a file, starting at a line   *
+  *             boundary, and returns them as a NUL-terminated string.  *
+  *               A malloc'ed string, or NULL if it cannot be opened.   *
+  ***********************************************************************/
+
 static char *tail_file(const char *path, long maxbytes)
 {
    FILE *fp = fopen(path, "rb");
@@ -753,11 +976,18 @@ static char *tail_file(const char *path, long maxbytes)
    buf[n] = '\0';
    fclose(fp);
    if (n == 0) return buf;
-   /* empezar en un limite de linea */
+   /* start at a line boundary */
    char *nl = strchr(buf, '\n');
    if (nl && nl != buf) memmove(buf, nl + 1, strlen(nl + 1) + 1);
    return buf;
 }
+
+ /***********************************************************************
+  *                          actualizar_log()                           *
+  *             Finds the most recent .log file for the selected module *
+  *             and shows its tail in the log text view.                *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void actualizar_log(void)
 {
@@ -768,8 +998,8 @@ static void actualizar_log(void)
    base[sizeof(base) - 1] = '\0';
    g_free(sel);
 
-   /* startstop nombra su log con el nombre del ejecutable (argv[0]),
-      no con el archivo de config (hace un segundo logit_init con argv[0]) */
+   /* startstop names its log with the executable name (argv[0]),
+      not with the config file (it makes a second logit_init with argv[0]) */
    if (!strcmp(base, "startstop")) strcpy(base, "startstop");
    else {
       int k = -1;
@@ -783,7 +1013,7 @@ static void actualizar_log(void)
    DIR *d = opendir(LogDir);
    if (!d) {
       char msg[512];
-      snprintf(msg, sizeof(msg), "(LogDir no accesible: %s)", LogDir);
+      snprintf(msg, sizeof(msg), "(LogDir not accessible: %s)", LogDir);
       gtk_text_buffer_set_text(g_logbuf, msg, -1);
       return;
    }
@@ -803,13 +1033,20 @@ static void actualizar_log(void)
    }
    closedir(d);
    if (best[0] == '\0') {
-      gtk_text_buffer_set_text(g_logbuf, "(sin archivo de log)", -1);
+      gtk_text_buffer_set_text(g_logbuf, "(no log file)", -1);
       return;
    }
    char *txt = tail_file(best, LOG_TAIL);
-   gtk_text_buffer_set_text(g_logbuf, txt ? txt : "(no se pudo leer)", -1);
+   gtk_text_buffer_set_text(g_logbuf, txt ? txt : "(could not be read)", -1);
    if (txt) free(txt);
 }
+
+ /***********************************************************************
+  *                         on_combo_changed()                          *
+  *             GTK handler that reloads the log when the module combo  *
+  *             selection changes.                                      *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_combo_changed(GtkComboBox *combo, gpointer data)
 {
@@ -817,8 +1054,15 @@ static void on_combo_changed(GtkComboBox *combo, gpointer data)
 }
 
 /* ***********************************************************
- *  Pestaña Configuración                                     *
+ *  Configuration tab                                          *
  * ***********************************************************/
+ /***********************************************************************
+  *                      actualizar_botones_cfg()                       *
+  *             Enables/disables the config buttons (Save/Reconfig/     *
+  *             according to whether a config file is loaded.           *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void actualizar_botones_cfg(void)
 {
    gboolean ok = (g_cfg_loaded == 1);
@@ -827,11 +1071,24 @@ static void actualizar_botones_cfg(void)
    gtk_widget_set_sensitive(g_btn_cfg_reload, ok);
 }
 
+ /***********************************************************************
+  *                       on_cfg_entry_changed()                        *
+  *             GTK handler for edits in the config grid; it marks the  *
+  *             the file as dirty and updates the status label.         *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_cfg_entry_changed(GtkWidget *entry, gpointer data)
 {
    g_cfg_dirty = 1;
-   gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), "Hay cambios sin guardar...");
+   gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), "There are unsaved changes...");
 }
+
+ /***********************************************************************
+  *                          cfg_vaciar_grid()                          *
+  *             Destroys all the widgets currently in the config grid.  *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void cfg_vaciar_grid(void)
 {
@@ -841,6 +1098,13 @@ static void cfg_vaciar_grid(void)
       gtk_widget_destroy(GTK_WIDGET(l->data));
    g_list_free(ch);
 }
+
+ /***********************************************************************
+  *                         cfg_rebuild_grid()                          *
+  *             Rebuilds the configuration grid: one bold label and one *
+  *             entry per editable line of the loaded CFGFILE.          *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void cfg_rebuild_grid(void)
 {
@@ -874,6 +1138,13 @@ static void cfg_rebuild_grid(void)
    gtk_widget_show_all(g_cfg_grid);
 }
 
+ /***********************************************************************
+  *                         cfg_cargar_modulo()                         *
+  *             Loads the .d config file of the given module into the   *
+  *             configuration editor and rebuilds the grid.             *
+  *               Nothing; the status label shows the result.           *
+  ***********************************************************************/
+
 static void cfg_cargar_modulo(int idx)
 {
    char path[512];
@@ -887,7 +1158,7 @@ static void cfg_cargar_modulo(int idx)
    if (cfg_leer(path, &g_cfg) != 0) {
       g_cfg_loaded = 0;
       gtk_label_set_text(GTK_LABEL(g_lbl_cfgpath), path);
-      snprintf(msg, sizeof(msg), "No se pudo leer el archivo de config: %s", path);
+      snprintf(msg, sizeof(msg), "Could not read the config file: %s", path);
       gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), msg);
       cfg_rebuild_grid();
       actualizar_botones_cfg();
@@ -900,11 +1171,18 @@ static void cfg_cargar_modulo(int idx)
    for (i = 0; i < g_cfg.nlines; i++)
       if (g_cfg.lines[i].kind == 0) nedit++;
    gtk_label_set_text(GTK_LABEL(g_lbl_cfgpath), path);
-   snprintf(msg, sizeof(msg), "Cargado: %s  (%d variables editables)", path, nedit);
+   snprintf(msg, sizeof(msg), "Loaded: %s  (%d editable variables)", path, nedit);
    gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), msg);
    cfg_rebuild_grid();
    actualizar_botones_cfg();
 }
+
+ /***********************************************************************
+  *                       on_cfg_combo_changed()                        *
+  *             GTK handler for the config module combo; avoids a reload*
+  *             when the file is unchanged and warns of unsaved changes.*
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_cfg_combo_changed(GtkComboBox *combo, gpointer data)
 {
@@ -913,7 +1191,7 @@ static void on_cfg_combo_changed(GtkComboBox *combo, gpointer data)
    idx = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
    if (idx < 0) return;
 
-   /* mismo archivo (aunque cambie la posicion en la lista): no recargar */
+   /* same file (even if the position in the list changes): do not reload */
    if (g_cfg_loaded && g_cfg_modidx >= 0 && g_cfg_modidx < g_nmods &&
        idx < g_nmods && !strcmp(g_mods[g_cfg_modidx].cfgfile, g_mods[idx].cfgfile)) {
       g_cfg_modidx = idx;
@@ -922,7 +1200,7 @@ static void on_cfg_combo_changed(GtkComboBox *combo, gpointer data)
 
    if (g_cfg_loaded && g_cfg_dirty) {
       char msg[300];
-      snprintf(msg, sizeof(msg), "Hay cambios sin guardar en '%s'. ¿Descartarlos?",
+      snprintf(msg, sizeof(msg), "There are unsaved changes in '%s'. Discard them?",
                (g_cfg_modidx >= 0 && g_cfg_modidx < g_nmods) ? g_mods[g_cfg_modidx].name : "?");
       if (!confirmar(msg)) {
          g_cfg_suppress = 1;
@@ -934,13 +1212,20 @@ static void on_cfg_combo_changed(GtkComboBox *combo, gpointer data)
    cfg_cargar_modulo(idx);
 }
 
+ /***********************************************************************
+  *                          on_btn_cfg_save()                          *
+  *             Copies the entry contents into the model and writes the *
+  *             config file to disk (with a .bak backup).               *
+  *               Nothing; the status label shows the result.           *
+  ***********************************************************************/
+
 static void on_btn_cfg_save(GtkWidget *w, gpointer data)
 {
    char msg[512];
    int i;
 
    if (!g_cfg_loaded) return;
-   /* volcar las entradas al modelo */
+   /* dump the entries into the model */
    for (i = 0; i < g_cfg.nlines; i++) {
       if (!g_cfg_entries[i]) continue;
       const gchar *txt = gtk_entry_get_text(GTK_ENTRY(g_cfg_entries[i]));
@@ -949,47 +1234,68 @@ static void on_btn_cfg_save(GtkWidget *w, gpointer data)
    }
    if (cfg_guardar(&g_cfg) == 0) {
       g_cfg_dirty = 0;
-      snprintf(msg, sizeof(msg), "Guardado en %s (backup .bak)", g_cfg.path);
+      snprintf(msg, sizeof(msg), "Saved to %s (backup .bak)", g_cfg.path);
       gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), msg);
    } else {
-      snprintf(msg, sizeof(msg), "ERROR al guardar %s", g_cfg.path);
+      snprintf(msg, sizeof(msg), "ERROR saving %s", g_cfg.path);
       gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), msg);
    }
 }
+
+ /***********************************************************************
+  *                        on_btn_cfg_reconfig()                        *
+  *             Saves the edited config and then asks startstop (or the *
+  *             module) to apply it by reconfiguring or restarting.     *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_btn_cfg_reconfig(GtkWidget *w, gpointer data)
 {
    char msg[300];
    if (!g_cfg_loaded || g_cfg_modidx < 0) return;
    on_btn_cfg_save(w, data);
-   if (g_cfg_dirty) return;   /* no se pudo guardar */
-   snprintf(msg, sizeof(msg), "Reiniciar '%s' para aplicar la config guardada?",
+   if (g_cfg_dirty) return;   /* could not be saved */
+   snprintf(msg, sizeof(msg), "Restart '%s' to apply the saved config?",
             g_mods[g_cfg_modidx].name);
    if (!confirmar(msg)) return;
    if (!strcmp(g_mods[g_cfg_modidx].name, "startstop")) {
       reconfigurar();
-      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Reconfig (startstop) enviado...");
-      gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), "startstop re-lee su config y aplica los cambios.");
+      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Reconfig (startstop) sent...");
+      gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status), "startstop re-reads its config and applies the changes.");
    } else {
       reiniciar_mod(g_mods[g_cfg_modidx].pid);
-      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Restart enviado...");
+      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "Restart sent...");
       gtk_label_set_text(GTK_LABEL(g_lbl_cfg_status),
-         "Config guardada. El modulo relee su config al reiniciar.");
+         "Config saved. The module re-reads its config on restart.");
    }
    pedir_estado();
 }
 
+ /***********************************************************************
+  *                         on_btn_cfg_reload()                         *
+  *             Reloads the config file from disk, discarding the       *
+  *             unsaved changes after confirmation.                     *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_btn_cfg_reload(GtkWidget *w, gpointer data)
 {
    if (!g_cfg_loaded) return;
-   if (g_cfg_dirty && !confirmar("Hay cambios sin guardar. ¿Recargar el archivo y descartarlos?"))
+   if (g_cfg_dirty && !confirmar("There are unsaved changes. Reload the file and discard them?"))
       return;
    cfg_cargar_modulo(g_cfg_modidx);
 }
 
 /* ***********************************************************
- *  Bucles de fondo (GTK main loop)                           *
+ *  Background loops (GTK main loop)                           *
  * ***********************************************************/
+ /***********************************************************************
+  *                              on_poll()                              *
+  *             Periodic timeout: sends heartbeats and status requests, *
+  *             and disables the buttons if startstop stops responding. *
+  *               G_SOURCE_CONTINUE always.                             *
+  ***********************************************************************/
+
 static gboolean on_poll(gpointer data)
 {
    if (!g_attached) return G_SOURCE_CONTINUE;
@@ -1000,9 +1306,9 @@ static gboolean on_poll(gpointer data)
       enviar(TypeHeartBeat, "");
    }
    pedir_estado();
-   /* si llevamos demasiado sin respuesta */
+   /* if too long without a response */
    if (g_last_status && (now - g_last_status) > (time_t)(PollInt * 4)) {
-      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "SIN RESPUESTA de startstop");
+      gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), "NO RESPONSE from startstop");
       gtk_widget_set_sensitive(g_btn_stop, FALSE);
       gtk_widget_set_sensitive(g_btn_restart, FALSE);
       gtk_widget_set_sensitive(g_btn_start, FALSE);
@@ -1010,6 +1316,13 @@ static gboolean on_poll(gpointer data)
    }
    return G_SOURCE_CONTINUE;
 }
+
+ /***********************************************************************
+  *                              on_read()                              *
+  *             GTK timeout that drains TYPE_STATUS from the ring and   *
+  *             parses them and refreshes the whole interface.          *
+  *               G_SOURCE_CONTINUE always.                             *
+  ***********************************************************************/
 
 static gboolean on_read(gpointer data)
 {
@@ -1039,10 +1352,10 @@ static gboolean on_read(gpointer data)
          time(&g_last_status);
          char sb[256];
          if (g_sel_idx >= 0 && g_sel_idx < g_nmods)
-            snprintf(sb, sizeof(sb), "Actualizado %s UTC - %d modulos - objetivo: %s (%s)",
+            snprintf(sb, sizeof(sb), "Updated %s UTC - %d modules - target: %s (%s)",
                      g_curtime, g_nmods, g_mods[g_sel_idx].name, g_mods[g_sel_idx].status);
          else
-            snprintf(sb, sizeof(sb), "Actualizado %s UTC - %d modulos", g_curtime, g_nmods);
+            snprintf(sb, sizeof(sb), "Updated %s UTC - %d modules", g_curtime, g_nmods);
          gtk_label_set_text(GTK_LABEL(g_lbl_statusbar), sb);
          gtk_widget_set_sensitive(g_btn_reconfig, TRUE);
          actualizar_log();
@@ -1055,6 +1368,13 @@ static gboolean on_read(gpointer data)
 /* ***********************************************************
  *  Main                                                      *
  * ***********************************************************/
+ /***********************************************************************
+  *                               main()                                *
+  *             Entry point: reads the config, connects to the ring,    *
+  *             builds the GTK interface and runs the main loop.        *
+  *               0 on clean exit.                                      *
+  ***********************************************************************/
+
 int main(int argc, char *argv[])
 {
    if (argc != 2) {
@@ -1062,7 +1382,7 @@ int main(int argc, char *argv[])
       exit(1);
    }
    if (ReadConfig(argv[1]) != 0) exit(1);
-   /* LogDir: prioridad EW_LOG (variable de ambiente) > config > "logs" */
+   /* LogDir: priority EW_LOG (environment variable) > config > "logs" */
    {
       const char *ewlog = getenv("EW_LOG");
       if (ewlog && *ewlog)
@@ -1112,13 +1432,13 @@ int main(int argc, char *argv[])
    gtk_widget_set_margin_bottom(g_lbl_header, 2);
    gtk_box_pack_start(GTK_BOX(vbox), g_lbl_header, FALSE, FALSE, 0);
 
-   /* ---- Notebook: pestañas Módulos / Configuración ---- */
+   /* ---- Notebook: Modules / Configuration tabs ---- */
    GtkWidget *notebook = gtk_notebook_new();
    gtk_box_pack_start(GTK_BOX(vbox), notebook, TRUE, TRUE, 0);
 
-   /* ================= Pestaña 1: MÓDULOS ================= */
+   /* ================= Tab 1: MODULES ================= */
    GtkWidget *page_mod = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page_mod, gtk_label_new("Módulos"));
+   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page_mod, gtk_label_new("Modules"));
 
    GtkWidget *paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
    gtk_box_pack_start(GTK_BOX(page_mod), paned, TRUE, TRUE, 0);
@@ -1135,7 +1455,7 @@ int main(int argc, char *argv[])
    GtkTreeSelection *sel;
 
    renderer = gtk_cell_renderer_text_new();
-   col = gtk_tree_view_column_new_with_attributes("Modulo", renderer, "text", 0, NULL);
+   col = gtk_tree_view_column_new_with_attributes("Module", renderer, "text", 0, NULL);
    gtk_tree_view_column_set_expand(GTK_TREE_VIEW_COLUMN(col), FALSE);
    gtk_tree_view_append_column(GTK_TREE_VIEW(g_tree), col);
 
@@ -1144,11 +1464,11 @@ int main(int argc, char *argv[])
    gtk_tree_view_append_column(GTK_TREE_VIEW(g_tree), col);
 
    renderer = gtk_cell_renderer_text_new();
-   col = gtk_tree_view_column_new_with_attributes("Estado", renderer, "text", 2, NULL);
+   col = gtk_tree_view_column_new_with_attributes("Status", renderer, "text", 2, NULL);
    gtk_tree_view_append_column(GTK_TREE_VIEW(g_tree), col);
 
    renderer = gtk_cell_renderer_text_new();
-   col = gtk_tree_view_column_new_with_attributes("Detalle", renderer, "text", 3, NULL);
+   col = gtk_tree_view_column_new_with_attributes("Details", renderer, "text", 3, NULL);
    gtk_tree_view_column_set_expand(GTK_TREE_VIEW_COLUMN(col), TRUE);
    gtk_tree_view_append_column(GTK_TREE_VIEW(g_tree), col);
 
@@ -1158,7 +1478,7 @@ int main(int argc, char *argv[])
    gtk_container_add(GTK_CONTAINER(sw_mod), g_tree);
    gtk_box_pack_start(GTK_BOX(box_mod), sw_mod, TRUE, TRUE, 0);
 
-   /* botones */
+   /* buttons */
    GtkWidget *hbtn = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
    gtk_box_pack_start(GTK_BOX(box_mod), hbtn, FALSE, FALSE, 0);
 
@@ -1196,11 +1516,11 @@ int main(int argc, char *argv[])
    g_signal_connect(sel, "changed", G_CALLBACK(on_row_selected), NULL);
    g_signal_connect(g_tree, "button-press-event", G_CALLBACK(on_tree_button_press), NULL);
 
-   /* ---- Panel derecho: anillos + logs ---- */
+   /* ---- Right panel: rings + logs ---- */
    GtkWidget *box_der = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
    gtk_paned_pack2(GTK_PANED(paned), box_der, TRUE, FALSE);
 
-   GtkWidget *lbl_rings = gtk_label_new("ANILLOS");
+   GtkWidget *lbl_rings = gtk_label_new("RINGS");
    gtk_label_set_xalign(GTK_LABEL(lbl_rings), 0.0);
    gtk_box_pack_start(GTK_BOX(box_der), lbl_rings, FALSE, FALSE, 0);
 
@@ -1241,13 +1561,13 @@ int main(int argc, char *argv[])
    gtk_container_add(GTK_CONTAINER(sw_log), g_logview);
    gtk_box_pack_start(GTK_BOX(box_der), sw_log, TRUE, TRUE, 0);
 
-   /* ================= Pestaña 2: CONFIGURACIÓN ================= */
+   /* ================= Tab 2: CONFIGURATION ================= */
    GtkWidget *page_cfg = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
-   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page_cfg, gtk_label_new("Configuración"));
+   gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page_cfg, gtk_label_new("Configuration"));
 
    GtkWidget *cfg_h = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
    gtk_box_pack_start(GTK_BOX(page_cfg), cfg_h, FALSE, FALSE, 0);
-   GtkWidget *lbl_cfg_mod = gtk_label_new("Módulo:");
+   GtkWidget *lbl_cfg_mod = gtk_label_new("Module:");
    gtk_box_pack_start(GTK_BOX(cfg_h), lbl_cfg_mod, FALSE, FALSE, 0);
 
    g_cfg_combo = gtk_combo_box_text_new();
@@ -1270,15 +1590,15 @@ int main(int argc, char *argv[])
    GtkWidget *cfg_btn = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
    gtk_box_pack_start(GTK_BOX(page_cfg), cfg_btn, FALSE, FALSE, 0);
 
-   g_btn_cfg_save = gtk_button_new_with_label("Guardar");
+   g_btn_cfg_save = gtk_button_new_with_label("Save");
    g_signal_connect(g_btn_cfg_save, "clicked", G_CALLBACK(on_btn_cfg_save), NULL);
    gtk_box_pack_start(GTK_BOX(cfg_btn), g_btn_cfg_save, FALSE, FALSE, 0);
 
-   g_btn_cfg_reconfig = gtk_button_new_with_label("Reconfigurar");
+   g_btn_cfg_reconfig = gtk_button_new_with_label("Reconfigure");
    g_signal_connect(g_btn_cfg_reconfig, "clicked", G_CALLBACK(on_btn_cfg_reconfig), NULL);
    gtk_box_pack_start(GTK_BOX(cfg_btn), g_btn_cfg_reconfig, FALSE, FALSE, 0);
 
-   g_btn_cfg_reload = gtk_button_new_with_label("Recargar");
+   g_btn_cfg_reload = gtk_button_new_with_label("Reload");
    g_signal_connect(g_btn_cfg_reload, "clicked", G_CALLBACK(on_btn_cfg_reload), NULL);
    gtk_box_pack_start(GTK_BOX(cfg_btn), g_btn_cfg_reload, FALSE, FALSE, 0);
 
@@ -1290,7 +1610,7 @@ int main(int argc, char *argv[])
    gtk_widget_set_sensitive(g_btn_cfg_reconfig, FALSE);
    gtk_widget_set_sensitive(g_btn_cfg_reload, FALSE);
 
-   g_lbl_statusbar = gtk_label_new("Esperando respuesta de startstop...");
+   g_lbl_statusbar = gtk_label_new("Waiting for startstop response...");
    gtk_label_set_xalign(GTK_LABEL(g_lbl_statusbar), 0.0);
    gtk_box_pack_start(GTK_BOX(vbox), g_lbl_statusbar, FALSE, FALSE, 0);
 

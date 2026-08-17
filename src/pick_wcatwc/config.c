@@ -67,7 +67,7 @@ int GetConfig( char *config_file, GPARM *Gparm )
 
 /* Read configuration parameters
    *****************************/
-         /* PARCHE 64 BITS Y WARNINGS: Paréntesis agregados */
+         /* 64-BIT PATCH AND WARNINGS: Parentheses added */
          else if ( k_its( "StaFile" ) )
          {
             if ( (str = k_str()) )
@@ -337,7 +337,7 @@ void LogConfig( GPARM *Gparm )
    logit( "", "StaDataFile:     %s\n",      Gparm->StaDataFile );
    logit( "", "ResponseFile:    %s\n",      Gparm->ResponseFile );
    
-   /* PARCHE FORMATO DE LOG 64 BITS: %ld y %u correctamente aplicados para llaves y ModID */
+   /* 64-BIT LOG FORMAT PATCH: %ld and %u correctly applied for keys and ModID */
    logit( "", "InKey:           %ld\n",     Gparm->InKey );
    logit( "", "OutKey:          %ld\n",     Gparm->OutKey );
    logit( "", "AlarmKey:        %ld\n",     Gparm->AlarmKey );

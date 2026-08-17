@@ -1,8 +1,8 @@
 /******************************************************************
  * dataprocessing.c                                               *
  * *
- * Librería de procesamiento digital de señales (DSP) para        *
- * visualizadores y análisis sismológico interactivo.             *
+ * Digital signal processing (DSP) library for                   *
+ * interactive seismological viewers and analysis.                *
  ******************************************************************/
 
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #endif
 
 /* --------------------------------------------------------------------
- * Filtro Butterworth IIR Dinámico (Soporta Orden 2 y 4)
+ * Dynamic Butterworth IIR Filter (Supports Order 2 and 4)
  * -------------------------------------------------------------------- */
 void aplicar_filtro_iir(long *data, long size, double fs, int type, double fc, int order) {
     if (fs <= 0.0 || size == 0 || fc <= 0.0) return;
@@ -28,10 +28,10 @@ void aplicar_filtro_iir(long *data, long size, double fs, int type, double fc, i
     
     int n_biquads = (order >= 4) ? 2 : 1;
     
-    /* Factores Q para Butterworth */
-    double Q[2] = {0.70710678, 0.0}; /* Orden 2 usa un Q unico de 1/sqrt(2) */
+    /* Butterworth Q factors */
+    double Q[2] = {0.70710678, 0.0}; /* Order 2 uses a single Q of 1/sqrt(2) */
     if (n_biquads == 2) {
-        /* Para orden 4 se requieren 2 biquads en cascada con estos Q especificos */
+        /* Order 4 requires 2 biquads in cascade with these specific Qs */
         Q[0] = 0.54119610;
         Q[1] = 1.30656296;
     }
@@ -57,12 +57,12 @@ void aplicar_filtro_iir(long *data, long size, double fs, int type, double fc, i
         /* Initialize states using the very first sample to avoid impulse response spikes */
         double x1 = (double)data[0], x2 = (double)data[0];
         double y1 = 0.0, y2 = 0.0;
-        if (type == 1) { y1 = 0.0; y2 = 0.0; } /* Para HPF, el resultado DC es 0 */
-        else { y1 = (double)data[0]; y2 = (double)data[0]; } /* Para LPF, la DC cruza intacta */
+        if (type == 1) { y1 = 0.0; y2 = 0.0; } /* For HPF, the DC result is 0 */
+        else { y1 = (double)data[0]; y2 = (double)data[0]; } /* For LPF, DC passes through unchanged */
         
         for (long i = 0; i < size; i++) {
-            /* Hueco (INT_MAX): reiniciar estado del filtro para que cada segmento
-               continuo se procese por separado y el hueco quede intacto en la salida. */
+            /* Gap (INT_MAX): reset the filter state so each continuous segment
+               is processed separately and the gap stays intact in the output. */
             if (data[i] == INT_MAX) {
                 x1 = x2 = 0.0; y1 = y2 = 0.0;
                 continue;
@@ -151,17 +151,17 @@ void FillInternalGaps(STATION *pSta) {
 }
 
 /* --------------------------------------------------------------------
- * MarkZeroDropouts: Limpia los dropouts de ceros grabados en disco (el
- * escritor rellena con 0 los huecos).
- *  - Runs de ceros >= 0.5 s (huecos reales) -> INT_MAX (se dibujan como
- *    espacio vacio; el filtro reinicia su estado).
- *  - Runs cortos de ceros (< 0.5 s, incl. ceros aislados): corresponden a
- *    muestras individuales perdidas del feed. Si estan inmersos en datos
- *    validos se interpolan linealmente entre los vecinos (evita el spike
- *    que un 0 real provocaria en el render y en el filtrado IIR). Si tocan
- *    el inicio/fin del buffer o estan pegados a un hueco (INT_MAX), se
- *    absorben como INT_MAX para no fabricar datos en los bordes de las
- *    ventanas vacias.
+ * MarkZeroDropouts: Cleans the zero dropouts recorded to disk (the
+ * writer fills the gaps with 0).
+ *  - Runs of zeros >= 0.5 s (real gaps) -> INT_MAX (they are drawn as
+ *    empty space; the filter resets its state).
+ *  - Short runs of zeros (< 0.5 s, incl. isolated zeros): they correspond
+ *    to individual samples lost from the feed. If they are immersed in
+ *    valid data they are linearly interpolated between the neighbors
+ *    (avoids the spike a real 0 would cause in the render and in the IIR
+ *    filtering). If they touch the start/end of the buffer or are adjacent
+ *    to a gap (INT_MAX), they are absorbed as INT_MAX so no data is
+ *    fabricated at the edges of the empty windows.
  * -------------------------------------------------------------------- */
 void MarkZeroDropouts(STATION *pSta) {
     long n = pSta->lRawCircCtr;
@@ -170,7 +170,7 @@ void MarkZeroDropouts(STATION *pSta) {
     long thr = (long)(0.5 * pSta->dSampRate);
     if (thr < 10) thr = 10;
 
-    /* 1a pasada: runs largos de ceros -> INT_MAX (hueco) */
+    /* 1st pass: long zero runs -> INT_MAX (gap) */
     long run = 0;
     for (long i = 0; i < n; i++) {
         if (pSta->plRawCircBuff[i] == 0) {
@@ -188,8 +188,8 @@ void MarkZeroDropouts(STATION *pSta) {
             pSta->plRawCircBuff[j] = INT_MAX;
     }
 
-    /* 2a pasada: runs cortos de ceros. Interpolar si estan flanqueados por
-       datos validos; si no (borde del buffer o contiguos a INT_MAX), hueco. */
+    /* 2nd pass: short zero runs. Interpolate if they are flanked by
+       valid data; otherwise (buffer edge or adjacent to INT_MAX), gap. */
     long i = 0;
     while (i < n) {
         if (pSta->plRawCircBuff[i] != 0) { i++; continue; }
@@ -197,10 +197,10 @@ void MarkZeroDropouts(STATION *pSta) {
         while (i < n && pSta->plRawCircBuff[i] == 0) i++;
         long e = i;
         long len = e - s;
-        if (len >= thr) continue;      /* ya convertido a INT_MAX arriba */
+        if (len >= thr) continue;      /* already converted to INT_MAX above */
 
-        /* Vecinos validos: los datos son bipolares, asi que se marcan con
-           banderas (un centinela -1 chocaria con muestras negativas reales). */
+        /* Valid neighbors: the data is bipolar, so they are marked with
+           flags (a -1 sentinel would collide with real negative samples). */
         int has_left  = (s > 0 && pSta->plRawCircBuff[s-1] != INT_MAX);
         int has_right = (e < n && pSta->plRawCircBuff[e]   != INT_MAX);
         long left  = has_left  ? pSta->plRawCircBuff[s-1] : 0;
@@ -219,7 +219,7 @@ void MarkZeroDropouts(STATION *pSta) {
 }
 
 /* --------------------------------------------------------------------
- * DemeanTrace: Calcula y remueve el offset DC de la señal
+ * DemeanTrace: Computes and removes the DC offset of the signal
  * -------------------------------------------------------------------- */
 void DemeanTrace(STATION *pSta) {
     if (pSta->lRawCircCtr <= 0) return;

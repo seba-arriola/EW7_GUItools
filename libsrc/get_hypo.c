@@ -127,7 +127,7 @@ int CopyHypo( HYPO *HStruct, HYPO Hypo[] )
 
 int HypoStruct( char *HIn, HYPO *pHypo )
 {
-/* Break up incoming message (PARCHADO A %d PARA VARIABLES INT EN 64 BITS)
+/* Break up incoming message (PATCHED TO %d FOR INT VARIABLES IN 64 BITS)
    *************************/
    if ( sscanf( HIn, "%d %d %lf %lf %lf %lf %d %d %lf %d %lf %3s %d "
                      "%lf %d %lf %d %lf %d %lf %d %lf %d %d",
@@ -219,7 +219,7 @@ void LoadHypo( char *pszQFile, HYPO Hypo[] )
       return;
    }
    
-/* Read in quake information (PARCHADO A %d PARA VARIABLES INT EN 64 BITS) */   
+/* Read in quake information (PATCHED TO %d FOR INT VARIABLES IN 64 BITS) */   
    for ( i=0; i<MAX_QUAKES; i++ )
    {
 if ( fscanf( hFile, "%lf %lf %lf %lf %d %3s %lf %d %d %d %lf"

@@ -10,7 +10,7 @@
 extern float fPP[27436];  
 extern char  szStnRem[MAX_PBUFFS][MAX_STN_REM][TRACE_STA_LEN];/* Removed stns */
 
-/* --- INICIO PARCHE DE 64 BITS (PROTOTIPOS MATEMATICOS FALTANTES) --- */
+/* --- START 64-BIT PATCH (MISSING MATH PROTOTYPES) --- */
 void InitialLocator( int, int, int, PPICK *, HYPO *, double, double );
 void QuakeSolveIasp( int, PPICK *, HYPO *, EQDEPTHDATA *, int );
 void IsItGoodSoln( int, PPICK *, HYPO *, int );
@@ -30,7 +30,7 @@ void NearestCitiesEC( LATLON *, CITY *, CITYDIS * );
 void NearestCities( LATLON *, CITY *, CITYDIS * );
 char *namnum( double, double, int *, char *, char *, char * );
 int  GetRegion( double, double );
-/* --- FIN PARCHE DE 64 BITS --- */
+/* --- END 64-BIT PATCH --- */
       
 void AddInMw( char *pszFile, HYPO *pHypo )
 {
@@ -95,7 +95,7 @@ void CheckPBuffTimes( PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[], int iActive,
    int     iMatch, iPCnt, iNearbyPMatch;
    int     iStnIndex;              
 
-   /* === BLINDAJE DE MEMORIA 1: LIMITAR VARIABLES GLOBALES AL TAMAÑO COMPILADO === */
+   /* === MEMORY SHIELD 1: LIMIT GLOBAL VARIABLES TO THE COMPILED SIZE === */
    int numPBuffs = Gparm->NumPBuffs;
    if (numPBuffs > MAX_PBUFFS) numPBuffs = MAX_PBUFFS;
    
@@ -177,7 +177,7 @@ NextBuffer:;}
                      if ( iBuff[j] != -2 )
                      {
                         iAlreadyUsed = 0;
-                        /* EL PARCHE kk QUE PREVIENE LA CORRUPCION DEL BUCLE */
+                        /* THE kk PATCH THAT PREVENTS LOOP CORRUPTION */
                         for ( kk=0; kk<i; kk++ )
                            if ( iBuff[kk] == j ) iAlreadyUsed = 1;
                         if ( iAlreadyUsed == 0 )
@@ -203,7 +203,7 @@ NextBuffer:;}
                   } else {
                      int limit_j = iPBufCnt[iTemp]; if(limit_j > iMaxStn) limit_j = iMaxStn;
                      for ( j=0; j<limit_j; j++ )
-                        /* EL PARCHE kk QUE PREVIENE LA CORRUPCION DEL BUCLE Y SAFE_NEAR_STN */
+                        /* THE kk PATCH THAT PREVENTS LOOP CORRUPTION AND SAFE_NEAR_STN */
                         for ( kk=1; kk<safeNumNearStn; kk++ ) 
                            if ( pszPStnArray[iStnIndex][kk][0] != '\0' && !strcmp( pPBuf[iTemp][j].szStation, pszPStnArray[iStnIndex][kk] ) )
                               iNearbyPMatch = 1;   
@@ -325,7 +325,7 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
    int     iStnIndex;              
    long    lTime;                  
 
-   /* === BLINDAJE DE MEMORIA 2: LIMITAR VARIABLES GLOBALES === */
+   /* === MEMORY SHIELD 2: LIMIT GLOBAL VARIABLES === */
    int numPBuffs = Gparm->NumPBuffs;
    if (numPBuffs > MAX_PBUFFS) numPBuffs = MAX_PBUFFS;
    
@@ -374,8 +374,8 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
                  !strcmp( pPBuf[i][j].szChannel, pPStruct->szChannel ) )
             {
                CopyPBuf( pPStruct, &pPBuf[i][j] );
-               /* PARCHE REPICK: pick manual reemplazado -> forzar relocalizacion
-                  en tiempo real (el contador no cambia, LocateThread no dispararia) */
+               /* REPICK PATCH: manual pick replaced -> force relocation
+                  in real time (the counter does not change, LocateThread would not trigger) */
                iLastCnt[i] = -1;
                return;
             }
@@ -399,8 +399,8 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
          {
             if ( pPStruct->iUseMe == 1 && pPBuf[i][j].iUseMe == 2 ) return;
             CopyPBuf( pPStruct, &pPBuf[i][j] );
-            /* PARCHE REPICK: solo picks manuales (iUseMe==2) fuerzan
-               relocalizacion en tiempo real; auto picks mantienen el flujo normal */
+            /* REPICK PATCH: only manual picks (iUseMe==2) force relocation
+               in real time; auto picks keep the normal flow */
             if ( pPStruct->iUseMe == 2 ) iLastCnt[i] = -1;
             return;
          }
@@ -414,7 +414,7 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
       iTemp = *piActive+i;
       if ( iTemp >= numPBuffs ) iTemp -= numPBuffs;
 	  
-      /* PARCHE 3: Evitar lectura fuera de memoria de szStnRem */
+      /* PATCH 3: Avoid out-of-bounds reads of szStnRem */
       int limit_rem = iNumRem[iTemp];
       if (limit_rem > MAX_STN_REM) limit_rem = MAX_STN_REM;
       for ( j=0; j<limit_rem; j++ ) {
@@ -453,9 +453,9 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
       }
    }
    
-   /* FIX SEGURO: Bloque rediseñado. Se calcula el tiempo esperado cinemático
-    * para descartar el pick de baja frecuencia en base a velocidades 
-    * teóricas sin usar GetPhaseTime (evitando crasheos por punteros no inicializados).
+   /* SAFE FIX: Redesigned block. The expected kinematic time is computed
+    * to discard the low-frequency pick based on theoretical velocities
+    * without using GetPhaseTime (avoiding crashes from uninitialized pointers).
     */
    if ( pPStruct->dFreq > 0.0 && pPStruct->dFreq < FREQ_MIN ) {
       for ( i=0; i<numPBuffs; i++ )
@@ -467,17 +467,17 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
               Hypo[iTemp].iGoodSoln >= 2 && 
               Hypo[iTemp].dPreferredMag >= 6.0 )
          {
-            /* Calculamos la distancia desde el sismo activo al pick nuevo */
+            /* We compute the distance from the active quake to the new pick */
             azidelt = GetDistanceAz( (LATLON *) &Hypo[iTemp], (LATLON *) pPStruct );
             double dist_km = azidelt.dDelta * 111.19;
             
-            /* Tiempos de viaje aproximados: Ondas Secundarias (~4.5 km/s) y Superficiales (~3.0 km/s) */
+            /* Approximate travel times: Secondary waves (~4.5 km/s) and Surface waves (~3.0 km/s) */
             double t_S = Hypo[iTemp].dOriginTime + (dist_km / 4.5);   
             double t_Surf = Hypo[iTemp].dOriginTime + (dist_km / 3.0);  
             
             dTTDif = pPStruct->dPTime;
             
-            /* Rechazar si coincide en el espacio de la onda secundaria de este gran evento */
+            /* Reject if it matches in the secondary wave space of this large event */
             if ( fabs( dTTDif - t_S ) <= 45.0 || fabs( dTTDif - t_Surf ) <= 90.0 ) 
             {
                return;
@@ -524,7 +524,7 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
          } else {
              int limit_j = iPBufCnt[iTemp]; if(limit_j > iNumMax) limit_j = iNumMax;
              for ( j=0; j<limit_j; j++ )
-                for ( k=1; k<safeNumNearStn; k++ ) /* USANDO VARIABLE SEGURA */
+                for ( k=1; k<safeNumNearStn; k++ ) /* USING SAFE VARIABLE */
                    if ( pszPStnArray[iStnIndex][k][0] != '\0' && !strcmp( pPBuf[iTemp][j].szStation, pszPStnArray[iStnIndex][k] ) )
                       iNearbyPMatch = 1;   
          }
@@ -640,7 +640,7 @@ void LoadPagerString( HYPO *pHypo, char *pszMsg, CITY *pcity, CITY *pcityEC, GPA
    else          
    {
       psz = namnum( ll.dLat, ll.dLon, &iFERegion, Gparm->szIndexFile, Gparm->szLatFile, Gparm->szNameFile );
-      /* BLINDAJE 64 BITS: Proteger contra lectura de archivos .fer corruptos (puntero nulo) */
+      /* 64-BIT SHIELD: Protect against reading corrupt .fer files (null pointer) */
       if (psz != NULL && strlen(psz) > 0) {
           psz[strlen (psz)-1] = '\0';
           strcpy( szTemp, psz );
@@ -649,14 +649,14 @@ void LoadPagerString( HYPO *pHypo, char *pszMsg, CITY *pcity, CITY *pcityEC, GPA
       }
    }
    
-/* --- INICIO PARCHE DE 64 BITS EN SPRINTF --- */
+/* --- START 64-BIT PATCH IN SPRINTF --- */
    sprintf( pszMsg, "%s  M%s %3.1lf  %d STN  %.1lf%c %.1lf%c  "
     "%02d:%02d:%02dZ %d/%d  RES %.1lf  AZM %d ",
     szTemp, pHypo->szPMagType,
     pHypo->dPreferredMag, (int)pHypo->iNumPs, fabs( ll.dLat ), cNS, fabs( ll.dLon ),
     cEW, (int)tm->tm_hour, (int)tm->tm_min, (int)tm->tm_sec, (int)tm->tm_mon+1, (int)tm->tm_mday,
     pHypo->dAvgRes, (int)pHypo->iAzm );
-/* --- FIN PARCHE DE 64 BITS --- */
+/* --- END 64-BIT PATCH --- */
 }
 
 void MakeH71Msg( HYPO *pHypo, char *pszMsg )
@@ -796,7 +796,7 @@ void MakeTWCMsg( HYPO *pHypo, char *pszMsg )
 {
    strcpy( pszMsg, "\0" );
 
-/* --- INICIO PARCHE DE 64 BITS EN SPRINTF --- */
+/* --- START 64-BIT PATCH IN SPRINTF --- */
    sprintf( pszMsg, "%d %d %lf %lf %lf %lf %d %d %lf %d %lf %s %d %lf "
                     "%d %lf %d %lf %d %lf %d %lf %d %d  \0",
     pHypo->iQuakeID, pHypo->iVersion, 
@@ -807,13 +807,13 @@ void MakeTWCMsg( HYPO *pHypo, char *pszMsg )
     pHypo->dMSAvg, pHypo->iNumMS, pHypo->dMwpAvg, pHypo->iNumMwp, 
     pHypo->dMbAvg, pHypo->iNumMb, pHypo->dMlAvg, pHypo->iNumMl, pHypo->dMwAvg,
 	pHypo->iNumMw, pHypo->iMagOnly );	
-/* --- FIN PARCHE DE 64 BITS --- */
+/* --- END 64-BIT PATCH --- */
 }
 
 void RemoveP( PPICK *pPBuf, int *iPBufCnt, int iIndex )
 {
    int     i;
-   /* BLINDAJE DE MEMORIA 3: Evitar Indices Negativos por Reduccion Constante */
+   /* MEMORY SHIELD 3: Avoid Negative Indices from Constant Reduction */
    if (*iPBufCnt <= 0) return;
    
    for ( i=0; i<*iPBufCnt; i++ )
@@ -853,7 +853,7 @@ int LocateQuake( PPICK *pPBuf, int *piPBufCnt, GPARM *Gparm, HYPO *pHypo,
    char    szTemp[32];      
    char    szTWCMsg[MAX_HYPO_SIZE]; 
    
-   /* === BLINDAJE DE MEMORIA 4 === */
+   /* === MEMORY SHIELD 4 === */
    int numPBuffs = Gparm->NumPBuffs;
    if (numPBuffs > MAX_PBUFFS) numPBuffs = MAX_PBUFFS;
    /* ============================= */
@@ -870,7 +870,7 @@ int LocateQuake( PPICK *pPBuf, int *piPBufCnt, GPARM *Gparm, HYPO *pHypo,
       iOrigGoodSoln = pHypo->iGoodSoln;
       if ( (pHypo->iNumPs+pHypo->iNumBadPs) >= Gparm->MinPs )
       {
-         /* PARCHE DE SEGURIDAD PARA INUMNEWPS */
+         /* SAFETY PATCH FOR INUMNEWPS */
          iNumNewPs = *piPBufCnt - (pHypo->iNumPs+pHypo->iNumBadPs);
          if ( iNumNewPs < 0 ) iNumNewPs = 0; 
          if ( iNumNewPs > 5 ) iNumNewPs = 5;
@@ -1099,7 +1099,7 @@ ReTry:
       if ( (hFile = fopen( Gparm->szOldQuakes, "r" )) != NULL )
       {
          for ( i=0; i<MAX_QUAKES; i++ ) {
-            /* --- INICIO PARCHE DE 64 BITS EN FSCANF --- */
+            /* --- START 64-BIT PATCH IN FSCANF --- */
             if ( fscanf( hFile, "%lf %lf %lf %lf %d %s %d %d %d %d %lf "
                                 "%lf %lf %d %lf %d %lf %d %lf %d %lf %d "
                                 "%lf %d\n",
@@ -1114,7 +1114,7 @@ ReTry:
                 &OldQuake[i].dMwpAvg, &OldQuake[i].iNumMwp,
                 &OldQuake[i].dMwAvg, &OldQuake[i].iNumMw,
                 &OldQuake[i].d1stPTime, &OldQuake[i].iGoodSoln ) != 24 ) break;
-            /* --- FIN PARCHE DE 64 BITS --- */
+            /* --- END 64-BIT PATCH --- */
          }
          fclose( hFile );
 			
@@ -1129,7 +1129,7 @@ ReTry:
          hFile = fopen( Gparm->szOldQuakes, "w" );
          if ( iMatch == -1 )          
          {
-            /* --- INICIO PARCHE DE 64 BITS EN FPRINTF --- */
+            /* --- START 64-BIT PATCH IN FPRINTF --- */
             fprintf( hFile, "%lf %lf %lf %lf %d %s %d %d %d %d %lf "
                             "%lf %lf %d %lf %d %lf %d %lf %d %lf %d "
                             "%lf %d\n",
@@ -1159,13 +1159,13 @@ ReTry:
                         OldQuake[i].dMwAvg, OldQuake[i].iNumMw,
                         OldQuake[i].d1stPTime, OldQuake[i].iGoodSoln );
             }
-            /* --- FIN PARCHE DE 64 BITS --- */
+            /* --- END 64-BIT PATCH --- */
          }
          else             
          {         		
             for ( i=0; i<MAX_QUAKES; i++ ) {
                if ( i == iMatch ) {
-                  /* --- INICIO PARCHE DE 64 BITS EN FPRINTF --- */
+                  /* --- START 64-BIT PATCH IN FPRINTF --- */
                   fprintf( hFile, "%lf %lf %lf %lf %d %s %d %d %d %d %lf "
                            "%lf %lf %d %lf %d %lf %d %lf %d %lf %d "
                            "%lf %d\n",
@@ -1194,7 +1194,7 @@ ReTry:
                     OldQuake[i].dMwpAvg, OldQuake[i].iNumMwp,
                     OldQuake[i].dMwAvg, OldQuake[i].iNumMw,
                     OldQuake[i].d1stPTime, OldQuake[i].iGoodSoln );
-                  /* --- FIN PARCHE DE 64 BITS --- */
+                  /* --- END 64-BIT PATCH --- */
                }
             }
          }

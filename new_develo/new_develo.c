@@ -1,3 +1,15 @@
+/***********************************************************************
+ *                             new_develo                              *
+ *                                                                     *
+ *  Real-time seismogram display and manual picking tool. It reads     *
+ *  the WAVE_RING for trace data, renders the last minutes of every    *
+ *  station in a scrollable canvas and lets the operator pick P        *
+ *  arrivals that are reported to PICK_RING. Includes HOLD/zoom,       *
+ *  colour, filter and time-window controls.                           *
+ *                                                                     *
+ *  Usage: new_develo <configfile.d>                                   *
+ ***********************************************************************/
+
 #include <gtk/gtk.h>
 #include <math.h>
 #include <string.h>
@@ -23,10 +35,10 @@
 #include <trace_buf.h>
 #include <kom.h>
 #include "earlybirdlib.h"
-#include "dataprocessing.h" /* Librería externa de DSP */
+#include "dataprocessing.h" /* External DSP library */
 
-#define REFRESH_MS 150           /* A1: 150ms ~ 6.7fps (antes 50ms = 20fps) */
-#define ENV_PROCESS_MS 500       /* A2: cadencia del procesado/envelope (2Hz) */
+#define REFRESH_MS 150           /* A1: 150ms ~ 6.7fps (before 50ms = 20fps) */
+#define ENV_PROCESS_MS 500       /* A2: processing/envelope cadence (2Hz) */
 #define PANEL_WIDTH 90
 #define BOTTOM_AXIS_H 30 
 #define MAX_TRACE_BYTES 4096
@@ -45,64 +57,64 @@
 
 #define CIRC_IDX(abs_val, size) (int)(((abs_val) % (size) + (size)) % (size))
 
-/* --- CONFIGURACION DEL MODULO --- */
-char MyModName[MAX_STR] = "MOD_DEVELO";
-char WaveRingName[MAX_STR] = "WAVE_RING";
-char PickRingName[MAX_STR] = "PICK_RING";
-char StaFile[MAX_STR] = "pick_wcatwc.sta";
-char StaDataFile[MAX_STR] = "station.dat"; 
-char CalibsFile[MAX_STR] = "calibs";
-int  HeartBeatInt = 30;
-int  LogFile = 1;
+/* --- MODULE CONFIGURATION --- */
+char MyModName[MAX_STR] = "MOD_DEVELO";     /* Earthworm module name */
+char WaveRingName[MAX_STR] = "WAVE_RING";   /* wave data ring */
+char PickRingName[MAX_STR] = "PICK_RING";   /* picks ring */
+char StaFile[MAX_STR] = "pick_wcatwc.sta";  /* station list file */
+char StaDataFile[MAX_STR] = "station.dat";  /* station data file */
+char CalibsFile[MAX_STR] = "calibs";        /* calibration file */
+int  HeartBeatInt = 30;                     /* heartbeat interval (seconds) */
+int  LogFile = 1;                           /* 1 = write log to disk */
 
-/* --- GLOBALES PARA COLORES PERSONALIZADOS --- */
-double g_color_bg[3]   = {1.0, 1.0, 1.0}; 
-double g_color_wave[3] = {0.0, 0.0, 0.0}; 
-double g_color_font[3] = {1.0, 0.0, 0.0}; 
-double g_color_sep[3]  = {0.85, 0.85, 0.85}; /* Nuevo color para el separador */
+/* --- GLOBALS FOR CUSTOM COLORS --- */
+double g_color_bg[3]   = {1.0, 1.0, 1.0};  /* background color */
+double g_color_wave[3] = {0.0, 0.0, 0.0};  /* waveform color */
+double g_color_font[3] = {1.0, 0.0, 0.0};  /* font color */
+double g_color_sep[3]  = {0.85, 0.85, 0.85}; /* separator color *//* New color for the separator */
 
-/* --- GLOBALES PARA FILTROS DINAMICOS --- */
+/* --- GLOBALS FOR DYNAMIC FILTERS --- */
 int g_filter_type = 0; /* 0=Raw, 1=HP, 2=LP, 3=BP */
-double g_f1 = 0.7;
-double g_f2 = 2.0;
-int g_order = 4;
+double g_f1 = 0.7;        /* first corner frequency (Hz) */
+double g_f2 = 2.0;        /* second corner frequency (Hz, band-pass) */
+int g_order = 4;          /* filter order (2 or 4) */
 
-SHM_INFO  WaveRegion;
-SHM_INFO  PickRegion;
-MSG_LOGO  WaveLogo[1];
-MSG_LOGO  PickLogo[1];                 
+SHM_INFO  WaveRegion;   /* transport region of the wave ring */
+SHM_INFO  PickRegion;   /* transport region of the pick ring */
+MSG_LOGO  WaveLogo[1];  /* logo to receive trace buffers */
+MSG_LOGO  PickLogo[1];  /* logo to receive pick messages */                 
 
-/* VARIABLES GLOBALES */
-double    g_latest_time = 0.0;
-double    g_smooth_time = 0.0;
-int64_t   g_last_frame_realtime = 0;
-gboolean  g_is_hold = FALSE;
-double    g_t_hold_time = 0.0;
-double    g_zoom_factor = 1.0; 
-unsigned char TypePickTWC = 0;
-unsigned char MyModId = 0;
-unsigned char MyInstId = 0;
-unsigned char TypeHeartBeat = 0;
-unsigned char TypeError = 0;
-pid_t         MyPid;
-time_t        timeLastBeat = 0;
-long          g_lPickIndexCounter = 10000;
-double        g_last_data_realtime = 0.0;
-gboolean      g_data_stale = FALSE;
-static int    g_warned_datatype = 0;
-double        g_pick_replace_secs = 15.0;
+/* GLOBAL VARIABLES */
+double    g_latest_time = 0.0;            /* newest time seen in the wave data */
+double    g_smooth_time = 0.0;            /* right edge of the display window */
+int64_t   g_last_frame_realtime = 0;      /* monotonic time of the last fetch frame */
+gboolean  g_is_hold = FALSE;              /* HOLD (frozen screen) active */
+double    g_t_hold_time = 0.0;            /* frozen time shown while on HOLD */
+double    g_zoom_factor = 1.0;            /* vertical zoom applied while on HOLD */
+unsigned char TypePickTWC = 0;            /* TYPE_PICKTWC */
+unsigned char MyModId = 0;                /* Earthworm module id */
+unsigned char MyInstId = 0;               /* Earthworm installation id */
+unsigned char TypeHeartBeat = 0;          /* TYPE_HEARTBEAT */
+unsigned char TypeError = 0;              /* TYPE_ERROR */
+pid_t         MyPid;                      /* this process id */
+time_t        timeLastBeat = 0;           /* time of the last heartbeat sent */
+long          g_lPickIndexCounter = 10000;/* next pick index to assign */
+double        g_last_data_realtime = 0.0; /* time of the last data packet */
+gboolean      g_data_stale = FALSE;       /* true when the data feed is stale */
+static int    g_warned_datatype = 0;      /* warns once about an unknown datatype */
+double        g_pick_replace_secs = 15.0; /* seconds to replace an existing pick */
 
-/* A1/A2/A3: estado del cache de envelope. El envelope se recalcula a lo
-   sumo cada ENV_PROCESS_MS o cuando algo lo fuerza (filtro, ventana, hold,
-   ancho); el draw solo lo lee y lo escala (zoom no invalida). */
-static int64_t g_last_env_process_ms = 0;
-static double  g_last_env_t_right = 0.0;
-static int     g_last_env_width = 0;
-static gboolean g_last_env_ok = FALSE;
-static gboolean g_bForceEnv = FALSE;
-static gboolean g_envelope_updated = FALSE;
+/* A1/A2/A3: state of the envelope cache. The envelope is recalculated at
+   most every ENV_PROCESS_MS or when something forces it (filter, window, hold,
+   width); the draw only reads it and scales it (zoom does not invalidate). */
+static int64_t g_last_env_process_ms = 0; /* monotonic ms of the last envelope pass */
+static double  g_last_env_t_right = 0.0;  /* t_right of the last envelope pass */
+static int     g_last_env_width = 0;      /* canvas width of the last pass */
+static gboolean g_last_env_ok = FALSE;    /* envelope cache computed at least once */
+static gboolean g_bForceEnv = FALSE;      /* forced recompute request */
+static gboolean g_envelope_updated = FALSE; /* set when the pass computed something */
 
-/* A2/A3: prototipos (se definen antes de on_draw_waves) */
+/* A2/A3: prototypes (defined before on_draw_waves) */
 static void compute_station_envelope(int i, int width);
 static void update_wave_envelopes(void);
 
@@ -129,9 +141,9 @@ typedef struct {
     int iNumPicks;
     long lPickRingNext;
     
-    /* Cache de la traza procesada (extract+interp+DC+filtro) para no
-       recalcular todo cada frame. Se invalida si cambia la ventana, el
-       filtro o llegan datos dentro de la ventana cacheada. */
+    /* Cache of the processed trace (extract+interp+DC+filter) to avoid
+       recomputing everything every frame. It is invalidated if the window, the
+       filter change or data arrives within the cached window. */
     long *plProcBuf;
     long lProcCap;
     long lProcAbsStart;
@@ -143,9 +155,9 @@ typedef struct {
     double dProcF2;
     int iProcOrder;
     
-    /* A3: envelope decimado por columna de pixel, en unidades crudas (sin
-       auto_scale/zoom). Se calcula en la pasada de procesado (A2) y el draw
-       solo lo escala; asi el zoom no lo invalida. */
+    /* A3: envelope decimated per pixel column, in raw units (without
+       auto_scale/zoom). It is computed in the processing pass (A2) and the draw
+       only scales it; thus the zoom does not invalidate it. */
     double  *dEnvMin;
     double  *dEnvMax;
     int     *iEnvHas;
@@ -159,24 +171,29 @@ typedef struct {
     PPICK pick;         
 } DEV_STATION;
 
-DEV_STATION *StaArray = NULL; 
-STATION *AtwcStaArray = NULL; 
-int iNumStas = 0;         
+DEV_STATION *StaArray = NULL;    /* per-station live data */
+STATION *AtwcStaArray = NULL;    /* ATWC station list (from ReadStationList) */
+int iNumStas = 0;                /* number of loaded stations */
 
-GtkWidget *g_scrolled_window;
-GtkWidget *g_drawing_waves;
-GtkWidget *drawing_axis; 
-GtkWidget *btn_hold;
+GtkWidget *g_scrolled_window;    /* scrolled window of the waveform canvas */
+GtkWidget *g_drawing_waves;      /* waveform drawing area */
+GtkWidget *drawing_axis;         /* time axis drawing area */
+GtkWidget *btn_hold;             /* HOLD toggle button */
 
-double dTrackHeight = 60.0;  
-int iVisStas = 12;            
-int iTimeWindowMinutes = 6;  
+double dTrackHeight = 60.0;      /* height of one station track */
+int iVisStas = 12;               /* stations visible per screen */
+int iTimeWindowMinutes = 6;      /* time window in minutes */
 
 /* --------------------------------------------------------------------
- * FUNCIONES BASE (ReadConfig, UI, etc)
+ * BASE FUNCTIONS (ReadConfig, UI, etc)
  * -------------------------------------------------------------------- */
-/* Convierte una cadena "#RRGGBB" o "RRGGBB" a doubles 0..1. Devuelve 0 si
-   ok, -1 si el formato no es valido. */
+ /***********************************************************************
+  *                           ParseHexColor()                           *
+  *             Converts a "#RRGGBB" or "RRGGBB" string to RGB          *
+  *             doubles in the range 0..1.                              *
+  *               0 if the format is valid, -1 otherwise.               *
+  ***********************************************************************/
+
 static int ParseHexColor(const char *s, double rgb[3]) {
     unsigned int r, g, b;
     if (!s || s[0] == '\0') return -1;
@@ -188,27 +205,45 @@ static int ParseHexColor(const char *s, double rgb[3]) {
     return 0;
 }
 
-/* Formatea un color double[3] (0..1) a cadena "RRGGBB" (sin '#', para que
-   el valor se pueda pegar tal cual en el archivo .d). */
+ /***********************************************************************
+  *                            ColorToHex()                             *
+  *             Formats an RGB color (0..1) as a "RRGGBB" string        *
+  *             without '#', ready to paste into the .d file.           *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void ColorToHex(const double rgb[3], char out[8]) {
     snprintf(out, 8, "%02X%02X%02X",
              (int)(rgb[0] * 255.0 + 0.5), (int)(rgb[1] * 255.0 + 0.5), (int)(rgb[2] * 255.0 + 0.5));
 }
 
-/* Escribe al log las 4 variables de color en formato config (.d) para
-   poder rescatar los valores y reutilizarlos. */
+ /***********************************************************************
+  *                          LogColorConfig()                           *
+  *             Logs the four color variables in .d format so the       *
+  *             current values can be recovered and reused.             *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void LogColorConfig(void) {
     char c_wave[8], c_bg[8], c_font[8], c_sep[8];
     ColorToHex(g_color_wave, c_wave);
     ColorToHex(g_color_bg, c_bg);
     ColorToHex(g_color_font, c_font);
     ColorToHex(g_color_sep, c_sep);
-    logit("et", "new_develo: Color config (copiar a .d):\n");
+    logit("et", "new_develo: Color config (copy to .d):\n");
     logit("et", "  waveformsColor   %s\n", c_wave);
     logit("et", "  backgroundColor  %s\n", c_bg);
     logit("et", "  fontColor        %s\n", c_font);
     logit("et", "  separatorColor   %s\n", c_sep);
 }
+
+ /***********************************************************************
+  *                            ReadConfig()                             *
+  *             Reads the module command file with kom.c, loading       *
+  *             the module, rings, station files, colors and display    *
+  *             parameters into the globals.                            *
+  *               0 on success, -1 if a parameter is missing or bad.    *
+  ***********************************************************************/
 
 int ReadConfig(char *configfile) {
     int ncommand = 8, nmiss = 0, i;
@@ -216,7 +251,7 @@ int ReadConfig(char *configfile) {
     char *com, *str;
 
     if (!k_open(configfile)) {
-        fprintf(stderr, "new_develo: Error abriendo archivo config <%s>\n", configfile);
+        fprintf(stderr, "new_develo: Error opening config file <%s>\n", configfile);
         return -1;
     }
 
@@ -232,28 +267,36 @@ int ReadConfig(char *configfile) {
         else if (k_its("StaFile")) { str = k_str(); if (str) strcpy(StaFile, str); init[5] = 1; }
         else if (k_its("StaDataFile")) { str = k_str(); if (str) strcpy(StaDataFile, str); init[6] = 1; }
         else if (k_its("CalibsFile")) { str = k_str(); if (str) strcpy(CalibsFile, str); init[7] = 1; }
-        else if (k_its("waveformsColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_wave)) logit("et", "new_develo: waveformsColor <%s> no valido, usando default\n", str); }
-        else if (k_its("backgroundColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_bg)) logit("et", "new_develo: backgroundColor <%s> no valido, usando default\n", str); }
-        else if (k_its("fontColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_font)) logit("et", "new_develo: fontColor <%s> no valido, usando default\n", str); }
-        else if (k_its("separatorColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_sep)) logit("et", "new_develo: separatorColor <%s> no valido, usando default\n", str); }
-        else if (k_its("StationsPerScreen")) { str = k_str(); if (str) { int v = atoi(str); if (v >= 1 && v <= MAX_STATIONS) iVisStas = v; else logit("et", "new_develo: StationsPerScreen <%s> invalido, usando default %d\n", str, iVisStas); } }
-        else if (k_its("TimeWindow")) { str = k_str(); if (str) { int v = atoi(str); if (v >= 1 && v <= MAX_MINUTES) iTimeWindowMinutes = v; else logit("et", "new_develo: TimeWindow <%s> invalido, usando default %d\n", str, iTimeWindowMinutes); } }
-        else if (k_its("PickReplaceWindow")) { str = k_str(); if (str) { double v = atof(str); if (v >= 0.0) g_pick_replace_secs = v; else logit("et", "new_develo: PickReplaceWindow <%s> invalido, usando default %.1f\n", str, g_pick_replace_secs); } }
+        else if (k_its("waveformsColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_wave)) logit("et", "new_develo: waveformsColor <%s> invalid, using default\n", str); }
+        else if (k_its("backgroundColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_bg)) logit("et", "new_develo: backgroundColor <%s> invalid, using default\n", str); }
+        else if (k_its("fontColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_font)) logit("et", "new_develo: fontColor <%s> invalid, using default\n", str); }
+        else if (k_its("separatorColor")) { str = k_str(); if (str && ParseHexColor(str, g_color_sep)) logit("et", "new_develo: separatorColor <%s> invalid, using default\n", str); }
+        else if (k_its("StationsPerScreen")) { str = k_str(); if (str) { int v = atoi(str); if (v >= 1 && v <= MAX_STATIONS) iVisStas = v; else logit("et", "new_develo: StationsPerScreen <%s> invalid, using default %d\n", str, iVisStas); } }
+        else if (k_its("TimeWindow")) { str = k_str(); if (str) { int v = atoi(str); if (v >= 1 && v <= MAX_MINUTES) iTimeWindowMinutes = v; else logit("et", "new_develo: TimeWindow <%s> invalid, using default %d\n", str, iTimeWindowMinutes); } }
+        else if (k_its("PickReplaceWindow")) { str = k_str(); if (str) { double v = atof(str); if (v >= 0.0) g_pick_replace_secs = v; else logit("et", "new_develo: PickReplaceWindow <%s> invalid, using default %.1f\n", str, g_pick_replace_secs); } }
         else continue;
 
         if (k_err()) {
-            fprintf(stderr, "new_develo: Error parseando <%s> en <%s>\n", com, configfile);
+            fprintf(stderr, "new_develo: Error parsing <%s> in <%s>\n", com, configfile);
             return -1;
         }
     }
     for (i = 0; i < ncommand; i++) if (!init[i]) nmiss++;
     k_close();
     if (nmiss > 0) {
-        fprintf(stderr, "new_develo: ERROR, faltan parametros en <%s>\n", configfile);
+        fprintf(stderr, "new_develo: ERROR, missing parameters in <%s>\n", configfile);
         return -1;
     }
     return 0;
 }
+
+ /***********************************************************************
+  *                          FreeAllStations()                          *
+  *             Frees the per-station buffers (raw, processed and       *
+  *             envelope caches) and the station arrays, resetting      *
+  *             the station count.                                      *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void FreeAllStations() {
     if (StaArray) {
@@ -274,9 +317,17 @@ void FreeAllStations() {
     iNumStas = 0;
 }
 
+ /***********************************************************************
+  *                        on_btn_hold_toggled()                        *
+  *             GTK handler for the HOLD toggle: freezes or releases    *
+  *             the screen time, resets the zoom, forces an envelope    *
+  *             recompute and redraws.                                  *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void on_btn_hold_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
     g_is_hold = gtk_toggle_button_get_active(togglebutton);
-    g_bForceEnv = TRUE; /* El envelope se recalcula para la ventana (in)activa */
+    g_bForceEnv = TRUE; /* The envelope is recalculated for the (in)active window */
     if (g_is_hold) {
         if (g_smooth_time > 0.0) g_t_hold_time = g_smooth_time;
         else { time_t t; time(&t); g_t_hold_time = (double)t; }
@@ -286,6 +337,13 @@ void on_btn_hold_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
     if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
     if (drawing_axis) gtk_widget_queue_draw(drawing_axis);
 }
+
+ /***********************************************************************
+  *                           on_key_press()                            *
+  *             GTK handler for key events while on HOLD: Up/Down       *
+  *             arrows zoom the waveform vertically in/out.             *
+  *               TRUE if handled, FALSE otherwise.                     *
+  ***********************************************************************/
 
 static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     if (!g_is_hold) return FALSE; 
@@ -302,6 +360,14 @@ static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer dat
     }
     return FALSE;
 }
+
+ /***********************************************************************
+  *                         on_colour_select()                          *
+  *             Opens a colour chooser dialog for one of the four       *
+  *             interface colors (waveform, background, font,           *
+  *             separator) and applies the selection.                   *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void on_colour_select(GtkWidget *widget, gpointer data) {
     int type = GPOINTER_TO_INT(data); 
@@ -331,8 +397,14 @@ void on_colour_select(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(dialog);
 }
 
-/* Recalcula el alto de pista segun el alto visible y las estaciones por
-   pantalla, y redibuja el canvas. */
+ /***********************************************************************
+  *                         RecalcTrackHeight()                         *
+  *             Recomputes the height of each station track from the    *
+  *             visible area and the stations per screen, then          *
+  *             redraws the canvas.                                     *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void RecalcTrackHeight() {
     GtkAllocation alloc;
     if (!g_scrolled_window) return;
@@ -344,6 +416,13 @@ void RecalcTrackHeight() {
     }
     if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
 }
+
+ /***********************************************************************
+  *                    on_stas_per_screen_activate()                    *
+  *             Shows a dialog to set how many stations fit             *
+  *             on the screen, then recomputes the track                *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void on_stas_per_screen_activate(GtkWidget *widget, gpointer data) {
     GtkWidget *window = GTK_WIDGET(data);
@@ -369,6 +448,13 @@ void on_stas_per_screen_activate(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(dialog);
 }
 
+ /***********************************************************************
+  *                      on_time_window_activate()                      *
+  *             Shows a dialog to set the time window in minutes,       *
+  *             forces the envelope to be recomputed and redraws.       *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void on_time_window_activate(GtkWidget *widget, gpointer data) {
     GtkWidget *dialog = gtk_dialog_new_with_buttons("Time window", GTK_WINDOW(data),
         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -387,7 +473,7 @@ void on_time_window_activate(GtkWidget *widget, gpointer data) {
 
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
         iTimeWindowMinutes = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spin));
-        g_bForceEnv = TRUE; /* Ventana nueva: recalcular envelope */
+        g_bForceEnv = TRUE; /* New window: recompute envelope */
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
         if (drawing_axis) gtk_widget_queue_draw(drawing_axis);
     }
@@ -395,15 +481,31 @@ void on_time_window_activate(GtkWidget *widget, gpointer data) {
 }
 
 /* --------------------------------------------------------------------
- * MANEJADOR DEL FILTRO DINAMICO INTERACTIVO
+ * INTERACTIVE DYNAMIC FILTER HANDLER
  * -------------------------------------------------------------------- */
+ /***********************************************************************
+  *                      on_filter_combo_changed()                      *
+  *             GTK handler for the filter type combo: enables or       *
+  *             disables the F1/F2/order fields according to the        *
+  *             selected filter type.                                   *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_filter_combo_changed(GtkComboBox *widget, gpointer data) {
     GtkWidget **entries = (GtkWidget **)data;
     int type = gtk_combo_box_get_active(widget);
     gtk_widget_set_sensitive(entries[0], (type != 0)); /* F1 (HP, LP, BP) */
-    gtk_widget_set_sensitive(entries[1], (type == 3)); /* F2 (Solo Band-Pass) */
-    gtk_widget_set_sensitive(entries[2], (type != 0)); /* Orden (HP, LP, BP) */
+    gtk_widget_set_sensitive(entries[1], (type == 3)); /* F2 (Only Band-Pass) */
+    gtk_widget_set_sensitive(entries[2], (type != 0)); /* Order (HP, LP, BP) */
 }
+
+ /***********************************************************************
+  *                       LoadStationsFromFile()                        *
+  *             Loads the station list from the .sta files, sorts it    *
+  *             by latitude (north first) and initializes the per-      *
+  *             station structures and circular buffers.                *
+  *               Nothing; exits on error or an empty list.             *
+  ***********************************************************************/
 
 void LoadStationsFromFile() {
     AtwcStaArray = (STATION *) calloc(MAX_STATIONS, sizeof(STATION));
@@ -466,6 +568,14 @@ void LoadStationsFromFile() {
     }
 }
 
+ /***********************************************************************
+  *                      on_clean_view_activate()                       *
+  *             Shows a dialog to drop stations that have not           *
+  *             received data for more than the given minutes,          *
+  *             freeing their buffers.                                  *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void on_clean_view_activate(GtkWidget *widget, gpointer data) {
     GtkWidget *window = GTK_WIDGET(data);
     GtkWidget *dialog = gtk_dialog_new_with_buttons("Clean View (Remove Inactive)", GTK_WINDOW(window),
@@ -520,11 +630,26 @@ void on_clean_view_activate(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(dialog);
 }
 
+ /***********************************************************************
+  *                    on_reload_default_activate()                     *
+  *             Reloads the default station list, discarding the        *
+  *             current data, and recomputes the track height.          *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void on_reload_default_activate(GtkWidget *widget, gpointer data) {
     FreeAllStations();
     LoadStationsFromFile();
     RecalcTrackHeight();
 }
+
+ /***********************************************************************
+  *                        ConnectToEarthworm()                         *
+  *             Resolves the ring keys, the message types and the       *
+  *             installation and module ids, and attaches to the        *
+  *             wave and pick rings.                                    *
+  *               Nothing; exits if a ring is not registered.           *
+  ***********************************************************************/
 
 void ConnectToEarthworm() {
     long WaveRingKey = GetKey(WaveRingName);
@@ -553,9 +678,13 @@ void ConnectToEarthworm() {
     }
 }
 
-/* Envia heartbeat y mensajes de estado al anillo de entrada (convencion
-   de los modulos de esta herramienta). El manager de Earthworm (startstop)
-   puede declarar muerto a un modulo que no envie latidos. */
+ /***********************************************************************
+  *                              Status()                               *
+  *             Sends a heartbeat or error message to the wave ring so  *
+  *             startstop knows the module is alive.                    *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void Status(unsigned char type, short ierr, char *note) {
     MSG_LOGO logo; char msg[256]; time_t t;
     logo.instid = MyInstId; logo.mod = MyModId; logo.type = type;
@@ -568,9 +697,13 @@ void Status(unsigned char type, short ierr, char *note) {
     tport_putmsg(&WaveRegion, &logo, (long) strlen(msg), msg);
 }
 
-/* Decodifica una muestra de TRACE_BUF segun su datatype.
-   Soporta i2/s2 (int16), i4/s4 (int32) y f4/t4 (float32).
-   Devuelve 0 si pudo decodificar, -1 si el tipo no es soportado. */
+ /***********************************************************************
+  *                           ReadSampleAt()                            *
+  *             Decodes one TRACE_BUF sample of the given datatype:     *
+  *             i2/s2 (int16), i4/s4 (int32) or f4/t4 (float32).        *
+  *               0 on success, -1 if the datatype is not supported.    *
+  ***********************************************************************/
+
 static int ReadSampleAt(const char *szType, const char *pData, int idx, int32_t *out) {
     if (strcmp(szType, "i2") == 0 || strcmp(szType, "s2") == 0) {
         int16_t v; memcpy(&v, pData + idx * 2, 2); *out = v; return 0;
@@ -585,6 +718,14 @@ static int ReadSampleAt(const char *szType, const char *pData, int idx, int32_t 
     *out = 0;
     return -1;
 }
+
+ /***********************************************************************
+  *                      on_canvas_button_press()                       *
+  *             GTK handler for clicks on a waveform while on HOLD:     *
+  *             creates a manual P pick at the clicked time,            *
+  *             replacing an existing nearby pick, and reports it       *
+  *               TRUE if handled, FALSE otherwise.                     *
+  ***********************************************************************/
 
 static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     if (!g_is_hold) return FALSE; 
@@ -606,10 +747,10 @@ static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event,
 
     DEV_STATION *dev = &StaArray[sta_idx];
 
-    /* Reemplazo por ventana (PickReplaceWindow): si ya existe un pick de la
-       misma estacion dentro de +/-g_pick_replace_secs, se envia un KO
-       (iUseMe=0) del viejo para que el asociador lo descarte, y se marca
-       eliminado localmente. El nuevo pick entra con un lPickIndex fresco. */
+    /* Window-based replacement (PickReplaceWindow): if a pick already exists
+       for the same station within +/-g_pick_replace_secs, a KO
+       (iUseMe=0) of the old one is sent so that the associator discards it, and it
+       is marked as deleted locally. The new pick arrives with a fresh lPickIndex. */
     if (g_pick_replace_secs > 0.0) {
         for (int pi = 0; pi < MAX_PICKS_PER_STA; pi++) {
             if (dev->picks[pi].iUseMe > 0 &&
@@ -629,7 +770,7 @@ static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event,
                 old.lPickIndex = dev->picks[pi].lPickIndex;
                 old.iUseMe = 0;
                 ReportPick(&old, &AtwcStaArray[sta_idx], MyModId, PickRegion, TypePickTWC, MyInstId, 2);
-                logit("et", "new_develo: reemplazando pick %ld de %s (%.3f -> %.3f)\n",
+                logit("et", "new_develo: replacing pick %ld of %s (%.3f -> %.3f)\n",
                       old.lPickIndex, dev->szStation, old.dPTime, clicked_time);
                 dev->picks[pi].iUseMe = 0;
             }
@@ -654,8 +795,8 @@ static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event,
     g_lPickIndexCounter = (g_lPickIndexCounter < 19999) ? g_lPickIndexCounter + 1 : 10000;
     StaArray[sta_idx].pick_status = 1;
 
-    /* Mostrar el pick manual de inmediato en la estacion, sin esperar a que
-       circule de vuelta por PICK_RING (D20). */
+    /* Show the manual pick immediately at the station, without waiting for it
+       to circulate back through PICK_RING (D20). */
     {
         int slot = (int)(dev->lPickRingNext % MAX_PICKS_PER_STA);
         dev->picks[slot].dTime = clicked_time;
@@ -667,15 +808,23 @@ static gboolean on_canvas_button_press(GtkWidget *widget, GdkEventButton *event,
         if (dev->iNumPicks < MAX_PICKS_PER_STA) dev->iNumPicks++;
     }
 
-    /* iType=2: "Data from develo" segun report.c (A1) */
+    /* iType=2: "Data from develo" according to report.c (A1) */
     ReportPick(&StaArray[sta_idx].pick, &AtwcStaArray[sta_idx], MyModId, PickRegion, TypePickTWC, MyInstId, 2);
     gtk_widget_queue_draw(widget);
     return TRUE;
 }
 
 /* ====================================================================
- * DATA FETCHING: MOTOR EN TIEMPO REAL (Solo Crudos, Sin DSP aqui)
+ * DATA FETCHING: REALTIME ENGINE (Only Raw, No DSP here)
  * ==================================================================== */
+ /***********************************************************************
+  *                        fetch_realtime_data()                        *
+  *             GTK timeout that drains wave packets into the raw       *
+  *             circular buffers, updates the screen clock and picks    *
+  *             from PICK_RING, and triggers the envelope pass.         *
+  *               G_SOURCE_CONTINUE always (keeps the timer alive).     *
+  ***********************************************************************/
+
 gboolean fetch_realtime_data(gpointer user_data) {
 
     char msg[MAX_TRACE_BYTES]; MSG_LOGO reclogo; long recsize; int res;
@@ -687,7 +836,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
     g_last_frame_realtime = current_realtime;
     double sys_time = (double)current_realtime / 1000000.0;
 
-    /* Heartbeat de Earthworm (A3) */
+    /* Earthworm heartbeat (A3) */
     {
         time_t timeNow; time(&timeNow);
         if (timeNow - timeLastBeat >= HeartBeatInt) {
@@ -723,7 +872,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
                     int64_t abs_start = (int64_t)(t_start * rate);
                     int64_t abs_end = (int64_t)(t_end * rate);
 
-                    /* Llenado estandar del gap con bandera de vacio (INT_MAX) */
+                    /* Standard gap fill with the empty flag (INT_MAX) */
                     if (StaArray[i].lLastAbsIdx > 0 && abs_start > StaArray[i].lLastAbsIdx) {
                         int64_t gap_samps = abs_start - StaArray[i].lLastAbsIdx;
                         if (gap_samps > StaArray[i].lRawCircSize) gap_samps = StaArray[i].lRawCircSize; 
@@ -732,7 +881,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
                             int idx = CIRC_IDX(clr_abs, StaArray[i].lRawCircSize);
                             StaArray[i].plRawCircBuff[idx] = INT_MAX;
                         }
-                        /* El gap modifica datos dentro de la ventana cacheada */
+                        /* The gap modifies data inside the cached window */
                         if (StaArray[i].iProcValid && (abs_start - 1) >= StaArray[i].lProcAbsStart)
                             StaArray[i].iProcValid = 0;
                     }
@@ -745,7 +894,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
                         if (ReadSampleAt(szType, pRaw, s, &x) != 0) {
                             if (!g_warned_datatype) {
                                 g_warned_datatype = 1;
-                                logit("et", "new_develo: datatype <%s> no soportado, leyendo como int32\n", szType);
+                                logit("et", "new_develo: datatype <%s> not supported, reading as int32\n", szType);
                             }
                             memcpy(&x, pRaw + s * sizeof(int32_t), sizeof(int32_t));
                         }
@@ -758,7 +907,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
                     }
 
                     if (abs_end > StaArray[i].lLastAbsIdx) StaArray[i].lLastAbsIdx = abs_end;
-                    /* Si la nueva data toca la ventana procesada en cache, invalidarla */
+                    /* If the new data touches the processed window in cache, invalidate it */
                     if (StaArray[i].iProcValid && abs_start <= StaArray[i].lProcAbsEnd)
                         StaArray[i].iProcValid = 0;
                     break; 
@@ -769,7 +918,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
 
     if (!g_is_hold) {
         if (g_last_data_realtime > 0.0 && (sys_time - g_last_data_realtime) > DATA_STALE_SECS) {
-            /* Feed muerto: no avanzar el reloj de pantalla hacia el vacio (D16) */
+            /* Dead feed: do not advance the screen clock towards the void (D16) */
             g_data_stale = TRUE;
         } else {
             g_data_stale = FALSE;
@@ -804,7 +953,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
             if (TypePickTWC != 0 && reclogo.type == TypePickTWC) {
                 PPICK pPick;
                 memset(&pPick, 0, sizeof(pPick));
-                /* B7: parseo robusto con PPickStruct (mismo formato de report.c) */
+                /* B7: robust parsing with PPickStruct (same format of report.c) */
                 if (PPickStruct(msg, &pPick, TypePickTWC) == 0) {
                     for ( int i = 0; i < iNumStas; i++ ) {
                         if ( !strcmp(AtwcStaArray[i].szStation, pPick.szStation) &&
@@ -812,7 +961,7 @@ gboolean fetch_realtime_data(gpointer user_data) {
                              !strcmp(AtwcStaArray[i].szNetID, pPick.szNetID) ) {
                             DEV_STATION *dev = &StaArray[i];
                             if ( pPick.iUseMe <= 0 ) {
-                                /* KO: eliminar localmente el pick con ese lPickIndex */
+                                /* KO: delete the pick with that lPickIndex locally */
                                 for ( int k = 0; k < MAX_PICKS_PER_STA; k++ ) {
                                     if ( dev->picks[k].lPickIndex == pPick.lPickIndex &&
                                          dev->picks[k].iUseMe > 0 ) {
@@ -821,9 +970,9 @@ gboolean fetch_realtime_data(gpointer user_data) {
                                 }
                                 picks_changed = TRUE;
                             } else {
-                                /* Upsert por lPickIndex: actualizar si ya existe
-                                   (evita el doble conteo del pick manual cuando el
-                                   mensaje vuelve por el anillo), si no insertar. */
+                                /* Upsert by lPickIndex: update if it already exists
+                                   (avoids the double count of the manual pick when the
+                                   message comes back through the ring), otherwise insert. */
                                 int found = -1;
                                 for ( int k = 0; k < MAX_PICKS_PER_STA; k++ ) {
                                     if ( dev->picks[k].lPickIndex == pPick.lPickIndex &&
@@ -857,8 +1006,8 @@ gboolean fetch_realtime_data(gpointer user_data) {
         }
     } while ( res != GET_NONE );
 
-    /* A1/A2/A3: refrescar el cache de envelope a su ritmo (2Hz) y redibujar
-       solo si algo cambio (envelope nuevo, picks, o cambio forzado). */
+    /* A1/A2/A3: refresh the envelope cache at its rhythm (2Hz) and redraw
+       only if something changed (new envelope, picks, or forced change). */
     g_envelope_updated = FALSE;
     update_wave_envelopes();
 
@@ -871,13 +1020,21 @@ gboolean fetch_realtime_data(gpointer user_data) {
 }
 
 /* ====================================================================
- * A2/A3: PROCESADO EN CACHE Y ENVELOPE DECIMADO POR COLUMNA
+ * A2/A3: CACHED PROCESSING AND ENVELOPE DECIMATED BY COLUMN
  * --------------------------------------------------------------------
- * El procesado (extract+interp+DC+filtro) y el scan min/max por columna
- * se hacen SOLO en la pasada de envelope (ritmo ENV_PROCESS_MS). El draw
- * lee el envelope crudo (sin auto_scale) y lo escala al vuelo, de modo que
- * el zoom vertical no invalida el cache.
+ * The processing (extract+interp+DC+filter) and the min/max scan per column
+ * are done ONLY in the envelope pass (ENV_PROCESS_MS rhythm). The draw
+ * reads the raw envelope (without auto_scale) and scales it on the fly, so
+ * the vertical zoom does not invalidate the cache.
  * ==================================================================== */
+ /***********************************************************************
+  *                     compute_station_envelope()                      *
+  *             Extracts, interpolates, de-DC and filters one           *
+  *             station window (using the cached trace), then           *
+  *             computes the min/max envelope per pixel column.         *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void compute_station_envelope(int i, int width) {
     DEV_STATION *sta = &StaArray[i];
     double rate = sta->dSampRate > 0 ? sta->dSampRate : 20.0;
@@ -885,7 +1042,7 @@ static void compute_station_envelope(int i, int width) {
     double t_right = g_is_hold ? g_t_hold_time : g_smooth_time;
     double t_left = t_right - window_secs;
 
-    /* PADDING MAGICO: 30s hacia atras para que el ringing del filtro muera */
+    /* MAGIC PADDING: 30s backwards so that the filter ringing dies */
     double pad_secs = 30.0;
     double extract_start = t_left - pad_secs;
 
@@ -895,8 +1052,8 @@ static void compute_station_envelope(int i, int width) {
 
     if (num_samps <= 0 || num_samps > sta->lRawCircSize) return;
 
-    /* 1. CACHE DE LA TRACE PROCESADA: si la ventana, el filtro y los datos
-       dentro de la ventana no cambiaron, reutilizar plProcBuf. */
+    /* 1. CACHE OF THE PROCESSED TRACE: if the window, the filter and the data
+       inside the window did not change, reuse plProcBuf. */
     int cache_hit =
         sta->iProcValid &&
         sta->lProcAbsStart == abs_start &&
@@ -918,7 +1075,7 @@ static void compute_station_envelope(int i, int width) {
         }
         trace_buf = sta->plProcBuf;
 
-        /* 2. EXTRACCION A ARREGLO LINEAL */
+        /* 2. EXTRACTION TO LINEAR ARRAY */
         for (long k = 0; k < num_samps; k++) {
             int64_t abs_k = abs_start + k;
             if (abs_k > sta->lLastAbsIdx || abs_k < 0) {
@@ -928,7 +1085,7 @@ static void compute_station_envelope(int i, int width) {
             }
         }
 
-        /* 3. INTERPOLACION DE GAPS PARA EVITAR SPIKES DE FILTRADO */
+        /* 3. GAP INTERPOLATION TO AVOID FILTERING SPIKES */
         long last_valid = 0;
         long gap_start = -1;
         found_first = 0;
@@ -959,13 +1116,13 @@ static void compute_station_envelope(int i, int width) {
             for (long k = 0; k < num_samps; k++) trace_buf[k] = 0;
         }
 
-        /* 4. ELIMINAR LINEA BASE (DC) */
+        /* 4. REMOVE DC (BASELINE) */
         double sum = 0;
         for (long k = 0; k < num_samps; k++) sum += (double)trace_buf[k];
         long mean = (long)(sum / num_samps);
         for (long k = 0; k < num_samps; k++) trace_buf[k] -= mean;
 
-        /* 5. APLICAR FILTROS USANDO LA LIBRERIA DSP */
+        /* 5. APPLY FILTERS USING THE DSP LIBRARY */
         if (g_filter_type != 0 && found_first) {
             double nyquist = rate / 2.0;
             double safe_f1 = g_f1, safe_f2 = g_f2;
@@ -997,7 +1154,7 @@ static void compute_station_envelope(int i, int width) {
         found_first = sta->iProcFoundFirst;
     }
 
-    /* 6. max_abs sobre el rango dibujado (para auto_scale en el draw) */
+    /* 6. max_abs over the drawn range (for auto_scale in the draw) */
     long draw_start_idx = (long)(pad_secs * rate);
     if (draw_start_idx > num_samps) draw_start_idx = 0;
 
@@ -1016,7 +1173,7 @@ static void compute_station_envelope(int i, int width) {
     sta->dEnvMaxAbs = max_abs;
     sta->iEnvFoundFirst = found_first;
 
-    /* 7. Envelope (min/max) por columna de pixel, en unidades crudas */
+    /* 7. Envelope (min/max) per pixel column, in raw units */
     if (sta->iEnvCap < width) {
         int new_cap = width + 256;
         double *nmin = (double *) realloc(sta->dEnvMin, new_cap * sizeof(double));
@@ -1070,6 +1227,14 @@ static void compute_station_envelope(int i, int width) {
     sta->bEnvValid = TRUE;
 }
 
+ /***********************************************************************
+  *                       update_wave_envelopes()                       *
+  *             Controls the envelope recompute cadence (2Hz or one     *
+  *             pixel of scroll) and calls compute_station_envelope     *
+  *             for every station when a refresh is due.                *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void update_wave_envelopes(void) {
     if (iNumStas == 0 || !g_drawing_waves) return;
 
@@ -1085,15 +1250,15 @@ static void update_wave_envelopes(void) {
     if (force) {
         should = TRUE;
     } else if (g_is_hold) {
-        /* Ventana congelada: solo si aun no se calculo o cambio el ancho */
+        /* Frozen window: only if it has not been computed yet or the width changed */
         if (g_last_env_width != width || !g_last_env_ok) should = TRUE;
     } else {
-        /* Sin movimiento ni datos: nada que refrescar */
+        /* No motion nor data: nothing to refresh */
         if (!(fabs(t_right - g_last_env_t_right) < 0.5 && g_data_stale)) {
-            /* Cadencia adaptativa: reprocesar cuando el scroll avanza ~1px
-               (1px de datos), con tope minimo de ENV_PROCESS_MS y maximo 1.5s
-               para ventanas muy largas. Con TimeWindow=20min/934px da ~0.8Hz
-               en lugar de 2Hz, lo que reduce el reprocesado a la mitad. */
+            /* Adaptive cadence: reprocess when the scroll advances ~1px
+               (1px of data), with a minimum cap of ENV_PROCESS_MS and a maximum
+               1.5s for very long windows. With TimeWindow=20min/934px it gives ~0.8Hz
+               instead of 2Hz, which halves the reprocessing. */
             double window_secs = iTimeWindowMinutes * 60.0;
             double interval_ms = (window_secs / width) * 1000.0;
             if (interval_ms < ENV_PROCESS_MS) interval_ms = ENV_PROCESS_MS;
@@ -1115,8 +1280,16 @@ static void update_wave_envelopes(void) {
 }
 
 /* ====================================================================
- * RENDER Y PROCESAMIENTO ON-THE-FLY CON PROTECCION ANTI-SPIKES Y FUTURE
+ * RENDER AND ON-THE-FLY PROCESSING WITH ANTI-SPIKES AND FUTURE PROTECTION
  * ==================================================================== */
+ /***********************************************************************
+  *                           on_draw_waves()                           *
+  *             Cairo draw handler: paints the station labels and the   *
+  *             separators, the cached waveform envelope scaled by the  *
+  *             zoom, and the manual picks.                             *
+  *               FALSE always.                                         *
+  ***********************************************************************/
+
 gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     if (iNumStas == 0 || g_latest_time <= 0.0) return FALSE; 
 
@@ -1150,12 +1323,12 @@ gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         snprintf(label, sizeof(label), "%-5s %s", StaArray[i].szStation, StaArray[i].szNetID); 
         cairo_show_text(cr, label);
 
-        cairo_set_source_rgb(cr, g_color_sep[0], g_color_sep[1], g_color_sep[2]); /* Color dinamico del separador */
+        cairo_set_source_rgb(cr, g_color_sep[0], g_color_sep[1], g_color_sep[2]); /* Dynamic separator color */
         cairo_move_to(cr, PANEL_WIDTH, y_top); cairo_line_to(cr, width, y_top); cairo_stroke(cr);
 
-        /* A2/A3: el dibujo usa el envelope cacheado (valores crudos). Si aun
-           no esta listo (arranque o resize antes de la pasada), se salta la
-           traza pero se siguen dibujando los picks. */
+        /* A2/A3: the draw uses the cached envelope (raw values). If it is
+           not ready yet (startup or resize before the pass), the trace is
+           skipped but the picks are still drawn. */
         DEV_STATION *sta = &StaArray[i];
         if (sta->bEnvValid && sta->iEnvCap >= (int)draw_area_width && sta->iEnvFoundFirst) {
             double max_abs = sta->dEnvMaxAbs;
@@ -1167,13 +1340,13 @@ gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
             cairo_rectangle(cr, PANEL_WIDTH, y_top, draw_area_width, dTrackHeight);
             cairo_clip(cr);
             cairo_set_source_rgb(cr, g_color_wave[0], g_color_wave[1], g_color_wave[2]);
-            /* Sin antialias + coordenadas enteras: cairo usa su fast-path de
-               boxes (un solo fill, sin teselado por subpath). El trazo queda
-               pixel-crisp, igual como se veian las barritas stroke. */
+            /* No antialias + integer coordinates: cairo uses its fast-path of
+               boxes (a single fill, without per-subpath tessellation). The stroke
+               stays pixel-crisp, just like the stroke bars used to look. */
             cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 
-            /* A4(a): una barra de 1px por columna a partir del envelope min/max
-               crudo, escalado aqui (asi el zoom no invalida el cache). */
+            /* A4(a): a 1px bar per column from the raw min/max envelope,
+               scaled here (so the zoom does not invalidate the cache). */
             int ncol = (int)draw_area_width;
             for (int px = 0; px < ncol; px++) {
                 if (!sta->iEnvHas[px]) continue;
@@ -1193,7 +1366,7 @@ gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
 
         cairo_set_source_rgb(cr, 1.0, 0.0, 0.0); cairo_set_line_width(cr, 2.0);
 
-        /* Picks: recorrer los ultimos iNumPicks del anillo circular (D19) */
+        /* Picks: traverse the last iNumPicks of the circular ring (D19) */
         int n_draw = (StaArray[i].iNumPicks < MAX_PICKS_PER_STA) ? StaArray[i].iNumPicks : MAX_PICKS_PER_STA;
         int start_slot = (int)((StaArray[i].lPickRingNext - n_draw + MAX_PICKS_PER_STA) % MAX_PICKS_PER_STA);
         for (int pi = 0; pi < n_draw; pi++) {
@@ -1217,6 +1390,14 @@ gboolean on_draw_waves(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     cairo_set_source_rgb(cr, 0.7, 0.7, 0.7); cairo_move_to(cr, PANEL_WIDTH, 0); cairo_line_to(cr, PANEL_WIDTH, height); cairo_stroke(cr);
     return FALSE;
 }
+
+ /***********************************************************************
+  *                           on_draw_axis()                            *
+  *             Cairo draw handler for the time axis: draws the UTC     *
+  *             clock labels at the left, center and right of the window*
+  *             and the STALE DATA warning.                             *
+  *               FALSE always.                                         *
+  ***********************************************************************/
 
 gboolean on_draw_axis(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     guint width = gtk_widget_get_allocated_width(widget);
@@ -1252,6 +1433,13 @@ gboolean on_draw_axis(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     }
     return FALSE;
 }
+
+ /***********************************************************************
+  *                      on_filter_menu_activate()                      *
+  *             Shows the filter settings dialog (type, F1, F2,         *
+  *             order) and applies the chosen values, forcing a         *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void on_filter_menu_activate(GtkWidget *widget, gpointer data) {
     GtkWidget *window = GTK_WIDGET(data);
@@ -1307,20 +1495,28 @@ void on_filter_menu_activate(GtkWidget *widget, gpointer data) {
         g_f2 = atof(gtk_entry_get_text(GTK_ENTRY(e_f2)));
         g_order = (gtk_combo_box_get_active(GTK_COMBO_BOX(cb_order)) == 0) ? 2 : 4;
         
-        g_bForceEnv = TRUE; /* Nuevo filtro: recalcular envelope */
+        g_bForceEnv = TRUE; /* New filter: recompute envelope */
         if (g_drawing_waves) gtk_widget_queue_draw(g_drawing_waves);
     }
     gtk_widget_destroy(dialog);
 }
 
+ /***********************************************************************
+  *                               main()                                *
+  *             Entry point: reads the config, loads the stations and   *
+  *             connects to Earthworm, builds the GTK interface and runs*
+  *             the main loop.                                          *
+  *               0 on clean exit.                                      *
+  ***********************************************************************/
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Uso: %s <configfile.d>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <configfile.d>\n", argv[0]);
         exit(1);
     }
 
     if (ReadConfig(argv[1]) != 0) {
-        fprintf(stderr, "Error leyendo configuracion\n");
+        fprintf(stderr, "Error reading configuration\n");
         exit(1);
     }
 
@@ -1411,10 +1607,10 @@ int main(int argc, char *argv[]) {
 
     GtkWidget *toolbar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5); gtk_widget_set_margin_start(toolbar, 10); gtk_widget_set_margin_end(toolbar, 10); gtk_widget_set_margin_top(toolbar, 5); gtk_widget_set_margin_bottom(toolbar, 5);
 
-    btn_hold = gtk_toggle_button_new_with_label("HOLD (Congelar Pantalla)"); g_signal_connect(btn_hold, "toggled", G_CALLBACK(on_btn_hold_toggled), NULL);
+    btn_hold = gtk_toggle_button_new_with_label("HOLD (Freeze Screen)"); g_signal_connect(btn_hold, "toggled", G_CALLBACK(on_btn_hold_toggled), NULL);
     gtk_box_pack_start(GTK_BOX(toolbar), btn_hold, FALSE, FALSE, 0);
 
-    GtkWidget *info_label = gtk_label_new(" | (En HOLD) Clic Izq: Picar onda | Flechas Arriba/Abajo: Zoom Vertical"); gtk_box_pack_start(GTK_BOX(toolbar), info_label, FALSE, FALSE, 10);
+    GtkWidget *info_label = gtk_label_new(" | (In HOLD) Left Click: Pick wave | Up/Down Arrows: Vertical Zoom"); gtk_box_pack_start(GTK_BOX(toolbar), info_label, FALSE, FALSE, 10);
 
     gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 

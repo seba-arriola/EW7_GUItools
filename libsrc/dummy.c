@@ -142,7 +142,7 @@ int ReadDummyData( HYPO *pHypo, char *pszDumFile )
     
 /* Read Dummy File */
    if ( (hFile = openFile( pszDumFile, "r" )) != NULL )
-      /* CORRECCION 64 BITS: %d en lugar de %ld para todos los int */
+      /* 64-BIT FIX: %d instead of %ld for all ints */
 fscanf( hFile, "%d %lf %lf %d %lf %3s %d %d %d %d %d %d "
                       "%d %d %lf %d %lf %d %lf %lf %d %lf %d %lf %d %d "
                       "%lf %lf %lf %d %d",
@@ -227,7 +227,7 @@ fscanf( hFile, "%d %lf %lf %d %lf %3s %d %d %d %d %d %d "
                               pHypo->dOriginTime );
    iOTimeRnd = pHypo->stOTimeRnd.wHour*100 + pHypo->stOTimeRnd.wMinute;
    
-   /* CORRECCION LINUX: Reemplazamos _itoa (exclusivo de Windows) por sprintf (Universal) */
+   /* LINUX FIX: Replace _itoa (Windows-only) with sprintf (Universal) */
 #ifdef _WIN32
    _itoa( iOTimeRnd, pHypo->szOTimeRnd, 10 ); 
 #else
@@ -272,7 +272,7 @@ Open:
    {
       while ( !feof( hFile ) )    /* Read till end of file */
       {
-         /* CORRECCION 64 BITS: %d en lugar de %ld para iUseMe */
+         /* 64-BIT FIX: %d instead of %ld for iUseMe */
          if (fscanf( hFile, "%s %s %s %lf %s %lf %lf %lf %lf %lf %lf %lf %lf %lf "
                         "%lf %lf %lf %d %ld %c %lf %lf %lf %lf\n",
           pPBuf[*piNumP].szStation, pPBuf[*piNumP].szChannel,
@@ -524,7 +524,7 @@ void WritePTimeFile( int iNumP, PPICK P[], char *pszFile )
 /* Dump the picks and magnitude data to disk */   
    for ( i=0; i<iNumP; i++ )  
       if ( P[i].iUseMe > 0 )
-         /* CORRECCION 64 BITS: %d para iUseMe */
+         /* 64-BIT FIX: %d for iUseMe */
          fprintf( hFile, "%s %s %s %lf %s %lf %lf %lf %lf %lf %lf %lf %lf %lf "
                          "%E %lf %lf %d %ld %c %lf %lf %lf %lf\n",
           P[i].szStation, P[i].szChannel, P[i].szNetID, P[i].dPTime,

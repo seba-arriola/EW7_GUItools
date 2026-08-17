@@ -1,13 +1,13 @@
-# Obtiene el nombre de la carpeta (ej. loc_wcatwc)
+# Gets the folder name (e.g. loc_wcatwc)
 MODULE = $(notdir $(CURDIR))
 
 CC = gcc
-# Banderas de compilacion (sin GTK)
+# Compilation flags (no GTK)
 CFLAGS = -Wall -O2 -I../../libsrc -I$(EW_HOME)/$(EW_VERSION)/include -fcommon -D_LINUX -D_REENTRANT -D_FORTIFY_SOURCE=0 -fno-stack-protector -U_FORTIFY_SOURCE  
 
 EW_LIB = $(EW_HOME)/$(EW_VERSION)/lib
-# Librerias base de Earthworm necesarias para ATWC
-# Librerias base de Earthworm necesarias para ATWC
+# Base Earthworm libraries required by ATWC
+# Base Earthworm libraries required by ATWC
 EW_OBJS = $(EW_LIB)/transport.o \
           $(EW_LIB)/getutil.o \
           $(EW_LIB)/kom.o \
@@ -21,7 +21,7 @@ EW_OBJS = $(EW_LIB)/transport.o \
 
 LDFLAGS = $(EW_OBJS) -lm -lpthread
 
-# Busca todos los .c en libsrc y en la carpeta actual
+# Finds all .c files in libsrc and in the current folder
 ATWC_SRCS = $(wildcard ../../libsrc/*.c)
 MOD_SRCS = $(wildcard *.c)
 
@@ -31,7 +31,7 @@ $(MODULE): $(MOD_SRCS) $(ATWC_SRCS)
 	$(CC) $(CFLAGS) -o $(MODULE) $(MOD_SRCS) $(ATWC_SRCS) $(LDFLAGS)
 	cp $(MODULE) $(EW_HOME)/$(EW_VERSION)/bin/
 	@echo "======================================================"
-	@echo " EXITO: $(MODULE) compilado y copiado a EW bin!"
+	@echo " SUCCESS: $(MODULE) compiled and copied to EW bin!"
 	@echo "======================================================"
 
 clean:

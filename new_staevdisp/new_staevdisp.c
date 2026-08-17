@@ -1,3 +1,15 @@
+/***********************************************************************
+ *                           new_staevdisp                             *
+ *                                                                     *
+ *  Network and seismicity viewer. Loads the station list and the      *
+ *  quake history file and renders them on an equirectangular map      *
+ *  image, with zoom and pan. Station triangles are colored by         *
+ *  elevation and quakes are drawn as red circles scaled by            *
+ *  magnitude.                                                         *
+ *                                                                     *
+ *  Usage: new_staevdisp <configfile.d>                                *
+ ***********************************************************************/
+
 #define _GNU_SOURCE
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -7,7 +19,7 @@
 #include <sys/stat.h>
 #include <locale.h>
 
-/* Cabeceras de Earthworm y ATWC */
+/* Earthworm and ATWC headers */
 #pragma warning(disable: 4005)
 #include <earthworm.h>
 #include <transport.h>
@@ -22,29 +34,29 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-/* --- CONFIGURACION DEL MODULO --- */
-char MyModName[MAX_STR] = "MOD_STAEVDISP";
-char RingName[MAX_STR] = "HYPO_RING";
-char StaFile[MAX_STR] = "";
-char StaDataFile[MAX_STR] = "";
-char CalibsFile[MAX_STR] = "";
-char QuakeFile[MAX_STR] = "";
-char MapImageFile[MAX_STR] = "";
-int  HeartBeatInt = 30;
-int  LogFile = 1;
+/* --- MODULE CONFIGURATION --- */
+char MyModName[MAX_STR] = "MOD_STAEVDISP";   /* Earthworm module name */
+char RingName[MAX_STR] = "HYPO_RING";        /* hypo solutions ring */
+char StaFile[MAX_STR] = "";                  /* station list file */
+char StaDataFile[MAX_STR] = "";              /* station data file */
+char CalibsFile[MAX_STR] = "";               /* calibration file */
+char QuakeFile[MAX_STR] = "";                /* quake history file */
+char MapImageFile[MAX_STR] = "";             /* base map image file */
+int  HeartBeatInt = 30;                      /* heartbeat interval (seconds) */
+int  LogFile = 1;                            /* 1 = write log to disk */
 
-/* PARAMETRO: Tamaño de los triángulos de estación (Leído obligatoriamente del .d) */
-double g_station_size = 5.0;
+/* PARAMETER: Size of the station triangles (Mandatorily read from the .d) */
+double g_station_size = 5.0;                 /* size of the station triangles (from the .d) */
 
-pid_t MyPid;
-time_t timeLastBeat = 0;
-unsigned char TypeHeartBeat = 0;
-unsigned char TypeError = 0;
-unsigned char MyModId = 0;
-unsigned char MyInstId = 0;
-SHM_INFO Region;
+pid_t MyPid;                                 /* this process id */
+time_t timeLastBeat = 0;                     /* time of the last heartbeat sent */
+unsigned char TypeHeartBeat = 0;             /* TYPE_HEARTBEAT */
+unsigned char TypeError = 0;                 /* TYPE_ERROR */
+unsigned char MyModId = 0;                   /* Earthworm module id */
+unsigned char MyInstId = 0;                  /* Earthworm installation id */
+SHM_INFO Region;                             /* transport region of the input ring */
 
-/* --- ESTRUCTURAS DE DATOS --- */
+/* --- DATA STRUCTURES --- */
 typedef struct {
     double lat;
     double lon;
@@ -52,42 +64,50 @@ typedef struct {
     int qid;
 } QUAKE_MARKER;
 
-QUAKE_MARKER QuakeList[MAX_QUAKES];
-int NumQuakes = 0;
+QUAKE_MARKER QuakeList[MAX_QUAKES];          /* quakes read from the history file */
+int NumQuakes = 0;                           /* number of loaded quakes */
 
-STATION *StaArray = NULL;
-int NumEstaciones = 0;
-double g_min_elev = 99999.0;
-double g_max_elev = -99999.0;
+STATION *StaArray = NULL;                    /* station array (from ReadStationList) */
+int NumEstaciones = 0;                       /* number of loaded stations */
+double g_min_elev = 99999.0;                 /* minimum elevation for the color gradient */
+double g_max_elev = -99999.0;                /* maximum elevation for the color gradient */
 
-time_t last_file_mod_time = 0;
-GdkPixbuf *g_map_pixbuf = NULL;
+time_t last_file_mod_time = 0;               /* mtime of the quake file on last check */
+GdkPixbuf *g_map_pixbuf = NULL;              /* base map image */
 
-/* --- Variables de Control de Zoom y Paneo del Mapa --- */
-double g_map_zoom = 2.0; 
-double g_map_pan_x = 0.0;
-double g_map_pan_y = 0.0;
-gboolean g_is_dragging = FALSE;
-double g_last_mouse_x = 0.0;
-double g_last_mouse_y = 0.0;
+/* --- Map Zoom and Pan Control Variables --- */
+double g_map_zoom = 2.0;                     /* map zoom factor */
+double g_map_pan_x = 0.0;                    /* horizontal pan offset (pixels) */
+double g_map_pan_y = 0.0;                    /* vertical pan offset (pixels) */
+gboolean g_is_dragging = FALSE;              /* left button dragging the map */
+double g_last_mouse_x = 0.0;                 /* last mouse x during a drag */
+double g_last_mouse_y = 0.0;                 /* last mouse y during a drag */
 
-/* Control de Eventos a Mostrar */
-int g_max_events_display = 10;
+/* Control of the Events to Display */
+int g_max_events_display = 10;               /* number of quakes to draw */
 
-/* Widgets de la Interfaz */
-GtkWidget *map_canvas;
+/* Interface Widgets */
+GtkWidget *map_canvas;                       /* map drawing area */
 
 /* --------------------------------------------------------------------
- * LECTURA DE CONFIGURACION EARTHWORM
+ * EARTHWORM CONFIGURATION READING
  * -------------------------------------------------------------------- */
+ /***********************************************************************
+  *                            ReadConfig()                             *
+  *             Reads the module command file with kom.c, loading the   *
+  *             module, ring, station files, quake history and the map, *
+  *             and the mandatory StationSize parameter.                *
+  *               0 on success, -1 if a parameter is missing or bad.    *
+  ***********************************************************************/
+
 int ReadConfig(char *configfile) {
-    /* FIX: Incrementado a 10 comandos para forzar la lectura de StationSize */
+    /* FIX: Increased to 10 commands to force the StationSize read */
     int ncommand = 10, nmiss = 0, i;
     char init[10] = {0};
     char *com, *str;
 
     if (!k_open(configfile)) {
-        fprintf(stderr, "new_staevdisp: Error abriendo archivo config <%s>\n", configfile);
+        fprintf(stderr, "new_staevdisp: Error opening config file <%s>\n", configfile);
         return -1;
     }
 
@@ -104,23 +124,30 @@ int ReadConfig(char *configfile) {
         else if (k_its("StaFile")) { str = k_str(); if (str) strcpy(StaFile, str); init[6] = 1; }
         else if (k_its("StaDataFile")) { str = k_str(); if (str) strcpy(StaDataFile, str); init[7] = 1; }
         else if (k_its("CalibsFile")) { str = k_str(); if (str) strcpy(CalibsFile, str); init[8] = 1; }
-        /* Ahora es OBLIGATORIO para garantizar que Earthworm no lo ignore */
+        /* Now it is MANDATORY to ensure Earthworm does not ignore it */
         else if (k_its("StationSize")) { g_station_size = k_val(); init[9] = 1; }
         else { continue; }
         
         if (k_err()) {
-            fprintf(stderr, "new_staevdisp: Error parseando <%s> en <%s>\n", com, configfile);
+            fprintf(stderr, "new_staevdisp: Error parsing <%s> in <%s>\n", com, configfile);
             return -1;
         }
     }
     for (i = 0; i < ncommand; i++) if (!init[i]) nmiss++;
     k_close();
     if (nmiss > 0) {
-        fprintf(stderr, "new_staevdisp: ERROR, faltan parametros (Ej. StationSize) en <%s>\n", configfile);
+        fprintf(stderr, "new_staevdisp: ERROR, missing parameters (e.g. StationSize) in <%s>\n", configfile);
         return -1;
     }
     return 0;
 }
+
+ /***********************************************************************
+  *                              Status()                               *
+  *             Sends a heartbeat or error message to the input ring so *
+  *             startstop knows the module is alive.                    *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void Status(unsigned char type, short ierr, char *note) {
     MSG_LOGO logo; char msg[256]; time_t t;
@@ -134,10 +161,18 @@ void Status(unsigned char type, short ierr, char *note) {
     tport_putmsg(&Region, &logo, strlen(msg), msg);
 }
 
+ /***********************************************************************
+  *                        ConnectToEarthworm()                         *
+  *             Resolves the ring key, the installation and module      *
+  *             ids and the message types, and attaches to the input    *
+  *             ring.                                                   *
+  *               Nothing; exits if the ring is not registered.         *
+  ***********************************************************************/
+
 void ConnectToEarthworm() {
     long RingKey = GetKey(RingName);
     
-    if (RingKey == -1) { printf("Error: Anillo invalido <%s>.\n", RingName); exit(-1); }
+    if (RingKey == -1) { printf("Error: Invalid ring <%s>.\n", RingName); exit(-1); }
     
     if (GetLocalInst(&MyInstId) != 0) MyInstId = 0;
     if (GetModId(MyModName, &MyModId) != 0) {
@@ -148,8 +183,15 @@ void ConnectToEarthworm() {
     if (GetType("TYPE_ERROR", &TypeError) != 0) TypeError = 0; 
     
     tport_attach(&Region, RingKey);
-    printf("=== CONECTADO A %s ===\n", RingName);
+    printf("=== CONNECTED TO %s ===\n", RingName);
 }
+
+ /***********************************************************************
+  *                        ew_background_tasks()                        *
+  *             Periodic GTK timeout: sends heartbeats and exits the    *
+  *             main loop when the ring signals termination.            *
+  *               G_SOURCE_REMOVE on termination, else CONTINUE.        *
+  ***********************************************************************/
 
 gboolean ew_background_tasks(gpointer user_data) {
     time_t timeNow; time(&timeNow);
@@ -160,7 +202,7 @@ gboolean ew_background_tasks(gpointer user_data) {
 
     int flag = tport_getflag(&Region);
     if (flag == TERMINATE || flag == MyPid) {
-        printf("new_staevdisp: Señal de terminacion recibida. Cerrando...\n");
+        printf("new_staevdisp: Termination signal received. Closing...\n");
         gtk_main_quit();
         return G_SOURCE_REMOVE;
     }
@@ -168,30 +210,45 @@ gboolean ew_background_tasks(gpointer user_data) {
 }
 
 /* --------------------------------------------------------------------
- * CARGA DE DATOS ESTÁTICOS Y DINÁMICOS
+ * LOADING OF STATIC AND DYNAMIC DATA
  * -------------------------------------------------------------------- */
+ /***********************************************************************
+  *                           LoadStations()                            *
+  *             Loads the station list from the .sta files and scans the*
+  *             minimum and maximum elevations for the color gradient.  *
+  *               Nothing; prints an error if the station list fails.   *
+  ***********************************************************************/
+
 void LoadStations() {
     StaArray = (STATION *) calloc(MAX_ESTA, sizeof(STATION));
     if (StaArray == NULL) {
-        fprintf(stderr, ">> FATAL: No se pudo reservar memoria para StaArray.\n");
+        fprintf(stderr, ">> FATAL: Could not allocate memory for StaArray.\n");
         exit(-1);
     }
     
-    /* Leemos las coordenadas y metadata apoyandonos en la libreria del ATWC */
+    /* We read the coordinates and metadata relying on the ATWC library */
     if (ReadStationList(&StaArray, &NumEstaciones, StaFile, StaDataFile, CalibsFile, MAX_ESTA, 0) == -1) {
-        fprintf(stderr, ">> Error leyendo la lista de estaciones o archivos faltantes.\n");
+        fprintf(stderr, ">> Error reading the station list or missing files.\n");
     } else {
-        printf(">> Cargadas %d estaciones para graficar (Tamanio: %.1f px).\n", NumEstaciones, g_station_size);
+        printf(">> Loaded %d stations to plot (Size: %.1f px).\n", NumEstaciones, g_station_size);
         
-        /* Escanear minimos y maximos de elevacion para el gradiente de color */
+        /* Scan minimum and maximum elevations for the color gradient */
         for (int i = 0; i < NumEstaciones; i++) {
             if (StaArray[i].dElevation < g_min_elev) g_min_elev = StaArray[i].dElevation;
             if (StaArray[i].dElevation > g_max_elev) g_max_elev = StaArray[i].dElevation;
         }
-        /* Fallback si todas tienen la misma elevacion */
+        /* Fallback if all stations have the same elevation */
         if (g_min_elev >= g_max_elev) { g_min_elev = 0.0; g_max_elev = 1000.0; }
     }
 }
+
+ /***********************************************************************
+  *                         LoadQuakeHistory()                          *
+  *             Reads the quake history file and fills the quake marker *
+  *             array with the latitude, longitude, magnitude and id of *
+  *             each event.                                             *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void LoadQuakeHistory() {
     FILE *f = fopen(QuakeFile, "r");
@@ -207,14 +264,14 @@ void LoadQuakeHistory() {
         int nps, qid, qver, npref, status;
         char mag_type[16];
 
-        /* Formato universal del oldquakeX.dat (Tomado del parser de new_hypo_display) */
+        /* Universal format of oldquakeX.dat (Taken from the new_hypo_display parser) */
         int parsed = sscanf(line, "%lf %lf %lf %lf %d %15s %lf %d %d %d %lf %lf %*f %*d %*f %*d %*f %*d %*f %*d %*f %*d %*f %d",
                &otime, &lat, &lon, &pref_mag, &npref, mag_type, &depth, &qid, &qver, &nps, &res, &azm, &status);
                 
         if (parsed >= 12) {
             QuakeList[NumQuakes].lat = lat;
             
-            /* Ajuste de longitud (0 a 360 o -180 a 180) */
+            /* Longitude adjustment (0 to 360 or -180 to 180) */
             double dLon = lon;
             if (dLon > 180.0) dLon -= 360.0;
             
@@ -228,8 +285,15 @@ void LoadQuakeHistory() {
 }
 
 /* --------------------------------------------------------------------
- * INTERFAZ DE USUARIO: MENUS Y EVENTOS
+ * USER INTERFACE: MENUS AND EVENTS
  * -------------------------------------------------------------------- */
+ /***********************************************************************
+  *                     on_events_number_activate()                     *
+  *             Shows a dialog to set how many quakes are drawn on      *
+  *             the map, then redraws it.                               *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void on_events_number_activate(GtkWidget *widget, gpointer data) {
     GtkWidget *window = GTK_WIDGET(data);
     GtkWidget *dialog = gtk_dialog_new_with_buttons("Events number", GTK_WINDOW(window),
@@ -255,6 +319,13 @@ void on_events_number_activate(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(dialog);
 }
 
+ /***********************************************************************
+  *                           on_map_scroll()                           *
+  *             GTK handler for the mouse wheel: zooms the map in/out   *
+  *             keeping the zoom within its limits, and redraws.        *
+  *               TRUE (event consumed).                                *
+  ***********************************************************************/
+
 static gboolean on_map_scroll(GtkWidget *widget, GdkEventScroll *event, gpointer data) {
     if (event->direction == GDK_SCROLL_UP) {
         g_map_zoom *= 1.2; 
@@ -269,6 +340,13 @@ static gboolean on_map_scroll(GtkWidget *widget, GdkEventScroll *event, gpointer
     return TRUE;
 }
 
+ /***********************************************************************
+  *                        on_map_button_press()                        *
+  *             GTK handler for the left button press: starts a drag to *
+  *             pan the map.                                            *
+  *               TRUE (event consumed).                                *
+  ***********************************************************************/
+
 static gboolean on_map_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     if (event->button == 1) { 
         g_is_dragging = TRUE;
@@ -278,12 +356,25 @@ static gboolean on_map_button_press(GtkWidget *widget, GdkEventButton *event, gp
     return TRUE;
 }
 
+ /***********************************************************************
+  *                       on_map_button_release()                       *
+  *             GTK handler for the left button release: ends the drag. *
+  *               TRUE (event consumed).                                *
+  ***********************************************************************/
+
 static gboolean on_map_button_release(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     if (event->button == 1) { 
         g_is_dragging = FALSE;
     }
     return TRUE;
 }
+
+ /***********************************************************************
+  *                           on_map_motion()                           *
+  *             GTK handler for mouse motion: pans the map while        *
+  *             dragging, and redraws.                                  *
+  *               TRUE (event consumed).                                *
+  ***********************************************************************/
 
 static gboolean on_map_motion(GtkWidget *widget, GdkEventMotion *event, gpointer data) {
     if (g_is_dragging) {
@@ -299,8 +390,15 @@ static gboolean on_map_motion(GtkWidget *widget, GdkEventMotion *event, gpointer
 }
 
 /* --------------------------------------------------------------------
- * FUNCION VIGIA: Refresca el catalogo si el archivo en disco cambia
+ * WATCHDOG FUNCTION: Refreshes the catalog if the disk file changes
  * -------------------------------------------------------------------- */
+ /***********************************************************************
+  *                      check_history_file_loop()                      *
+  *             Periodic watchdog: reloads the quake history and        *
+  *             redraws the map when the history file changes.          *
+  *               TRUE always (keeps the timer alive).                  *
+  ***********************************************************************/
+
 static gboolean check_history_file_loop(gpointer data) {
     struct stat file_stat;
     
@@ -319,8 +417,16 @@ static gboolean check_history_file_loop(gpointer data) {
 }
 
 /* --------------------------------------------------------------------
- * CANVAS DEL MAPA (Proyección Equirectangular + Renderizado Dinámico)
+ * MAP CANVAS (Equirectangular Projection + Dynamic Rendering)
  * -------------------------------------------------------------------- */
+ /***********************************************************************
+  *                            on_draw_map()                            *
+  *             Cairo draw handler: renders the base map with the grid, *
+  *             the station triangles colored by elevation and the quake*
+  *             circles scaled by magnitude, plus the legends.          *
+  *               FALSE always.                                         *
+  ***********************************************************************/
+
 static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
     guint width = gtk_widget_get_allocated_width(widget);
     guint height = gtk_widget_get_allocated_height(widget);
@@ -329,34 +435,34 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         double img_w = gdk_pixbuf_get_width(g_map_pixbuf);
         double img_h = gdk_pixbuf_get_height(g_map_pixbuf);
         
-        /* Determinar centro virtual de la pantalla */
+        /* Determine the virtual center of the screen */
         double screen_cx = width / 2.0 + g_map_pan_x;
         double screen_cy = height / 2.0 + g_map_pan_y;
 
-        /* Enfoque por defecto en Chile si la imagen es el mapamundi entero (-70.0 Lon, -30.0 Lat) */
+        /* Default focus on Chile if the image is the whole world map (-70.0 Lon, -30.0 Lat) */
         double center_x = img_w * (-70.0 + 180.0) / 360.0;
         double center_y = img_h * (90.0 - (-30.0)) / 180.0;
 
         cairo_save(cr);
         
-        /* 1. Mover el origen al centro de la ventana y aplicar Paneo y Zoom Global */
+        /* 1. Move the origin to the window center and apply Pan and Global Zoom */
         cairo_translate(cr, screen_cx, screen_cy);
         cairo_scale(cr, g_map_zoom, g_map_zoom);
         cairo_translate(cr, -center_x, -center_y);
 
-        /* 2. Dibujar Imagen Base */
+        /* 2. Draw Base Image */
         gdk_cairo_set_source_pixbuf(cr, g_map_pixbuf, 0, 0);
         cairo_paint(cr);
         
-        /* 3. Dibujar Grilla (Latitud / Longitud) */
+        /* 3. Draw Grid (Latitude / Longitude) */
         double step = 10.0; 
         if (g_map_zoom > 30.0) step = 1.0;
         else if (g_map_zoom > 15.0) step = 2.0;
         else if (g_map_zoom > 5.0) step = 5.0;
 
         cairo_new_path(cr);
-        cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.3); /* Blanco semi-transparente */
-        cairo_set_line_width(cr, 1.0 / g_map_zoom);    /* Grosor invariante al zoom */
+        cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.3); /* Semi-transparent white */
+        cairo_set_line_width(cr, 1.0 / g_map_zoom);    /* Thickness invariant to zoom */
 
         for (double lon = -180.0; lon <= 180.0; lon += step) {
             double x = img_w * (lon + 180.0) / 360.0;
@@ -368,28 +474,28 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         }
         cairo_stroke(cr);
 
-        /* 4. Dibujar Estaciones con Color Dinámico de Elevación */
+        /* 4. Draw Stations with Dynamic Elevation Color */
         cairo_set_line_width(cr, 1.0 / g_map_zoom); 
         
-        /* USO DE LA VARIABLE GLOBAL DE CONFIGURACIÓN DE TAMAÑO */
-        double s_size = g_station_size / g_map_zoom; /* Tamaño del triángulo ajustado al zoom */
+        /* USE OF THE GLOBAL SIZE CONFIGURATION VARIABLE */
+        double s_size = g_station_size / g_map_zoom; /* Triangle size adjusted to the zoom */
 
         for(int i = 0; i < NumEstaciones; i++) {
             if (StaArray[i].dLat != 0.0 && StaArray[i].dLon != 0.0) {
                 double x = img_w * (StaArray[i].dLon + 180.0) / 360.0;
                 double y = img_h * (90.0 - StaArray[i].dLat) / 180.0;
 
-                /* Calcular el ratio de elevación para la paleta de colores [0.0 = bajo, 1.0 = alto] */
+                /* Compute the elevation ratio for the color palette [0.0 = low, 1.0 = high] */
                 double elev_ratio = (StaArray[i].dElevation - g_min_elev) / (g_max_elev - g_min_elev);
                 if (elev_ratio < 0.0) elev_ratio = 0.0;
                 if (elev_ratio > 1.0) elev_ratio = 1.0;
 
-                /* Gradiente: Verde Claro (Baja elevación) a Verde Oscuro (Alta elevación) */
+                /* Gradient: Light Green (Low elevation) to Dark Green (High elevation) */
                 double r = 0.6 - (0.6 * elev_ratio); 
                 double g = 1.0 - (0.7 * elev_ratio); 
                 double b = 0.6 - (0.6 * elev_ratio); 
 
-                cairo_new_path(cr); /* Levantar lápiz, evita lineas anómalas */
+                cairo_new_path(cr); /* Lift the pen, avoids anomalous lines */
                 cairo_set_source_rgb(cr, r, g, b);
                 cairo_move_to(cr, x, y - s_size);
                 cairo_line_to(cr, x - s_size, y + s_size);
@@ -397,28 +503,28 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
                 cairo_close_path(cr);
                 cairo_fill_preserve(cr);
                 
-                cairo_set_source_rgb(cr, 0.0, 0.0, 0.0); /* Borde negro para distinguir */
+                cairo_set_source_rgb(cr, 0.0, 0.0, 0.0); /* Black border to distinguish */
                 cairo_stroke(cr);
             }
         }
 
-        /* 5. Dibujar Sismos (Círculos Rojos con Escalado Lineal Controlado) */
+        /* 5. Draw Quakes (Red Circles with Controlled Linear Scaling) */
         int events_to_draw = (NumQuakes > g_max_events_display) ? g_max_events_display : NumQuakes;
         
-        for(int i = events_to_draw - 1; i >= 0; i--) { /* Pintamos de atras para adelante (los mas nuevos arriba) */
+        for(int i = events_to_draw - 1; i >= 0; i--) { /* We paint from back to front (the newest on top) */
             double x = img_w * (QuakeList[i].lon + 180.0) / 360.0;
             double y = img_h * (90.0 - QuakeList[i].lat) / 180.0;
 
             double mag = QuakeList[i].mag;
             if (mag < 0.0) mag = 1.0; 
             
-            /* Escalado Lineal Ajustado: Reduce superposicion pero mantiene diferencias obvias */
+            /* Adjusted Linear Scaling: Reduces overlap but keeps obvious differences */
             double radius = (mag * 2.0) / g_map_zoom;
 
-            cairo_new_path(cr); /* Levantar lápiz entre círculos */
+            cairo_new_path(cr); /* Lift the pen between circles */
 
             if (i == 0) {
-                /* Último Evento: Rojo vivo (100% Opacidad), Borde grueso negro */
+                /* Last Event: Bright red (100% Opacity), Thick black border */
                 cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 1.0); 
                 cairo_arc(cr, x, y, radius, 0, 2 * M_PI);
                 cairo_fill_preserve(cr);
@@ -427,7 +533,7 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
                 cairo_set_line_width(cr, 2.0 / g_map_zoom);
                 cairo_stroke(cr);
             } else {
-                /* Eventos Históricos: Rojo sutil (50% Opacidad), Borde oscuro intermedio */
+                /* Historical Events: Subtle red (50% Opacity), Intermediate dark border */
                 cairo_set_source_rgba(cr, 0.9, 0.2, 0.2, 0.50); 
                 cairo_arc(cr, x, y, radius, 0, 2 * M_PI);
                 cairo_fill_preserve(cr);
@@ -438,11 +544,11 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
             }
         }
 
-        cairo_restore(cr); /* Restaura la matriz a pixeles absolutos para dibujar UI (Leyendas) */
+        cairo_restore(cr); /* Restore the matrix to absolute pixels to draw UI (Legends) */
         
-        /* --- LEYENDAS Y ESCALAS VERTICALES (UI FIJA) --- */
+        /* --- LEGENDS AND VERTICAL SCALES (FIXED UI) --- */
         cairo_new_path(cr);
-        cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.85); /* Caja semitransparente expandida */
+        cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.85); /* Expanded semi-transparent box */
         cairo_rectangle(cr, 10, height - 370, 120, 360);
         cairo_fill_preserve(cr);
         cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
@@ -455,11 +561,11 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_move_to(cr, 20, height - 345);
         cairo_show_text(cr, "Magnitude");
 
-        /* Escala de Círculos para Magnitudes (Disposición Vertical) */
+        /* Circle Scale for Magnitudes (Vertical Layout) */
         double mag_base_x = 40;
         double mag_base_y = height - 310;
         for (int m = 4; m <= 8; m++) {
-            double r = m * 2.0; /* Coherente con el multiplicador ajustado del mapa */
+            double r = m * 2.0; /* Coherent with the adjusted map multiplier */
             
             cairo_new_path(cr);
             cairo_set_source_rgba(cr, 0.9, 0.2, 0.2, 0.6); 
@@ -478,18 +584,18 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
             cairo_move_to(cr, mag_base_x + 25, mag_base_y + 4);
             cairo_show_text(cr, m_lbl);
             
-            mag_base_y += 35; /* Espaciado vertical reajustado */
+            mag_base_y += 35; /* Readjusted vertical spacing */
         }
 
-        /* Escala de Colores para Elevación (Triángulo Verde + Texto) */
+        /* Color Scale for Elevation (Green Triangle + Text) */
         double t_x = 25.0;
         double t_y = height - 120.0;
         
-        /* FIX: Vinculamos el triángulo de la leyenda al tamaño del parámetro global */
+        /* FIX: We link the legend triangle to the size of the global parameter */
         double leg_s_size = g_station_size; 
 
         cairo_new_path(cr);
-        cairo_set_source_rgb(cr, 0.0, 0.8, 0.0); /* Verde representativo */
+        cairo_set_source_rgb(cr, 0.0, 0.8, 0.0); /* Representative green */
         cairo_move_to(cr, t_x, t_y - leg_s_size);
         cairo_line_to(cr, t_x - leg_s_size, t_y + leg_s_size);
         cairo_line_to(cr, t_x + leg_s_size, t_y + leg_s_size);
@@ -507,8 +613,8 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_show_text(cr, "Elevation (m)");
 
         cairo_pattern_t *pat = cairo_pattern_create_linear(0, height - 20, 0, height - 100);
-        cairo_pattern_add_color_stop_rgb(pat, 0.0, 0.6, 1.0, 0.6); /* Verde Claro (Bajo) */
-        cairo_pattern_add_color_stop_rgb(pat, 1.0, 0.0, 0.3, 0.0); /* Verde Oscuro (Alto) */
+        cairo_pattern_add_color_stop_rgb(pat, 0.0, 0.6, 1.0, 0.6); /* Light Green (Low) */
+        cairo_pattern_add_color_stop_rgb(pat, 1.0, 0.0, 0.3, 0.0); /* Dark Green (High) */
         
         cairo_new_path(cr);
         cairo_rectangle(cr, 25, height - 100, 20, 80);
@@ -522,7 +628,7 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_set_line_width(cr, 1.0);
         cairo_stroke(cr);
 
-        /* Redondear valores de la escala de elevación para limpieza visual */
+        /* Round the elevation scale values for visual cleanliness */
         int min_val = (int)(floor(g_min_elev / 100.0) * 100);
         if (min_val < 0 && g_min_elev >= 0.0) min_val = 0; 
         int max_val = (int)(ceil(g_max_elev / 100.0) * 100);
@@ -533,7 +639,7 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         
         cairo_new_path(cr);
         cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-        cairo_set_font_size(cr, 14.0); /* Números de elevacion más grandes */
+        cairo_set_font_size(cr, 14.0); /* Larger elevation numbers */
         
         cairo_move_to(cr, 55, height - 20);
         cairo_show_text(cr, min_el);
@@ -542,7 +648,7 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_show_text(cr, max_el);
 
     } else {
-        /* Fallback: Si no existe el archivo JPG, dibujar fondo gris/azulado */
+        /* Fallback: If the JPG file does not exist, draw a gray/bluish background */
         cairo_set_source_rgb(cr, 0.85, 0.92, 0.98); 
         cairo_rectangle(cr, 0, 0, width, height);
         cairo_fill(cr);
@@ -551,10 +657,10 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
         cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
         cairo_set_font_size(cr, 14);
         cairo_move_to(cr, width / 2 - 120, height / 2);
-        cairo_show_text(cr, "Falta archivo de mapa (Equirectangular)");
+        cairo_show_text(cr, "Missing map file (Equirectangular)");
     }
 
-    /* Marco perimetral */
+    /* Perimeter frame */
     cairo_new_path(cr);
     cairo_set_source_rgb(cr, 0.3, 0.3, 0.3);
     cairo_set_line_width(cr, 3.0);
@@ -564,9 +670,17 @@ static gboolean on_draw_map(GtkWidget *widget, cairo_t *cr, gpointer data) {
     return FALSE;
 }
 
+ /***********************************************************************
+  *                               main()                                *
+  *             Entry point: reads the config, connects to Earthworm,   *
+  *             loads the stations and quake history, builds the GTK    *
+  *             interface and runs the main loop.                       *
+  *               0 on clean exit.                                      *
+  ***********************************************************************/
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Uso: %s <configfile.d>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <configfile.d>\n", argv[0]);
         exit(1);
     }
     if (ReadConfig(argv[1]) != 0) exit(1);
@@ -581,21 +695,21 @@ int main(int argc, char *argv[]) {
 
     ConnectToEarthworm();
     
-    /* 1. Cargar Estaciones (Extraer Lat/Lon y limites de Elevacion) */
+    /* 1. Load Stations (Extract Lat/Lon and Elevation limits) */
     LoadStations();
     
-    /* 2. Carga Inicial del Historial de Sismos */
+    /* 2. Initial Load of the Quake History */
     LoadQuakeHistory();
     
-    /* 3. Cargar imagen del mapa base en memoria */
+    /* 3. Load the base map image into memory */
     GError *err = NULL;
     g_map_pixbuf = gdk_pixbuf_new_from_file(MapImageFile, &err);
     if (!g_map_pixbuf) {
-        printf(">> [AVISO] No se pudo cargar %s: %s\n", MapImageFile, err->message);
+        printf(">> [WARNING] Could not load %s: %s\n", MapImageFile, err->message);
         g_error_free(err);
     }
 
-    /* --- CREACIÓN DE VENTANA GTK --- */
+    /* --- GTK WINDOW CREATION --- */
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Network & Seismicity Viewer");
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
@@ -618,11 +732,11 @@ int main(int argc, char *argv[]) {
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), ctrl_panel_item); 
     gtk_box_pack_start(GTK_BOX(vbox_main), menu_bar, FALSE, FALSE, 0);
 
-    /* --- CANVAS DEL MAPA --- */
+    /* --- MAP CANVAS --- */
     map_canvas = gtk_drawing_area_new();
     gtk_widget_set_size_request(map_canvas, -1, -1); 
     
-    /* VINCULAR EVENTOS DE RATÓN */
+    /* BIND MOUSE EVENTS */
     gtk_widget_add_events(map_canvas, GDK_SCROLL_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
     g_signal_connect(G_OBJECT(map_canvas), "scroll-event", G_CALLBACK(on_map_scroll), NULL);
     g_signal_connect(G_OBJECT(map_canvas), "button-press-event", G_CALLBACK(on_map_button_press), NULL);
@@ -633,9 +747,9 @@ int main(int argc, char *argv[]) {
     
     gtk_box_pack_start(GTK_BOX(vbox_main), map_canvas, TRUE, TRUE, 0);
 
-    /* --- TIMERS DE TAREAS EN SEGUNDO PLANO --- */
-    g_timeout_add(2000, check_history_file_loop, NULL);  /* Revisa sismos cada 2s */
-    g_timeout_add(1000, ew_background_tasks, NULL);      /* Latidos EW cada 1s */
+    /* --- BACKGROUND TASK TIMERS --- */
+    g_timeout_add(2000, check_history_file_loop, NULL);  /* Checks quakes every 2s */
+    g_timeout_add(1000, ew_background_tasks, NULL);      /* EW heartbeats every 1s */
 
     gtk_widget_show_all(window);
     gtk_main();

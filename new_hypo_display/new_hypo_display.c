@@ -1,3 +1,15 @@
+/***********************************************************************
+ *                         new_hypo_display                            *
+ *                                                                     *
+ *  Hypocenter database and repicker. Reads quake solutions from       *
+ *  HYPO_RING and the quake history file, shows them in a table,       *
+ *  and renders the aligned seismograms of the selected event.         *
+ *  Lets the operator add/remove P picks (repick mode) that are        *
+ *  written back to the locator, and force a relocation.               *
+ *                                                                     *
+ *  Usage: new_hypo_display <configfile.d>                             *
+ ***********************************************************************/
+
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,85 +25,85 @@
 #include <transport.h>
 #include <kom.h>
 #include "earlybirdlib.h"
-#include "dataprocessing.h" /* Libreria externa de procesamiento */
+#include "dataprocessing.h" /* External processing library */
 
 #define MAX_ESTA 512
 #define MAX_STR 256
 
 /* --- MODULE CONFIGURATION --- */
-char MyModName[MAX_STR] = "MOD_HYPO_DISPLAY";
-char InRingName[MAX_STR] = "HYPO_RING";
-char OutRingName[MAX_STR] = "PICK_RING";
-char StaFile[MAX_STR] = "";
-char StaDataFile[MAX_STR] = "";
-char CalibsFile[MAX_STR] = "";
-char QuakeFile[MAX_STR] = "";
-char LocFilePath[MAX_STR] = "";
-char WaveFilePath[MAX_STR] = "";
-int  HeartBeatInt = 30;
-int  LogFile = 1;
-int  iFileLength = 10; 
+char MyModName[MAX_STR] = "MOD_HYPO_DISPLAY";   /* Earthworm module name */
+char InRingName[MAX_STR] = "HYPO_RING";         /* hypo solutions ring */
+char OutRingName[MAX_STR] = "PICK_RING";        /* picks ring */
+char StaFile[MAX_STR] = "";                     /* station list file */
+char StaDataFile[MAX_STR] = "";                 /* station data file */
+char CalibsFile[MAX_STR] = "";                  /* calibration file */
+char QuakeFile[MAX_STR] = "";                   /* quake history file */
+char LocFilePath[MAX_STR] = "";                 /* locator picks directory */
+char WaveFilePath[MAX_STR] = "";                /* waveform data directory */
+int  HeartBeatInt = 30;                         /* heartbeat interval (seconds) */
+int  LogFile = 1;                               /* 1 = write log to disk */
+int  iFileLength = 10;                          /* waveform file length (minutes) */
 
-pid_t MyPid;
-time_t timeLastBeat = 0;
-unsigned char TypeHeartBeat = 0;
-unsigned char TypeError = 0;
+pid_t MyPid;                                    /* this process id */
+time_t timeLastBeat = 0;                        /* time of the last heartbeat sent */
+unsigned char TypeHeartBeat = 0;                /* TYPE_HEARTBEAT */
+unsigned char TypeError = 0;                    /* TYPE_ERROR */
 
 /* --- Global State Variables --- */
-STATION *StaArray = NULL; 
-PPICK   PBufG[MAX_ESTA]; 
-int     bHasData[MAX_ESTA]; 
-double  g_StaDist[MAX_ESTA]; 
-int     NumEstaciones = 0;
-int     selected_qid = 0;
-double  selected_otime = 0;
-double  selected_lat = 0;
-double  selected_lon = 0;
-double  selected_depth = 0;
-char    selected_id[32] = "None";
+STATION *StaArray = NULL;   /* station array (from ReadStationList) */
+PPICK   PBufG[MAX_ESTA];    /* global pick buffer, one per station */
+int     bHasData[MAX_ESTA]; /* 1 when the station has loaded waveforms */
+double  g_StaDist[MAX_ESTA];/* epicentral distance of each station */
+int     NumEstaciones = 0;  /* number of loaded stations */
+int     selected_qid = 0;   /* quake id of the selected event */
+double  selected_otime = 0; /* origin time of the selected event */
+double  selected_lat = 0;   /* latitude of the selected event */
+double  selected_lon = 0;   /* longitude of the selected event */
+double  selected_depth = 0; /* depth of the selected event */
+char    selected_id[32] = "None"; /* displayed ID of the selected event */
 
 /* TRACKER & DEBOUNCE */
-gboolean pending_waveform_reload = FALSE;
+gboolean pending_waveform_reload = FALSE; /* debounced waveform reload request */
 
 /* --- TIMEOUT & ALERT CONTROL --- */
-gboolean waiting_for_ew = FALSE;
-guint    ew_timeout_id = 0;
-int      expected_qid = 0;
-int      expected_min_qver = 0;
+gboolean waiting_for_ew = FALSE;  /* waiting for the forced relocation */
+guint    ew_timeout_id = 0;     /* id of the 15s timeout source */
+int      expected_qid = 0;      /* qid expected from the forced solution */
+int      expected_min_qver = 0; /* minimum version expected */
 
-GtkWidget *canvas_global = NULL;
-GtkWidget *tree_global = NULL;
-GtkWidget *btn_repick = NULL;
-GtkWidget *btn_force = NULL; 
-GtkWidget *lbl_event_info = NULL; /* Nueva Etiqueta de ID y O-Time */
-GtkWidget *btn_refresh = NULL;    /* Nuevo boton de Refresh Waveforms */
+GtkWidget *canvas_global = NULL;  /* seismogram drawing area */
+GtkWidget *tree_global = NULL;    /* quake list tree view */
+GtkWidget *btn_repick = NULL;     /* "Repick mode" button */
+GtkWidget *btn_force = NULL;      /* "Force Relocation" button */
+GtkWidget *lbl_event_info = NULL; /* event ID and O-Time label */
+GtkWidget *btn_refresh = NULL;    /* refresh waveforms button */
 
-/* --- COMPONENTES DINAMICOS DEL FILTRO --- */
-GtkWidget *combo_filter = NULL; 
-GtkWidget *entry_freq1 = NULL;
-GtkWidget *entry_freq2 = NULL;
-GtkWidget *combo_order = NULL;
-GtkWidget *btn_apply_filter = NULL;
+/* --- DYNAMIC FILTER COMPONENTS --- */
+GtkWidget *combo_filter = NULL;  /* filter type combo */
+GtkWidget *entry_freq1 = NULL;   /* first corner frequency entry */
+GtkWidget *entry_freq2 = NULL;   /* second corner frequency entry */
+GtkWidget *combo_order = NULL;   /* filter order combo */
+GtkWidget *btn_apply_filter = NULL; /* apply filter button */
 
 /* --- DYNAMIC REPICK TOOLS --- */
-GtkWidget *box_fetch = NULL;
-GtkWidget *entry_dist = NULL;
-GtkWidget *entry_time = NULL; 
-double g_max_dist_km = 500.0; 
+GtkWidget *box_fetch = NULL;  /* distance/time fetch box */
+GtkWidget *entry_dist = NULL; /* max distance entry (km) */
+GtkWidget *entry_time = NULL; /* time window entry (minutes) */
+double g_max_dist_km = 500.0; /* max station distance (km) */
 
-gboolean edit_mode = FALSE;
-double   g_zoom_factor = 1.0; 
+gboolean edit_mode = FALSE;     /* repick (edit) mode active */
+double   g_zoom_factor = 1.0;   /* vertical zoom in edit mode */
 int      g_filter_type = 0; /* 0 = Raw, 1 = HP, 2 = LP, 3 = BP */
 
-double g_dWindowStart = 0;
-double g_dScreenTime = 120.0; 
-int    g_margin_left = 160; 
-int    g_spacing = 100;
+double g_dWindowStart = 0;     /* absolute time of the left window edge */
+double g_dScreenTime = 120.0;  /* window length in seconds */
+int    g_margin_left = 160;    /* left margin for the station labels */
+int    g_spacing = 100;        /* vertical spacing between stations */
 
-/* Alineacion por la onda P: la marca P de la estacion mas cercana define la
-   linea de referencia vertical; todas las demas marcas P caen sobre ella. */
-#define ALIGN_LEAD 20.0   /* segundos de ventana previa al P (equivale al "earliest_pick - 20") */
-double g_align_lead = ALIGN_LEAD;
+/* Alignment by the P wave: the P mark of the closest station defines the
+   vertical reference line; all the other P marks fall on it. */
+#define ALIGN_LEAD 20.0   /* seconds of window before the P (equivalent to the "earliest_pick - 20") */
+double g_align_lead = ALIGN_LEAD; /* window before the P mark (seconds) */
 
 typedef struct { 
     int idx; 
@@ -100,24 +112,32 @@ typedef struct {
     int y_bottom; 
 } StaNode;
 
-StaNode g_SortedNodes[MAX_ESTA];
-int     g_NumSortedNodes = 0;
+StaNode g_SortedNodes[MAX_ESTA]; /* stations sorted by distance for drawing */
+int     g_NumSortedNodes = 0;    /* number of sorted stations */
 
-SHM_INFO InRegion;       
-SHM_INFO PRegion;
-unsigned char TypePickTWC = 0;
+SHM_INFO InRegion;        /* transport region of the input (hypo) ring */
+SHM_INFO PRegion;         /* transport region of the output (pick) ring */
+unsigned char TypePickTWC = 0;  /* TYPE_PICKTWC */
 
-unsigned char MyModId = 0;
-unsigned char MyInstId = 0;
+unsigned char MyModId = 0;      /* Earthworm module id */
+unsigned char MyInstId = 0;     /* Earthworm installation id */
 
 /* --- HISTORY FILE MONITORING AND GLOBALS --- */
-static time_t g_last_file_mtime = 0;
-double g_top_otime = 0.0;
-gboolean g_block_waveform_fetch = FALSE;
+static time_t g_last_file_mtime = 0; /* mtime of the quake file on last check */
+double g_top_otime = 0.0;            /* otime of the first row */
+gboolean g_block_waveform_fetch = FALSE; /* blocks reload during restore */
 
 /* Forward declaration for GTK callback used in RepopulateTable */
 static void on_row_selected(GtkTreeSelection *selection, gpointer data);
 static void detectar_solucion_force(GtkWidget *tree);
+
+ /***********************************************************************
+  *                        ConnectToEarthworm()                         *
+  *             Resolves the ring keys, the message types and the       *
+  *             installation and module ids, and attaches to the        *
+  *             input and output rings.                                 *
+  *               Nothing; exits if a ring is not registered.           *
+  ***********************************************************************/
 
 void ConnectToEarthworm() {
     long InRingKey = GetKey(InRingName); long OutRingKey = GetKey(OutRingName);
@@ -129,6 +149,14 @@ void ConnectToEarthworm() {
     
     tport_attach(&InRegion, InRingKey); tport_attach(&PRegion, OutRingKey);
 }
+
+ /***********************************************************************
+  *                            ReadConfig()                             *
+  *             Reads the module command file with kom.c, loading       *
+  *             the rings, station files, quake history and display     *
+  *             parameters into the globals.                            *
+  *               0 on success, -1 if a parameter is missing or bad.    *
+  ***********************************************************************/
 
 int ReadConfig(char *configfile) {
     int ncommand = 10, nmiss = 0, i;
@@ -171,6 +199,13 @@ int ReadConfig(char *configfile) {
     return 0;
 }
 
+ /***********************************************************************
+  *                              Status()                               *
+  *             Sends a heartbeat or error message to the input ring so *
+  *             startstop knows the module is alive.                    *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void Status(unsigned char type, short ierr, char *note) {
     MSG_LOGO logo; char msg[256]; time_t t;
     logo.instid = MyInstId; logo.mod = MyModId; logo.type = type;
@@ -182,18 +217,33 @@ void Status(unsigned char type, short ierr, char *note) {
     tport_putmsg(&InRegion, &logo, strlen(msg), msg);
 }
 
+ /***********************************************************************
+  *                     actualizar_altura_canvas()                      *
+  *             Resizes the seismogram canvas to fit the stations       *
+  *             with data within the maximum distance, or to a          *
+  *             fixed size if there are none.                           *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void actualizar_altura_canvas() {
     if (!canvas_global) return;
     int count = 0;
     for (int i = 0; i < NumEstaciones; i++) {
         if (bHasData[i] == 1 && (g_StaDist[i] * 6371.0) <= g_max_dist_km) count++;
     }
-    /* Ajuste de margen superior (+ 20) al eliminar el texto que dibujaba cairo */
+    /* Top margin adjustment (+ 20) after removing the text that cairo drew */
     if (count > 0) gtk_widget_set_size_request(canvas_global, -1, (count * g_spacing) + 20);
     else gtk_widget_set_size_request(canvas_global, -1, 600);
 }
 
-/* Modificado para soportar filtros dinamicos IIR y validaciones de Nyquist */
+ /***********************************************************************
+  *                        ApplySelectedFilter()                        *
+  *             Applies the selected IIR filter to every station with   *
+  *             data, clamping the frequencies to the Nyquist rate      *
+  *             and demeaning the trace first.                          *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void ApplySelectedFilter() {
     double f1 = 0.7, f2 = 2.0; 
     int order = 4;
@@ -216,20 +266,20 @@ void ApplySelectedFilter() {
             double safe_f1 = f1;
             double safe_f2 = f2;
             
-            /* --- Validaciones Matematicas de Nyquist --- */
+            /* --- Mathematical Nyquist Validations --- */
             if (g_filter_type != 0) {
                 if (safe_f1 >= nyquist) {
                     safe_f1 = nyquist * 0.95; 
-                    logit("t", "Aviso: Freq1 (%.2f Hz) excede Nyquist (%.2f Hz) para %s. Reducido a %.2f Hz\n", f1, nyquist, StaArray[i].szStation, safe_f1);
+                    logit("t", "Warning: Freq1 (%.2f Hz) exceeds Nyquist (%.2f Hz) for %s. Reduced to %.2f Hz\n", f1, nyquist, StaArray[i].szStation, safe_f1);
                 }
                 if (g_filter_type == 3) {
                     if (safe_f2 >= nyquist) {
                         safe_f2 = nyquist * 0.95;
-                        logit("t", "Aviso: Freq2 (%.2f Hz) excede Nyquist para %s. Reducido a %.2f Hz\n", f2, StaArray[i].szStation, safe_f2);
+                        logit("t", "Warning: Freq2 (%.2f Hz) exceeds Nyquist for %s. Reduced to %.2f Hz\n", f2, StaArray[i].szStation, safe_f2);
                     }
                     if (safe_f1 >= safe_f2) {
                         safe_f1 = safe_f2 * 0.5; 
-                        logit("t", "Aviso: Freq1 es mayor que Freq2 para %s. Ajustado F1 a %.2f Hz\n", StaArray[i].szStation, safe_f1);
+                        logit("t", "Warning: Freq1 is greater than Freq2 for %s. Adjusted F1 to %.2f Hz\n", StaArray[i].szStation, safe_f1);
                     }
                 }
             }
@@ -247,6 +297,14 @@ void ApplySelectedFilter() {
         }
     }
 }
+
+ /***********************************************************************
+  *                          ReloadWaveforms()                          *
+  *             Reloads the seismograms for the selected quake: clears  *
+  *             the buffers, computes the expected P times, reads the   *
+  *             disk waveform files and redraws the canvas.             *
+  *               Nothing; returns if no quake is selected.             *
+  ***********************************************************************/
 
 void ReloadWaveforms() {
     if (selected_qid == 0) return;
@@ -305,6 +363,13 @@ void ReloadWaveforms() {
     }
 }
 
+ /***********************************************************************
+  *                       waveform_reload_timer()                       *
+  *             GTK timeout that applies the debounced waveform         *
+  *             reload when it is pending and the edit mode is off.     *
+  *               TRUE always (keeps the timer alive).                  *
+  ***********************************************************************/
+
 gboolean waveform_reload_timer(gpointer data) {
     if (pending_waveform_reload && !edit_mode) {
         pending_waveform_reload = FALSE;
@@ -313,11 +378,25 @@ gboolean waveform_reload_timer(gpointer data) {
     return TRUE;
 }
 
-/* Evento para forzar la actualizacion manual de datos al clickear Refresh Waveforms */
+ /***********************************************************************
+  *                      on_btn_refresh_clicked()                       *
+  *             GTK handler for the Refresh waveforms button: forces    *
+  *             a manual reload of the selected quake waveforms.        *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_btn_refresh_clicked(GtkWidget *widget, gpointer data) {
     if (selected_qid == 0) return;
     ReloadWaveforms();
 }
+
+ /***********************************************************************
+  *                         on_filter_changed()                         *
+  *             GTK handler for the filter combo: enables the F1/F2/    *
+  *             order fields according to the type, applies the new     *
+  *             filter and redraws.                                     *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_filter_changed(GtkComboBox *widget, gpointer data) {
     g_filter_type = gtk_combo_box_get_active(widget);
@@ -334,10 +413,25 @@ static void on_filter_changed(GtkComboBox *widget, gpointer data) {
     if (canvas_global) gtk_widget_queue_draw(canvas_global);
 }
 
+ /***********************************************************************
+  *                    on_btn_apply_filter_clicked()                    *
+  *             GTK handler for the Apply button: re-applies the        *
+  *             current filter settings and redraws the canvas.         *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_btn_apply_filter_clicked(GtkWidget *widget, gpointer data) {
     ApplySelectedFilter();
     if (canvas_global) gtk_widget_queue_draw(canvas_global);
 }
+
+ /***********************************************************************
+  *                       on_btn_fetch_clicked()                        *
+  *             GTK handler for the Fetch button: updates the maximum   *
+  *             station distance and the time window, then queues a     *
+  *             waveform reload.                                        *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_btn_fetch_clicked(GtkWidget *widget, gpointer data) {
     if (!entry_dist || !entry_time) return;
@@ -356,6 +450,13 @@ static void on_btn_fetch_clicked(GtkWidget *widget, gpointer data) {
     }
 }
 
+ /***********************************************************************
+  *                          color_rows_func()                          *
+  *             GTK cell data function: colors the table rows, marking  *
+  *             the selected row in blue and the even rows in light red.*
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void color_rows_func(GtkTreeViewColumn *col, GtkCellRenderer *rend, GtkTreeModel *model, GtkTreeIter *iter, gpointer data) {
     GtkTreePath *path = gtk_tree_model_get_path(model, iter);
     if (path) {
@@ -371,6 +472,13 @@ static void color_rows_func(GtkTreeViewColumn *col, GtkCellRenderer *rend, GtkTr
     }
 }
 
+ /***********************************************************************
+  *                           on_key_press()                            *
+  *             GTK handler for key events while in edit mode: Up/Down  *
+  *             arrows zoom the seismograms vertically in/out.          *
+  *               TRUE if handled, FALSE otherwise.                     *
+  ***********************************************************************/
+
 static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data) {
     if (!edit_mode) return FALSE; 
     if (event->keyval == GDK_KEY_Up) { g_zoom_factor *= 1.5; if (canvas_global) gtk_widget_queue_draw(canvas_global); return TRUE; } 
@@ -378,12 +486,27 @@ static gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer dat
     return FALSE;
 }
 
+ /***********************************************************************
+  *                          mostrar_alerta()                           *
+  *             Shows a modal message dialog with the given text and    *
+  *             message type.                                           *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void mostrar_alerta(const char *mensaje, GtkMessageType tipo) {
     GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, tipo, GTK_BUTTONS_OK, "%s", mensaje);
     gtk_window_set_title(GTK_WINDOW(dialog), "Earthworm Response");
     g_signal_connect(dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL);
     gtk_widget_show_all(dialog);
 }
+
+ /***********************************************************************
+  *                           on_ew_timeout()                           *
+  *             Timeout fired after forcing a relocation: warns that no *
+  *             new solution was generated and restores the Force       *
+  *             button label.                                           *
+  *               FALSE (one-shot timer).                               *
+  ***********************************************************************/
 
 static gboolean on_ew_timeout(gpointer data) {
     if (waiting_for_ew) {
@@ -394,6 +517,14 @@ static gboolean on_ew_timeout(gpointer data) {
     }
     return FALSE;
 }
+
+ /***********************************************************************
+  *                       UpdatePPickArrayLocal()                       *
+  *             Merges the auto picks read from the locator .dat file   *
+  *             into the global pick buffer, keeping the station info   *
+  *             and expected P times of the target stations.            *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void UpdatePPickArrayLocal( int iNumPIn, int iNumSta, PPICK PIn[], PPICK POut[] ) {
    for ( int i=0; i<iNumPIn; i++ ) {
@@ -419,6 +550,13 @@ void UpdatePPickArrayLocal( int iNumPIn, int iNumSta, PPICK PIn[], PPICK POut[] 
    }
 }
 
+ /***********************************************************************
+  *                       InitPBufWithStaLocal()                        *
+  *             Initializes the pick buffer with one pick per station,  *
+  *             copying the station coordinates and identifiers.        *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void InitPBufWithStaLocal( int iNumSta, PPICK P[], STATION Sta[] ) {
    for ( int i=0; i<iNumSta; i++ ) {
       InitP( &P[i] );
@@ -428,6 +566,14 @@ void InitPBufWithStaLocal( int iNumSta, PPICK P[], STATION Sta[] ) {
       P[i].iUseMe = 1; 
    }
 }
+
+ /***********************************************************************
+  *                    cargar_estaciones_dinamicas()                    *
+  *             Loads the station list from the .sta files and          *
+  *             allocates the raw and filtered trace buffers of         *
+  *             each station.                                           *
+  *               Nothing; exits on error or an empty list.             *
+  ***********************************************************************/
 
 void cargar_estaciones_dinamicas() {
     StaArray = (STATION *) calloc(MAX_ESTA, sizeof(STATION));
@@ -459,6 +605,13 @@ void cargar_estaciones_dinamicas() {
 }
 
 /* --- TABLE POPULATION AND SELECTION LOGIC --- */
+ /***********************************************************************
+  *                      procesar_mensaje_sismo()                       *
+  *             Parses one quake line from the history file and appends *
+  *             a formatted row to the tree view store.                 *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void procesar_mensaje_sismo(GtkWidget *tree, const char *payload) {
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(tree)));
     
@@ -503,6 +656,13 @@ void procesar_mensaje_sismo(GtkWidget *tree, const char *payload) {
     gtk_list_store_set(store, &match_iter, 0, fecha, 1, hora, 2, szLat, 3, szLon, 4, szDep, 5, szRes, 6, szAzm, 7, szStn, 8, szID, 9, szMs, 10, szMw, 11, szMwp, 12, szMb, 13, szMl, 14, otime, 15, qver, 16, qid, 17, lat, 18, lon, 19, depth, -1);
 }
 
+ /***********************************************************************
+  *                      RestoreSelectionByOTime()                      *
+  *             Selects the table row whose origin time matches the     *
+  *             given value, blocking the waveform fetch while doing    *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void RestoreSelectionByOTime(GtkWidget *tree, double target_otime) {
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(tree));
     GtkTreeIter iter;
@@ -523,6 +683,12 @@ void RestoreSelectionByOTime(GtkWidget *tree, double target_otime) {
     }
 }
 
+ /***********************************************************************
+  *                          SelectFirstRow()                           *
+  *             Selects the first row of the table and scrolls to it.   *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void SelectFirstRow(GtkWidget *tree) {
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(tree));
     GtkTreeIter iter;
@@ -537,6 +703,13 @@ void SelectFirstRow(GtkWidget *tree) {
         gtk_tree_path_free(path);
     }
 }
+
+ /***********************************************************************
+  *                          RepopulateTable()                          *
+  *             Clears the tree view and reloads it from the quake      *
+  *             history file (up to 500 events).                        *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 void RepopulateTable(GtkWidget *tree) {
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(tree)));
@@ -561,6 +734,13 @@ void RepopulateTable(GtkWidget *tree) {
     fclose(fp);
 }
 
+ /***********************************************************************
+  *                      cargar_sismos_iniciales()                      *
+  *             Initial load: populates the table, records the top      *
+  *             origin time and file mtime, and selects the first row.  *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 void cargar_sismos_iniciales(GtkWidget *tree) {
     RepopulateTable(tree);
     
@@ -577,6 +757,14 @@ void cargar_sismos_iniciales(GtkWidget *tree) {
         g_last_file_mtime = file_stat.st_mtime;
     }
 }
+
+ /***********************************************************************
+  *                      check_history_file_loop()                      *
+  *             Periodic GTK timeout that repopulates the table when    *
+  *             the quake history file changes, keeping the selection   *
+  *             and checking for a forced solution.                     *
+  *               TRUE always (keeps the timer alive).                  *
+  ***********************************************************************/
 
 static gboolean check_history_file_loop(gpointer user_data) {
     GtkWidget *tree = GTK_WIDGET(user_data);
@@ -609,6 +797,14 @@ static gboolean check_history_file_loop(gpointer user_data) {
     return TRUE; 
 }
 
+ /***********************************************************************
+  *                      detectar_solucion_force()                      *
+  *             Checks whether the locator produced a new solution for  *
+  *             the forced relocation, and stops waiting on success or  *
+  *             if the quake disappeared.                               *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void detectar_solucion_force(GtkWidget *tree) {
     if (!waiting_for_ew) return;
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(tree));
@@ -627,14 +823,22 @@ static void detectar_solucion_force(GtkWidget *tree) {
         waiting_for_ew = FALSE;
         if (ew_timeout_id != 0) { g_source_remove(ew_timeout_id); ew_timeout_id = 0; }
         if (btn_force) gtk_button_set_label(GTK_BUTTON(btn_force), "Force Relocation");
-        mostrar_alerta("El sismo ya no esta activo en el localizador.\nNo fue posible forzar la relocalizacion.", GTK_MESSAGE_WARNING);
+        mostrar_alerta("The quake is no longer active in the locator.\nIt was not possible to force the relocation.", GTK_MESSAGE_WARNING);
     } else if (row_qver > expected_min_qver) {
         waiting_for_ew = FALSE;
         if (ew_timeout_id != 0) { g_source_remove(ew_timeout_id); ew_timeout_id = 0; }
         if (btn_force) gtk_button_set_label(GTK_BUTTON(btn_force), "Force Relocation");
-        logit("t", "Force relocation: nueva solucion recibida (qid=%d, qver %d -> %d).\n", expected_qid, expected_min_qver, row_qver);
+        logit("t", "Force relocation: new solution received (qid=%d, qver %d -> %d).\n", expected_qid, expected_min_qver, row_qver);
     }
 }
+
+ /***********************************************************************
+  *                          on_row_selected()                          *
+  *             GTK handler for the table selection: stores the selected*
+  *             event data, updates the info label and enables the      *
+  *             repick/force buttons.                                   *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_row_selected(GtkTreeSelection *selection, gpointer data) {
     if (edit_mode) return;
@@ -670,6 +874,14 @@ static void on_row_selected(GtkTreeSelection *selection, gpointer data) {
     }
 }
 
+ /***********************************************************************
+  *                       on_btn_repick_clicked()                       *
+  *             GTK handler for the Repick mode button: toggles the edit*
+  *             mode on/off, changing the button and hiding the Force   *
+  *             button while editing.                                   *
+  *               Nothing.                                              *
+  ***********************************************************************/
+
 static void on_btn_repick_clicked(GtkWidget *widget, gpointer data) {
     if (selected_qid == 0) return;
     if (!edit_mode) {
@@ -687,6 +899,14 @@ static void on_btn_repick_clicked(GtkWidget *widget, gpointer data) {
         pending_waveform_reload = TRUE;
     }
 }
+
+ /***********************************************************************
+  *                       on_btn_force_clicked()                        *
+  *             GTK handler for the Force Relocation button: rejects    *
+  *             events older than one hour and sends a fake pick to the *
+  *             locator to force a new solution.                        *
+  *               Nothing.                                              *
+  ***********************************************************************/
 
 static void on_btn_force_clicked(GtkWidget *widget, gpointer data) {
     if (selected_qid == 0) return;
@@ -715,7 +935,13 @@ static void on_btn_force_clicked(GtkWidget *widget, gpointer data) {
     ew_timeout_id = g_timeout_add_seconds(15, on_ew_timeout, NULL);
 }
 
-/* Marca P mostrada de la estacion i (pick real si existe y se usa, si no la P teorica). */
+ /***********************************************************************
+  *                         marca_p_estacion()                          *
+  *             Returns the P mark of a station: the real pick when it  *
+  *             exists and is used, otherwise the theoretical P time.   *
+  *               The P time; *is_real is 0 for a theoretical mark.     *
+  ***********************************************************************/
+
 static double marca_p_estacion(int i, int *is_real)
 {
    double pt = PBufG[i].dPTime;
@@ -727,12 +953,25 @@ static double marca_p_estacion(int i, int *is_real)
    return pt;
 }
 
-/* Inicio de ventana (tiempo absoluto) de la estacion i en el modo alineado:
-   la marca P de la estacion queda en la linea de referencia. */
+ /***********************************************************************
+  *                       win_start_de_estacion()                       *
+  *             Window start (absolute time) of a station in the aligned*
+  *             mode: the station's P mark stays on the reference line. *
+  *               The window start time.                                *
+  ***********************************************************************/
+
 static double win_start_de_estacion(int i)
 {
    return marca_p_estacion(i, NULL) - g_align_lead;
 }
+
+ /***********************************************************************
+  *                         on_canvas_clicked()                         *
+  *             GTK handler for clicks on a station track in edit mode: *
+  *             left click sets/updates the P pick, right click deletes *
+  *             it, writes the pick file and reports it to the locator. *
+  *               TRUE always (event consumed).                         *
+  ***********************************************************************/
 
 static gboolean on_canvas_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data) {
     if (!edit_mode) return TRUE;
@@ -787,6 +1026,14 @@ static gboolean on_canvas_clicked(GtkWidget *widget, GdkEventButton *event, gpoi
     return TRUE;
 }
 
+ /***********************************************************************
+  *                          on_draw_signal()                           *
+  *             Cairo draw handler: sorts the stations by distance and  *
+  *             renders the aligned seismograms with the vertical P     *
+  *             reference line and the pick markers.                    *
+  *               FALSE always.                                         *
+  ***********************************************************************/
+
 static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
     int width = gtk_widget_get_allocated_width(widget);
     cairo_set_source_rgb(cr, 1, 1, 1); cairo_paint(cr);
@@ -815,9 +1062,9 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
     if (earliest_pick == 1e15) earliest_pick = selected_otime + 15.0; 
     g_dWindowStart = earliest_pick - 20.0;
 
-    /* Linea de referencia vertical: la marca P de la estacion mas cercana define
-       una linea imaginaria; cada estacion desplaza su ventana (winStart) para que
-       su marca P caiga sobre x_ref. */
+    /* Vertical reference line: the P mark of the closest station defines
+       an imaginary line; each station shifts its window (winStart) so that
+       its P mark falls on x_ref. */
     int height = gtk_widget_get_allocated_height(widget);
     int x_ref = g_margin_left + (int)((g_align_lead / g_dScreenTime) * draw_width);
     cairo_set_source_rgb(cr, 0.55, 0.55, 0.75);
@@ -831,7 +1078,7 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     for (int n = 0; n < g_NumSortedNodes; n++) {
         int i = g_SortedNodes[n].idx; 
-        /* Ajuste de margen y_center para aprovechar espacio despues de quitar texto con cairo */
+        /* y_center margin adjustment to take advantage of the space after removing cairo text */
         int y_center = (n * g_spacing) + (g_spacing / 2) + 10;
         g_SortedNodes[n].y_top = y_center - (g_spacing / 2);
         g_SortedNodes[n].y_bottom = y_center + (g_spacing / 2);
@@ -841,7 +1088,7 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
         int is_real = 1;
         if (pick_t < 1.0 || PBufG[i].iUseMe <= 0) { pick_t = PBufG[i].dExpectedPTime; is_real = 0; }
 
-        /* Ventana alineada: la marca P de la estacion cae en x_ref */
+        /* Aligned window: the station's P mark falls on x_ref */
         double winStart = pick_t - g_align_lead;
 
         cairo_new_path(cr); cairo_set_line_width(cr, 1.0);
@@ -890,18 +1137,18 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
             }
         }
 
-        /* Marca P sobre la linea de referencia (todas las estaciones alineadas) */
+        /* P mark on the reference line (all stations aligned) */
         if (pick_t > 1.0 && pick_t >= winStart && pick_t <= (winStart + g_dScreenTime)) {
             int px = x_ref;
             if (is_real) cairo_set_source_rgb(cr, 1.0, 0.0, 0.0); else cairo_set_source_rgb(cr, 1.0, 0.5, 0.0); 
             cairo_set_line_width(cr, 2);
             cairo_move_to(cr, px, y_center - (g_spacing / 2.5)); cairo_line_to(cr, px, y_center + (g_spacing / 2.5)); cairo_stroke(cr);
             cairo_set_font_size(cr, 11); cairo_move_to(cr, px + 4, y_center - (g_spacing / 3)); 
-            if (is_real && strlen(PBufG[i].szPhase) > 0) { cairo_show_text(cr, PBufG[i].szPhase); } else { cairo_show_text(cr, is_real ? "P" : "P(teo)"); }
+            if (is_real && strlen(PBufG[i].szPhase) > 0) { cairo_show_text(cr, PBufG[i].szPhase); } else { cairo_show_text(cr, is_real ? "P" : "P(theo)"); }
         }
 
-        /* Marcador de la P teorica (desviacion del pick automatico): si el pick
-           real es correcto coincide con la linea de referencia; si no, se desplaza. */
+        /* Theoretical P marker (deviation of the automatic pick): if the real
+           pick is correct it coincides with the reference line; if not, it shifts. */
         if (is_real && PBufG[i].dExpectedPTime > 1.0) {
             double pexp = PBufG[i].dExpectedPTime;
             if (pexp >= winStart && pexp <= (winStart + g_dScreenTime)) {
@@ -919,6 +1166,13 @@ static gboolean on_draw_signal(GtkWidget *widget, cairo_t *cr, gpointer data) {
     return FALSE;
 }
 
+ /***********************************************************************
+  *                        ew_background_tasks()                        *
+  *             Periodic GTK timeout: sends heartbeats and exits the    *
+  *             main loop when the ring signals termination.            *
+  *               G_SOURCE_REMOVE on termination, else CONTINUE.        *
+  ***********************************************************************/
+
 gboolean ew_background_tasks(gpointer user_data) {
     time_t timeNow; time(&timeNow);
     if (timeNow - timeLastBeat >= HeartBeatInt) { timeLastBeat = timeNow; Status(TypeHeartBeat, 0, ""); }
@@ -926,6 +1180,14 @@ gboolean ew_background_tasks(gpointer user_data) {
     if (flag == TERMINATE || flag == MyPid) { gtk_main_quit(); return G_SOURCE_REMOVE; }
     return G_SOURCE_CONTINUE;
 }
+
+ /***********************************************************************
+  *                               main()                                *
+  *             Entry point: reads the config, loads the stations and   *
+  *             connects to Earthworm, builds the GTK interface and runs*
+  *             the main loop.                                          *
+  *               0 on clean exit.                                      *
+  ***********************************************************************/
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -998,7 +1260,7 @@ int main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(sw_lista), tree_global); 
     gtk_box_pack_start(GTK_BOX(vbox), sw_lista, FALSE, FALSE, 0);
 
-    /* --- NUEVA BARRA INTERMEDIA (INFO EVENTO Y FETCH VISIBLE SIEMPRE) --- */
+    /* --- NEW MIDDLE BAR (EVENT INFO AND FETCH ALWAYS VISIBLE) --- */
     GtkWidget *hbox_middle = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_widget_set_margin_start(hbox_middle, 10);
     gtk_widget_set_margin_end(hbox_middle, 10);
@@ -1048,7 +1310,7 @@ int main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(sw_ondas), canvas_global);
     g_signal_connect(G_OBJECT(canvas_global), "draw", G_CALLBACK(on_draw_signal), NULL);
 
-    /* --- BARRA INFERIOR --- */
+    /* --- BOTTOM BAR --- */
     GtkWidget *hbox_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_widget_set_margin_start(hbox_bottom, 10); gtk_widget_set_margin_end(hbox_bottom, 10); gtk_widget_set_margin_bottom(hbox_bottom, 5);
     
@@ -1058,7 +1320,7 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_name(btn_repick, "btn_repick"); gtk_widget_set_sensitive(btn_repick, FALSE); 
     g_signal_connect(btn_repick, "clicked", G_CALLBACK(on_btn_repick_clicked), NULL);
 
-    /* --- GESTOR DE FILTROS DINAMICOS --- */
+    /* --- DYNAMIC FILTER MANAGER --- */
     GtkWidget *box_filter = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
     
     GtkWidget *lbl_filter = gtk_label_new("  Filter:");

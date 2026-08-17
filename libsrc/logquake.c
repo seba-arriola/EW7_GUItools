@@ -63,7 +63,7 @@ void LogToMySQL( HYPO *pHypo, char *pszIndexFile,
    if ( ll.dLon > 180.0 && ll.dLon < 360.0 ) ll.dLon -= 360.0;
    psz = namnumLC( ll.dLat, ll.dLon, &iFERegion, pszIndexFile, pszLatFile,
                    pszNameFileLC );
-   /* FIX: namnumLC puede devolver NULL o cadena vacia */
+   /* FIX: namnumLC may return NULL or an empty string */
    if ( psz && strlen( psz ) > 0 ) psz[strlen( psz )-1] = '\0';
    else psz = "";                            /* Quake Region - "Kuril Is." */                      
    iRegion = GetRegion( ll.dLat, ll.dLon );     /* Quake Region - 1-20        */   

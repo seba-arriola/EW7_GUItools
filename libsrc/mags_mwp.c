@@ -106,18 +106,18 @@ if (sp_time > 2 && sp_time < iMwpSeconds)
    /* How many points to evaluate? */   
    if ( iS == 1 ) 
    {
-      /* FIX: tasa de muestreo valida (evita SIGFPE) */
+      /* FIX: valid sample rate (avoids SIGFPE) */
       if ( Sta->dSampRate <= 0.0 ) { return; }
       lNumInBuff = (long) ((Sta->dEndTime-pPBuf->dPTime) * Sta->dSampRate);
       lNum = (long) (Sta->dSampRate * (double) iMwpSeconds);
-      /* FIX: acotar a los buffers ANTES de usarlos (el guard antiguo llegaba
-             despues del desbordamiento con tasas altas de muestreo) */
+      /* FIX: bound the buffers BEFORE using them (the old guard came
+             after the overflow with high sample rates) */
       if ( lNum > MAXMWPARRAY ) lNum = MAXMWPARRAY-1;
       if ( lNum > lNumInBuff ) 
       {
-         /* FIX CRITICO: En sistemas en tiempo real NO truncamos la ventana si falta data.
-            Abortamos la funcion silenciosamente (retornando con Mwp=0) para que el modulo padre
-            vuelva a intentarlo en el proximo latido/segundo. */
+         /* CRITICAL FIX: In real-time systems we do NOT truncate the window if data is missing.
+            We abort the function silently (returning with Mwp=0) so the parent module
+            retries on the next heartbeat/second. */
          return;
       }
    }
@@ -163,9 +163,9 @@ if (sp_time > 2 && sp_time < iMwpSeconds)
       }
    }
 else {
-       /* iS==0: plRawData ya trae la linea base pre-evento restada al llenarse
-          (get_pick.c resta dAveLDCRawOrig al llenar plRawData). Restar aqui de
-          nuevo seria una doble remocion de offset, asi que usamos local_mean=0. */
+       /* iS==0: plRawData already has the pre-event baseline subtracted when filled
+          (get_pick.c subtracts dAveLDCRawOrig when filling plRawData). Subtracting
+          again here would be a double offset removal, so we use local_mean=0. */
        local_mean = 0.0;
        S_to_N_prior = Sta->dAveRawNoiseOrig;
     }
@@ -774,7 +774,7 @@ double Mwp_adjustment( double dDistance )
 }
 
 /* ====================================================================
-   FUNCIONES FALTANTES RESTAURADAS PARA EVITAR ERROR DE ENLAZADO (LD)
+   MISSING FUNCTIONS RESTORED TO AVOID LINKING ERROR (LD)
    ==================================================================== */
 
 int GetMbMl( STATION *Sta, int iIndex, unsigned char ucMyModID,
@@ -783,7 +783,7 @@ int GetMbMl( STATION *Sta, int iIndex, unsigned char ucMyModID,
 {
    PPICK  PTemp;        
 
-   memset( &PTemp, 0, sizeof( PTemp ) );   /* FIX: evitar lectura no inicializada */
+   memset( &PTemp, 0, sizeof( PTemp ) );   /* FIX: avoid uninitialized read */
 
    if ( Sta->dSens > 0. )
    {     

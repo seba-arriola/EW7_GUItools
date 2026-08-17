@@ -295,7 +295,7 @@ int ReadStationData( char *pszStaFile, char *pszStaResp, STATION sta[],
 i = 0;
     while ( fgets( szString, 160, hFile ) != NULL )
     {
-       if ( i >= iMaxStn )   /* FIX: no escribir fuera del array del llamador */
+       if ( i >= iMaxStn )   /* FIX: do not write outside the caller's array */
        {
           logit( "et", "Too many stations in %s (max %d)\n", pszStaFile, iMaxStn );
           break;

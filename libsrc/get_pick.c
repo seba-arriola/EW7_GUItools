@@ -265,8 +265,8 @@ void InitP( PPICK *pP )
 void MovingAvg( long LongSample, STATION *Sta, long lLTASamps,  
                 long RawSample, long lNumConsec )
 {
-   /* FIX: picos/valles por estacion (antes static compartido entre estaciones
-          contamninaba la linea de base de ruido) */
+   /* FIX: peaks/troughs per station (formerly a static shared between stations
+          contaminated the noise baseline) */
    long    lHigh = Sta->lNoiseHigh;  
    long    lLow  = Sta->lNoiseLow;
 
@@ -378,7 +378,7 @@ void MovingAvg( long LongSample, STATION *Sta, long lLTASamps,
    Sta->lSampOld = Sta->lSampNew;
    Sta->lLTACtr++;           // LTA counter
 
-/* Persistir picos/valles por estacion */
+/* Persist peaks/troughs per station */
    Sta->lNoiseHigh = lHigh;
    Sta->lNoiseLow  = lLow;
 }
@@ -814,7 +814,7 @@ int PPickStruct( char *PIn, PPICK *PPick, unsigned char TypePickTWC )
 {
    int      iMessageType, iModId, iInst;  /* Incoming logo */
 
-/* Break up incoming message (PARCHADO A %d PARA VARIABLES INT EN 64 BITS)
+/* Break up incoming message (PATCHED TO %d FOR INT VARIABLES IN 64 BITS)
    *************************/
    sscanf( PIn,    "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf %lf "
                    "%lf %lf %lf %lf %E %lf %d %lf %lf",

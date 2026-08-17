@@ -14,8 +14,8 @@
 #define MAX_STN_REM      100  /* Max number of Stations to permanently remove */
 #define BUFFER_TIMEOUT   150  /* Adjusted P-pick time limit */
 #define PPICK_TIMEOUT   3600  /* Don't accept P-picks older than this (sec) */
-                               /* 3600: alineado con la ventana de 1h del boton
-                                  Force Location de hypo_display */
+                               /* 3600: aligned with the 1h window of the
+                                  Force Location button in hypo_display */
 #define MAX_SCAVENGE      20  /* Don't scavenge from a buffer if it has more 
                                  than this # of picks */
 #define MAX_VERSIONS      98  /* Max number of times to allow quake to be
