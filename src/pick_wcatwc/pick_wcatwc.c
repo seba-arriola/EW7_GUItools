@@ -62,7 +62,6 @@ int main( int argc, char **argv )
    char          AssignedLoc[MAX_STATIONS][4];
    for (i=0; i<MAX_STATIONS; i++) AssignedLoc[i][0] = '\0';
    
-   int           first_packet_tracer = 0;
 
    if ( argc != 2 ) {
       fprintf( stderr, "Usage: pick_wcatwc <configfile>\n" );
@@ -207,13 +206,6 @@ int main( int argc, char **argv )
       rc = tport_getmsg( &Gparm.InRegion, getlogo, nlogos, &logo, &MsgLen, WaveBuf, MAX_TRACEBUF_SIZ);
 
       if ( rc == GET_NONE ) { sleep_ew( 50 ); continue; } 
-      
-      if ( rc == GET_OK || rc == GET_MISS ) {
-          if (first_packet_tracer < 5) {
-              logit("t", ">> TRACER: Paquete de onda RECIBIDO! Sta: %s, Tipo Logo EW: %d\n", WaveHead->sta, logo.type);
-              first_packet_tracer++;
-          }
-      }
       
       if ( rc == GET_NOTRACK ) logit( "et", "pick_wcatwc: Tracking error.\n");
       if ( rc == GET_MISS_LAPPED ) logit( "et", "pick_wcatwc: Got lapped on the ring.\n");

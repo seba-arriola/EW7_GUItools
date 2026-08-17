@@ -24,7 +24,6 @@
 /* External prototypes for Mwp algorithms located in mags_mwp.c */
 extern double ComputeMwpMag( double dMaxIntDisp, double dDelta );
 extern void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS );
-extern void MwpTracerLog(const char *fmt, ...);
 
 /* Global Variables */
 /* WC&ATWC long period seismometer response */
@@ -202,9 +201,6 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
    
    time( &lTime );
 
-   MwpTracerLog("\n=======================================================\n");
-   MwpTracerLog("=== EVALUANDO MAGNITUDES (Sismo ID: %d, iPNum: %d) ===\n", pHypo->iQuakeID, iPNum);
-
    for ( i=0; i<iPNum; i++ )
    {   
       if ( i >= MAX_STATIONS ) break;   /* FIX: acotar iMwpCounted[] */
@@ -258,9 +254,6 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
                 pHypo->iNumMwp++;
                 pHypo->dMwpAvg += P[i].dMwpMag;
                 iMwpCounted[i] = 1;
-                MwpTracerLog("  [EVAL %s] -> ACEPTADA. Mwp=%.2f calculada con exito.\n", P[i].szStation, P[i].dMwpMag);
-            } else {
-                MwpTracerLog("  [EVAL %s] -> RECHAZADA. Distancia %.2f esta fuera de los limites seguros [3.0 - 90.0]\n", P[i].szStation, P[i].dDelta);
             }
          }
 		
@@ -276,9 +269,6 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
    {
       dMwpAvgRaw = pHypo->dMwpAvg / (double) pHypo->iNumMwp;
       iNumMwpRaw = pHypo->iNumMwp;
-      MwpTracerLog("  [PROMEDIO] Promedio crudo inicial Mwp: %.2f desde %d estaciones.\n", dMwpAvgRaw, iNumMwpRaw);
-   } else {
-      MwpTracerLog("  [PROMEDIO] 0 estaciones iniciales superaron los filtros Mwp.\n");
    }
                                                                
    if ( pHypo->iNumMb )  pHypo->dMbAvg /= (double) pHypo->iNumMb;
@@ -300,11 +290,6 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
    double mwp_tolerance = dSD * 2.0;
    if (mwp_tolerance < 0.6) mwp_tolerance = 0.6;
    
-   if (pHypo->iNumMwp > 2) {
-       MwpTracerLog("  [ESTADISTICAS] Desviacion Estandar (SD) calculada: %.3f\n", dSD);
-       MwpTracerLog("  [ESTADISTICAS] Tolerancia a aplicar (2*SD, Minimo 0.6): %.3f\n", mwp_tolerance);
-   }
-
    for ( i=0; i<iPNum; i++ )
       if ( P[i].iUseMe > 0 ) 
       {
@@ -318,9 +303,6 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
             double diff = fabs( pHypo->dMwpAvg-P[i].dMwpMag );
             if ( diff <= mwp_tolerance && iMwpCounted[i] == 1 ) { 
                 iMwpCountMod++; dMwpSumMod += P[i].dMwpMag; 
-                MwpTracerLog("    -> %s: Mwp=%.2f MANTENIDA en promedio final. Diff (%.2f) <= Tol (%.2f)\n", P[i].szStation, P[i].dMwpMag, diff, mwp_tolerance);
-            } else if (iMwpCounted[i] == 1) {
-                MwpTracerLog("    -> %s: Mwp=%.2f DESCARTADA por dispersion. Diff (%.2f) > Tol (%.2f)\n", P[i].szStation, P[i].dMwpMag, diff, mwp_tolerance);
             }
          }
          if ( P[i].dMwMag > 0. )
@@ -333,10 +315,8 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
    
    if ( iMwpCountMod >= 2 ) { 
        pHypo->dMwpAvg = dMwpSumMod / (double) iMwpCountMod; pHypo->iNumMwp = iMwpCountMod; 
-       MwpTracerLog("  [FINAL] Promedio FINAL Mwp: %.2f con %d estaciones.\n", pHypo->dMwpAvg, pHypo->iNumMwp);
    } else { 
        pHypo->dMwpAvg = dMwpAvgRaw; pHypo->iNumMwp = iNumMwpRaw; 
-       MwpTracerLog("  [FINAL] Promedio FINAL Mwp se mantiene en Crudo: %.2f con %d estaciones.\n", pHypo->dMwpAvg, pHypo->iNumMwp);
    }      
    
    if ( iMwCountMod >= 2 ) { pHypo->dMwAvg = dMwSumMod / (double) iMwCountMod; pHypo->iNumMw = iMwCountMod; }

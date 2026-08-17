@@ -313,8 +313,6 @@ int main( int argc, char **argv )
          char     errmsg[80];
          MSG_LOGO logo;
 		 
-         logit("e", "DEBUG RECHAZO: El pick de la estacion %s %s %s fue DESCARTADO porque los canales/nombres no coinciden exactamente con el archivo .sta\n", PStruct.szStation, PStruct.szChannel, PStruct.szNetID);
-
          time( &errTime );
          sprintf( errmsg, "%ld 1 %s %s %s not found in StaDataFile\n",
                   (long) errTime,
@@ -329,18 +327,10 @@ int main( int argc, char **argv )
 	  
       RequestSpecificMutex( &mutsem1 );  
       
-      logit("e", "\nDEBUG ASOCIADOR: Pick aceptado de %s. Pasando a LoadUpPBuff...\n", PStruct.szStation);
-      
       LoadUpPBuff( &PStruct, PBuf, iPBufCnt, Hypo, &iActiveBuffer, &Gparm,
                    &Ewh, city, iLastBuffCnt, iNumPBufRem, cityEC, EqDepth,
                    szPStnArray, Nsta, Gparm.iNumNearStn, MAX_STATIONS );
                    
-      for(int b=0; b < 10; b++) {
-          if (iPBufCnt[b] > 0) {
-              logit("e", "  -> Status Buffer [%d]: Tiene ahora %d picks (Se necesitan %d).\n", b, iPBufCnt[b], Gparm.MinPs);
-          }
-      }
-      
       ReleaseSpecificMutex( &mutsem1 );  
    }
 
@@ -485,19 +475,10 @@ thr_ret LocateThread( void *dummy )
             if ( PBuf[i][iPBufCnt[i]-1].dPTime > 0. &&
                  Hypo[i].iVersion < MAX_VERSIONS &&
                  Hypo[i].iNumPs < MAX_STATIONS ) iLoc = 1;
-                 
-            logit("e", "\nDEBUG 1: [Buffer %d] Tenemos %d picks (MinPs=%d). Intentando LocateQuake()...\n", i, iPBufCnt[i], Gparm.MinPs);
-
+                  
             iRC = LocateQuake( PBuf[i], &iPBufCnt[i], &Gparm, &Hypo[i], i, &Ewh,
                                city, iLoc, Hypo, iPBufCnt, cityEC, EqDepth, MAX_STATIONS );			
             
-            logit("e", "DEBUG 2: [Buffer %d] LocateQuake retorno %d. iGoodSoln = %d\n", i, iRC, Hypo[i].iGoodSoln);
-            if (iRC >= 0 && Hypo[i].iGoodSoln >= 2) {
-                logit("e", "DEBUG 3: Localizacion BUENA! Lat: %.2f, Lon: %.2f. Revisa si escribio en disco.\n", Hypo[i].dLat, Hypo[i].dLon);
-            } else if (iRC >= 0 && Hypo[i].iGoodSoln < 2) {
-                logit("e", "DEBUG X: Algoritmo fallo en converger o el residual es muy alto (solucion descartada).\n");
-            }
-
             if ( iRC == -1 )
                logit( "et", "Problem in LocateQuake\n" );
             else

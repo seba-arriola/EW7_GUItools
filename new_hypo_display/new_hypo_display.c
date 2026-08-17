@@ -251,8 +251,6 @@ void ApplySelectedFilter() {
 void ReloadWaveforms() {
     if (selected_qid == 0) return;
     
-    logit("t", ">> TRACER: Preparing buffers for Quake ID: %d...\n", selected_qid);
-    
     HYPO trkHypo; memset(&trkHypo, 0, sizeof(HYPO));
     trkHypo.dOriginTime = selected_otime; trkHypo.dLat = selected_lat; trkHypo.dLon = selected_lon; trkHypo.dDepth = selected_depth;
     GeoCent( (LATLON *) &trkHypo ); GetLatLonTrig( (LATLON *) &trkHypo );
@@ -285,9 +283,7 @@ void ReloadWaveforms() {
     int files_needed = (view_mins / iFileLength) + 2; 
     int safe_req_mins = files_needed * iFileLength;
 
-    logit("t", ">> TRACER: Executing ReadDiskDataForHypo. FileLength=%d, ReqMins=%d\n", iFileLength, safe_req_mins);
     ReadDiskDataForHypo( iFileLength, safe_req_mins, WaveFilePath, ".S", 60.0, NumEstaciones, PBufG, StaArray );
-    logit("t", ">> TRACER: ReadDiskDataForHypo finished.\n");
     
     for(int i=0; i<NumEstaciones; i++) {
         MarkZeroDropouts(&StaArray[i]);
@@ -299,7 +295,6 @@ void ReloadWaveforms() {
             if (StaArray[i].lRawCircCtr > 0) { bHasData[i] = 1; }
         }
         
-        logit("t", ">> TRACER: Applying filters to the extracted data...\n");
         ApplySelectedFilter();
         
         if (entry_dist) g_max_dist_km = atof(gtk_entry_get_text(GTK_ENTRY(entry_dist)));
@@ -307,7 +302,6 @@ void ReloadWaveforms() {
         
         actualizar_altura_canvas();
         gtk_widget_queue_draw(canvas_global);
-        logit("t", ">> TRACER: UI redraw requested successfully.\n");
     }
 }
 
@@ -462,7 +456,6 @@ void cargar_estaciones_dinamicas() {
              exit(-1);
         }
     }
-    logit("t", ">> TRACER: Station dynamic memory shielded correctly (Max. %d stations)\n", NumEstaciones);
 }
 
 /* --- TABLE POPULATION AND SELECTION LOGIC --- */

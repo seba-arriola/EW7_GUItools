@@ -76,8 +76,6 @@ int InitDiskFile( char *pszFile, STATION StaArray[], double dFileTime,
           if ( iDebug ) logit( "t", "Dir: %s not created in InitDiskFile\n", szDir );
    }
 
-   if ( iDebug ) logit("e", "\nDEBUG 1: Intentando abrir archivo: %s\n", pszFile);
-
    if ( ( hFile = fopen( pszFile, "wb" ) ) == NULL ) {
       logit( "t", "File: %s not opened in InitDiskFile\n", pszFile ); return( -1 );
    }

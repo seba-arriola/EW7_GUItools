@@ -333,8 +333,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
    if (safeNumNearStn > MAX_NUM_NEAR_STN) safeNumNearStn = MAX_NUM_NEAR_STN;
    /* ========================================================= */
 
-   logit("e", "DEBUG TRACER [1]: Iniciando LoadUpPBuff para estacion %s\n", pPStruct->szStation);
-   
    if ( pPStruct->dPTime < 0.1 ) {
       for ( i=0; i<numPBuffs; i++ )
          if ( Hypo[i].iQuakeID == pPStruct->lPickIndex ) 
@@ -364,11 +362,9 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
 		 
    if ( pPStruct->dPTime < 0.1 ) return;
    
-   logit("e", "DEBUG TRACER [3]: Verificando timeout de picks...\n");
    time( &lTime );
    if ( lTime-(long) pPStruct->dPTime > PPICK_TIMEOUT ) return;
    
-   logit("e", "DEBUG TRACER [4]: Verificando picks forzados...\n");
    for ( i=0; i<numPBuffs; i++ )
       if ( Hypo[i].iQuakeID == pPStruct->iHypoID )
       {             
@@ -392,7 +388,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
          return;
       }
    
-   logit("e", "DEBUG TRACER [5]: Verificando duplicados...\n");
    for ( i=0; i<numPBuffs; i++ ) {
       int limit_j = iPBufCnt[i]; if(limit_j > iNumMax) limit_j = iNumMax;
       for ( j=0; j<limit_j; j++ ) {
@@ -414,7 +409,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
 
    for ( i=0; i<numPBuffs; i++ ) iBuff[i] = -1;   
    
-   logit("e", "DEBUG TRACER [6]: Revisando buffers existentes...\n");
    for ( i=0; i<numPBuffs; i++ )
    {
       iTemp = *piActive+i;
@@ -459,8 +453,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
       }
    }
    
-   logit("e", "DEBUG TRACER [6.1]: Comprobando fase baja frecuencia...\n");
-   
    /* FIX SEGURO: Bloque rediseñado. Se calcula el tiempo esperado cinemático
     * para descartar el pick de baja frecuencia en base a velocidades 
     * teóricas sin usar GetPhaseTime (evitando crasheos por punteros no inicializados).
@@ -488,15 +480,12 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
             /* Rechazar si coincide en el espacio de la onda secundaria de este gran evento */
             if ( fabs( dTTDif - t_S ) <= 45.0 || fabs( dTTDif - t_Surf ) <= 90.0 ) 
             {
-               logit("e", "DEBUG TRACER [SAFE]: Fase de baja frecuencia descartada en %s (coincide con coda/superficial de sismo grande QID %d)\n", 
-                     pPStruct->szStation, Hypo[iTemp].iQuakeID);
                return;
             }                     
          }
       }
    }
    
-   logit("e", "DEBUG TRACER [6.2]: Ordenando buffers...\n");
    for ( i=0; i<numPBuffs; i++ )
       if ( iBuff[i] != -2 )      
       {
@@ -520,7 +509,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
    if(iDLev < 0) iDLev = 0;
    if(iDLev >= 27436 - 362) iDLev = 27436 - 362;
    
-   logit("e", "DEBUG TRACER [6.3]: Buscando estacion vecina...\n");
    for ( i=0; i<numPBuffs; i++ )
    {
       iTemp = iBuff[i];
@@ -571,7 +559,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
       }
    }
 
-   logit("e", "DEBUG TRACER [7]: Creando un nuevo buffer para %s...\n", pPStruct->szStation);
    for ( i=0; i<numPBuffs; i++ )
    {
       iTemp = *piActive+i;
@@ -584,7 +571,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
          }
    }
 
-   logit("e", "DEBUG TRACER [8]: Reciclando el buffer mas antiguo...\n");
    iIndex = 0; dMin = 1.E20; time( &lTime );
    for ( i=0; i<numPBuffs; i++ ) {
       if ( Hypo[i].dMSAvg == 0. || ((double) lTime-Hypo[i].dOriginTime) > 7200. ) {
@@ -608,7 +594,6 @@ void LoadUpPBuff( PPICK *pPStruct, PPICK **pPBuf, int iPBufCnt[], HYPO Hypo[],
    CopyPBuf( pPStruct, &pPBuf[iIndex][iPBufCnt[iIndex]] );
    iPBufCnt[iIndex]++;
    
-   logit("e", "DEBUG TRACER [9]: Finalizado correctamente.\n");
 }				  
 
 void LoadPagerString( HYPO *pHypo, char *pszMsg, CITY *pcity, CITY *pcityEC, GPARM *Gparm )
@@ -873,8 +858,6 @@ int LocateQuake( PPICK *pPBuf, int *piPBufCnt, GPARM *Gparm, HYPO *pHypo,
    if (numPBuffs > MAX_PBUFFS) numPBuffs = MAX_PBUFFS;
    /* ============================= */
    
-   logit("e", "DEBUG LQ 1: Entrando a LocateQuake (Picks: %d, iLoc: %d)\n", *piPBufCnt, iLoc);
-
    iFirst = 1;
    if ( iLoc == 1 ) pHypo->iMagOnly = 0;
    else             pHypo->iMagOnly = 1;
@@ -901,29 +884,24 @@ ReTry:
          if ( pPBuf[i].iUseMe > 0 && pPBuf[i].dPTime > 0. ) iPCnt++;
       if ( iPCnt < Gparm->MinPs )
       {
-         logit( "", "Not enough Ps; need %ld, have %ld; buffer %ld; PCnt %ld\n", Gparm->MinPs, *piPBufCnt, iIndex, iPCnt );
+      logit( "", "Not enough Ps; need %ld, have %ld; buffer %ld; PCnt %ld\n", Gparm->MinPs, *piPBufCnt, iIndex, iPCnt );
          return -1;
       }
-	  
-      logit("e", "DEBUG LQ 2: Llamando a qsort para ordenar %d picks\n", *piPBufCnt);
+ 	  
       qsort( (void *) pPBuf, *piPBufCnt, sizeof( PPICK ), SortAllByPTime );
 	
       pHypo->iDepthControl = 3;                           
       pHypo->dDepth = DEPTHKM;                        
       InitHypo( pHypo );                                 
       
-      logit("e", "DEBUG LQ 3: Llamando a InitialLocator (Metodo 1)\n");
       InitialLocator( *piPBufCnt, 3, 1, pPBuf, pHypo, 0., 0. );
       
-      logit("e", "DEBUG LQ 4: Llamando a QuakeSolveIasp (Metodo 1)\n");
       QuakeSolveIasp( *piPBufCnt, pPBuf, pHypo, pEqDepth, 1 ); 
       
-      logit("e", "DEBUG LQ 5: Llamando a IsItGoodSoln\n");
       IsItGoodSoln( *piPBufCnt, pPBuf, pHypo, Gparm->MinPs );
    
       if ( pHypo->iGoodSoln != 3 )
       {
-         logit("e", "DEBUG LQ 6: Solucion no fue 3. Llamando a InitialLocator (Metodo 2)\n");
          InitHypo( pHypo );		
          InitialLocator( *piPBufCnt, 3, 2, pPBuf, pHypo, 0., 0. );
          QuakeSolveIasp( *piPBufCnt, pPBuf, pHypo, pEqDepth, 1 );
@@ -932,16 +910,14 @@ ReTry:
    
       if ( pHypo->iGoodSoln != 3 && MAX_TO_KO > 0 )
       {
-         logit("e", "DEBUG LQ 7: Llamando a FindBadPs\n");
          InitHypo( pHypo );		
          FindBadPs( *piPBufCnt, 3, pPBuf, pHypo, 0., 0., Gparm->MinPs, pEqDepth );
          IsItGoodSoln( *piPBufCnt, pPBuf, pHypo, Gparm->MinPs );
       }
    
       if ( pHypo->iGoodSoln > 0 && pHypo->iAzm >= 180 &&
-           pHypo->iNumPs >= Gparm->MinPs+2 )
+            pHypo->iNumPs >= Gparm->MinPs+2 )
       {
-         logit("e", "DEBUG LQ 8: Liberando profundidad (Depth float)\n");
          pHypo->iDepthControl = 4;                        
          iCnt = 0;
          for ( i=0; i<*piPBufCnt; i++ )
@@ -967,9 +943,8 @@ ReTry:
       }
      
       if ( iOrigGoodSoln >= 2 && pHypo->iGoodSoln <= 1 &&
-           *piPBufCnt > Gparm->MinPs+2 && iFirst == 1 )
+            *piPBufCnt > Gparm->MinPs+2 && iFirst == 1 )
       {
-         logit("e", "DEBUG LQ 9: Descartando ultimo pick y reintentando (ReTry)\n");
          for ( j=0; j<iNumNewPs; j++ )
             for ( i=0; i<*piPBufCnt; i++ )
                if ( !strcmp( szLastSta[j], pPBuf[i].szStation ) )
@@ -986,7 +961,6 @@ ReTry:
          if ( pPBuf[i].dPTime <= 1. ) pPBuf[i].dRes = 0.;
    }
    
-   logit("e", "DEBUG LQ 10: Calculando magnitudes...\n");
    ZeroMagnitudes( pPBuf, iNumMax );
    ComputeMagnitudes( *piPBufCnt, pPBuf, pHypo );
    AddInMw( Gparm->szMwFile, pHypo );
@@ -1019,7 +993,6 @@ ReTry:
    
    if ( iLoc == 1 && pHypo->iVersion == 1 && iBufferMatch < 0 && iInRegion == 1 )
    {
-      logit("e", "DEBUG LQ 11: Escribiendo en %s...\n", Gparm->szAutoLoc);
       if ( (hFile = fopen( Gparm->szAutoLoc, "w" )) != NULL )
       {
          fprintf( hFile, "%lf\n", pHypo->dFirstPTime );
@@ -1030,13 +1003,11 @@ ReTry:
    if ( pHypo->iGoodSoln >= 2 && pHypo->iNumPs >= Gparm->MinPs &&
         iBufferMatch < 0  && iLoc == 1 && pHypo->iNumPs < 15 && iInRegion == 1 )
    {
-      logit("e", "DEBUG LQ 12: Escribiendo Dummy Data en %s...\n", Gparm->szDummyFile);
       WriteDummyData( pHypo, Gparm->szDummyFile, 1, 1 );
    }
    if ( pHypo->iGoodSoln >= 2 && pHypo->iNumPs >= Gparm->MinPs &&
         iBufferMatch < 0  && iLoc == 1 && iInRegion == 1 )
    {	
-      logit("e", "DEBUG LQ 13: Escribiendo P-Time Files (%s)...\n", Gparm->szRTPFile);
       WritePTimeFile( pHypo->iNumPs, pPBuf, Gparm->szRTPFile );     
       strcpy( szFile, Gparm->szPFilePath );     
       sprintf( szTemp, "%d", pHypo->iQuakeID );     
@@ -1049,7 +1020,6 @@ ReTry:
    if ( pHypo->iGoodSoln >= 2 && pHypo->iNumPs >= Gparm->MinPs &&
         iBufferMatch < 0 && iInRegion == 1 )
    {
-      logit("e", "DEBUG LQ 14: Enviando reportes al anillo...\n");
       MakeH71Msg( pHypo, szPageMsg );
       MakeTWCMsg( pHypo, szTWCMsg );
       ReportHypo( szPageMsg, szTWCMsg, Gparm->MyModId, Gparm->OutRegion,
@@ -1126,7 +1096,6 @@ ReTry:
    if ( pHypo->iGoodSoln >= 2 && pHypo->iNumPs >= Gparm->MinPs &&
         iBufferMatch < 0 && iInRegion == 1 )
    {
-      logit("e", "DEBUG LQ 15: Entrando a bloque OldQuakes (%s)...\n", Gparm->szOldQuakes);
       if ( (hFile = fopen( Gparm->szOldQuakes, "r" )) != NULL )
       {
          for ( i=0; i<MAX_QUAKES; i++ ) {
@@ -1235,7 +1204,6 @@ ReTry:
    
    if ( iLoc == 1 )
    {
-      logit("e", "DEBUG LQ 16: Escribiendo el log final con QuakeLog...\n");
       QuakeLog( *piPBufCnt, pPBuf, pHypo, pcity, pcityEC, Gparm->szNameFile,
                  Gparm->szNameFileLC, Gparm->szIndexFile, Gparm->szLatFile, 1,
                  NULL );
@@ -1243,8 +1211,6 @@ ReTry:
    }
    
    if ( iLoc == 1 ) pHypo->iVersion++;   
-   
-   logit("e", "DEBUG LQ 17: FIN DEL PROCESO. Localizacion %d exitosa.\n", pHypo->iQuakeID);
    
    if ( iBufferMatch >= 0 ) return iBufferMatch;
    else                     return iIndex;

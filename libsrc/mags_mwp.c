@@ -37,39 +37,6 @@ int integrate( double *height1, double *height2, int *n1, int *n2,
                long ncount, double Z_in[], double dt, double int_len );
 double Mwp_adjustment( double dDistance );
 
-/* =========================================================
-   SISTEMA DE LOGEO FORENSE PARA MWP
-   FIX: ruta absoluta del sistema original; ahora via $EW_LOG
-   (o /tmp si no esta definido) para no fallar en silencio.
-   ========================================================= */
-#define MWP_LOG_FILE_ENV "EW_LOG"
-static const char *mwp_log_path(void) {
-   static char buf[512];
-   const char *p = getenv(MWP_LOG_FILE_ENV);
-   if (p && *p) {
-      snprintf(buf, sizeof(buf), "%s/mwp_debug.log", p);
-      return buf;
-   }
-   return "/tmp/mwp_debug.log";
-}
-
-void MwpTracerLog(const char *fmt, ...) {
-    FILE *fp = fopen(mwp_log_path(), "a");
-    if (fp) {
-        time_t t = time(NULL);
-        struct tm *tm_info = gmtime(&t);
-        char time_buf[26];
-        strftime(time_buf, 26, "%Y-%m-%d %H:%M:%S", tm_info);
-        
-        fprintf(fp, "[%s] ", time_buf);
-        va_list args;
-        va_start(args, fmt);
-        vfprintf(fp, fmt, args);
-        va_end(args);
-        fclose(fp);
-    }
-}
-
 /* ---------------------------------------------------------
    AutoMwp
    ---------------------------------------------------------*/
@@ -92,11 +59,8 @@ void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS )
    long    lTemp, lTemp2;      
    static  double  x, x2_bar, xcount, S_to_N_prior;
    int     contador_aux;
-   int     orig_window = iMwpSeconds;
    double  local_mean = 0.0;
    
-   MwpTracerLog("\n--- INICIANDO AutoMwp para %s.%s (Delta: %.2f) ---\n", Sta->szStation, Sta->szChannel, pPBuf->dDelta);
-
 /* Initialize return values early */
    pPBuf->dMwpIntDisp = 0.;
    pPBuf->dMwpMag = 0.;
@@ -107,7 +71,6 @@ void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS )
    {
       dOldestTime = Sta->dEndTime - ((double) Sta->lRawCircSize/Sta->dSampRate) + 1./Sta->dSampRate;
       if ( pPBuf->dPTime < dOldestTime || pPBuf->dPTime > Sta->dEndTime ) {
-          MwpTracerLog("  [%s] ABORT: P-time (%.2f) fuera del buffer circular [%.2f - %.2f]\n", Sta->szStation, pPBuf->dPTime, dOldestTime, Sta->dEndTime);
           return;
       }
    }                                
@@ -133,21 +96,18 @@ void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS )
                }
            }
        }
-       if (sp_time > 2 && sp_time < iMwpSeconds)
-       {
-           iMwpSeconds = sp_time - 2;
-           if (iMwpSeconds < 5) iMwpSeconds = 5; 
-           MwpTracerLog("  [%s] Ajuste dinamico por onda S: Ventana reducida de %d a %d segundos (S-P: %d s)\n", Sta->szStation, orig_window, iMwpSeconds, sp_time);
-       } else {
-           MwpTracerLog("  [%s] Ventana mantenida en %d segundos (S-P estimado: %d s)\n", Sta->szStation, iMwpSeconds, sp_time);
-       }
-   }
+if (sp_time > 2 && sp_time < iMwpSeconds)
+        {
+            iMwpSeconds = sp_time - 2;
+            if (iMwpSeconds < 5) iMwpSeconds = 5; 
+        }
+    }
 
    /* How many points to evaluate? */   
    if ( iS == 1 ) 
    {
       /* FIX: tasa de muestreo valida (evita SIGFPE) */
-      if ( Sta->dSampRate <= 0.0 ) { MwpTracerLog("  [%s] ABORT: dSampRate<=0 (%g)\n", Sta->szStation, Sta->dSampRate); return; }
+      if ( Sta->dSampRate <= 0.0 ) { return; }
       lNumInBuff = (long) ((Sta->dEndTime-pPBuf->dPTime) * Sta->dSampRate);
       lNum = (long) (Sta->dSampRate * (double) iMwpSeconds);
       /* FIX: acotar a los buffers ANTES de usarlos (el guard antiguo llegaba
@@ -158,7 +118,6 @@ void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS )
          /* FIX CRITICO: En sistemas en tiempo real NO truncamos la ventana si falta data.
             Abortamos la funcion silenciosamente (retornando con Mwp=0) para que el modulo padre
             vuelva a intentarlo en el proximo latido/segundo. */
-         MwpTracerLog("  [%s] ABORT: Faltan datos en buffer. Necesito %ld muestras (%d s), tengo %ld\n", Sta->szStation, lNum, iMwpSeconds, lNumInBuff);
          return;
       }
    }
@@ -239,11 +198,9 @@ else {
       dTotalDisp = Sta->pdRawDispData[i];
    }
    
-   MwpTracerLog("  [%s] Ejecutando detrend()...\n", Sta->szStation);
    iRC = detrend( 200., 1./Sta->dSampRate, Sta->pdRawDispData, lNum,
                   S_to_N_prior, dVelMSData, dZDispData, 1, dSN );
    if ( iRC == -1 || iRC == -2 ) {
-       MwpTracerLog("  [%s] ABORT: detrend() fallo con codigo %d (Señal muy ruidosa o termino lineal grande)\n", Sta->szStation, iRC);
        return;
    }
 			
@@ -251,10 +208,8 @@ else {
    
    if ( iRC == -2 ) dWinLen = 20.;
    else dWinLen = wavelet_decomp( (double) iMwpSeconds, dZDispData, lNum, 1./Sta->dSampRate );		  
-   MwpTracerLog("  [%s] wavelet_decomp() asigno una longitud de ventana dWinLen = %.2f s\n", Sta->szStation, dWinLen);
    
    if (dWinLen <= 0.) {
-       MwpTracerLog("  [%s] ABORT: dWinLen <= 0 (%.2f)\n", Sta->szStation, dWinLen);
        return;
    }
    if ( dWinLen > (double) iMwpSeconds ) dWinLen = (double)iMwpSeconds;
@@ -269,10 +224,8 @@ else {
       dTotalDisp = Sta->pdRawIDispData[i];
    }
    
-   MwpTracerLog("  [%s] Ejecutando integrate()...\n", Sta->szStation);
    iRC = integrate (&dHighSave, &dLowSave, &iHighSave, &iLowSave, lNum, dZDispData, 1./Sta->dSampRate, dWinLen);
    if (iRC < 0) {
-       MwpTracerLog("  [%s] ABORT: integrate() fallo devolviendo %d\n", Sta->szStation, iRC);
        return;
    }
       
@@ -281,12 +234,9 @@ else {
 						  
    if ( (iHighSave == 0 && iLowSave == 0) || pPBuf->dMwpTime < 2.01 )
    {
-      MwpTracerLog("  [%s] ABORT: Integral extrema nula (High=%d, Low=%d) o MwpTime muy corto (%.2f)\n", Sta->szStation, iHighSave, iLowSave, pPBuf->dMwpTime);
       pPBuf->dMwpIntDisp = 0.;
       pPBuf->dMwpMag = 0.;
       pPBuf->dMwpTime = 0.;
-   } else {
-      MwpTracerLog("  [%s] EXITO en AutoMwp: dMwpIntDisp = %g, dMwpTime = %.2f\n", Sta->szStation, pPBuf->dMwpIntDisp, pPBuf->dMwpTime);
    }
 }
 
@@ -314,11 +264,9 @@ double ComputeMwpMag( double dMaxIntDisp, double dDelta )
       double adj = Mwp_adjustment(dDelta);
       dMwp += adj;
       
-      MwpTracerLog("    [ComputeMwpMag] dDelta=%.2f, dMoment=%g, Ajuste=%.2f -> Mwp Final=%.2f\n", dDelta, dMoment, adj, dMwp);
       return( dMwp ); 
    }
    else {
-      MwpTracerLog("    [ComputeMwpMag] ABORT: dMoment no es > 0 (%g)\n", dMoment);
       return( 0.0 );
    }
 }
@@ -358,7 +306,6 @@ int detrend( double int_len, double dt, double Z_in[], long ncount,
    rms_signal_amp = sqrt( rms_signal_amp / (double) top );
   
    if ( prior_motion == 0.0 || (rms_signal_amp / prior_motion) < S_to_N ) {
-       MwpTracerLog("    [detrend] SNR rechazado (RMS/Prior = %g < %g)\n", (prior_motion>0.0)?(rms_signal_amp/prior_motion):0.0, S_to_N);
        return (-1);
    }
 
@@ -411,7 +358,6 @@ int detrend( double int_len, double dt, double Z_in[], long ncount,
 
       if ( (rms_signal_amp/prior_motion) < 3.5 )
       {
-        MwpTracerLog("    [detrend] S/N marginal o termino lineal grande (SNR=%g, ErrLin=%e)\n", rms_signal_amp / prior_motion, error_linear); 
         return (-2);
       } 
    }
@@ -698,7 +644,6 @@ int integrate( double *height1, double *height2, int *n1, int *n2,
    int    *extrema_idx = (int *)calloc(ncount + 10, sizeof(int));
    
    if (!zT || !extrema_val || !extrema_idx) {
-       MwpTracerLog("    [integrate] ABORT: Falla en asignacion de memoria!\n");
        if (zT) free(zT); if (extrema_val) free(extrema_val); if (extrema_idx) free(extrema_idx);
        return -1;
    }
@@ -734,7 +679,6 @@ int integrate( double *height1, double *height2, int *n1, int *n2,
 
    if ( n_max < 1 )  
    {
-      MwpTracerLog("    [integrate] ABORT: Muy pocos extremos encontrados (n_max = %d)\n", n_max);
       free(zT); free(extrema_val); free(extrema_idx);
       return( -1 );
    }

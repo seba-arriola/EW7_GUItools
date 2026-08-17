@@ -448,10 +448,8 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
    LATLON  llAKArray;           
    LATLON  llCen1;              
    LATLON  llCen2;              
-   LATLON  llEpi;               
+    LATLON  llEpi;               
    
-   logit("e", "DEBUG LQ 3.1: Entramos a InitialLocator con exito\n");
-
    pHypo->iNumPs = 0;
    pHypo->iNumBadPs = 0;
    for ( i=0; i<iPNum; i++ )    
