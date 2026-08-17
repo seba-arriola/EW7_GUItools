@@ -1,3 +1,7 @@
+/* Enable LFS (Large File Support) for offsets > 2GB: MUST be defined before
+   any system include so that off_t is widened to 64 bits. */
+#define _FILE_OFFSET_BITS 64
+
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -11,8 +15,6 @@
 #ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
-/* Enable LFS (Large File Support) for offsets > 2GB */
-#define _FILE_OFFSET_BITS 64
 #endif
 
 int InitDiskFile( char *pszFile, STATION StaArray[], double dFileTime,

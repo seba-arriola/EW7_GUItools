@@ -63,7 +63,9 @@ void LogToMySQL( HYPO *pHypo, char *pszIndexFile,
    if ( ll.dLon > 180.0 && ll.dLon < 360.0 ) ll.dLon -= 360.0;
    psz = namnumLC( ll.dLat, ll.dLon, &iFERegion, pszIndexFile, pszLatFile,
                    pszNameFileLC );
-   psz[strlen( psz )-1] = '\0';                 /* Quake Region - "Kuril Is." */                      
+   /* FIX: namnumLC puede devolver NULL o cadena vacia */
+   if ( psz && strlen( psz ) > 0 ) psz[strlen( psz )-1] = '\0';
+   else psz = "";                            /* Quake Region - "Kuril Is." */                      
    iRegion = GetRegion( ll.dLat, ll.dLon );     /* Quake Region - 1-20        */   
    tm = TWCgmtime( (long) (pHypo->dOriginTime+0.5) ); /* Origin Time - hr,... */
 
@@ -74,7 +76,7 @@ void LogToMySQL( HYPO *pHypo, char *pszIndexFile,
       logit( "t", "%s\n", mysql_error( conn ) );  
    else
    {
-      sprintf( szInsertStmt, 
+      snprintf( szInsertStmt, sizeof( szInsertStmt ), 
        "INSERT INTO WCATWCEvents (Latitude,Longitude,Depth,PreferredMag,MagType,"
        "Day,Month,Year,Hour,Minute,Second,NumPMags,MSAvg,NumMS,MwpAvg,NumMwp,MbAvg,NumMb,"
        "MlAvg,NumMl,MwAvg,NumMw,NumPs,NearestDist,AvgRes,Azm,QuakeID,OTime,"

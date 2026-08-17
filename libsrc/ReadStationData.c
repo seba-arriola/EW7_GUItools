@@ -292,14 +292,19 @@ int ReadStationData( char *pszStaFile, char *pszStaResp, STATION sta[],
    
 /* Read station data from the station data file
    ********************************************/
-   i = 0;
-   while ( fgets( szString, 160, hFile ) != NULL )
-   {
-      iNDecoded = sscanf( szString, "%s %s %s %lf %lf %lf %lf %lf %lf %lf %d %d %s",
-       sta[i].szStation, sta[i].szChannel, sta[i].szNetID, &sta[i].dSens,
-       &sta[i].dGainCalibration, &sta[i].dLat, &sta[i].dLon, &sta[i].dElevation,
-       &sta[i].dClipLevel, &sta[i].dTimeCorrection,					
-       &sta[i].iStationType, &sta[i].iAgency, sta[i].szStationName );
+i = 0;
+    while ( fgets( szString, 160, hFile ) != NULL )
+    {
+       if ( i >= iMaxStn )   /* FIX: no escribir fuera del array del llamador */
+       {
+          logit( "et", "Too many stations in %s (max %d)\n", pszStaFile, iMaxStn );
+          break;
+       }
+       iNDecoded = sscanf( szString, "%6s %8s %8s %lf %lf %lf %lf %lf %lf %lf %d %d %63s",
+        sta[i].szStation, sta[i].szChannel, sta[i].szNetID, &sta[i].dSens,
+        &sta[i].dGainCalibration, &sta[i].dLat, &sta[i].dLon, &sta[i].dElevation,
+        &sta[i].dClipLevel, &sta[i].dTimeCorrection,					
+        &sta[i].iStationType, &sta[i].iAgency, sta[i].szStationName );
       if ( iNDecoded < 13 )
       {
          logit( "et", "Error decoding station data file-%s.\n", pszStaFile );

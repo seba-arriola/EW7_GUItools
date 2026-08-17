@@ -660,9 +660,12 @@ typedef struct {              /* STATION - station parameters and variables */
    long    lRawCircSize;      /* Size (# samples) in plRawCircBuff */
    long    lRawTempCtr;       /* Index counter for small, raw-data, circ buff */
    long    lRawTempSize;      /* Size (# samples) in plRawTempBuff */
-   long    lRawNoise;         /* Max peak/trough signal difference */
+long    lRawNoise;         /* Max peak/trough signal difference */
    long    lRawNoiseOrig;     /* Max peak/trough signal difference when Phase1
-                                 passed */
+                                  passed */
+   long    lNoiseHigh;        /* FIX: peak signal por estacion (antes static global
+                                  compartido entre estaciones -> ruido cruzado) */
+   long    lNoiseLow;         /* FIX: trough signal por estacion */
    long    lSampIndexF;       /* Next index to write in filt data circ. buff */
    long    lSampIndexR;       /* Next index to write in raw data circular buff */
    long    lSampNew;          /* Present sample */
@@ -883,6 +886,7 @@ int      LoadEQData( char *, int, EQDEPTHDATA * );
 int      QuakeAzimuthSort( int, PPICK * );
 double   QuakeDeta( int, double [][4] );
 void     QuakeDets( int, double [][4], double [], double [] );
+double   EstimatePTravelTime( double );
 void     QuakeSolveIasp( int, PPICK *, HYPO *, EQDEPTHDATA[], int );
 int      Round( double );
 int      SortAllByPTime( const void *, const void * );

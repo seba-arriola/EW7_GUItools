@@ -1,4 +1,5 @@
 *.o
+bin_dev/
 src/disk_wcatwc/disk_wcatwc
 src/loc_wcatwc/loc_wcatwc
 src/pick_wcatwc/pick_wcatwc
@@ -14,3 +15,4 @@ new_hypo_display/new_hypo_display
 new_staevdisp/new_staevdisp
 new_summary/new_summary
 earthworm_7.1/bin/*
+test/test_mags

@@ -63,6 +63,8 @@ void ComputeTimeWindows( double dOTime, int iDepthDum, STATION StaArray[],
       dOver = StaArray[i].dDelta*(1./IASP_DIST_INC) - 
               floor( StaArray[i].dDelta * (1./IASP_DIST_INC) );
       iTab = (int) (StaArray[i].dDelta * (1./IASP_DIST_INC));
+      if ( iTab > IASP_NUM_PER_DEP-2 )   /* FIX: no leer fPP[itab+1] fuera de nivel */
+         iTab = IASP_NUM_PER_DEP-2;
 
       pfIAT = fPP + iDep*IASP_NUM_PER_DEP + iTab;
       dTemp1 = *pfIAT + (*(pfIAT+1) - *pfIAT) * dOver;
@@ -75,6 +77,7 @@ void ComputeTimeWindows( double dOTime, int iDepthDum, STATION StaArray[],
    {
       dDist2 = StaArray[i].dDelta;
       dOver = dDist2 - floor( dDist2 );
+      if ( dDist2 > 179.0 ) dDist2 = 179.0;   /* FIX: evitar iRTravTime[181] */
       pPW[i].dRTravTime = (double) iRTravTime[(int) dDist2] +
        ((double) (iRTravTime[(int) dDist2+1] - iRTravTime[(int) dDist2]) * dOver);
    }
@@ -340,15 +343,21 @@ void GetEpiAzDelta( int iPNum, PPICK *P, HYPO *pHypo )
       dDeltaCosine = pHypo->dCoslat*P[i].dCoslat + pHypo->dSinlat*
                      P[i].dSinlat*(pHypo->dCoslon*P[i].dCoslon +
                      pHypo->dSinlon*P[i].dSinlon);
+      /* FIX: clamp para evitar NaN en sqrt(1-cos^2) por redondeo FP */
+      if ( dDeltaCosine > 1.0 ) dDeltaCosine = 1.0;
+      else if ( dDeltaCosine < -1.0 ) dDeltaCosine = -1.0;
       dDeltaSine = sqrt( 1. - dDeltaCosine*dDeltaCosine );
-      if ( dDeltaSine == 0.0 )   dDeltaSine = 0.01;
+      if ( dDeltaSine < 0.01 ) dDeltaSine = 0.01;
       if ( dDeltaCosine == 0.0 ) dDeltaCosine = 0.01;
       dTempDelta =  atan( dDeltaSine / dDeltaCosine );
+      /* FIX: si el resultado es NaN (por guardas anteriores) marca delta 0 */
+      if ( !(dTempDelta == dTempDelta) ) dTempDelta = 0.0;
       P[i].dCooze = (P[i].dCoslat - pHypo->dCoslat * dDeltaCosine) /
                     (pHypo->dSinlat * dDeltaSine);
-      if ( P[i].dCooze == 0.0 ) P[i].dCooze = 0.0001;
+      if ( !(P[i].dCooze == P[i].dCooze) || P[i].dCooze == 0.0 ) P[i].dCooze = 0.0001;
       P[i].dSnooze = P[i].dSinlat * (pHypo->dCoslon * P[i].dSinlon -
                      pHypo->dSinlon * P[i].dCoslon) / dDeltaSine;
+      if ( !(P[i].dSnooze == P[i].dSnooze) ) P[i].dSnooze = 0.0;
       dTempAz = atan( P[i].dSnooze / P[i].dCooze );
       while ( dTempAz < 0.0 )    dTempAz += PI;
       if ( P[i].dSnooze <= 0. )  dTempAz += PI;
@@ -362,11 +371,11 @@ void GetEpiAzDelta( int iPNum, PPICK *P, HYPO *pHypo )
 	   
 void GetPTimes( int iPNum, PPICK *P, HYPO *pHypo )
 {
-   AZIDELT azidelt;        
+AZIDELT azidelt;        
    double  dCorr;          
-   int     i;
+   int     i, iTab;         
    static  int  iDLev;     
-   int     iDepth;         
+   int     iDepth;
    
    iDepth = (int) pHypo->dDepth;
 
@@ -392,12 +401,12 @@ void GetPTimes( int iPNum, PPICK *P, HYPO *pHypo )
       
       P[i].dDelta = azidelt.dDelta;
       P[i].dAz = azidelt.dAzimuth;
-      dCorr = azidelt.dDelta*(1./IASP_DIST_INC) - 
-              floor( azidelt.dDelta*(1./IASP_DIST_INC) );
-      P[i].dExpectedPTime = fPP[(int) (azidelt.dDelta*(1./IASP_DIST_INC))+
-              iDLev] + dCorr*(fPP[(int) (azidelt.dDelta*
-              (1./IASP_DIST_INC))+1+iDLev] - fPP[(int)
-              (azidelt.dDelta*(1./IASP_DIST_INC))+iDLev]) + pHypo->dOriginTime;				
+dCorr = azidelt.dDelta*(1./IASP_DIST_INC) - 
+               floor( azidelt.dDelta*(1./IASP_DIST_INC) );
+      iTab = (int) (azidelt.dDelta*(1./IASP_DIST_INC));
+      if ( iTab > IASP_NUM_PER_DEP-2 ) iTab = IASP_NUM_PER_DEP-2;  /* FIX: antípoda */
+      P[i].dExpectedPTime = fPP[iTab+
+              iDLev] + dCorr*(fPP[iTab+1+iDLev] - fPP[iTab+iDLev]) + pHypo->dOriginTime;
    }
 }
 	   
@@ -543,13 +552,24 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
          azidelt12 = GetDistanceAz( &llK, &llL );
 
          dTemp1 = 0.5*(azidelt01.dDelta + azidelt02.dDelta + azidelt12.dDelta);
-         dTemp2 = sqrt( (sin ((dTemp1 - azidelt01.dDelta)*RAD) *
+         /* FIX: triangulo degenerado (estaciones duplicadas/colineales) -> 0/0 o NaN */
+         double dSinS = sin (dTemp1*RAD);
+         if ( fabs( dSinS ) < 1.E-9 ) dSinS = (dSinS < 0.0 ? -1.E-9 : 1.E-9);
+         double dRadic = (sin ((dTemp1 - azidelt01.dDelta)*RAD) *
                          sin ((dTemp1 - azidelt02.dDelta)*RAD) *
-                         sin ((dTemp1 - azidelt12.dDelta)*RAD)) / 
-                         sin (dTemp1*RAD) );
-         dAng[0] = 2.*atan( dTemp2/sin( (dTemp1-azidelt01.dDelta)*RAD ) )*DEG;
-         dAng[1] = 2.*atan( dTemp2/sin( (dTemp1-azidelt02.dDelta)*RAD ) )*DEG;
-         dAng[2] = 2.*atan( dTemp2/sin( (dTemp1-azidelt12.dDelta)*RAD ) )*DEG;
+                         sin ((dTemp1 - azidelt12.dDelta)*RAD)) / dSinS;
+         if ( dRadic < 0.0 ) dRadic = 0.0;
+         dTemp2 = sqrt( dRadic );
+         if ( !(dTemp2 == dTemp2) ) dTemp2 = 0.0;
+         dAng[0] = 2.*atan( dTemp2/(fabs(sin( (dTemp1-azidelt01.dDelta)*RAD )) < 1.E-9 ? 1.E-9 :
+                             sin( (dTemp1-azidelt01.dDelta)*RAD )) )*DEG;
+         dAng[1] = 2.*atan( dTemp2/(fabs(sin( (dTemp1-azidelt02.dDelta)*RAD )) < 1.E-9 ? 1.E-9 :
+                             sin( (dTemp1-azidelt02.dDelta)*RAD )) )*DEG;
+         dAng[2] = 2.*atan( dTemp2/(fabs(sin( (dTemp1-azidelt12.dDelta)*RAD )) < 1.E-9 ? 1.E-9 :
+                             sin( (dTemp1-azidelt12.dDelta)*RAD )) )*DEG;
+         if ( !(dAng[0] == dAng[0]) ) dAng[0] = 0.0;
+         if ( !(dAng[1] == dAng[1]) ) dAng[1] = 0.0;
+         if ( !(dAng[2] == dAng[2]) ) dAng[2] = 0.0;
 
          llCen1.dLat = (min( P[j].dLat, min (P[k].dLat, P[l].dLat) ) + 
                         max( P[j].dLat, max (P[k].dLat, P[l].dLat) )) / 2.0;
@@ -620,9 +640,11 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
          if ( dTdAC == 0.0 ) dTdAC = 0.01;
 
          i = (int) ((azideltB.dDelta)*(1./IASP_DIST_INC));
+         if ( i > IASP_NUM_PER_DEP-2 ) i = IASP_NUM_PER_DEP-2;   /* FIX */
          dCorrB = azideltB.dDelta*(1./IASP_DIST_INC) - 
                   floor( azideltB.dDelta*(1./IASP_DIST_INC) );
          n = (int) ((azideltC.dDelta)*(1./IASP_DIST_INC)); 
+         if ( n > IASP_NUM_PER_DEP-2 ) n = IASP_NUM_PER_DEP-2;   /* FIX */
          dCorrC = azideltC.dDelta*(1./IASP_DIST_INC) - 
                   floor( azideltC.dDelta*(1./IASP_DIST_INC) );
 
@@ -714,8 +736,17 @@ void InitialLocator( int iPNum, int iArea, int iTry, PPICK *P, HYPO *pHypo,
       }
       while ( pHypo->dLon >= TWOPI ) pHypo->dLon -= TWOPI; 
       while ( pHypo->dLon < 0.0 )    pHypo->dLon += TWOPI;
-      while ( pHypo->dLat >= PI )    pHypo->dLat -= PI;		
-      while ( pHypo->dLon < 0.0 )    pHypo->dLon += PI;
+      /* FIX: espejo correcto de colatitud al cruzar el polo (antes dLat-=PI
+             sin voltear longitud, y dLon+=PI inalcanzable) */
+      while ( pHypo->dLat > TWOPI ) pHypo->dLat -= TWOPI;
+      while ( pHypo->dLat < 0.0 )   pHypo->dLat += TWOPI;
+      if ( pHypo->dLat > PI && pHypo->dLat <= TWOPI )
+      {
+         pHypo->dLat = TWOPI - pHypo->dLat;
+         pHypo->dLon += PI;
+         while ( pHypo->dLon >= TWOPI ) pHypo->dLon -= TWOPI;
+      }
+      if ( pHypo->dLat < 0.0 ) pHypo->dLat = 0.0;
    }
    else                      
    {
@@ -808,14 +839,14 @@ int LoadEQData( char *pszFile, int iNumDep, EQDEPTHDATA *pEqDepth )
    }
    while ( !feof( hFile ) )   
    {
-      fscanf( hFile, "%d %d %d %d",  &pEqDepth[i].iLat, &pEqDepth[i].iLon,
-              &pEqDepth[i].iAveDepth, &pEqDepth[i].iMaxDepth );
-      i++; 
-      if ( i > iNumDep )    
+      if ( i >= iNumDep )    /* FIX: comprobar ANTES de escribir */
       {
          logit( "", "Too many values in %s, %ld values\n", pszFile, i );
          break;
       }
+      fscanf( hFile, "%d %d %d %d",  &pEqDepth[i].iLat, &pEqDepth[i].iLon,
+              &pEqDepth[i].iAveDepth, &pEqDepth[i].iMaxDepth );
+      i++; 
    }
    fclose( hFile );
    return (1);
@@ -837,6 +868,9 @@ int QuakeAzimuthSort( int iPNum, PPICK *P )
          ii++;
       }
    iGoodPicks = ii;
+
+   /* FIX: sin picks utilizables no hay gap que calcular (evita dAz[-1]) */
+   if ( iGoodPicks == 0 ) return 0;
 
    for ( i=0; i<iGoodPicks-1; i++ )
    {
@@ -865,28 +899,30 @@ int QuakeAzimuthSort( int iPNum, PPICK *P )
        
 double QuakeDeta( int iDNum, double dAdet[][4] )
 {
-   double  dProd, dSave[4];
-   int     k, kk, i1, k1, k2, i, j, iCnt;
+   double  dProd;
+   int     k, kk, i1, i2, i, j;
 
    dProd = 1.0;
    for ( k=0; k<(iDNum-1); k++ )
    {
-      iCnt = 0;
-      kk = k+1;
-      while ( dAdet[k][k] == 0.0 )
+      /* FIX: pivoteo real con tolerancia (antes solo igualdad exacta y sin
+             recuperar el pivote; matrices casi singulares daban NaN/Inf) */
+      if ( fabs( dAdet[k][k] ) < 1.E-12 )
       {
-         if ( iCnt-(iDNum-1)+k+1 > 0 ) return 0.0;
-         else
+         int  iPiv = -1;
+         double dMax = 0.0;
+         for ( i1=k+1; i1<iDNum; i1++ )
+            if ( fabs( dAdet[i1][k] ) > dMax ) { dMax = fabs( dAdet[i1][k] ); iPiv = i1; }
+         if ( iPiv == -1 ) return 0.0;   /* singular */
+         for ( i2=0; i2<iDNum; i2++ )     /* swap filas k <-> iPiv */
          {
-            for ( i1=k; i1<iDNum; i1++ ) dSave[i1] = dAdet[i1][k];
-            for ( k1=k; k1<iDNum; k1++ )
-               for ( k2=k; k2<(iDNum-1); k2++ ) 
-                  dAdet[k1][k2] = dAdet[k1][k2+1];
-            for ( i1=k; i1<iDNum; i1++ ) dAdet[i1][k] = dSave[i1];
-            iCnt++;
-            dProd *= ((((iDNum-1)-k) % 2) ? -1.0 : 1.0);
+            double dT = dAdet[k][i2];
+            dAdet[k][i2] = dAdet[iPiv][i2];
+            dAdet[iPiv][i2] = dT;
          }
+         dProd *= -1.0;                   /* signo por permutacion de filas */
       }
+      kk = k+1;
       for ( i=kk; i<iDNum; i++ )
          for ( j=kk; j<iDNum; j++ )
             dAdet[j][i] -= dAdet[j][k] * dAdet[k][i] / dAdet[k][k];
@@ -905,7 +941,7 @@ void QuakeDets( int iDNum, double dAdet[][4], double dBdet[], double dXdet[] )
       for ( j=0; j<iDNum; j++ ) dA1det[i][j] = dAdet[i][j];
 
    dDenom = QuakeDeta( iDNum, dAdet );
-   if ( dDenom < 1.E-13 )
+   if ( !(dDenom == dDenom) || fabs( dDenom ) < 1.E-13 )
    {
       dXdet[0] = 111.;
       return;
@@ -932,8 +968,9 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
    double  fih, fh, dadd, dadh, ptt1, ptt2, ptt; 
    int     i, j, k, l, mm, ih, itab, iIndex;     
    int     iIterCnt;                             
-   int	   iMaxDepthLevel = 0;      
+   int	   iMaxDepthLevel = DEPTH_LEVELS_IASP;   /* FIX: rejilla completa por defecto */      
    int     iPCnt;               
+   int     iDim;               
    LATLON  LLIn, LLOut;	        
    float   *pfIA;               
 
@@ -958,14 +995,7 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
          dPTimeMin = P[l].dPTime;	
          dDeltaMin = P[l].dDelta;	
 	 
-         if ( dDeltaMin <= 20.0 )
-            pHypo->dOriginTime = dPTimeMin - 3.67489 - 14.1561*dDeltaMin -
-             0.0189237*dDeltaMin*dDeltaMin + 0.00267753*dDeltaMin*dDeltaMin*
-             dDeltaMin;
-         else
-            pHypo->dOriginTime = dPTimeMin - 61.1089 - 11.4192*dDeltaMin +
-             0.0410401*dDeltaMin*dDeltaMin - 0.0000301625*dDeltaMin*dDeltaMin*
-             dDeltaMin;
+         pHypo->dOriginTime = dPTimeMin - EstimatePTravelTime( dDeltaMin );
       }
       pHypo->dAvgRes = 0.0;
     
@@ -1055,7 +1085,11 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
                dCoef[4*COEFFSIZE+iPCnt] = P[j].dRes;
                dCoef[iPCnt] = 1.0;
                pHypo->dAvgRes += fabs( P[j].dRes );
-               if ( pHypo->iDepthControl == 3 )
+               /* FIX: profundidad fija (iDepthControl 1 o 3, iDim=3) ->
+                  la columna 3 se sustituye por el residual para que dBdet
+                  (mm=iDim=3) use el residual y no el derivado de profundidad.
+                  Sin esto, iDepthControl=1 planteaba un LSQ incorrecto. */
+               if ( pHypo->iDepthControl == 3 || pHypo->iDepthControl == 1 )
                   dCoef[3*COEFFSIZE+iPCnt] = dCoef[4*COEFFSIZE+iPCnt];
                iPCnt++;
             } 
@@ -1064,27 +1098,47 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
             P[j].dRes = 0.;
       }
 	
-      if ( iIterCnt >= QUAKE_ITER-1 || pHypo->dAvgRes/(double) iPNum < 0.2 )
+      if ( iPCnt <= 0 ) goto FunctionEnd;   /* FIX: no hay picks usados */
+      if ( iIterCnt >= QUAKE_ITER-1 || pHypo->dAvgRes/(double) iPCnt < 0.2 )
          goto FunctionEnd;
 
-      for ( j=0; j<pHypo->iDepthControl; j++ )
-         for ( l=0; l<pHypo->iDepthControl; l++ )
+      /* FIX: dimension de la matriz acotada a dAdet[4][4].
+         iDepthControl codifica binariamente si la profundidad se resuelve:
+         (1,3) -> profundidad fija (3 variables: tiempo, lat, lon)
+         (2,4) -> profundidad libre (4 variables). El mapeo directo
+         iDim=iDepthControl dejaba 1 y 2 con matrices degeneradas. */
+      iDim = ( pHypo->iDepthControl == 1 || pHypo->iDepthControl == 3 ) ? 3 : 4;
+      if ( iDim < 1 ) iDim = 1;
+      if ( iDim > 4 ) iDim = 4;
+      for ( j=0; j<iDim; j++ )
+         for ( l=0; l<iDim; l++ )
          {
             dAdet[j][l] = 0.0;
             for ( k=0; k<iPCnt; k++ )
                dAdet[j][l] += dCoef[k+j*COEFFSIZE] * dCoef[k+l*COEFFSIZE];
          }
-      mm = pHypo->iDepthControl;
-      for ( j=0; j<pHypo->iDepthControl; j++ )
+      mm = iDim;
+      for ( j=0; j<iDim; j++ )
       {
          dBdet[j] = 0.0;
          for ( k=0; k<iPCnt; k++ )
             dBdet[j] += dCoef[k+j*COEFFSIZE] * dCoef[k+mm*COEFFSIZE];
       }
       
-      QuakeDets( pHypo->iDepthControl, dAdet, dBdet, dXdet );
+      dXdet[0] = dXdet[1] = dXdet[2] = dXdet[3] = 0.0;
+      QuakeDets( iDim, dAdet, dBdet, dXdet );
       if ( dXdet[0] == 111. ) goto FunctionEnd;
-      if ( pHypo->iDepthControl > 3 ) pHypo->dDepth += dXdet[3];
+      /* FIX: NaN/Inf contamina la solucion -> tratar como no convergida */
+      if ( !isfinite( dXdet[0] ) || !isfinite( dXdet[1] ) ||
+           !isfinite( dXdet[2] ) || !isfinite( dXdet[3] ) )
+         goto FunctionEnd;
+      /* FIX: amortiguacion de paso para evitar saltos gigantes por iteracion */
+      if ( fabs( dXdet[1] ) > 5.0 ) dXdet[1] = (dXdet[1] < 0.0 ? -5.0 : 5.0);
+      if ( fabs( dXdet[2] ) > 5.0 ) dXdet[2] = (dXdet[2] < 0.0 ? -5.0 : 5.0);
+      if ( fabs( dXdet[0] ) > 30.0 ) dXdet[0] = (dXdet[0] < 0.0 ? -30.0 : 30.0);
+      if ( iDim > 3 && fabs( dXdet[3] ) > 50.0 )
+         dXdet[3] = (dXdet[3] < 0.0 ? -50.0 : 50.0);
+      if ( iDim > 3 ) pHypo->dDepth += dXdet[3];
       pHypo->dOriginTime += dXdet[0];
       pHypo->dLat += dXdet[1]*RAD;
       pHypo->dLon += dXdet[2]*RAD;
@@ -1092,7 +1146,14 @@ void QuakeSolveIasp( int iPNum, PPICK *P, HYPO *pHypo, EQDEPTHDATA pEqDep[],
    }
 FunctionEnd:
 
-   pHypo->dAvgRes = pHypo->dAvgRes/(double) iPNum;
+   /* FIX: promedio sobre picks realmente usados (antes se dividia por iPNum total) */
+   iPCnt = 0;
+   for ( j=0; j<iPNum; j++ )
+      if ( P[j].dPTime > 0. && P[j].iUseMe > 0 ) iPCnt++;
+   if ( iPCnt > 0 )
+      pHypo->dAvgRes = pHypo->dAvgRes/(double) iPCnt;
+   else
+      pHypo->dAvgRes = 0.0;
 
    pHypo->iAzm = QuakeAzimuthSort( iPNum, P );
    pHypo->dNearestDist = 200.;
@@ -1144,6 +1205,24 @@ int Round( double dInput )
    return (iRound);	
 }
 	   
+double EstimatePTravelTime( double dDelta )
+{
+   double dNear, dFar, dW;
+
+   dNear = 3.67489 + 14.1561*dDelta + 0.0189237*dDelta*dDelta -
+           0.00267753*dDelta*dDelta*dDelta;
+   dFar  = 61.1089 + 11.4192*dDelta - 0.0410401*dDelta*dDelta +
+           0.0000301625*dDelta*dDelta*dDelta;
+
+   /* FIX: los polinomios near (<=20) y far (>=24) no son continuos en
+      dDelta=20 (~0.37 s de salto). Mezcla lineal en la banda [20,24]
+      para suavizar la transicion sin alterar los polinomios. */
+   if ( dDelta <= 20.0 ) return dNear;
+   if ( dDelta >= 24.0 ) return dFar;
+   dW = (dDelta - 20.0) / 4.0;
+   return (1.0 - dW)*dNear + dW*dFar;
+}
+
 int SortAllByPTime( const void *pP1, const void *pP2 )
 {
    PPICK   *pP1T, *pP2T;

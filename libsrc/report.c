@@ -33,23 +33,23 @@ void ReportAlarm( STATION *Sta, unsigned char ucMyModID, SHM_INFO siAlarmRegion,
    (SIN CERO INCORPORADO PARA EVITAR WARNING, REPARADO FORMATO %d)
    ******************************************************/
    if ( iType == 1 )        /* Strong motion SP alarm */
-      sprintf( line,    "%5d %5d %5d %5d %5d     0 %s %s DIGITAL SP ALARM",
+      snprintf( line, sizeof(line),    "%5d %5d %5d %5d %5d     0 %s %s DIGITAL SP ALARM",
            (int) ucEWHTypeAlarm, (int) ucMyModID, (int) ucEWHMyInstID,
            Sta->iAlarmSpeak, Sta->iAlarmPage, Sta->szStation, Sta->szChannel );
    else if ( iType == 2 )   /* Multi-station regional alarm */
-      sprintf( line,    "%5d %5d %5d     1     1     0 %s REGIONAL ALARM",
+      snprintf( line, sizeof(line),    "%5d %5d %5d     1     1     0 %s REGIONAL ALARM",
            (int) ucEWHTypeAlarm, (int) ucMyModID, (int) ucEWHMyInstID,
            pszAlarmString );
    else if ( iType == 3 )   /* Strong motion LP alarm */
-      sprintf( line,    "%5d %5d %5d %5d %5d     0 %s %s DIGITAL LP ALARM",
+      snprintf( line, sizeof(line),    "%5d %5d %5d %5d %5d     0 %s %s DIGITAL LP ALARM",
            (int) ucEWHTypeAlarm, (int) ucMyModID, (int) ucEWHMyInstID,
            Sta->iAlarmSpeak, Sta->iAlarmPage, Sta->szStation, Sta->szChannel );
    else if ( iType == 4 )   /* Location alarm */
-      sprintf( line,    "%5d %5d %5d     0     1 %5d %s",
+      snprintf( line, sizeof(line),    "%5d %5d %5d     0     1 %5d %s",
            (int) ucEWHTypeAlarm, (int) ucMyModID, (int) ucEWHMyInstID,
            iRespond, pszAlarmString );
    else if ( iType == 5 )   /* No data alarm */
-      sprintf( line,    "%5d %5d %5d     1     1     0 Earthworm Data Outage",
+      snprintf( line, sizeof(line),    "%5d %5d %5d     1     1     0 Earthworm Data Outage",
            (int) ucEWHTypeAlarm, (int) ucMyModID, (int) ucEWHMyInstID );
    lineLen = strlen( line ) + 1;
 
@@ -127,8 +127,8 @@ void ReportPick( PPICK *P, STATION *Sta, unsigned char ucMyModID,
 /* Create TYPE_PICKTWC message (SIN CERO INCORPORADO, VARIABLES EN %d PARA 64 BITS)
    ***************************/
    if ( iType == 1 )        /* Data from lpproc */
-      sprintf( line, "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
-                     "%lf %lf %lf %lf %lE %lf %d %lf %lf",
+      snprintf( line, sizeof(line), "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
+                     "%lf %lf %lf %lf %E %lf %d %lf %lf",
              (int) ucEWHTypePickTWC, (int) ucMyModID, (int) ucEWHMyInstID,
              P->szStation, P->szChannel, P->szNetID, P->lPickIndex, P->iUseMe, 
              P->dPTime, P->cFirstMotion, P->szPhase, P->dMbAmpGM, P->dMbPer,
@@ -136,16 +136,16 @@ void ReportPick( PPICK *P, STATION *Sta, unsigned char ucMyModID,
              P->dMSAmpGM, P->dMSPer, P->dMSTime, P->dMwpIntDisp, P->dMwpTime,
              1, P->dPStrength, P->dFreq );
    if ( iType == 2 )        /* Data from develo */
-      sprintf( line, "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
-                     "%lf %lf %lf %lf %lE %lf %d %lf %lf",
+      snprintf( line, sizeof(line), "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
+                     "%lf %lf %lf %lf %E %lf %d %lf %lf",
              (int) ucEWHTypePickTWC, (int) ucMyModID, (int) ucEWHMyInstID,
              P->szStation, P->szChannel, P->szNetID, P->lPickIndex, P->iUseMe, 
              P->dPTime, P->cFirstMotion, P->szPhase, P->dMbAmpGM, P->dMbPer,
              P->dMbTime, P->dMlAmpGM, P->dMlPer, P->dMlTime, 0., 0., 0.,
              P->dMwpIntDisp, P->dMwpTime, P->iHypoID, P->dPStrength, P->dFreq );
    else if ( iType == 3 )   /* Data from hypo_display */
-      sprintf( line, "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
-                     "%lf %lf %lf %lf %lE %lf %d %lf %lf",
+      snprintf( line, sizeof(line), "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
+                     "%lf %lf %lf %lf %E %lf %d %lf %lf",
              (int) ucEWHTypePickTWC, (int) ucMyModID, (int) ucEWHMyInstID,
              P->szStation, P->szChannel, P->szNetID, P->lPickIndex, P->iUseMe, 
              P->dPTime, P->cFirstMotion, P->szPhase, P->dMbAmpGM, P->dMbPer,
@@ -153,8 +153,8 @@ void ReportPick( PPICK *P, STATION *Sta, unsigned char ucMyModID,
              P->dMSAmpGM, P->dMSPer, P->dMSTime, P->dMwpIntDisp, P->dMwpTime,
              P->iHypoID, P->dPStrength, P->dFreq );
    if ( iType == 4 )        /* Data from pick_wcatwc */
-      sprintf( line, "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
-                     "%lf %lf %lf %lf %lE %lf %d %lf %lf",
+      snprintf( line, sizeof(line), "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf "
+                     "%lf %lf %lf %lf %E %lf %d %lf %lf",
              (int) ucEWHTypePickTWC, (int) ucMyModID, (int) ucEWHMyInstID,
              Sta->szStation, Sta->szChannel, Sta->szNetID, Sta->lPickIndex, 1,
              Sta->dTrigTime-Sta->dTimeCorrection, Sta->cFirstMotion, Sta->szPhase,

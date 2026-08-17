@@ -149,8 +149,10 @@ void GeoCent( LATLON *pll )
 {
    double  dTemp;
 
-   while ( pll->dLat < -90.0 ) pll->dLat += 90.0;
-   while ( pll->dLat > 90.0 )  pll->dLat -= 90.0;
+   /* FIX: normalizacion de latitud fuera de rango con espejo al polo opuesto
+         (antes el wrap de +/-90 daba resultados incorrectos, p.ej. 100->10) */
+   while ( pll->dLat > 90.0 )  { pll->dLat -= 180.0; pll->dLon += 180.0; }
+   while ( pll->dLat < -90.0 ) { pll->dLat += 180.0; pll->dLon += 180.0; }
    if ( pll->dLat < 0. )
    {
       dTemp = 1.;
@@ -220,17 +222,23 @@ AZIDELT GetDistanceAz( LATLON *pll1, LATLON *pll2 )
        (0.5 * (pll1->dLat+pll2->dLat)) == PI/2. ||
        (0.5 * (pll1->dLat-pll2->dLat)) == PI/2. || pll1->dLon < 0. || 
         pll1->dLon > TWOPI || pll2->dLon < 0. || pll2->dLon > TWOPI )
+   {
       logit ("t", "Bad Latlon in GetDistanceAz\nlat1=%lf, lon1=%lf, "
                   "lat2=%lf, lon2=%lf\n", pll1->dLat, pll1->dLon,
                                           pll2->dLat, pll2->dLon);
+      /* FIX: de verdad devolver ceros como documenta el comentario */
+      azidelt.dAzimuth = 0.0;
+      azidelt.dDelta = 0.0;
+      return( azidelt );
+   }
    dDelLon = fabs( pll1->dLon - pll2->dLon );   /* Polar angle */
    while ( dDelLon >= TWOPI ) dDelLon -= TWOPI; /* Not likely */
    if ( dDelLon >= PI ) dDelLon = TWOPI - dDelLon; /* Force it between 0 and PI */
-   if ( dDelLon == PI ) dDelLon -= 0.000000001; /* So tan doesn't explode */
-   if ( dDelLon == 0. ) dDelLon += 0.000000001;	/* Prevent divide by zero */
+   if ( fabs( dDelLon - PI ) < 1.E-9 ) dDelLon = PI - 1.E-9; /* tan no explote */
+   if ( dDelLon < 1.E-9 ) dDelLon = 1.E-9;	/* Prevent divide by zero */
    dDelLat = pll1->dLat - pll2->dLat;
-   if ( dDelLat == PI ) dDelLat -= 0.000000001;
-   if ( dDelLat == 0. ) dDelLat += 0.000000001;
+   if ( fabs( dDelLat - PI ) < 1.E-9 ) dDelLat -= 1.E-9;
+   if ( fabs( dDelLat ) < 1.E-9 ) dDelLat = (dDelLat < 0.0 ? -1.E-9 : 1.E-9);
 /* Use Napier analogies to get internal angles (azimuths) at pll1 and 2 */
    dAdd = atan( (cos( 0.5 * dDelLat )) / (tan( 0.5*dDelLon ) * 
                  cos( 0.5 * (pll1->dLat+pll2->dLat) )) );
@@ -258,9 +266,18 @@ AZIDELT GetDistanceAz( LATLON *pll1, LATLON *pll2 )
              "lat2=%lf, lon2=%lf\n", azidelt.dAzimuth, pll1->dLat, pll1->dLon,
              pll2->dLat, pll2->dLon );
 /* Use another one of Napier's analogies to get distance from pll1 to 2 */
-   if ( dSub == 0. || dSub == PI ) dSub += 0.0000001; /* Prevent divide by zero */
+   if ( fabs( dSub ) < 1.E-9 || fabs( dSub - PI ) < 1.E-9 ) dSub += 0.0000001; /* Prevent divide by zero */
    azidelt.dDelta = fabs( 2.*atan( (tan( 0.5*dDelLat ) *
                     sin( dAdd )) / sin( dSub ) ) );
+   /* FIX: proteccion ante NaN/Inf y clamp de rango */
+   if ( !(azidelt.dDelta == azidelt.dDelta) || azidelt.dDelta > PI )
+      azidelt.dDelta = PI;
+   if ( !(azidelt.dAzimuth == azidelt.dAzimuth) ) azidelt.dAzimuth = 0.0;
+   else
+   {
+      while ( azidelt.dAzimuth >= TWOPI ) azidelt.dAzimuth -= TWOPI;
+      while ( azidelt.dAzimuth < 0.0 )   azidelt.dAzimuth += TWOPI;
+   }
 /* Check to see that computed distance makes sense */
    if ( azidelt.dDelta < 0. || azidelt.dDelta > PI )
       logit ( "t", "Bad dist in GetDistanceAz: %lf\nlat1=%lf, lon1=%lf, "
@@ -1092,7 +1109,10 @@ void PadBlanksL( int iNumDigits, char *pszString )
 {
    int     i, iStringLen;
    char    szTemp1[80], szTemp2[80];
-   
+
+   /* FIX: guardas de tamaño (antes desbordaba con entradas largas) */
+   if ( strlen( pszString ) >= sizeof( szTemp1 ) ) return;
+   if ( iNumDigits > (int) sizeof( szTemp1 )-1 ) iNumDigits = (int) sizeof( szTemp1 )-1;
    strcpy( szTemp1, pszString );
    strcpy( szTemp2, szTemp1 );
    iStringLen = strlen( szTemp1 );
@@ -1123,6 +1143,9 @@ void PadZeroes( int iNumDigits, char *pszString )
    int     i, iStringLen;
    char    szTemp1[10], szTemp2[10];
 
+   /* FIX: guardas de tamaño (documentado "10 chars max" pero sin chequeo) */
+   if ( strlen( pszString ) >= sizeof( szTemp1 ) ) return;
+   if ( iNumDigits > (int) sizeof( szTemp1 )-1 ) iNumDigits = (int) sizeof( szTemp1 )-1;
    strcpy( szTemp1, pszString );
    strcpy( szTemp2, szTemp1 );
    iStringLen = strlen( szTemp1 );
@@ -1152,6 +1175,9 @@ void PadZeroesR( int iNumDigits, char *pszString )
    int     i, iStringLen;
    char    szTemp1[10];
 
+   /* FIX: guardas de tamaño (documentado "10 chars max" pero sin chequeo) */
+   if ( strlen( pszString ) >= sizeof( szTemp1 ) ) return;
+   if ( iNumDigits > (int) sizeof( szTemp1 )-1 ) iNumDigits = (int) sizeof( szTemp1 )-1;
    strcpy( szTemp1, pszString );
    iStringLen = strlen( szTemp1 );
    if ( iNumDigits-iStringLen > 0 ) /* Number of zeroes to add */

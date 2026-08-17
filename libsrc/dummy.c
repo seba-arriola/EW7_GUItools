@@ -143,9 +143,9 @@ int ReadDummyData( HYPO *pHypo, char *pszDumFile )
 /* Read Dummy File */
    if ( (hFile = openFile( pszDumFile, "r" )) != NULL )
       /* CORRECCION 64 BITS: %d en lugar de %ld para todos los int */
-      fscanf( hFile, "%d %lf %lf %d %lf %s %d %d %d %d %d %d "
-                     "%d %d %lf %d %lf %d %lf %lf %d %lf %d %lf %d %d "
-                     "%lf %lf %lf %d %d",
+fscanf( hFile, "%d %lf %lf %d %lf %3s %d %d %d %d %d %d "
+                      "%d %d %lf %d %lf %d %lf %lf %d %lf %d %lf %d %d "
+                      "%lf %lf %lf %d %d",
        &pHypo->iBullNo, &pHypo->llEpiGG.dLat, &pHypo->llEpiGG.dLon, &iDepth,
        &pHypo->dPreferredMag, pHypo->szPMagType, &tm.tm_mday, &iMonth, &iYear,
        &tm.tm_hour, &tm.tm_min, &tm.tm_sec, &iDum, &pHypo->iNumPMags,
@@ -360,7 +360,7 @@ int WriteDummyData( HYPO *pHypo, char *pszDumFile, int iUpdate, int iGetBull )
    int     iDum;
    static  LATLON ll;   /* Epicentral geographic location */
    long    lTime;       /* 1/1/70 time */
-   char    szDum[8];
+   char    szDum[32];
    struct  tm *tm;      /* Origin time in structure */
       
 /* Get epicenter lat/lon in geographic coordinates */
@@ -373,7 +373,7 @@ int WriteDummyData( HYPO *pHypo, char *pszDumFile, int iUpdate, int iGetBull )
       hFile = openFile( pszDumFile, "r" );     // jmc
       if ( hFile != NULL )           /* Read bulletin number */
          /* CORRECCION 64 BITS: %d en lugar de %ld */
-         fscanf( hFile, "%d %lf %lf %d %lf %s %d %d %d %d %d %d "
+fscanf( hFile, "%d %lf %lf %d %lf %31s %d %d %d %d %d %d "
                         "%d %d %lf %d %lf %d %lf %lf %d %lf %d %lf %d %d "
                         "%lf %lf %lf %d %d",
           &iBullNo, &dDum, &dDum, &iDum, &dDum, szDum, &iDum, &iDum, &iDum,

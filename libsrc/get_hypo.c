@@ -129,7 +129,7 @@ int HypoStruct( char *HIn, HYPO *pHypo )
 {
 /* Break up incoming message (PARCHADO A %d PARA VARIABLES INT EN 64 BITS)
    *************************/
-   if ( sscanf( HIn, "%d %d %lf %lf %lf %lf %d %d %lf %d %lf %s %d "
+   if ( sscanf( HIn, "%d %d %lf %lf %lf %lf %d %d %lf %d %lf %3s %d "
                      "%lf %d %lf %d %lf %d %lf %d %lf %d %d",
     &pHypo->iQuakeID, &pHypo->iVersion, &pHypo->dOriginTime,
     &pHypo->dLat, &pHypo->dLon, &pHypo->dDepth, &pHypo->iNumPs, &pHypo->iAzm,
@@ -222,9 +222,9 @@ void LoadHypo( char *pszQFile, HYPO Hypo[] )
 /* Read in quake information (PARCHADO A %d PARA VARIABLES INT EN 64 BITS) */   
    for ( i=0; i<MAX_QUAKES; i++ )
    {
-      if ( fscanf( hFile, "%lf %lf %lf %lf %d %s %lf %d %d %d %lf"
-                          " %lf %lf %d %lf %d %lf %d %lf %d %lf %d"
-                          " %lf %d\n",
+if ( fscanf( hFile, "%lf %lf %lf %lf %d %3s %lf %d %d %d %lf"
+                           " %lf %lf %d %lf %d %lf %d %lf %d %lf %d"
+                           " %lf %d\n",
                    &Hypo[i].dOriginTime, &ll.dLat, &ll.dLon,
                    &Hypo[i].dPreferredMag, &Hypo[i].iNumPMags,
                     Hypo[i].szPMagType, &Hypo[i].dDepth,

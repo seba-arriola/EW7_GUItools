@@ -212,6 +212,12 @@ int main( int argc, char **argv )
             logit( "", "reset StaArray Nsta = %d\n", Nsta );	 
 	        free( StaArray );                                  
 	        StaArray = (STATION *) calloc( MAX_STATIONS, sizeof(STATION) );
+            /* FIX: si calloc falla no seguir con puntero NULL */
+            if ( StaArray == NULL )
+            {
+               logit( "et", "Out of memory al recargar StaArray\n" );
+               continue;
+            }
             Nsta = ReadLineupFile( Gparm.ATPLineupFileBB, StaArray );
             logit( "", "New StaArray Nsta = %d\n", Nsta );	 
             if ( Nsta < 1 )

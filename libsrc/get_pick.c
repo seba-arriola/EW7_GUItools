@@ -265,7 +265,10 @@ void InitP( PPICK *pP )
 void MovingAvg( long LongSample, STATION *Sta, long lLTASamps,  
                 long RawSample, long lNumConsec )
 {
-   static long    lHigh, lLow; /* Peak/trough signal values for each interval */
+   /* FIX: picos/valles por estacion (antes static compartido entre estaciones
+          contamninaba la linea de base de ruido) */
+   long    lHigh = Sta->lNoiseHigh;  
+   long    lLow  = Sta->lNoiseLow;
 
 /* Copy new sample to structure and compute DF */
    Sta->lSampNew = LongSample;
@@ -294,6 +297,8 @@ void MovingAvg( long LongSample, STATION *Sta, long lLTASamps,
       }
       if ( Sta->lSampRaw > lHigh ) lHigh = Sta->lSampRaw;
       if ( Sta->lSampRaw < lLow )  lLow  = Sta->lSampRaw;
+      Sta->lNoiseHigh = lHigh;
+      Sta->lNoiseLow  = lLow;
    }
    else               /* Compute new LTAs and noise level */
    {
@@ -323,6 +328,8 @@ void MovingAvg( long LongSample, STATION *Sta, long lLTASamps,
 /* Reset summation variables and compute thresholds */	  
       lHigh = -10000000;
       lLow  =  10000000;
+      Sta->lNoiseHigh = lHigh;
+      Sta->lNoiseLow  = lLow;
       Sta->dSumMDF = 0.;
       Sta->dSumLDC = 0.;
       Sta->dSumLDCRaw = 0.;
@@ -370,6 +377,10 @@ void MovingAvg( long LongSample, STATION *Sta, long lLTASamps,
    elsewhere) */   
    Sta->lSampOld = Sta->lSampNew;
    Sta->lLTACtr++;           // LTA counter
+
+/* Persistir picos/valles por estacion */
+   Sta->lNoiseHigh = lHigh;
+   Sta->lNoiseLow  = lLow;
 }
 
  /***********************************************************************
@@ -806,7 +817,7 @@ int PPickStruct( char *PIn, PPICK *PPick, unsigned char TypePickTWC )
 /* Break up incoming message (PARCHADO A %d PARA VARIABLES INT EN 64 BITS)
    *************************/
    sscanf( PIn,    "%d %d %d %s %s %s %ld %d %lf %c %s %lf %lf %lf %lf %lf "
-                   "%lf %lf %lf %lf %lE %lf %d %lf %lf",
+                   "%lf %lf %lf %lf %E %lf %d %lf %lf",
            &iMessageType, &iModId, &iInst, PPick->szStation, PPick->szChannel,
             PPick->szNetID, &PPick->lPickIndex, &PPick->iUseMe, &PPick->dPTime,
            &PPick->cFirstMotion, PPick->szPhase,

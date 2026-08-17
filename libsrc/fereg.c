@@ -206,14 +206,20 @@ int getnum( double dLat, double dLon, char *pszIndexFile, char *pszLatFile )
    }
 
 /* GET ONSET OF QUADRANT INFO IN llindx.fer */
+/* FIX: usar el signo de dLon original para el cuadrante. El mapeo
+   dLng==-180 -> 180 (arriba) ocurria ANTES de esta seleccion, de modo
+   que (-lat,-180) caia en el cuadrante SE/NE en vez de SW/NW y se leia
+   el indice de otra latitud. Con el signo original, -180 se mantiene en
+   el hemisferio W (consistente con -179.999) mientras que iLon=180 hace
+   el lookup de tier por el inicio de la lista de longitudes W. */
    if ( dLat < 0. )
    {    /* NOTE: Both +0.0 & -0.0 will belong to the No. Hemisphere */
-      if ( dLng < 0. ) iQuadOn = 273;    /* quadrant onset */
+      if ( dLon < 0. ) iQuadOn = 273;    /* quadrant onset */
       else             iQuadOn = 182;
    }
    else
    {
-      if ( dLng < 0. ) iQuadOn = 91;
+      if ( dLon < 0. ) iQuadOn = 91;
       else             iQuadOn = 0;
    }
 
@@ -223,14 +229,14 @@ int getnum( double dLat, double dLon, char *pszIndexFile, char *pszLatFile )
 
 /* Read (save last) latitude of interest */
    for ( i=0; i<=iLat+iQuadOn; i++ )
-      fscanf( InFile1, "%ld %ld", &iTierOn, &iNumRegs );
+      fscanf( InFile1, "%d %d", &iTierOn, &iNumRegs );
 
 /* Read records for this latitude and see where longitude fits */
    for ( i=0; i<iTierOn-1; i++ )
-      fscanf( InFile2, "%ld %ld\n", &iTierLon, &iFENum );
+      fscanf( InFile2, "%d %d\n", &iTierLon, &iFENum );
    for ( i=iTierOn-1; i<=iTierOn+iNumRegs-2; i++ )
    {
-      fscanf( InFile2, "%ld %ld\n", &iTierLon, &iFENum );
+      fscanf( InFile2, "%d %d\n", &iTierLon, &iFENum );
       if ( iLon < iTierLon )
       {
          iFENum = iLastFENum;

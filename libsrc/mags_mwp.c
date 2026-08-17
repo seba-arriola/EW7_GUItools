@@ -38,12 +38,23 @@ int integrate( double *height1, double *height2, int *n1, int *n2,
 double Mwp_adjustment( double dDistance );
 
 /* =========================================================
-   SISTEMA DE LOGEO FORENSE HARDCODEADO PARA MWP
+   SISTEMA DE LOGEO FORENSE PARA MWP
+   FIX: ruta absoluta del sistema original; ahora via $EW_LOG
+   (o /tmp si no esta definido) para no fallar en silencio.
    ========================================================= */
-#define MWP_LOG_FILE "/home/ew8/earthworm/mwp_debug.log"
+#define MWP_LOG_FILE_ENV "EW_LOG"
+static const char *mwp_log_path(void) {
+   static char buf[512];
+   const char *p = getenv(MWP_LOG_FILE_ENV);
+   if (p && *p) {
+      snprintf(buf, sizeof(buf), "%s/mwp_debug.log", p);
+      return buf;
+   }
+   return "/tmp/mwp_debug.log";
+}
 
 void MwpTracerLog(const char *fmt, ...) {
-    FILE *fp = fopen(MWP_LOG_FILE, "a");
+    FILE *fp = fopen(mwp_log_path(), "a");
     if (fp) {
         time_t t = time(NULL);
         struct tm *tm_info = gmtime(&t);
@@ -132,11 +143,16 @@ void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS )
        }
    }
 
-/* How many points to evaluate? */   
+   /* How many points to evaluate? */   
    if ( iS == 1 ) 
    {
+      /* FIX: tasa de muestreo valida (evita SIGFPE) */
+      if ( Sta->dSampRate <= 0.0 ) { MwpTracerLog("  [%s] ABORT: dSampRate<=0 (%g)\n", Sta->szStation, Sta->dSampRate); return; }
       lNumInBuff = (long) ((Sta->dEndTime-pPBuf->dPTime) * Sta->dSampRate);
       lNum = (long) (Sta->dSampRate * (double) iMwpSeconds);
+      /* FIX: acotar a los buffers ANTES de usarlos (el guard antiguo llegaba
+             despues del desbordamiento con tasas altas de muestreo) */
+      if ( lNum > MAXMWPARRAY ) lNum = MAXMWPARRAY-1;
       if ( lNum > lNumInBuff ) 
       {
          /* FIX CRITICO: En sistemas en tiempo real NO truncamos la ventana si falta data.
@@ -187,10 +203,13 @@ void AutoMwp( STATION *Sta, PPICK *pPBuf, double dSN, int iMwpSeconds, int iS )
          S_to_N_prior = sqrt( x2_bar );
       }
    }
-   else {
-      local_mean = Sta->dAveLDCRaw; /* En pick_wcatwc, usamos la línea base global calculada */
-      S_to_N_prior = Sta->dAveRawNoiseOrig;
-   }
+else {
+       /* iS==0: plRawData ya trae la linea base pre-evento restada al llenarse
+          (get_pick.c resta dAveLDCRawOrig al llenar plRawData). Restar aqui de
+          nuevo seria una doble remocion de offset, asi que usamos local_mean=0. */
+       local_mean = 0.0;
+       S_to_N_prior = Sta->dAveRawNoiseOrig;
+    }
    
    dTotalDisp = 0.;
    for ( i=0; i<lNum-1; i++ )
@@ -819,6 +838,8 @@ int GetMbMl( STATION *Sta, int iIndex, unsigned char ucMyModID,
              unsigned char ucEWHMyInstID, int iMbCycles, int iRT )
 {
    PPICK  PTemp;        
+
+   memset( &PTemp, 0, sizeof( PTemp ) );   /* FIX: evitar lectura no inicializada */
 
    if ( Sta->dSens > 0. )
    {     

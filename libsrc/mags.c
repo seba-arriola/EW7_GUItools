@@ -207,6 +207,7 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
 
    for ( i=0; i<iPNum; i++ )
    {   
+      if ( i >= MAX_STATIONS ) break;   /* FIX: acotar iMwpCounted[] */
       azidelt = GetDistanceAz( (LATLON *) pHypo, (LATLON *) &P[i] );
       P[i].dDelta = azidelt.dDelta;
       P[i].dAz = azidelt.dAzimuth;
@@ -322,6 +323,8 @@ void ComputeMagnitudes( int iPNum, PPICK P[], HYPO *pHypo )
                 MwpTracerLog("    -> %s: Mwp=%.2f DESCARTADA por dispersion. Diff (%.2f) > Tol (%.2f)\n", P[i].szStation, P[i].dMwpMag, diff, mwp_tolerance);
             }
          }
+         if ( P[i].dMwMag > 0. )
+            if ( P[i].iMwClip == 0 && fabs( pHypo->dMwAvg-P[i].dMwMag ) < 0.6 ) { iMwCountMod++; dMwSumMod += P[i].dMwMag; }
       }
 
    if ( iMbCountMod >= 2 ) { pHypo->dMbAvg = dMbSumMod / (double) iMbCountMod; pHypo->iNumMb = iMbCountMod; }
@@ -377,6 +380,7 @@ double ComputeMbMag( char *pszChan, double dGain, double dMbAmp, double dMbPer, 
    if ( iDelta < 0 )   iDelta = 0;
    iDep = (int) ((dDepth + 37.5) / 25.) - 1; 
    if ( iDep >= 24 ) iDep = 24;
+   if ( iDep < 0 )   iDep = 0;   /* FIX: clamp inferior evita iBVal[negativo] */
 
    if ( dAmp <= 1.0 ) dAmp = 1.0;
    return( log10( dAmp/(dMbPerT/10.) ) + 0.1*(double) iBVal[iDelta*25 + iDep] );
@@ -417,6 +421,7 @@ double ComputeMBMag( char * pszChan, double dGain, double dMBAmp, double dMBPer,
    if ( iDelta < 0 )   iDelta = 0;
    iDep = (int) ((dDepth + 37.5) / 25.) - 1; 
    if ( iDep >= 24 ) iDep = 24;
+   if ( iDep < 0 )   iDep = 0;   /* FIX: clamp inferior evita iBVal[negativo] */
 
    if ( dAmp <= 1.0 ) dAmp = 1.0;
    return( log10( dAmp/dMBPerT ) + 0.1*(double) iBVal[iDelta*25 + iDep] );
@@ -600,6 +605,8 @@ double ComputeMwMag( double dGain, double dMwAmp, double dMwPer, double dDelta )
       dMagMm = (((double) i - 1.0)*0.1) + 5.0;
 	
       iMoment = (int) ((dMagMm - 4.9) * 10. + 0.1);
+      if ( iMoment < 1 )  iMoment = 1;    /* FIX: clamp indice dBruneFactor[] */
+      if ( iMoment > 51 ) iMoment = 51;
       dBruneMoment = pow( 10., dBruneFactor[iMoment-1] );
       dMwMag = 0.66667 * log10( dBruneMoment ) - 10.7;	
    }
@@ -763,6 +770,18 @@ int LoadBVals( char *pszBValFile )
    return 0;
 }                
 
+/* Las funciones MbMlCtsFromGM()/MbMlGroundMotion() y MsCtsFromGM()/
+   MsGroundMotion() usan dos convenciones de ganancia, seleccionadas por el
+   valor de dSens (o dGain):
+     - dSens >= 1E7 : ganancia digital broadband (counts/(m/s)). La amplitud
+       es proporcional a la velocidad del suelo y requiere la division por
+       omega (2*PI*periodo) para obtener el desplazamiento en nm.
+     - dSens < 1E7  : ganancia analogica/heli (cuentas analogicas). La
+       conversion a desplazamiento (nm) es directa, sin normalizar por omega.
+   Ambas ramas devuelven desplazamiento de suelo en nm y cada par
+   CtsFromGM/GroundMotion es inverso exacto dentro de su rama. No son
+   equivalentes entre si: se conservan ambas por completitud para soportar
+   instrumentos de ambas convenciones. (Ver nota original en todo.dat.) */
 long MbMlCtsFromGM( char *pszChannel, double dSens, long lPer, double dAmp )
 {
    double dResponse;             
